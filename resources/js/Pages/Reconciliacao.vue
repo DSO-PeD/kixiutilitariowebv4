@@ -2,7 +2,7 @@
 
     <Head title="Reconciliação" />
 
-    <div class="container mx-auto px-4 py-6 max-w-full">
+    <div class="w-full max-w-[calc(100vw-30rem)] mx-auto"> <!-- Ajuste 17rem conforme o sidebar -->
         <!-- Alertas -->
         <div v-if="$page.props.flash.success" class="alert alert-success mb-4">
             {{ $page.props.flash.success }}
@@ -20,45 +20,51 @@
             </div>
         </div>
 
-        <!-- Card Principal -->
-        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
-            <!-- Cabeçalho do Card -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-lg font-semibold text-gray-700">Comprovativos Pendentes de Validação</h2>
+        <!-- Cabeçalho do Card -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
 
-                <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                    <button class="btn btn-outline-secondary flex items-center gap-2" @click="showModalLoan = true">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        Consultar por Loan
-                    </button>
-                    <button class="btn btn-outline-secondary flex items-center gap-2" @click="showModalData = true">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                        </svg>
-                        Consultar por Data
-                    </button>
-                    <button class="btn btn-outline-excel flex items-center gap-2" @click="exportarParaExcel">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                        </svg>
-                        Exportar para Excel
-                    </button>
-                </div>
+            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+
+                <button class="btn btn-outline-consulta flex items-center gap-2" @click="showModalLoan = true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Consultar Dados por:= Loan Number
+                </button>
+                <button class="btn btn-outline-consulta flex items-center gap-2" @click="showModalData = true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                    </svg>
+                    Consultar Dados por:= Data, Agência e Estado
+                </button>
+                <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                    Exportar Dados para Excel
+                </button>
             </div>
+        </div>
 
+        <!-- Card Principal -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6 w-full min-w-max">
+
+
+
+            <hr />
             <!-- Filtro Avançado -->
-            <div class="mb-6 bg-gray-50 p-4 rounded-lg">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Pesquisa Geral</label>
+            <div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtro Geral nos Dados
+                            Listados na
+                            Tabela</label>
                         <div class="relative">
                             <input type="text" v-model="filtro.search" placeholder="Digite para filtrar..."
                                 class="input input-bordered w-full pl-10" />
@@ -72,14 +78,19 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por LNR</label>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por LNR nos Dados
+                            Listados
+                            na Tabela</label>
                         <input type="text" v-model="filtro.lnr" placeholder="Número do Loan"
                             class="input input-bordered w-full" />
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Estado</label>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Estado nos
+                            Dados
+                            Listados na Tabela</label>
+
                         <select v-model="filtro.estado" class="input input-bordered w-full">
                             <option value="">Todos</option>
                             <option v-for="estado in $page.props.estados" :value="estado.descricao_estado"
@@ -88,8 +99,10 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Agência</label>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Agência nos
+                            Dados
+                            Listados na Tabela</label>
                         <input type="text" v-model="filtro.agencia" placeholder="Nome da Agência"
                             class="input input-bordered w-full" />
                     </div>
@@ -106,14 +119,17 @@
             </div>
 
             <!-- Tabela Responsiva -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full min-w-[1024px] divide-y divide-gray-200 lg:min-w-0">
+                    <!-- lg:min-w-0 para desktop -->
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px]" >
                                 #
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -123,7 +139,7 @@
                                     Arquivo
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Registado">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -134,7 +150,7 @@
                                     Registado
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Agência">
 
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -159,7 +175,7 @@
                                     Por
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Cliente">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -171,7 +187,7 @@
                                     Cliente
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="LNR">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -182,7 +198,7 @@
                                     LNR
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Produto">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -193,7 +209,7 @@
                                     Produto
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Montante">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -204,7 +220,7 @@
                                     Montante
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Estado">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -216,7 +232,7 @@
                                 </div>
                             </th>
                             <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Ações">
                                 Ações
                             </th>
                         </tr>
@@ -224,7 +240,7 @@
                     <tbody class="bg-white divide-y divide-gray-200 font-thin">
                         <tr v-for="(comprovativo, index) in comprovativosFiltrados" :key="comprovativo.id"
                             class="hover:bg-gray-50">
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
                                 {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -283,16 +299,15 @@
 
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center">
+
                                 <button @click="abrirModalReconciliacao(comprovativo)"
-                                    class="btn btn-action btn-validate flex items-center gap-1 mx-auto"
-                                    :disabled="comprovativo.estado === 'Validado'">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    Mudar Estado
+                                    class="btn btn-action btn-validate flex items-center gap-1 mx-auto px-2 py-1 text-xs sm:text-sm sm:px-3 sm:py-1.5">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4">...</svg>
+                                    <span class="hidden sm:inline">Mudar Estado</span>
+                                    <span class="sm:hidden">Estado</span>
                                 </button>
+
+
                             </td>
                         </tr>
                         <tr v-if="comprovativosFiltrados.length === 0">
@@ -332,13 +347,17 @@
                     </button>
                 </div>
             </div>
+
+
         </div>
     </div>
 
     <!-- Modals -->
     <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan" v-model="filtroLoan" />
-    <ModalDate :isOpen="showModalData" @close="showModalData = false" @search="buscarPorDatas"
-        v-model:dataInicio="dataInicio" v-model:dataFim="dataFim" />
+    <ModalDate :isOpen="showModalData" :dataInicio="dataInicio" :dataFim="dataFim" :estadoModal="estadoModal"
+        :agenciaModal="agenciaModal" @close="showModalData = false" @update:dataInicio="val => dataInicio = val"
+        @update:dataFim="val => dataFim = val" @update:estadoModal="val => estadoModal = val"
+        @update:agenciaModal="val => agenciaModal = val" @search="buscarPorDatas" />
 
     <ModalDelete v-if="showModalEliminar" @close="fecharModalEliminacao" @confirm="confirmarEliminacao"
         v-model:motivo="formEliminacao.txtMotivo" :dados="formEliminacao.txtDadosEliminado"
@@ -399,6 +418,8 @@ const filtro = ref({
 const filtroLoan = ref('')
 const dataInicio = ref('')
 const dataFim = ref('')
+const estadoModal = ref(0)
+const agenciaModal = ref('')
 
 // Computed
 const comprovativosFiltrados = computed(() => {
@@ -477,12 +498,15 @@ const mudarPagina = (novaPagina) => {
         replace: true
     })
 }
-const buscarPorDatas = () => {
+const buscarPorDatas = (params) => {
     router.get('/reconciliacao', {
         tipo: 1,
-        data_inicio: dataInicio.value,
-        data_fim: dataFim.value
+        data_inicio: params.data_inicio,
+        data_fim: params.data_fim,
+        estadoconsulta: params.estadoconsulta,
+        agenciaconsulta: params.agenciaconsulta
     }, { preserveState: true })
+
     showModalData.value = false
 }
 const exportarParaExcel = () => {
@@ -576,6 +600,10 @@ watch(() => props.total, (newTotal) => {
 
 .btn-outline-secondary {
     @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+}
+
+.btn-outline-consulta {
+    @apply border border-gray-300 bg-white text-cyan-800 hover:bg-gray-50;
 }
 
 .btn-outline-excel {
@@ -675,5 +703,123 @@ watch(() => props.total, (newTotal) => {
 /* Efeitos de hover */
 tr:hover {
     @apply bg-gray-50;
+}
+
+/* Garante que a tabela seja scrollável horizontalmente */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+/* Versão mobile - transforma tabela em cards */
+@media (max-width: 1023px) {
+    table {
+        display: block;
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody {
+        display: block;
+        width: 100%;
+    }
+
+    tr {
+        display: block;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f3f4f6;
+        text-align: right;
+    }
+
+    td:last-child {
+        border-bottom: none;
+    }
+
+    td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 500;
+        color: #6b7280;
+        margin-right: 1rem;
+    }
+
+    /* Esconde algumas colunas menos importantes em mobile */
+    td:nth-child(4),
+    /* Agência */
+    td:nth-child(6)
+
+    /* Cliente */
+        {
+        display: none;
+    }
+}
+
+/* Melhora a legibilidade em mobile */
+@media (max-width: 640px) {
+    .btn {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    .input {
+        @apply py-1.5 text-sm;
+    }
+
+    /* Ajusta o tamanho dos textos */
+    td {
+        @apply text-sm;
+    }
+
+    /* Garante que os textos longos quebrem */
+    .whitespace-normal {
+        white-space: normal !important;
+    }
+}
+
+/* Barra de rolagem personalizada */
+::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* Mostra mais colunas que em mobile */
+    td:nth-child(4), /* Agência */
+    td:nth-child(6) /* Cliente */ {
+        display: flex !important;
+    }
+
+    /* Ajusta o tamanho dos textos */
+    td {
+        @apply text-sm;
+    }
+
+    /* Reduz o padding */
+    td {
+        @apply px-2 py-3;
+    }
 }
 </style>

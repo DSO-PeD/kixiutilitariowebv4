@@ -15,7 +15,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span>Consultar por Data</span>
+                            <span>Consultar Dados</span>
                         </h3>
                         <button @click="handleClose" class="text-white hover:text-gray-200 focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -52,16 +52,26 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <select v-model="estadoModal" class="form-select pr-8">
-                            <option disabled selected :value="''">Escolha estado</option>
-                            <option v-for="est in estados" v-bind:key="est.id" v-bind:value="est.id">
-                                {{ est.descricao_estado }}</option>
+                         <label class="block text-sm font-medium text-gray-700">Estado</label>
+                          <label class="block text-sm font-medium text-gray-700">Agência</label>
+                        <select v-model="estadoModal" class="form-select pr-8"
+                            :class="{ 'border-red-500': dateError && !estadoModal }">
+                            <option disabled :value="0">Escolha estado</option>
+                            <option v-for="estado in $page.props.estados" :value="Number(estado.id)" :key="estado.id">
+                                {{ estado.descricao_estado }}
+                            </option>
+                            <option  :value="28">Todos estados</option>
                         </select>
 
-                        <select v-model="agenciaModal" class="form-select pr-8">
+                        <select v-model="agenciaModal" class="form-select pr-8"
+                            :class="{ 'border-red-500': dateError && !agenciaModal }">
                             <option disabled selected :value="''">Escolha agência</option>
-                            <option v-for="ag in agencias" v-bind:key="ag.OfIdentificador"
-                                v-bind:value="ag.OfIdentificador">{{ ag.OfNombre }}</option>
+
+                            <option v-for="age in $page.props.bases" :value="age.OfIdentificador"
+                                :key="age.OfIdentificador">
+                                {{ age.OfIdentificador }} - {{ age.OfNombre }}
+                            </option>
+                            <option  :value="'T'">Todas que tenho acesso</option>
                         </select>
                     </div>
 
@@ -106,38 +116,38 @@ const props = defineProps({
     isOpen: Boolean,
     dataInicio: String,
     dataFim: String,
-    estadoModal: String,
     agenciaModal: String,
-})
+    estadoModal: {
+        type: Number,
+        default: 0 // Valor padrão numérico
+    }
 
-const emit = defineEmits(['update:dataInicio', 'update:dataFim', 'update:estadoModal', 'update:agenciaModal','close', 'search', 'onSearch'])
+})
+const emit = defineEmits([
+    'update:dataInicio',
+    'update:dataFim',
+    'update:estadoModal',
+    'update:agenciaModal',
+    'close',
+    'search'
+])
 
 const startDate = ref(props.dataInicio || '')
 const endDate = ref(props.dataFim || '')
-const estadoModal = ref(props.estadoModal || '')
+const estadoModal = ref(props.estadoModal || 0)
 const agenciaModal = ref(props.agenciaModal || '')
 const dateError = ref('')
 
-const estados = ref([]);
-//const estado = ref('');
-const listarEstados = async () => {
-    const res = await fetch('/listarEstados');
-    const json = await res.json();
-    estados.value = json;
-}
 
-const agencias = ref([]);
-//const agencia = ref('');
-const listarAgencias = async () => {
-    const res = await fetch('/listarAgencias');
-    const json = await res.json();
-    agencias.value = json;
-}
+
+
 
 
 // Validação do formulário
 const isFormValid = computed(() => {
-    return startDate.value && endDate.value && !dateError.value
+    const datesValid = startDate.value && endDate.value && !dateError.value
+    const selectsValid = estadoModal.value && agenciaModal.value
+    return datesValid && selectsValid
 })
 
 // Validação das datas
@@ -178,23 +188,41 @@ const handleClose = () => {
 }
 
 const handleSearch = () => {
-    if (!validateDates() || !isFormValid.value) return
+    // Resetar erro anterior
+    dateError.value = ''
 
+    // Validação básica
+    if (!startDate.value || !endDate.value) {
+        dateError.value = 'Por favor, selecione ambas as datas'
+        return
+    }
+
+    // Validação de datas
+    if (new Date(startDate.value) > new Date(endDate.value)) {
+        dateError.value = 'A data de início não pode ser maior que a data de fim'
+        return
+    }
+
+    // Validação de estado/agência (se obrigatórios)
+    if (!estadoModal.value || !agenciaModal.value) {
+        dateError.value = 'Por favor, selecione o estado e a agência'
+        return
+    }
+
+    // Emitir os dados
     emit('update:dataInicio', startDate.value)
     emit('update:dataFim', endDate.value)
     emit('update:estadoModal', estadoModal.value)
     emit('update:agenciaModal', agenciaModal.value)
-    emit('search', { startDate: startDate.value, endDate: endDate.value })
-    emit('onSearch', {
-        start: startDate.value,
-        end: endDate.value
+    emit('search', {
+        data_inicio: startDate.value,
+        data_fim: endDate.value,
+        estadoconsulta: estadoModal.value,
+        agenciaconsulta: agenciaModal.value
     })
 }
 
-onMounted(async () => {
-    listarEstados();
-    listarAgencias();
-});
+
 </script>
 <style scoped>
 .form-input,

@@ -26,7 +26,7 @@ class CpvtReconciliacaoController extends Controller
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
 
-        $filtros = $request->only(['search', 'data_inicio', 'data_fim']);
+        $filtros = $request->only(['search', 'data_inicio', 'data_fim','estadoconsulta','agenciaconsulta']);
 
 
         $tipoDeBusca = $request->tipo;
@@ -53,8 +53,12 @@ class CpvtReconciliacaoController extends Controller
         } else {
             $sistema_aberto = true;
         }
+         $estados = EstadosModel::getEstadosDCF('DCF');
+         $ids_estados = $estados->pluck('id')->implode(',');
 
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+        $ESTADO = "'" .$ids_estados. "'";
+
           $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
         $TIPO = 0;
@@ -67,6 +71,16 @@ class CpvtReconciliacaoController extends Controller
             $DataInicio =date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
+            if($request->agenciaconsulta !='T'){
+                $Bases= "'" .$request->agenciaconsulta . "'";
+            }
+
+            if($request->estadoconsulta !=28){
+                $ESTADO="'" .$request->estadoconsulta. "'";
+            }
+
+           // dd( $DataFim);
+
         }
 
         if ($tipoDeBusca == 3) {
@@ -75,12 +89,12 @@ class CpvtReconciliacaoController extends Controller
 
         }
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN);
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN,$ESTADO);
         $lista_produtos = TKxClProdutoModel::getProdutos();
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
-        $estados = EstadosModel::getEstadosDCF('DCF');
+
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
@@ -126,7 +140,7 @@ class CpvtReconciliacaoController extends Controller
             'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
         ]);
     }
-    
+
     public function validarComprovativo(Request $request)
     {
         $authenticatedUser = Auth::user();
@@ -180,4 +194,11 @@ class CpvtReconciliacaoController extends Controller
             }
         }
     }
+
+     public function listarEstadosReconciliacao(){
+
+          $estados = EstadosModel::getEstadosDCF('DCF');
+        return response()->json($estados);
+    }
+
 }

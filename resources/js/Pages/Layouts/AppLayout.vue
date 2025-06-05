@@ -23,8 +23,12 @@ const props = defineProps({
             <Header @toggle-sidebar="toggleSidebar" :sidebar-collapsed="sidebarCollapsed" />
 
             <main class="flex-1 overflow-y-auto">
-                <div class="container mx-auto p-4 lg:p-6 transition-all duration-300" style="padding-right: 1rem;"
-                    :style="{ 'padding-left': sidebarCollapsed ? '0.5rem' : 'calc(16rem + 1.5rem)' }">
+                <!--div class="container mx-auto p-4 lg:p-6 transition-all duration-300" style="padding-right: 1rem;"
+                    :style="{ 'padding-left': sidebarCollapsed ? '0.5rem' : 'calc(16rem + 1.5rem)' }"-->
+
+                <!--div class="w-full p-4 lg:p-6 transition-all duration-300 pr-4"
+                    :style="{ 'padding-left': sidebarCollapsed ? '4rem' : '17rem' }"-->
+               <div class="w-full mx-auto px-2 sm:px-4 lg:px-6">
                     <slot />
                 </div>
             </main>

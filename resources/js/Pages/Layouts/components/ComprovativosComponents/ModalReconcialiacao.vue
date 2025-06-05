@@ -68,17 +68,17 @@
                                         <div class="flex justify-between border-b pb-1">
                                             <span class="text-sm text-gray-500">Agência:</span>
                                             <span class="text-sm font-medium">{{ form.agencia || '-'
-                                                }}</span>
+                                            }}</span>
                                         </div>
                                         <div class="flex justify-between border-b pb-1">
                                             <span class="text-sm text-gray-500">Registado Por:</span>
                                             <span class="text-sm font-medium">{{ form.usuario
-                                                }}</span>
+                                            }}</span>
                                         </div>
                                         <div class="flex justify-between border-b pb-1">
                                             <span class="text-sm text-gray-500">Cliente:</span>
                                             <span class="text-sm font-medium">{{ form.cliente || '-'
-                                                }}</span>
+                                            }}</span>
                                         </div>
 
                                     </div>
@@ -101,7 +101,7 @@
                                             <span class="text-sm font-medium text-green-600">{{
                                                 formatCurrency(form.montante) }}</span>
                                         </div>
-                                          <div class="flex justify-between border-b pb-1">
+                                        <div class="flex justify-between border-b pb-1">
                                             <span class="text-sm text-gray-500">Estado Actual do Comprovativo
                                                 :</span>
                                             <span :class="form.color"
@@ -124,6 +124,7 @@
                                     <!--h4 class="font-medium text-gray-900">Comprovativo</h4-->
                                     <div class="mt-1">
                                         <div v-if="form.file" class="flex flex-col items-center">
+                                            <!-- Botão de download (comum para ambos os tipos) -->
                                             <a :href="`/storage/comprovativos/${form.file}`" target="_blank"
                                                 class="btn btn-secondary flex items-center gap-2 mb-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -133,14 +134,26 @@
                                                 </svg>
                                                 Baixar Comprovativo
                                             </a>
-                                            <iframe :src="`/storage/comprovativos/${form.file}`"
-                                                class="w-full h-64 border rounded-lg" v-if="isPdf(form.file)">
-                                                Seu navegador não suporta PDFs. <a
-                                                    :href="`/storage/comprovativos/${form.file}`">Baixe
-                                                    o arquivo</a>.
-                                            </iframe>
-                                            <img :src="`/storage/comprovativos/${form.file}`"
-                                                class="max-w-full h-auto border rounded-lg" v-else>
+
+                                            <!-- Visualização do arquivo -->
+                                            <template v-if="isPdf(form.file)">
+                                                <!-- PDF (iframe) -->
+                                                <iframe :src="`/storage/comprovativos/${form.file}`"
+                                                    class="w-full h-64 border rounded-lg">
+                                                </iframe>
+                                                <!-- Mensagem alternativa fora do iframe -->
+                                                <p class="text-sm text-gray-600 mt-2">
+                                                    Seu navegador não suporta PDFs.
+                                                    <a :href="`/storage/comprovativos/${form.file}`"
+                                                        class="text-blue-600">Baixe o arquivo</a>.
+                                                </p>
+                                            </template>
+                                            <template v-else>
+                                                <!-- Imagem -->
+                                                <img :src="`/storage/comprovativos/${form.file}`"
+                                                    class="max-w-full h-auto max-h-64 border rounded-lg"
+                                                    alt="Comprovativo">
+                                            </template>
                                         </div>
                                         <div v-else class="text-center text-gray-500 italic">
                                             Nenhum arquivo de comprovativo disponível
@@ -169,7 +182,7 @@
                     Dados para Reconciliação
 
                 </h3>
-<hr/>
+                <hr />
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Banco de Pagamento</label>
@@ -372,7 +385,7 @@ watchEffect(() => {
             conta: props.comprovativoreconci.conta || '',
             cliente: props.comprovativoreconci.cliente || '',
             estado: props.comprovativoreconci.estado || '',
-             color: props.comprovativoreconci.color || ''
+            color: props.comprovativoreconci.color || ''
         }
     }
 })
