@@ -12,7 +12,7 @@ use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class CpvtReconciliacaoController extends Controller
@@ -26,15 +26,10 @@ class CpvtReconciliacaoController extends Controller
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
 
-        $filtros = $request->only(['search', 'data_inicio', 'data_fim','estadoconsulta','agenciaconsulta']);
+        $filtros = $request->only(['search', 'data_inicio', 'data_fim', 'estadoconsulta', 'agenciaconsulta']);
 
 
         $tipoDeBusca = $request->tipo;
-
-
-
-
-
 
 
 
@@ -53,13 +48,13 @@ class CpvtReconciliacaoController extends Controller
         } else {
             $sistema_aberto = true;
         }
-         $estados = EstadosModel::getEstadosDCF('DCF');
-         $ids_estados = $estados->pluck('id')->implode(',');
+        $estados = EstadosModel::getEstadosDCF('DCF');
+        $ids_estados = $estados->pluck('id')->implode(',');
 
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
-        $ESTADO = "'" .$ids_estados. "'";
+        $ESTADO = "'" . $ids_estados . "'";
 
-          $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
+        $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
         $TIPO = 0;
         $LOAN = "'DS/280890'";
@@ -68,18 +63,18 @@ class CpvtReconciliacaoController extends Controller
 
         if ($tipoDeBusca == 1) {
 
-            $DataInicio =date("Y-m-d 00:00:00", strtotime($request->data_inicio));
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
-            if($request->agenciaconsulta !='T'){
-                $Bases= "'" .$request->agenciaconsulta . "'";
+            if ($request->agenciaconsulta != 'T') {
+                $Bases = "'" . $request->agenciaconsulta . "'";
             }
 
-            if($request->estadoconsulta !=28){
-                $ESTADO="'" .$request->estadoconsulta. "'";
+            if ($request->estadoconsulta != 28) {
+                $ESTADO = "'" . $request->estadoconsulta . "'";
             }
 
-           // dd( $DataFim);
+            // dd( $DataFim);
 
         }
 
@@ -89,11 +84,12 @@ class CpvtReconciliacaoController extends Controller
 
         }
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN,$ESTADO);
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO);
         $lista_produtos = TKxClProdutoModel::getProdutos();
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+        $total = sizeof($lista_comprovativo);
 
         $TipoComprovativo = [
             'G' => 'G/',
@@ -115,14 +111,13 @@ class CpvtReconciliacaoController extends Controller
                 'color' => $item->color,
                 'cliente' => $item->infoadicional,
                 'observacao' => $item->observacao,
-
                 'metodologia' => $item->PoAgrupado,
                 'referencia' => $item->BuReferencia,
                 'montante' => number_format($item->BuMontante, 2, ',', '.'),
 
             ];
         });
-        $NumeroPaginator = 30;
+        $NumeroPaginator = $NumeroRegistroTabela;
         $paginado = $comprovativos_list->forPage($request->input('page', 1), $NumeroPaginator)->values();
 
         //dd($comprovativos_list);
@@ -137,6 +132,8 @@ class CpvtReconciliacaoController extends Controller
             'contas' => $lista_bancos_contas,
             'tipocomprovativos' => $TipoComprovativo,
             'estados' => $estados,
+            'lista_comprovativo' => $lista_comprovativo,
+            'total' => $total,
             'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
         ]);
     }
@@ -195,10 +192,53 @@ class CpvtReconciliacaoController extends Controller
         }
     }
 
-     public function listarEstadosReconciliacao(){
+    public function listarEstadosReconciliacao()
+    {
 
-          $estados = EstadosModel::getEstadosDCF('DCF');
+        $estados = EstadosModel::getEstadosDCF('DCF');
         return response()->json($estados);
     }
+
+
+
+    public function listarDetalhesComprovativosDCF(Request $request)
+    {
+        // Validação mínima
+        if (!$request->idComprovativo || !is_numeric($request->idComprovativo)) {
+            return response()->json([], 400);
+        }
+
+        $dados = CpvtReconciliacaoModel::getComprovativosDCFDetalhe($request->idComprovativo);
+
+        return response()->json($dados);
+
+    }
+
+    public function listarDetalhesComprovativosDCF02(Request $request)
+    {
+        try {
+
+
+            // Cache com tempo de 1 hora (3600 segundos)
+            $dados = Cache::remember(
+                "operacoes_reconciliacao_{$request->idComprovativo}",
+                3600,
+                function () use ($request) {
+                    return CpvtReconciliacaoModel::getComprovativosDCFDetalhe($request->idComprovativo);
+                }
+            );
+
+            return response()->json($dados);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao buscar operações',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
 
 }

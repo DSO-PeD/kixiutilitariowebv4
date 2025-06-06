@@ -13,7 +13,7 @@
                         enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
                         leave-to="opacity-0 scale-95">
                         <DialogPanel
-                            class="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                             <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-950  ">
                                 <b>Detalhes do Comprovativo - LNR {{ comprovativo.lnr }}</b>
 
@@ -69,19 +69,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <h6 class="font-medium text-gray-900">Operação de Reconciliação</h6>
 
-                                                <table style="font-size:10;">
-                                                    <th>Data</th>
-                                                    <th>Registado</th>
-                                                    <th>Estado</th>
-                                                    <th>Obs</th>
-                                                     <th>Descrição</th>
-                                                     <th>Obs</th>
-                                                     <th>Dado Bancarios</th>
-                                                </table>
-                                            </div>
 
                                         </div>
                                     </div>
@@ -89,36 +77,6 @@
                                     <!-- Coluna 2 -->
                                     <div>
                                         <div class="space-y-4">
-                                            <!--div>
-                                                <h4 class="font-medium text-gray-900">Estado Actual</h4>
-                                                <div class="mt-2 space-y-2">
-                                                    <div class="flex justify-between border-b pb-1">
-                                                        <span class="text-sm text-gray-500">Estado:</span>
-                                                        <span :class="comprovativo.color"
-                                                            class="px-2 py-1 text-xs font-medium rounded-full">
-                                                            {{ comprovativo.estado }}
-                                                        </span>
-                                                    </div>
-                                                    <div v-if="comprovativo.validado_por"
-                                                        class="flex justify-between border-b pb-1">
-                                                        <span class="text-sm text-gray-500">Validado Por:</span>
-                                                        <span class="text-sm font-medium">{{ comprovativo.validado_por
-                                                        }}</span>
-                                                    </div>
-                                                    <div v-if="comprovativo.data_validacao"
-                                                        class="flex justify-between border-b pb-1">
-                                                        <span class="text-sm text-gray-500">Data Validação:</span>
-                                                        <span class="text-sm font-medium">{{ comprovativo.data_validacao
-                                                        }}</span>
-                                                    </div>
-                                                    <div v-if="comprovativo.observacoes"
-                                                        class="flex justify-between border-b pb-1">
-                                                        <span class="text-sm text-gray-500">Observações:</span>
-                                                        <span class="text-sm font-medium">{{ comprovativo.observacoes
-                                                        }}</span>
-                                                    </div>
-                                                </div>
-                                            </div-->
 
                                             <div>
                                                 <!--h4 class="font-medium text-gray-900">Comprovativo</h4-->
@@ -143,7 +101,7 @@
                                                                 o arquivo</a>.
                                                         </iframe>
                                                         <img :src="`/storage/comprovativos/${comprovativo.file}`"
-                                                            class="max-w-full h-auto border rounded-lg" v-else>
+                                                            class="max-w-full h-auto border rounded-lg" v-else />
                                                     </div>
                                                     <div v-else class="text-center text-gray-500 italic">
                                                         Nenhum arquivo de comprovativo disponível
@@ -155,19 +113,62 @@
                                 </div>
                             </div>
 
+                            <div class=" p-2 rounded" v-if="comprovativo.operacoesReconciliacao?.length">
+                                <h6 class="font-medium text-slate-900">Operações de Reconciliação - DCF</h6>
+                                <table class="w-full min-w-[800px] text-white text-sm ">
+                                    <thead class="font-light bg-slate-600">
+                                        <tr>
+                                            <th class="text-left py-2 font-light">Alterado em</th>
+                                            <th class="text-left py-2 font-light">Operador</th>
+                                            <th class="text-left py-2 font-light">Estado</th>
+                                            <th class="text-left py-2 font-light">Obs</th>
+                                            <th class="text-left py-2 font-light">Descrição</th>
+
+                                            <th class="text-left py-2 font-light">Banco</th>
+                                            <th class="text-left py-2 font-light">Conta</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr v-for="op in comprovativo.operacoesReconciliacao" :key="op.id" class="border-b border-gray-700 hover:bg-gray-600 text-slate-950">
+                                            <!-- Células ajustadas para usar operacao diretamente -->
+                                            <td class="text-left  px-1 py-2">{{ op.datareconciliacao || '-' }}</td>
+                                            <td class="text-left px-1 py-2">{{ op.UtNome || '-' }}</td>
+                                            <td class="text-left px-1 py-2">
+
+                                                {{ op.descricao_estado || '-' }}
+
+                                            </td>
+                                            <td class="text-left px-1 py-2">
+
+                                                {{ op.observacao || '-' }}
+
+                                            </td>
+                                            <td class="text-left px-1 py-2">
+
+                                                {{ op.descricao || '-' }}
+
+                                            </td>
+                                            <td class="text-left px-1 py-2">
+
+                                                {{ op.BaSigla || '-' }}
+
+                                            </td>
+                                            <td class="text-left px-1 py-2">
+
+                                                {{ op.ContaBacaria || '-' }}
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
                             <div class="mt-6 flex justify-end space-x-3">
                                 <button type="button" @click="closeModal" class="btn btn-outline-secondary">
                                     Fechar
                                 </button>
-                                <!--button @click="abrirReconciliacao" class="btn btn-primary"
-                                    :disabled="comprovativo.estado === 'Validado'">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 mr-1">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    Validar Comprovativo
-                                </button-->
+
                             </div>
                         </DialogPanel>
                     </TransitionChild>
@@ -183,7 +184,11 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 
 const props = defineProps({
     isOpen: Boolean,
-    comprovativo: Object
+    comprovativo: Object,
+    operacoesReconciliacao: {
+        type: Array,
+        default: () => []
+    }
 })
 
 const emit = defineEmits(['close', 'openReconciliation'])

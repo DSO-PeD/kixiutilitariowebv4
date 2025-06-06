@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/listarEstadosDCF', [CpvtReconciliacaoController::class, 'listarEstadosReconciliacao']);
+    Route::get('/listarCpvtDetalheDCF', [CpvtReconciliacaoController::class, 'listarDetalhesComprovativosDCF']);
     Route::get('/extratos', [TKxExtratoController::class, 'viewExtrato'])->name('extratos');
     Route::post('/guardar-comprovativo', [ComprovativosController::class, 'guardar']);
 

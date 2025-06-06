@@ -221,16 +221,29 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+
                     <div class="flex flex-col">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
+
+
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                         <div class="relative w-full">
-                            <input v-model="form.voucher" type="text" class="form-input w-full pl-3 pr-10" />
+                            <select v-model="form.estado" class="form-select w-full pl-3 pr-10" required>
+                                <option value="" disabled selected>Selecione o Estado</option>
+                                <option v-for="estado in $page.props.estados" :value="estado.id" :key="estado.id">
+                                    {{ estado.descricao_estado }}
+                                </option>
+                            </select>
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                <i class="fa-solid fa-barcode text-gray-400"></i>
+                                <i class="fa-solid fa-circle-check text-gray-400"></i>
                             </div>
                         </div>
-                        <p v-if="errors.voucher" class="mt-1 text-xs text-red-600">{{ errors.voucher }}</p>
+                        <p v-if="errors.estado" class="mt-1 text-xs text-red-600">{{ errors.estado }}</p>
+
+
+
+
                     </div>
+
 
                     <div class="flex flex-col">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
@@ -246,19 +259,18 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div class="flex flex-col">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Voucher
+                            <span v-if="estadoRefleteSelecionado" class="text-red-500">*</span>
+                        </label>
                         <div class="relative w-full">
-                            <select v-model="form.estado" class="form-select w-full pl-3 pr-10" required>
-                                <option value="" disabled selected>Selecione o Estado</option>
-                                <option v-for="estado in $page.props.estados" :value="estado.id" :key="estado.id">
-                                    {{ estado.descricao_estado }}
-                                </option>
-                            </select>
+                            <input v-model="form.voucher" type="text" :required="estadoRefleteSelecionado"
+                                class="form-input w-full pl-3 pr-10" />
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                <i class="fa-solid fa-circle-check text-gray-400"></i>
+                                <i class="fa-solid fa-barcode text-gray-400"></i>
                             </div>
                         </div>
-                        <p v-if="errors.estado" class="mt-1 text-xs text-red-600">{{ errors.estado }}</p>
+                        <p v-if="errors.voucher" class="mt-1 text-xs text-red-600">{{ errors.voucher }}</p>
                     </div>
 
                     <div class="flex flex-col">
@@ -368,6 +380,11 @@ const contasFiltradas = computed(() => {
     return page.props.contas.filter(conta => conta.BaCodigo === form.value.banco);
 });
 
+const estadoRefleteSelecionado = computed(() => {
+    const estadoReflete = page.props.estados.find(e => e.descricao_estado.toLowerCase().includes('reflete'));
+    return estadoReflete ? form.value.estado === estadoReflete.id : false;
+});
+
 watchEffect(() => {
     if (props.comprovativoreconci) {
         form.value = {
@@ -451,6 +468,13 @@ const validarComprovativo = async () => {
         return;
     }
 
+    // Validação específica para quando o estado é "Reflete"
+    if (estadoRefleteSelecionado.value && !form.value.voucher) {
+        errors.value.voucher = 'O campo Voucher é obrigatório quando o estado é Reflete';
+        return;
+    }
+
+
     loading.value = true
     try {
         await router.post('/validar-comprovativo', form.value, {
@@ -486,6 +510,10 @@ const validarComprovativo = async () => {
         loading.value = false
     }
 }
+
+
+
+
 </script>
 
 <style scoped>

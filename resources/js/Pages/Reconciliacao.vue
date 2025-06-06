@@ -41,14 +41,7 @@
                     </svg>
                     Consultar Dados por:= Data, Agência e Estado
                 </button>
-                <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                    </svg>
-                    Exportar Dados para Excel
-                </button>
+
             </div>
         </div>
 
@@ -107,13 +100,55 @@
                             class="input input-bordered w-full" />
                     </div>
                 </div>
-
                 <div class="mt-4 flex justify-end">
                     <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
                         Limpar Filtros
                     </button>
                     <button @click="aplicarFiltros" class="btn btn-primary">
                         Aplicar Filtros
+                    </button>
+
+                </div>
+
+                <div class="mt-4 flex justify-start">
+                    <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        Exportar Dados da tabela para Excel
+                    </button>
+                </div>
+
+
+            </div>
+
+            <!-- Paginação -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
+                    de {{ totalItens }} registros
+                </div>
+                <div class="flex gap-2">
+                    <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        Anterior
+                    </button>
+                    <div class="flex items-center">
+                        <span class="mx-2">Página {{ paginaAtual }}</span>
+                    </div>
+                    <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
+                        Próxima
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -125,7 +160,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px]" >
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px]">
                                 #
                             </th>
                             <th
@@ -139,7 +174,8 @@
                                     Arquivo
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Registado">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Registado">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -150,7 +186,8 @@
                                     Registado
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Agência">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Agência">
 
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -172,10 +209,11 @@
                                             d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                     </svg>
 
-                                    Por
+                                    Registado Por
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Cliente">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Cliente">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -187,7 +225,8 @@
                                     Cliente
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="LNR">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="LNR">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -198,7 +237,8 @@
                                     LNR
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Produto">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Produto">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -209,7 +249,8 @@
                                     Produto
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Montante">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Montante">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -220,7 +261,8 @@
                                     Montante
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Estado">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Estado">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -231,8 +273,8 @@
                                     Estado
                                 </div>
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" data-label="Ações">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Ações">
                                 Ações
                             </th>
                         </tr>
@@ -301,7 +343,8 @@
                             <td class="px-4 py-4 whitespace-nowrap text-center">
 
                                 <button @click="abrirModalReconciliacao(comprovativo)"
-                                    class="btn btn-action btn-validate flex items-center gap-1 mx-auto px-2 py-1 text-xs sm:text-sm sm:px-3 sm:py-1.5">
+                                    class="btn btn-action btn-validate flex items-center gap-1 mx-auto"
+                                    :disabled="deveDesativarBotao(comprovativo.estado)">
                                     <svg class="w-3 h-3 sm:w-4 sm:h-4">...</svg>
                                     <span class="hidden sm:inline">Mudar Estado</span>
                                     <span class="sm:hidden">Estado</span>
@@ -312,7 +355,7 @@
                         </tr>
                         <tr v-if="comprovativosFiltrados.length === 0">
                             <td colspan="11" class="px-4 py-4 text-center text-sm text-gray-500">
-                                Nenhum comprovativo encontrado com os filtros aplicados
+                                Nenhum comprovativo encontrado.
                             </td>
                         </tr>
                     </tbody>
@@ -389,11 +432,26 @@ const props = defineProps({
     filters: Object,
     page: Number,
     hasMorePages: Boolean,
+    lista_comprovativo: {
+        type: Array,
+        required: true
+    },
     perPage: {
         type: Number,
         default: 15
     },
-    total: Number
+    total: Number,
+    bases: Array,
+    produtos: Array,
+    bancos: Array,
+    contas: Array,
+    tipocomprovativos: Object,
+    estados: Array,
+    auth: Object,
+    errors: Object,
+    session: Object,
+    flash: Object,
+    user: Object
 })
 
 // Estados
@@ -409,8 +467,8 @@ const comprovativoSelecionado = ref(null)
 const filtro = ref({
     search: props.filters.search || '',
     lnr: props.filters.lnr || '',
-    estado: props.filters.estado || '',
-    agencia: props.filters.agencia || '',
+    estadoconsulta: props.filters.estado || '',
+    agenciaconsulta: props.filters.agencia || '',
     data_inicio: props.filters.data_inicio || '',
     data_fim: props.filters.data_fim || ''
 })
@@ -439,6 +497,8 @@ const comprovativosFiltrados = computed(() => {
         return matchesSearch && matchesLnr && matchesEstado && matchesAgencia
     })
 })
+
+
 
 // Métodos
 
@@ -481,8 +541,8 @@ const resetarFiltros = () => {
     filtro.value = {
         search: '',
         lnr: '',
-        estado: '',
-        agencia: '',
+        estadoconsulta: '',
+        agenciaconsulta: '',
         data_inicio: '',
         data_fim: ''
     }
@@ -510,30 +570,124 @@ const buscarPorDatas = (params) => {
     showModalData.value = false
 }
 const exportarParaExcel = () => {
-    const dadosFormatados = comprovativosFiltrados.value.map((comprovativo, index) => ({
-        '#': calcularNumeroLinha(index),
-        'Data': formatarData(comprovativo.data),
-        'Agência': comprovativo.agencia || '-',
-        'Registado Por': comprovativo.usuario,
-        'Base': comprovativo.basedelacamento || '-',
-        'LNR': comprovativo.lnr,
-        'Produto': comprovativo.metodologia,
-        'Montante': formatCurrency(comprovativo.montante),
-        'Estado': comprovativo.estado,
-        'Arquivo': comprovativo.file ? 'Sim' : 'Não'
-    }))
+    try {
+        // Acessando a lista_comprovativo corretamente (dependendo do seu contexto)
+        let listaCompleta;
 
-    const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Comprovativos")
+        // Opção 1: Se estiver usando Inertia.js em Composition API
+        if (typeof usePage !== 'undefined') {
+            const { props } = usePage();
+            listaCompleta = props.value.lista_comprovativo;
+        }
+        // Opção 2: Se estiver usando Options API
+        else if (this && this.$page && this.$page.props) {
+            listaCompleta = this.$page.props.lista_comprovativo;
+        }
+        // Opção 3: Se a lista estiver disponível como prop no componente
+        else if (props && props.lista_comprovativo) {
+            listaCompleta = props.lista_comprovativo;
+        }
+        // Opção 4: Se estiver disponível diretamente no escopo
+        else if (typeof lista_comprovativo !== 'undefined') {
+            listaCompleta = lista_comprovativo;
+        }
+        else {
+            throw new Error('Não foi possível encontrar a lista de comprovativos');
+        }
 
-    const nomeArquivo = `comprovativos_reconciliacao_${new Date().toISOString().split('T')[0]}.xlsx`
-    XLSX.writeFile(wb, nomeArquivo)
-}
+        // Verifica se há dados
+        if (!listaCompleta || listaCompleta.length === 0) {
+            alert('Nenhum dado disponível para exportar');
+            return;
+        }
+
+        console.log('Total de registros a exportar:', listaCompleta.length);
+
+        // Formata os dados
+        const dadosFormatados = listaCompleta.map((comprovativo, index) => {
+            try {
+                return {
+                    '#': index + 1,
+                    'Data': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleDateString('pt-PT') : '-',
+                    'Agência': comprovativo.OfNombre || '-',
+                    'Registado Por': comprovativo.UtNome || '-',
+                    //'Base': comprovativo.basedelacamento || '-',
+                    'LNR': comprovativo.BuDadoOrigem || '-',
+                    'Cliente': comprovativo.infoadicional || '-',
+                    'Produto': comprovativo.PoAgrupado || '-',
+                    'Voucher': comprovativo.BuReferencia || '-',
+                    'Montante': formatCurrency(comprovativo.BuMontante) || '0,00',
+                    'Estado': comprovativo.estado || '-',
+                    // 'Arquivo': comprovativo.file ? 'Sim' : 'Não'
+                };
+            } catch (error) {
+                console.error('Erro ao formatar registro:', comprovativo, error);
+                return null;
+            }
+        }).filter(record => record !== null);
+
+        if (dadosFormatados.length === 0) {
+            alert('Nenhum dado válido para exportar após formatação');
+            return;
+        }
+
+        // Cria a planilha
+        const ws = XLSX.utils.json_to_sheet(dadosFormatados);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Comprovativos");
+
+        // Gera o nome do arquivo
+        const dataHoje = new Date().toISOString().split('T')[0];
+        const nomeArquivo = `comprovativos_reconciliacao_completa_${dataHoje}.xlsx`;
+
+        // Faz o download
+        XLSX.writeFile(wb, nomeArquivo);
+
+    } catch (error) {
+        console.error('Erro detalhado ao exportar para Excel:', error);
+        alert(`Erro ao exportar: ${error.message || 'Verifique o console para mais detalhes'}`);
+    }
+};
 
 
 const showModalDetalhe = ref(false)
 const comprovativoDetalhe = ref(null)
+const operacoesReconciliacao = ref([]);
+const loading = ref(false);
+const error = ref(null);
+
+const carregarOperacoes = async (idComprovativo) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+        const response = await axios.get('/listarCpvtDetalheDCF', {
+            params: { idComprovativo },
+            timeout: 10000
+        });
+
+        if (!response.data) {
+            throw new Error('Resposta vazia da API');
+        }
+
+        return Array.isArray(response.data) ? response.data : [];
+
+    } catch (err) {
+        error.value = err.response?.data?.message ||
+            err.message ||
+            'Erro ao carregar operações';
+
+        console.error('Erro detalhado:', {
+            error: err,
+            request: err.config,
+            response: err.response
+        });
+
+        return [];
+    } finally {
+        loading.value = false;
+    }
+};
 
 
 const abrirModalReconciliacao = (comprovativo) => {
@@ -541,11 +695,29 @@ const abrirModalReconciliacao = (comprovativo) => {
     showModalReconcialiacao.value = true
 }
 
-const abrirModalReconciliacaoDetalhe = (idComprovativo) => {
-    // Find the comprovativo in the list
-    comprovativoDetalhe.value = props.comprovativos.find(c => c.id === idComprovativo)
-    showModalDetalhe.value = true
-}
+const abrirModalReconciliacaoDetalhe = async (idComprovativo) => {
+    // 1. Encontra o comprovativo
+    comprovativoDetalhe.value = props.comprovativos.find(c => c.id === idComprovativo);
+
+    if (!comprovativoDetalhe.value) {
+        alert('Comprovativo não encontrado');
+        return;
+    }
+
+    // 2. Carrega as operações
+    const operacoes = await carregarOperacoes(idComprovativo);
+
+    // 3. Adiciona as operações ao comprovativo
+    comprovativoDetalhe.value = {
+        ...comprovativoDetalhe.value,
+        operacoesReconciliacao: operacoes
+    };
+
+    // 4. Abre o modal
+    showModalDetalhe.value = true;
+};
+
+
 
 
 const handleReconciliationSuccess = () => {
@@ -553,6 +725,9 @@ const handleReconciliationSuccess = () => {
     router.reload({ only: ['comprovativos'] })
 }
 
+const deveDesativarBotao = (estado) => {
+    return ['Validado', 'Reflete'].includes(estado);
+}
 // Watchers
 watch(() => props.filters, (newFilters) => {
     filtro.value.search = newFilters.search || ''
@@ -641,6 +816,11 @@ watch(() => props.total, (newTotal) => {
 
 .to-greenkixi-300 {
     --tw-gradient-to: #08583d;
+}
+
+.btn-validate:disabled {
+    @apply bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed;
+    opacity: 0.7;
 }
 
 /* Responsividade da tabela */
@@ -807,8 +987,12 @@ tr:hover {
 
 @media (min-width: 768px) and (max-width: 1023px) {
     /* Mostra mais colunas que em mobile */
-    td:nth-child(4), /* Agência */
-    td:nth-child(6) /* Cliente */ {
+    td:nth-child(4),
+    /* Agência */
+    td:nth-child(6)
+
+    /* Cliente */
+        {
         display: flex !important;
     }
 
