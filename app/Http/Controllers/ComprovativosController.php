@@ -40,6 +40,9 @@ class ComprovativosController extends Controller
         $dataActual = date("Y-m-d", strtotime($hoje));
         $sistema_aberto = true;
 
+         $estados = EstadosModel::getEstadosDCF('DCF');
+        $ids_estados = $estados->pluck('id')->implode(',');
+
 
         if ($dataFecho == $dataActual) {
             $sistema_aberto = false;
@@ -48,6 +51,7 @@ class ComprovativosController extends Controller
         }
 
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+         $ESTADO = "'" . $ids_estados . "'";
         $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
         $TIPO = 0;
@@ -68,9 +72,9 @@ class ComprovativosController extends Controller
             $TIPO = $tipoDeBusca;
         }
 
-      
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN);
-        
+
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO);
+
         $lista_produtos = TKxClProdutoModel::getProdutos();
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
@@ -98,8 +102,8 @@ class ComprovativosController extends Controller
                 'cliente' => $item->infoadicional
             ];
         });
-        
-       
+
+
         $NumeroPaginator = 30;
         $paginado = $comprovativos_list->forPage($request->input('page', 1), $NumeroPaginator)->values();
 

@@ -79,8 +79,10 @@ class AuthController extends Controller
 
 
     }
-    public function carregamentoInicial()
+    public function carregamentoInicial(Request $request)
     {
+        $filtros = $request->only(['search', 'start_date', 'end_date']);
+
 
         $authenticatedUser = Auth::user();
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
@@ -95,29 +97,108 @@ class AuthController extends Controller
         $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
         $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
 
-        $listaprdt= TKxClProdutoModel::getProdutosDesembolsos();
+        $listaprdt = TKxClProdutoModel::getProdutosDesembolsos();
 
         $lista_produtos = TKxClProdutoModel::getProdutos();
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
 
+        $QtdRegistosComprovativos = 0;
+        $QtdValorRegistosComprovativos = 0;
+
+        $QtdRegistosRecuperacoes = 0;
+        $QtdValorRegistosRecuperacoes = 0;
+
+        $QtdRegistosDesembosos = 0;
+        $QtdValorRegistosDesembosos = 0;
+
+
+        // DCF
+
+        $TotaldeRegistossemParacer = 0;
+        $TotalValordeRegistossemParacer = 0;
+
+        $TotaldeRegistosRespondidos = 0;
+        $TotalValordeRegistosRespondidos = 0;
+
+        $TotaldeReconciliaNaoFinalizado = 0;
+        $TotalValorReconciliaNaoFinalizado = 0;
+
+        $cpvtDFC = null;
+        $cpvtDFC2 = null;
+        $cpvtDFC3 = null;
+        $cpvtDOP = null;
+        $extrato = null;
+        $cpvtRecupe = null;
+
+
+
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
         ];
-        $hoje = date('Y-m-d');
-        $QtdRegistosComprovativosHoje = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->count();
-        $QtdRegistosRecuperacoesHoje = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->count();
-        $ValorTotalRegistosRecuperacoesHoje = TKxExtratoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->sum('ValorDoCredito');
-        $ValorTotalRegistosRecuperacoesHoje =number_format($ValorTotalRegistosRecuperacoesHoje, 2, ',', '.');
+        $hoje = date('Y-m-d Y-m-d 00:00:00');
+
+        if ($request->search == 1) {
+
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->start_date));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->end_date));
+
+            $cpvtDFC = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('idestado', 1)->where('Eliminado', 0);
+            $cpvtDFC2 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('idestado', 8)->where('Eliminado', 0);
+            $cpvtDFC3 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('idestado', '<>', 8)->where('idestado', '<>', 1)->where('Eliminado', 0);
+
+            $cpvtDOP = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('Eliminado', 0);
+            $extrato = TKxExtratoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('Eliminado', 0);
+
+            $cpvtRecupe = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('id_estado','<>', 6)->where('Eliminado', 0);
+
+
+
+
+        } else {
+            $cpvtDOP = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('Eliminado', 0);
+
+            $cpvtRecupe = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('id_estado', '<>', 6)->where('Eliminado', 0);
+            $extrato = TKxExtratoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('Eliminado', 0);
+
+            $cpvtDFC = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('idestado', 1)->where('Eliminado', 0);
+            $cpvtDFC2 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('idestado', 8)->where('Eliminado', 0);
+
+            $cpvtDFC3 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('idestado', '<>', 8)->where('idestado', '<>', 1)->where('Eliminado', 0);
+
+
+        }
+
+
+        $TotalValordeRegistossemParacer = $cpvtDFC->sum('BuMontante');
+        $TotaldeRegistossemParacer = $cpvtDFC->count();
+
+        $TotalValordeRegistosRespondidos = $cpvtDFC2->sum('BuMontante');
+        $TotaldeRegistosRespondidos = $cpvtDFC2->count();
+
+        $TotalValorReconciliaNaoFinalizado = $cpvtDFC3->sum('BuMontante');
+        $TotaldeReconciliaNaoFinalizado = $cpvtDFC3->count();
+
+
+        $QtdRegistosComprovativos = $cpvtDOP->count();
+        $QtdValorRegistosComprovativos = $cpvtDOP->sum('BuMontante');
+
+        $QtdRegistosRecuperacoes = $cpvtRecupe->count();
+        $QtdValorRegistosRecuperacoes = $cpvtRecupe->sum('ReBuMontante');
+
+        $QtdRegistosDesembosos = $extrato->count();
+        $QtdValorRegistosDesembosos = $extrato->sum('ValorDoCredito');
+
+
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
 
 
 
         return Inertia::render('Dashboard', [
 
-            'produtosextratos'=> $listaprdt,
+            'produtosextratos' => $listaprdt,
             'produtos' => $lista_produtos,
             'formaspagamentos' => $lista_das_formaspagamento,
             'bancos' => $lista_banco,
@@ -129,10 +210,18 @@ class AuthController extends Controller
             'lista_actividade_economica' => $lista_actividade_economica,
             'BasesOperacao' => explode(',', $resultagencia_user->BasesOperacao),
             'bases' => $BasesOperacaoAgencias,
-            'QtdRegistosComprovativosHoje' => $QtdRegistosComprovativosHoje,
-            'QtdRegistosRecuperacoesHoje' => $QtdRegistosRecuperacoesHoje,
-            'ValorTotalRegistosRecuperacoesHoje'=>$ValorTotalRegistosRecuperacoesHoje
-
+            'QtdRegistosComprovativos' => $QtdRegistosComprovativos,
+            'QtdValorRegistosComprovativos' => $QtdValorRegistosComprovativos,
+             'QtdRegistosDesembosos' => $QtdRegistosDesembosos,
+            'QtdValorRegistosDesembosos' => $QtdValorRegistosDesembosos,
+            'TotaldeRegistossemParacer' => $TotaldeRegistossemParacer,
+            'TotalValordeRegistossemParacer' => $TotalValordeRegistossemParacer,
+            'TotaldeRegistosRespondidos' => $TotaldeRegistosRespondidos,
+            'TotalValordeRegistosRespondidos' => $TotalValordeRegistosRespondidos,
+            'TotaldeReconciliaNaoFinalizado' => $TotaldeReconciliaNaoFinalizado,
+            'TotalValorReconciliaNaoFinalizado' => $TotalValorReconciliaNaoFinalizado,
+            'QtdRegistosRecuperacoes' => $QtdRegistosRecuperacoes,
+            'QtdValorRegistosRecuperacoes' => $QtdValorRegistosRecuperacoes
         ]);
     }
     public function logout(Request $request)

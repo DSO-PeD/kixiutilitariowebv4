@@ -2,7 +2,7 @@
 
     <Head title="Reconciliação" />
 
-    <div class="w-full max-w-[calc(100vw-30rem)] mx-auto"> <!-- Ajuste 17rem conforme o sidebar -->
+    <div class="w-full max-w-[calc(100vw-25rem)] mx-auto"> <!-- Ajuste 17rem conforme o sidebar -->
         <!-- Alertas -->
         <div v-if="$page.props.flash.success" class="alert alert-success mb-4">
             {{ $page.props.flash.success }}
@@ -85,7 +85,7 @@
                             Listados na Tabela</label>
 
                         <select v-model="filtro.estado" class="input input-bordered w-full">
-                            <option value="">Todos</option>
+                            <option value="" selected>Todos</option>
                             <option v-for="estado in $page.props.estados" :value="estado.descricao_estado"
                                 :key="estado.id">{{ estado.descricao_estado }}</option>
 
@@ -110,16 +110,6 @@
 
                 </div>
 
-                <div class="mt-4 flex justify-start">
-                    <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                        </svg>
-                        Exportar Dados da tabela para Excel
-                    </button>
-                </div>
 
 
             </div>
@@ -130,7 +120,31 @@
                     Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
                     de {{ totalItens }} registros
                 </div>
+                <div class="text-sm text-green-500 ">
+                    <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        Exportar Dados da tabela para Excel
+                    </button>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="text-wrap">
+                        <span class="bg-blue-50 text-blue-600 px-2 py-1 text-sm font-bold">
+                            Total Geral Montante: {{ formatCurrency(montantetotal) }}
+                        </span>
+                    </div>
+                    <div class="text-wrap">
+                        <span class="bg-yellow-50 text-green-600 px-2 py-1 text-sm font-bold">
+                          Montante  Total Filtrado por Página: {{ formatCurrency(montanteTotalFiltrado) }}
+                        </span>
+                    </div>
+                </div>
                 <div class="flex gap-2">
+
                     <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
                         :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -438,9 +452,10 @@ const props = defineProps({
     },
     perPage: {
         type: Number,
-        default: 15
+        default: 100
     },
     total: Number,
+    montantetotal: Number,
     bases: Array,
     produtos: Array,
     bancos: Array,
@@ -498,7 +513,16 @@ const comprovativosFiltrados = computed(() => {
     })
 })
 
+const montanteTotalFiltrado = computed(() => {
+    return comprovativosFiltrados.value.reduce((total, comprovativo) => {
+        // Converte o montante para número (removendo possíveis caracteres não numéricos)
+        const montante = typeof comprovativo.montante === 'string'
+            ? parseFloat(comprovativo.montante.replace(/[^\d,]/g, '').replace(',', '.'))
+            : comprovativo.montante;
 
+        return total + (montante || 0);
+    }, 0);
+});
 
 // Métodos
 
@@ -616,8 +640,14 @@ const exportarParaExcel = () => {
                     'Cliente': comprovativo.infoadicional || '-',
                     'Produto': comprovativo.PoAgrupado || '-',
                     'Voucher': comprovativo.BuReferencia || '-',
+                    'Descrição':comprovativo.descricao|| '-',
+                    'Banco':comprovativo.BaSigla|| '-',
+                    'Conta Bancaria':comprovativo.ContaBacaria|| '-',
+                    'Observação': comprovativo.observacao|| '-',
                     'Montante': formatCurrency(comprovativo.BuMontante) || '0,00',
                     'Estado': comprovativo.estado || '-',
+                    'Operador DCF': comprovativo.operadordcf|| '-',
+                    'Data de Operação DCF': comprovativo.datareconciliacao|| '-',
                     // 'Arquivo': comprovativo.file ? 'Sim' : 'Não'
                 };
             } catch (error) {

@@ -96,9 +96,8 @@
                                                         <iframe :src="`/storage/comprovativos/${comprovativo.file}`"
                                                             class="w-full h-64 border rounded-lg"
                                                             v-if="isPdf(comprovativo.file)">
-                                                            Seu navegador não suporta PDFs. <a
-                                                                :href="`/storage/comprovativos/${comprovativo.file}`">Baixe
-                                                                o arquivo</a>.
+                                                            Seu navegador não suporta PDFs.
+
                                                         </iframe>
                                                         <img :src="`/storage/comprovativos/${comprovativo.file}`"
                                                             class="max-w-full h-auto border rounded-lg" v-else />

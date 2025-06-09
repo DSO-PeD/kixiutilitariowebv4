@@ -74,7 +74,7 @@ class CpvtReconciliacaoController extends Controller
                 $ESTADO = "'" . $request->estadoconsulta . "'";
             }
 
-            // dd( $DataFim);
+
 
         }
 
@@ -90,6 +90,10 @@ class CpvtReconciliacaoController extends Controller
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
+        $totalMontante = collect($lista_comprovativo)->sum('BuMontante');
+        $totalMontante = number_format($totalMontante, 2, ',', '.');
+
+        // dd($totalMontante);
 
         $TipoComprovativo = [
             'G' => 'G/',
@@ -120,7 +124,7 @@ class CpvtReconciliacaoController extends Controller
         $NumeroPaginator = $NumeroRegistroTabela;
         $paginado = $comprovativos_list->forPage($request->input('page', 1), $NumeroPaginator)->values();
 
-        //dd($comprovativos_list);
+
 
         return Inertia::render('Reconciliacao', [
             'comprovativos' => $paginado,
@@ -134,6 +138,7 @@ class CpvtReconciliacaoController extends Controller
             'estados' => $estados,
             'lista_comprovativo' => $lista_comprovativo,
             'total' => $total,
+            'montantetotal' => $totalMontante,
             'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
         ]);
     }
