@@ -122,7 +122,7 @@
 
 
                     <select v-model="filtro.estado" class="input input-bordered w-full">
-                        <option disabled  :value="'s/e'">Escolha estado</option>
+                        <option disabled :value="'s/e'">Escolha estado</option>
                         <option v-for="estado in $page.props.estados" :value="Number(estado.id)" :key="estado.id">
                             {{ estado.descricao_estado }}
                         </option>
@@ -133,7 +133,7 @@
                 <div class="col-span-2 sm:col-span-1">
                     <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Agência </label>
                     <select v-model="filtro.agencia" class="input input-bordered w-full">
-                        <option disabled  :value="'s/a'">Escolha agência</option>
+                        <option disabled :value="'s/a'">Escolha agência</option>
 
                         <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
                             :key="agencia.OfIdentificador">
@@ -189,15 +189,21 @@
 
                 <div class="flex gap-4">
                     <div class="text-wrap">
-                        <span class="bg-blue-50 text-blue-600 px-2 py-1 text-sm font-bold">
-                            Total Geral Montante: {{ formatCurrency(montantetotal) }}
+
+                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex">
+
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg>  <span>Total Montante: </span> &ThickSpace; {{ formatCurrency(montantetotal) }}
                         </span>
                     </div>
-                    <div class="text-wrap">
+                    <!--div class="text-wrap">
                         <span class="bg-yellow-50 text-green-600 px-2 py-1 text-sm font-bold">
                             Montante Total Filtrado por Página: {{ formatCurrency(montanteTotalFiltrado) }}
                         </span>
-                    </div>
+                    </div-->
                 </div>
                 <div class="flex gap-2">
 
@@ -541,14 +547,11 @@ const comprovativoSelecionado = ref(null)
 const filtro = ref({
 
     search: props.filters.search || '',
-    estadoconsulta: props.filters.estado || '',
-    agenciaconsulta: props.filters.agencia || '',
-    dataInicioInput: props.filters.data_inicio || '',
-    dataFimInput: props.filters.data_fim || '',
-    search: props.filters.search || '',
     lnr: props.filters.lnr || '',
-    estado: props.filters.estado || 28, // 28 é o valor para "Todos estados"
-    agencia: props.filters.agencia || 'T', // 'T' é o valor para "Todas que tenho acesso"
+    estado: props.filters.estado || 28,
+    agencia: props.filters.agencia || 'T',
+    dataInicioInput: props.filters.data_inicio || '',
+    dataFimInput: props.filters.data_fim || ''
 
 
 })
@@ -619,20 +622,10 @@ const calcularNumeroLinha = (index) => {
     return (paginaAtual.value - 1) * props.perPage + index + 1
 }
 
-/*const aplicarFiltros = () => {
-    router.get('/reconciliacao', {
-        ...filtro.value,
-        page: 1
-    }, {
-        preserveState: true,
-        replace: true
-    })
-}*/
+
 
 const aplicarFiltros = () => {
-    if (!validarDatas()) {
-        return; // Não prossegue se a validação falhar
-    }
+    if (!validarDatas()) return;
 
     router.get('/reconciliacao', {
         search_input: filtro.value.search,
@@ -645,7 +638,8 @@ const aplicarFiltros = () => {
         tipo: 4
     }, {
         preserveState: true,
-        replace: true
+        replace: true,
+        preserveScroll: true
     });
 };
 
@@ -655,21 +649,6 @@ const buscarPorLoan = () => {
 }
 
 const resetarFiltros = () => {
-    filtro.value = {
-        search_input: '',
-        lnr_imput: '',
-        estado_input: 28,
-        agencia_imput: 'T',
-        data_inicio_imput: '',
-        data_fim_imput: '',
-        lnr: '',
-        estado: 28, // Volta para "Todos estados"
-        agencia: 'T', // Volta para "Todas que tenho acesso"
-        dataInicioInput: '',
-        dataFimInput: ''
-    }
-
-    // Recarrega os dados iniciais
     router.get('/reconciliacao', {
         page: 1
     }, {
@@ -908,15 +887,17 @@ const handleReconciliationSuccess = () => {
 const deveDesativarBotao = (estado) => {
     return ['Validado', 'Reflete'].includes(estado);
 }
-// Watchers
+// Watcher para sincronizar quando as props forem atualizadas
 watch(() => props.filters, (newFilters) => {
-    filtro.value.search = newFilters.search || ''
-    filtro.value.lnr = newFilters.lnr || ''
-    filtro.value.estado = newFilters.estado || ''
-    filtro.value.agencia = newFilters.agencia || ''
-    filtro.value.dataInicioInput = newFilters.data_inicio || ''
-    filtro.value.dataFimInput = newFilters.data_fim || ''
-})
+    filtro.value = {
+        search: newFilters.search || '',
+        lnr: newFilters.lnr || '',
+        estado: newFilters.estado || 28,
+        agencia: newFilters.agencia || 'T',
+        dataInicioInput: newFilters.data_inicio || '',
+        dataFimInput: newFilters.data_fim || ''
+    }
+}, { immediate: true, deep: true })
 
 watch(() => props.page, (newPage) => {
     paginaAtual.value = newPage
@@ -1030,6 +1011,10 @@ watch(() => props.dataFimInput, (newVal) => {
 .btn-validate:disabled {
     @apply bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed;
     opacity: 0.7;
+}
+
+.input:not(:placeholder-shown) {
+    @apply bg-gray-50 border-green-200;
 }
 
 /* Responsividade da tabela */

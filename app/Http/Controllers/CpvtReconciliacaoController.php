@@ -28,7 +28,8 @@ class CpvtReconciliacaoController extends Controller
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
 
-        $filtros = $request->only(['search', 'data_inicio', 'data_fim', 'estadoconsulta', 'agenciaconsulta']);
+        // $filtros = $request->only(['search', 'data_inicio', 'data_fim', 'estadoconsulta', 'agenciaconsulta']);
+
 
 
         $tipoDeBusca = $request->tipo;
@@ -92,34 +93,20 @@ class CpvtReconciliacaoController extends Controller
 
         }
 
-       // dd($request->estado_input);
-  //dd($Bases);
         if ($tipoDeBusca == 4) {
 
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
 
-
-            if ($request->lnr_imput) {
-                $LOAN = "'" . $request->lnr_imput . "'";
-
+            if ($request->estado_input !== '28') {
+                $ESTADO = $request->estado_input;
+                // dd($request->estado_input);
             }
-
             if ($request->agencia_imput !== 'T') {
                 $Bases = "'" . $request->agencia_imput . "'";
-
             }
-
-            if ($request->estado_input !== '28' ) {
-
-                $ESTADO = $request->estado_input;
-
-            }
-
- //dd( $Bases);
 
             $TIPO = $tipoDeBusca;
-
         }
 
 
@@ -165,8 +152,16 @@ class CpvtReconciliacaoController extends Controller
 
 
         return Inertia::render('Reconciliacao', [
+
             'comprovativos' => $paginado,
-            'filters' => $filtros,
+            'filters' => [
+                'search' => $request->input('search_input', ''),
+                'lnr' => $request->input('lnr_imput', ''),
+                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
+                'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
+                'data_inicio' => $request->input('data_inicio_imput', ''),
+                'data_fim' => $request->input('data_fim_imput', '')
+            ],
             'page' => (int) $request->input('page', 1),
             'bases' => $BasesOperacaoAgencias,
             'produtos' => $lista_produtos,
