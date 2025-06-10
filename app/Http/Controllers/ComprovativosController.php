@@ -179,9 +179,7 @@ class ComprovativosController extends Controller
 
                     $tipotransacao = "L04";
                     $banco = $request->selectBanco;
-                    //Código estava armazenar valores de forma errada, ex.: 19.666,67 => 1.966.667
-                    //$money = str_replace('.', '', $request->txtMontante);
-                    //$money = str_replace(",", ".", $money);
+
                     $money = $request->txtMontante;
                     $dataBorderoux = $request->calDataBorderoux;
                     $voucher = $request->txtVoucher;

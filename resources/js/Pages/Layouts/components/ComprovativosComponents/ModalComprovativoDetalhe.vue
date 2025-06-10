@@ -15,7 +15,7 @@
                         <DialogPanel
                             class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                             <DialogTitle as="h3" class="text-lg font-medium leading-6 text-green-950  ">
-                                <b>Detalhes do Comprovativo - LNR {{ comprovativo.lnr }}</b>
+                                <b>Detalhes do Comprovativo - LOAN NUMBER: {{ comprovativo.lnr }}</b>
 
                             </DialogTitle>
 
@@ -96,8 +96,9 @@
                                                         <iframe :src="`/storage/comprovativos/${comprovativo.file}`"
                                                             class="w-full h-64 border rounded-lg"
                                                             v-if="isPdf(comprovativo.file)">
-                                                            Seu navegador não suporta PDFs.
-
+                                                            Seu navegador não suporta PDFs. <a
+                                                                :href="`/storage/comprovativos/${comprovativo.file}`">Baixe
+                                                                o arquivo</a>.
                                                         </iframe>
                                                         <img :src="`/storage/comprovativos/${comprovativo.file}`"
                                                             class="max-w-full h-auto border rounded-lg" v-else />

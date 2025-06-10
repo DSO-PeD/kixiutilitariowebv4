@@ -11,12 +11,14 @@ use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class CpvtReconciliacaoController extends Controller
 {
+
     public function viewComprovativosReconlicacao(Request $request)
     {
 
@@ -61,18 +63,24 @@ class CpvtReconciliacaoController extends Controller
 
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
+        // COSULTAS PARA FILTRO
+
         if ($tipoDeBusca == 1) {
 
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
-            if ($request->agenciaconsulta != 'T') {
+
+            if ($request->agenciaconsulta != 'T' || $request->agenciaconsulta != '') {
                 $Bases = "'" . $request->agenciaconsulta . "'";
             }
 
-            if ($request->estadoconsulta != 28) {
+            if ($request->estadoconsulta != 28 || $request->estadoconsulta != '') {
                 $ESTADO = "'" . $request->estadoconsulta . "'";
+
             }
+
+
 
 
 
@@ -84,6 +92,38 @@ class CpvtReconciliacaoController extends Controller
 
         }
 
+       // dd($request->estado_input);
+  //dd($Bases);
+        if ($tipoDeBusca == 4) {
+
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+
+
+            if ($request->lnr_imput) {
+                $LOAN = "'" . $request->lnr_imput . "'";
+
+            }
+
+            if ($request->agencia_imput !== 'T') {
+                $Bases = "'" . $request->agencia_imput . "'";
+
+            }
+
+            if ($request->estado_input !== '28' ) {
+
+                $ESTADO = $request->estado_input;
+
+            }
+
+ //dd( $Bases);
+
+            $TIPO = $tipoDeBusca;
+
+        }
+
+
+
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO);
         $lista_produtos = TKxClProdutoModel::getProdutos();
         $lista_banco = TKxBancoModel::getBancos();
@@ -91,9 +131,7 @@ class CpvtReconciliacaoController extends Controller
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
         $totalMontante = collect($lista_comprovativo)->sum('BuMontante');
-        $totalMontante = number_format($totalMontante, 2, ',', '.');
 
-        // dd($totalMontante);
 
         $TipoComprovativo = [
             'G' => 'G/',
@@ -152,18 +190,6 @@ class CpvtReconciliacaoController extends Controller
         $reconciliacao = CpvtReconciliacaoModel::where('idcomprovativo', $request->id)->where('idestado', $request->estado)->first();
 
         if ($reconciliacao) {
-            // Atualiza os campos se já existe
-            /*    $reconciliacao->update([
-                   'datareconciliacao' => $hoje,
-                   'CodigoConta' => $request->conta,
-                   'voucher' => $request->voucher,
-                   'descricao' => $request->descricao,
-                   'observacao' => $request->observacao,
-                   'UtCodigo' => $authenticatedUser->UtCodigo,
-                   'idestado' => $request->estado
-               ]);
-                return redirect()->back()->with('success', 'Comprovativo reconciliado (atualizado) com sucesso!');
-               */
 
 
             return back()->with('error', 'Ups!, não foi possível reconciliar o comprovativo, duplicação de estado');
