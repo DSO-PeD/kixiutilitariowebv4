@@ -138,7 +138,7 @@ class AuthController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-        $hoje = date('Y-m-d Y-m-d 00:00:00');
+        $hoje = date('Y-m-d 00:00:00');
 
         if ($request->search == 1) {
 

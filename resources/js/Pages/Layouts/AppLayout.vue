@@ -27,7 +27,7 @@ const props = defineProps({
                     :style="{ 'padding-left': sidebarCollapsed ? '0.5rem' : 'calc(16rem + 1.5rem)' }"-->
 
                 <div class="mx-auto p-4 lg:p-6 transition-all duration-300 pr-4"
-                    :style="{ 'padding-left': sidebarCollapsed ? '2rem' : '15rem' }">
+                    :style="{ 'padding-left': sidebarCollapsed ? '2rem' : '18rem' }">
                <!--div class="w-full mx-auto px-2 sm:px-4 lg:px-6"-->
                     <slot />
                 </div>

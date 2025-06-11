@@ -141,19 +141,30 @@ class CpvtReconciliacaoController extends Controller
                 'cliente' => $item->infoadicional,
                 'observacao' => $item->observacao,
                 'metodologia' => $item->PoAgrupado,
+                'banco' => $item->BaSigla,
+                'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
-                'montante' => number_format($item->BuMontante, 2, ',', '.'),
-
+                'voucher' => $item->voucher,
+                'descricao' => $item->descricao,
+                'operadordcf' => $item->operadordcf,
+                'datareconciliacao' => $item->datareconciliacao,
+                'montante' => $item->BuMontante,
+                // Mantenha todos os campos necessários para filtros client-side
+                'CiFecha' => $item->CiFecha, // Para filtro por data
+                'estado_id' => $item->idestado, // Para filtro por estado
+                'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
+                'BuMontante' => $item->BuMontante // Para cálculos
             ];
         });
+
         $NumeroPaginator = $NumeroRegistroTabela;
-        $paginado = $comprovativos_list->forPage($request->input('page', 1), $NumeroPaginator)->values();
+        // $paginado = $comprovativos_list->forPage($request->input('page', 1), $NumeroPaginator)->values();
 
 
 
         return Inertia::render('Reconciliacao', [
-
-            'comprovativos' => $paginado,
+            'lista_comprovativo' => $comprovativos_list,
+            // 'comprovativos' => $paginado,
             'filters' => [
                 'search' => $request->input('search_input', ''),
                 'lnr' => $request->input('lnr_imput', ''),
@@ -169,10 +180,9 @@ class CpvtReconciliacaoController extends Controller
             'contas' => $lista_bancos_contas,
             'tipocomprovativos' => $TipoComprovativo,
             'estados' => $estados,
-            'lista_comprovativo' => $lista_comprovativo,
             'total' => $total,
             'montantetotal' => $totalMontante,
-            'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
+
         ]);
     }
 

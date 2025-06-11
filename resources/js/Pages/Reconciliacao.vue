@@ -2,7 +2,7 @@
 
     <Head title="Reconciliação" />
 
-    <div class="w-full max-w-[calc(100vw-25rem)] mx-auto"> <!-- Ajuste 17rem conforme o sidebar -->
+     <div class="container mx-auto py-6 max-w-full"><!-- Ajuste 17rem conforme o sidebar -->
         <!-- Alertas -->
         <div v-if="$page.props.flash.success" class="alert alert-success mb-4">
             {{ $page.props.flash.success }}
@@ -22,31 +22,6 @@
 
 
 
-        <!-- Cabeçalho do Card
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-
-            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-
-                <button class="btn btn-outline-consulta flex items-center gap-2" @click="showModalLoan = true">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                    Consultar Dados por:= Loan Number
-                </button>
-                <button class="btn btn-outline-consulta flex items-center gap-2" @click="showModalData = true">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                    </svg>
-                    Consultar Dados por:= Data, Agência e Estado
-                </button>
-
-            </div>
-        </div>-->
-
         <hr />
         <!-- Filtro Avançado -->
         <div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg ">
@@ -62,11 +37,6 @@
                         </svg>
                         Clicar Aqui
                     </button>
-
-                    <!--label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Loan Number
-                    </label-->
-                    <!--input type="text" v-model="filtro.lnr" placeholder="Número do Loan"
-                        class="input input-bordered w-full" /-->
 
 
                 </div>
@@ -97,18 +67,7 @@
                             </div>
                         </div>
                     </div>
-                    <!--div class="relative">
 
-                            <input type="text" v-model="filtro.search" placeholder="Digite para filtrar..."
-                                class="input input-bordered w-full pl-10" />
-                            <span class="absolute right-3 top-3 text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                                </svg>
-                            </span>
-                        </div-->
 
 
                 </div>
@@ -192,18 +151,14 @@
 
                         <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex">
 
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                            </svg>  <span>Total Montante: </span> &ThickSpace; {{ formatCurrency(montantetotal) }}
+                            </svg> <span>Total Montante: </span> &ThickSpace; {{ formatCurrency(montantetotal) }}
                         </span>
                     </div>
-                    <!--div class="text-wrap">
-                        <span class="bg-yellow-50 text-green-600 px-2 py-1 text-sm font-bold">
-                            Montante Total Filtrado por Página: {{ formatCurrency(montanteTotalFiltrado) }}
-                        </span>
-                    </div-->
+
                 </div>
                 <div class="flex gap-2">
 
@@ -356,7 +311,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 font-thin">
-                        <tr v-for="(comprovativo, index) in comprovativosFiltrados" :key="comprovativo.id"
+                        <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
                             class="hover:bg-gray-50">
                             <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
                                 {{ calcularNumeroLinha(index) }}
@@ -429,7 +384,7 @@
 
                             </td>
                         </tr>
-                        <tr v-if="comprovativosFiltrados.length === 0">
+                        <tr v-if="comprovativosPaginados.length === 0">
                             <td colspan="11" class="px-4 py-4 text-center text-sm text-gray-500">
                                 Nenhum comprovativo encontrado.
                             </td>
@@ -481,6 +436,7 @@
     <ModalDelete v-if="showModalEliminar" @close="fecharModalEliminacao" @confirm="confirmarEliminacao"
         v-model:motivo="formEliminacao.txtMotivo" :dados="formEliminacao.txtDadosEliminado"
         :loan="formEliminacao.txtLoan" :id="formEliminacao.txtId" />
+
     <ModalReconcialiacao :show="showModalReconcialiacao" @close="showModalReconcialiacao = false"
         :comprovativoreconci="comprovativoSelecionado" @success="handleReconciliationSuccess" />
 
@@ -502,6 +458,8 @@ import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vu
 import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
 import ModalReconcialiacao from './Layouts/components/ComprovativosComponents/ModalReconcialiacao.vue'
 import ModalComprovativoDetalhe from './Layouts/components/ComprovativosComponents/ModalComprovativoDetalhe.vue'
+
+
 
 const props = defineProps({
     comprovativos: Array,
@@ -539,9 +497,38 @@ const showModalLoan = ref(false)
 const showModalData = ref(false)
 const showModalEliminar = ref(false)
 const showModalReconcialiacao = ref(false)
-const paginaAtual = ref(props.page || 1)
-const totalItens = ref(props.total || 0)
 const comprovativoSelecionado = ref(null)
+
+// Configuração da paginação
+const perPage = ref(100);
+const paginaAtual = ref(1);
+
+// Dados locais para paginação
+const dadosLocais = ref([]);
+
+// Watch para atualizar dadosLocais quando lista_comprovativo mudar
+watch(() => props.lista_comprovativo, (newVal) => {
+    dadosLocais.value = newVal;
+    paginaAtual.value = 1; // Resetar para primeira página
+}, { immediate: true });
+
+
+// Computed property para os dados paginados
+const comprovativosPaginados = computed(() => {
+    const start = (paginaAtual.value - 1) * perPage.value;
+    const end = start + perPage.value;
+    return dadosLocais.value.slice(start, end);
+});
+
+// Computed properties auxiliares
+const totalItens = computed(() => dadosLocais.value.length);
+const hasMorePages = computed(() => paginaAtual.value * perPage.value < dadosLocais.value.length);
+
+// Função para mudar de página (client-side)
+const mudarPagina = (novaPagina) => {
+    paginaAtual.value = novaPagina;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 // Filtros
 const filtro = ref({
@@ -562,24 +549,7 @@ const dataFim = ref('')
 const estadoModal = ref(0)
 const agenciaModal = ref('')
 
-// Computed
-/*const comprovativosFiltrados = computed(() => {
-   return props.comprovativos.filter(comp => {
-       const searchTerm = filtro.value.search.toLowerCase()
-       const matchesSearch =
-           (comp.usuario && comp.usuario.toLowerCase().includes(searchTerm)) ||
-           (comp.lnr && comp.lnr.toString().includes(searchTerm)) ||
-           (comp.agencia && comp.agencia.toLowerCase().includes(searchTerm)) ||
-           (comp.metodologia && comp.metodologia.toLowerCase().includes(searchTerm)) ||
-           (comp.basedelacamento && comp.basedelacamento.toLowerCase().includes(searchTerm))
 
-       const matchesLnr = !filtro.value.lnr || (comp.lnr && comp.lnr.toString().includes(filtro.value.lnr))
-       const matchesEstado = !filtro.value.estado || comp.estado === filtro.value.estado
-       const matchesAgencia = !filtro.value.agencia || (comp.agencia && comp.agencia.toLowerCase().includes(filtro.value.agencia.toLowerCase()))
-
-       return matchesSearch && matchesLnr && matchesEstado && matchesAgencia
-   })
-})*/
 
 const comprovativosFiltrados = computed(() => {
     return props.comprovativos // Agora usamos diretamente os comprovativos recebidos do backend
@@ -587,17 +557,6 @@ const comprovativosFiltrados = computed(() => {
 const montanteTotalFiltrado = computed(() => {
     return props.montanteFiltrado || 0 // Usamos o valor calculado no backend
 })
-
-/*const montanteTotalFiltrado = computed(() => {
-    return comprovativosFiltrados.value.reduce((total, comprovativo) => {
-        // Converte o montante para número (removendo possíveis caracteres não numéricos)
-        const montante = typeof comprovativo.montante === 'string'
-            ? parseFloat(comprovativo.montante.replace(/[^\d,]/g, '').replace(',', '.'))
-            : comprovativo.montante;
-
-        return total + (montante || 0);
-    }, 0);
-});*/
 
 
 // Métodos
@@ -623,7 +582,7 @@ const calcularNumeroLinha = (index) => {
 }
 
 
-
+// Função aplicarFiltros modificada
 const aplicarFiltros = () => {
     if (!validarDatas()) return;
 
@@ -634,12 +593,32 @@ const aplicarFiltros = () => {
         agencia_imput: filtro.value.agencia,
         data_inicio_imput: filtro.value.dataInicioInput,
         data_fim_imput: filtro.value.dataFimInput,
-        page: 1,
         tipo: 4
     }, {
         preserveState: true,
         replace: true,
-        preserveScroll: true
+        onSuccess: () => {
+            paginaAtual.value = 1; // Resetar paginação
+        }
+    });
+};
+
+// Função resetarFiltros
+const resetarFiltros = () => {
+    filtro.value = {
+        search: '',
+        lnr: '',
+        estado: 28,
+        agencia: 'T',
+        dataInicioInput: '',
+        dataFimInput: ''
+    };
+
+    router.get('/reconciliacao', {
+        page: 1
+    }, {
+        preserveState: true,
+        replace: true
     });
 };
 
@@ -648,14 +627,7 @@ const buscarPorLoan = () => {
     showModalLoan.value = false
 }
 
-const resetarFiltros = () => {
-    router.get('/reconciliacao', {
-        page: 1
-    }, {
-        preserveState: true,
-        replace: true
-    })
-}
+
 watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInicio, newFim]) => {
     if (newInicio && newFim && newInicio > newFim) {
         alert('A data de início não pode ser maior que a data de fim');
@@ -663,15 +635,7 @@ watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInic
         filtro.value.dataFimInput = '';
     }
 });
-const mudarPagina = (novaPagina) => {
-    router.get('/reconciliacao', {
-        ...filtro.value,
-        page: novaPagina
-    }, {
-        preserveState: true,
-        replace: true
-    })
-}
+
 const buscarPorDatas = (params) => {
     router.get('/reconciliacao', {
         tipo: 1,
@@ -722,19 +686,19 @@ const exportarParaExcel = () => {
             try {
                 return {
                     '#': index + 1,
-                    'Data': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleDateString('pt-PT') : '-',
-                    'Agência': comprovativo.OfNombre || '-',
-                    'Registado Por': comprovativo.UtNome || '-',
+                    'Data': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleString('pt-PT') : '-',
+                    'Agência': comprovativo.agencia || '-',
+                    'Registado Por': comprovativo.usuario || '-',
                     //'Base': comprovativo.basedelacamento || '-',
-                    'LNR': comprovativo.BuDadoOrigem || '-',
-                    'Cliente': comprovativo.infoadicional || '-',
-                    'Produto': comprovativo.PoAgrupado || '-',
-                    'Voucher': comprovativo.BuReferencia || '-',
+                    'LNR': comprovativo.lnr || '-',
+                    'Cliente': comprovativo.cliente || '-',
+                    'Produto': comprovativo.metodologia || '-',
+                    'Voucher': comprovativo.voucher || '-',
                     'Descrição': comprovativo.descricao || '-',
-                    'Banco': comprovativo.BaSigla || '-',
-                    'Conta Bancaria': comprovativo.ContaBacaria || '-',
+                    'Banco': comprovativo.banco || '-',
+                    'Conta Bancaria': comprovativo.conta || '-',
                     'Observação': comprovativo.observacao || '-',
-                    'Montante': formatCurrency(comprovativo.BuMontante) || '0,00',
+                    'Montante': comprovativo.montante || '0,00',
                     'Estado': comprovativo.estado || '-',
                     'Operador DCF': comprovativo.operadordcf || '-',
                     'Data de Operação DCF': comprovativo.datareconciliacao || '-',
@@ -823,25 +787,33 @@ const abrirModalReconciliacao = (comprovativo) => {
 }
 
 const abrirModalReconciliacaoDetalhe = async (idComprovativo) => {
-    // 1. Encontra o comprovativo
-    comprovativoDetalhe.value = props.comprovativos.find(c => c.id === idComprovativo);
+    try {
+        // 1. Encontra o comprovativo
+        comprovativoDetalhe.value = props.lista_comprovativo.find(c => c.id === idComprovativo);
 
-    if (!comprovativoDetalhe.value) {
-        alert('Comprovativo não encontrado');
-        return;
+        if (!comprovativoDetalhe.value) {
+            alert('Comprovativo não encontrado');
+            return;
+        }
+
+        // 2. Carrega as operações
+        const operacoes = await carregarOperacoes(idComprovativo);
+
+        // 3. Adiciona as operações ao comprovativo
+        comprovativoDetalhe.value = {
+            ...comprovativoDetalhe.value,
+            operacoesReconciliacao: operacoes
+        };
+
+        // 4. Abre o modal
+        showModalDetalhe.value = true;
+    } catch (err) {
+        console.error('Erro ao abrir modal de detalhes:', err);
+        // Exibe mensagem de erro para o usuário
+        alert('Ocorreu um erro ao carregar os detalhes. Por favor, tente novamente.');
+    } finally {
+        loading.value = false;
     }
-
-    // 2. Carrega as operações
-    const operacoes = await carregarOperacoes(idComprovativo);
-
-    // 3. Adiciona as operações ao comprovativo
-    comprovativoDetalhe.value = {
-        ...comprovativoDetalhe.value,
-        operacoesReconciliacao: operacoes
-    };
-
-    // 4. Abre o modal
-    showModalDetalhe.value = true;
 };
 
 const validarDatas = () => {
@@ -901,10 +873,6 @@ watch(() => props.filters, (newFilters) => {
 
 watch(() => props.page, (newPage) => {
     paginaAtual.value = newPage
-})
-
-watch(() => props.total, (newTotal) => {
-    totalItens.value = newTotal
 })
 
 // Validação das datas

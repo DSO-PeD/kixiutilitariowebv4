@@ -32,10 +32,13 @@ class TKxExtratoController extends Controller
         $TIPO = 0;
         $LOAN = "'DS/280891'";
 
+        $tipoDeBusca = $request->tipo;
 
 
+        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
 
-
+        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
+        $ConsultaBaseConsulta = "'" . $resultagencia_user->BasesOperacao . "'";
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
         $dataFecho = $resultagencia_user->DataFecho;
@@ -60,24 +63,36 @@ class TKxExtratoController extends Controller
         }
 
         if ($tipoDeBusca == 3) {
-            $LOAN = $request->loan;
+            $LOAN = "'" .$request->loan. "'";
             $TIPO = $tipoDeBusca;
 
         }
 
+        if ($tipoDeBusca == 4) {
 
-        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
 
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
-        $ConsultaBaseConsulta = "'" . $resultagencia_user->BasesOperacao . "'";
+            if ($request->estado_input !== '28') {
+                $ESTADO = $request->estado_input;
+                // dd($request->estado_input);
+            }
+            if ($request->agencia_imput !== 'T') {
+                $Bases = "'" . $request->agencia_imput . "'";
+            }
+
+            $TIPO = $tipoDeBusca;
+        }
 
 
-        $page = request()->get('page', 1);
-        $perPage = 30;
+
+
+        // $page = request()->get('page', 1);
+        // $perPage = 30;
 
         $extratos = collect(TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
-        $paginados = $extratos->forPage($page, $perPage)->values();
-        $paginados->transform(fn($item) => (array) $item);
+        // $paginados = $extratos->forPage($page, $perPage)->values();
+        //  $paginados->transform(fn($item) => (array) $item);
 
         $lista_produtos = TKxClProdutoModel::getProdutosDesembolsos();
         $lista_banco = TKxBancoModel::getBancos();
@@ -88,14 +103,82 @@ class TKxExtratoController extends Controller
         $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
         $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
 
-        //dd($extratos);
+        $total = sizeof($extratos);
+        $totalMontante = collect($extratos)->sum('ValorTotalCredito');
+
+        $extrato_list = $extratos->map(function ($item) {
+            return [
+                'Num' => $item->Num,
+                'CiFecha' => $item->CiFecha,
+                'UtCodigo' => $item->UtCodigo,
+                'OficialCredito' => $item->OficialCredito,
+                'Lnr' => $item->Lnr,
+                'Cliente' => $item->Cliente,
+                'Produto' => $item->Produto,
+                'ValorCreditoNoContrato' => $item->ValorCreditoNoContrato,
+                'PercColateral' => $item->PercColateral,
+                'ValorDoColateral' => $item->ValorDoColateral,
+                'PercColateralDeduzido' => $item->PercColateralDeduzido,
+                'ValorDoColateralDeduzido' => $item->ValorDoColateralDeduzido,
+                'ValorDoCredito' => $item->ValorDoCredito,
+                'ValorTotalCredito' => $item->ValorTotalCredito,
+                'TaxaProcessamento' => $item->TaxaProcessamento,
+                'TXAProcePercenta' => $item->TXAProcePercenta,
+                'TXAProcePercentaValor' => $item->TXAProcePercentaValor,
+                'ValorIVATaxaProcessamento' => $item->ValorIVATaxaProcessamento,
+                'TaxaProcessamentoAnte' => $item->TaxaProcessamentoAnte,
+                'TXAProcePercentaAnte' => $item->TXAProcePercentaAnte,
+                'TXAProcePercentaValorAnte' => $item->TXAProcePercentaValorAnte,
+                'ValorIVATaxaProcessamentoAnte' => $item->ValorIVATaxaProcessamentoAnte,
+                'TXAProceAnteBuReferencia' => $item->TXAProceAnteBuReferencia,
+                'TXAProceAnteBuBanco' => $item->TXAProceAnteBuBanco,
+
+                'TXAProceAnteBuNumeroConta' => $item->TXAProceAnteBuNumeroConta,
+                'TXAProceAnteBuMontante' => $item->TXAProceAnteBuMontante,
+                'TaxaImprevisto' => $item->TaxaImprevisto,
+                'TXAImprePercenta' => $item->TXAImprePercenta,
+                'TXAImprePercentaValor' => $item->TXAImprePercentaValor,
+                'ValorIVATaxaImprevisto' => $item->ValorIVATaxaImprevisto,
+
+                'TXAImpreBuBanco' => $item->TXAImpreBuBanco,
+                'TXAImpreBuNumeroConta' => $item->TXAImpreBuNumeroConta,
+                'TXAImpreBuMontante' => $item->TXAImpreBuMontante,
+                'TXAImpreBuData' => $item->TXAImpreBuData,
+                'ValorAKZTaxaDeConfirmacao' => $item->ValorAKZTaxaDeConfirmacao,
+                'DataRetiradaTaxaDeConfirmacao' => $item->DataRetiradaTaxaDeConfirmacao,
+
+                'ValorIVATaxaConfirmacao' => $item->ValorIVATaxaConfirmacao,
+                'DescricaoActividadeEconomica' => $item->DescricaoActividadeEconomica,
+                'CodigoAtividade' => $item->CodigoAtividade,
+                'Sector' => $item->Sector,
+                'Magnitude' => $item->Magnitude,
+                'RendaMensal' => $item->RendaMensal,
+
+
+                'ValorPrimeiraPrestacao' => $item->ValorPrimeiraPrestacao,
+
+                'ppe' => $item->ppe,
+                'Eliminado' => $item->Eliminado,
+
+                'BaseOperacao' => $item->BaseOperacao,
+                'referenciapagamento' => $item->referenciapagamento,
+                'RefPgtActivo' => $item->RefPgtActivo
+
+
+            ];
+        });
+
 
         return Inertia::render('Extratos', [
-            'lista_extrato' => [
-                'data' => $paginados,
-                'current_page' => $page,
-                'per_page' => $perPage,
-                'total' => $extratos->count(),
+
+            'lista_extrato' => $extrato_list,
+            'filters' => [
+                'search' => $request->input('search_input', ''),
+                'lnr' => $request->input('lnr_imput', ''),
+                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
+                'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
+                'data_inicio' => $request->input('data_inicio_imput', ''),
+                'data_fim' => $request->input('data_fim_imput', '')
             ],
             'BasesOperacao' => explode(',', $resultagencia_user->BasesOperacao),
             'agencia' => session('Agencia'),
@@ -107,6 +190,8 @@ class TKxExtratoController extends Controller
             'lista_nes_grupo' => $lista_nes_grupo,
             'lista_nes_tipo' => $lista_nes_tipo,
             'bases' => $BasesOperacaoAgencias,
+            'total' => $total,
+            'montantetotal' => $totalMontante,
         ]);
 
 
@@ -403,25 +488,25 @@ class TKxExtratoController extends Controller
     }
 
 
- public static function index()
-  {
-    $todos_extratos = TKxExtratoModel::all();
-    return $todos_extratos;
-  }
+    public static function index()
+    {
+        $todos_extratos = TKxExtratoModel::all();
+        return $todos_extratos;
+    }
 
-  //Listas Todos Extratos por parametro
-  public static function show($DataInicio)
-  {
+    //Listas Todos Extratos por parametro
+    public static function show($DataInicio)
+    {
 
-    $hoje = date('Y-m-d');
-    $Bases = "'DJA'";
-    $DataFim = $hoje;
-    $TIPO = 3;
-    $LOAN = "'DS/280890'";
+        $hoje = date('Y-m-d');
+        $Bases = "'DJA'";
+        $DataFim = $hoje;
+        $TIPO = 3;
+        $LOAN = "'DS/280890'";
 
-    $listagem_extrat = TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, 0, $TIPO, $LOAN);
-    return $listagem_extrat;
-  }
+        $listagem_extrat = TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, 0, $TIPO, $LOAN);
+        return $listagem_extrat;
+    }
 
 
 

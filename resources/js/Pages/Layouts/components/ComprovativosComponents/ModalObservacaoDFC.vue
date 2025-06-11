@@ -42,9 +42,9 @@
                         </div>
                     </div>
                     <div class="flex flex-col">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">ID do Comprovativo</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
                         <div class="relative">
-                            <input v-model="form.referencia" type="text" class="form-input bg-gray-100 pl-3 pr-10"
+                            <input v-model="form.voucher" type="text" class="form-input bg-gray-100 pl-3 pr-10"
                                 readonly />
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                 <i class="fa-solid fa-building text-gray-400"></i>

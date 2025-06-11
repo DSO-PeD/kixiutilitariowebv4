@@ -29,10 +29,110 @@
             </div>
         </div>
 
+        <hr />
+        <!-- Filtro Avançado -->
+        <div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg ">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3  ">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Loan Number
+                    </label>
+                    <button class="btn btn-outline-consulta flex items-center gap-2" @click="showModalLoan = true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        Clicar Aqui
+                    </button>
+
+
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+
+
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Data de Início -->
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Periodo de Início*</label>
+                            <div class="relative">
+                                <input v-model="filtro.dataInicioInput" type="date" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition"
+                                    :max="filtro.dataFimInput" @change="validarDatas" />
+                                <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Data de Fim -->
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Periodo de Fim*</label>
+                            <div class="relative">
+                                <input v-model="filtro.dataFimInput" type="date" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition"
+                                    :min="filtro.dataInicioInput" @change="validarDatas" />
+                                <span v-if="erros.dataFim" class="text-red-500 text-xs">{{ erros.dataFim }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+
+
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Estado
+                    </label>
+
+
+
+                    <select v-model="filtro.estado" class="input input-bordered w-full">
+                        <option disabled :value="'s/e'">Escolha estado</option>
+                        <option v-for="estado in $page.props.estados" :value="Number(estado.id)" :key="estado.id">
+                            {{ estado.descricao_estado }}
+                        </option>
+                        <option :value="28">Todos estados</option>
+                    </select>
+                </div>
+
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Agência </label>
+                    <select v-model="filtro.agencia" class="input input-bordered w-full">
+                        <option disabled :value="'s/a'">Escolha agência</option>
+
+                        <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
+                            :key="agencia.OfIdentificador">
+                            {{ agencia.OfIdentificador }} - {{ agencia.OfNombre }}
+                        </option>
+                        <option :value="'T'">Todas que tenho acesso</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
+                    Limpar Filtros
+                </button>
+                <button @click="aplicarFiltros" class="btn btn-primary">
+                    Aplicar Filtros &MediumSpace;
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                </button>
+
+            </div>
+
+
+
+        </div>
+
         <!-- Card Principal -->
         <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
             <!-- Cabeçalho do Card -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <!--div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-lg font-semibold text-gray-700">Comprovativos Registrados</h2>
 
                 <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
@@ -61,52 +161,60 @@
                         Exportar para Excel
                     </button>
                 </div>
-            </div>
-
-            <!-- Filtro Avançado -->
-            <div class="mb-6 bg-gray-50 p-4 rounded-lg">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Pesquisa Geral</label>
-                        <div class="relative">
-                            <input type="text" v-model="filtro.search" placeholder="Digite para filtrar..."
-                                class="input input-bordered w-full pl-10" />
-                            <span class="absolute right-3 top-3 text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por LNR</label>
-                        <input type="text" v-model="filtro.lnr" placeholder="Número do Loan"
-                            class="input input-bordered w-full" />
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Estado</label>
-
-                        <select v-model="filtro.estado" class="input input-bordered w-full">
-                            <option value="">Todos</option>
-                            <option v-for="estado in $page.props.estados" :value="estado.descricao_estado" :key="estado.id">{{ estado.descricao_estado }}</option>
-
-                        </select>
-                    </div>
+            </div-->
 
 
-
+            <!-- Paginação -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
+                    de {{ totalItens }} registros
+                </div>
+                <div class="text-sm text-green-500 ">
+                    <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        Exportar Dados da tabela para Excel
+                    </button>
                 </div>
 
-                <div class="mt-4 flex justify-end">
-                    <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
-                        Limpar Filtros
+                <div class="flex gap-4">
+                    <div class="text-wrap">
+
+                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg> <span>Total Montante: </span> &ThickSpace; {{ formatCurrency(montantetotal) }}
+                        </span>
+                    </div>
+
+                </div>
+                <div class="flex gap-2">
+
+                    <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        Anterior
                     </button>
-                    <button @click="aplicarFiltros" class="btn btn-primary">
-                        Aplicar Filtros
+                    <div class="flex items-center">
+                        <span class="mx-2">Página {{ paginaAtual }}</span>
+                    </div>
+                    <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
+                        Próxima
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -162,7 +270,7 @@
                                             d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
 
-                                    LNR
+                                    Loan Number
                                 </div>
 
                             </th>
@@ -210,7 +318,7 @@
                                             d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
                                     </svg>
 
-                                     Borderoux
+                                    Voucher
                                 </div>
 
                             </th>
@@ -241,10 +349,10 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="(comprovativo, index) in comprovativosFiltrados" :key="comprovativo.id"
+                        <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
                             class="hover:bg-gray-50">
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ calcularNumeroLinha(index) }}
+                               {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
@@ -274,10 +382,10 @@
                                 {{ comprovativo.metodologia }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                                {{ comprovativo.montante }}
+                                {{ formatCurrency(comprovativo.montante) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.referencia || '-' }}
+                                {{ comprovativo.voucher || '-' }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <button @click="abrirModalObservacaoDCF(comprovativo)"
@@ -298,7 +406,7 @@
                                 </span>
                             </td>
                         </tr>
-                        <tr v-if="comprovativosFiltrados.length === 0">
+                        <tr v-if="comprovativosPaginados.length === 0">
                             <td colspan="9" class="px-4 py-4 text-center text-sm text-gray-500">
                                 Nenhum comprovativo encontrado com os filtros aplicados
                             </td>
@@ -307,7 +415,7 @@
                 </table>
             </div>
 
-            <!-- Paginação -->
+           <!-- Paginação -->
             <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
                 <div class="text-sm text-gray-600">
                     Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
@@ -316,6 +424,10 @@
                 <div class="flex gap-2">
                     <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
                         :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
                         Anterior
                     </button>
                     <div class="flex items-center">
@@ -324,6 +436,10 @@
                     <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)" class="btn btn-outline"
                         :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
                         Próxima
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -359,6 +475,7 @@ import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelet
 import ModalObservacaoDFC from './Layouts/components/ComprovativosComponents/ModalObservacaoDFC.vue'
 import ModalNovoComprovativo from './Layouts/components/ComprovativosComponents/ModalNovoComprovativo.vue'
 
+
 const props = defineProps({
     comprovativos: Array,
     filters: Object,
@@ -366,9 +483,29 @@ const props = defineProps({
     hasMorePages: Boolean,
     perPage: {
         type: Number,
-        default: 15
+        default: 100
     },
-    total: Number
+    lista_comprovativo: {
+        type: Array,
+        required: true
+    },
+    total: Number,
+    dataInicioInput: String,
+    dataFimInput: String,
+    montantetotal: Number,
+    bases: Array,
+    produtos: Array,
+    bancos: Array,
+    contas: Array,
+    tipocomprovativos: Object,
+    estados: Array,
+    auth: Object,
+    errors: Object,
+    session: Object,
+    flash: Object,
+    user: Object,
+    dataInicioInput: String,
+    dataFimInput: String,
 })
 
 // Estados
@@ -376,102 +513,262 @@ const showModalLoan = ref(false)
 const showModalData = ref(false)
 const showModalNovo = ref(false)
 const showModalEliminar = ref(false)
-const paginaAtual = ref(props.page || 1)
-const totalItens = ref(props.total || 0)
+//const totalItens = ref(props.total || 0)
 const showModalObservacao = ref(false)
 const comprovativoSelecionado = ref(null)
+
+// Configuração da paginação
+const perPage = ref(100);
+const paginaAtual = ref(1);
+
+// Dados locais para paginação
+const dadosLocais = ref([]);
+
+
+// Watch para atualizar dadosLocais quando lista_comprovativo mudar
+watch(() => props.lista_comprovativo, (newVal) => {
+    dadosLocais.value = newVal;
+    paginaAtual.value = 1; // Resetar para primeira página
+}, { immediate: true });
+
+
+// Computed property para os dados paginados
+const comprovativosPaginados = computed(() => {
+    const start = (paginaAtual.value - 1) * perPage.value;
+    const end = start + perPage.value;
+    return dadosLocais.value.slice(start, end);
+});
+
+
+// Computed properties auxiliares
+const totalItens = computed(() => dadosLocais.value.length);
+const hasMorePages = computed(() => paginaAtual.value * perPage.value < dadosLocais.value.length);
+
+// Função para mudar de página (client-side)
+const mudarPagina = (novaPagina) => {
+    paginaAtual.value = novaPagina;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 // Filtros
 const filtro = ref({
     search: props.filters.search || '',
     lnr: props.filters.lnr || '',
-    estado: props.filters.estado || '',
-    data_inicio: props.filters.data_inicio || '',
-    data_fim: props.filters.data_fim || ''
+    estado: props.filters.estado || 28,
+    agencia: props.filters.agencia || 'T',
+    dataInicioInput: props.filters.data_inicio || '',
+    dataFimInput: props.filters.data_fim || ''
 })
 
 const filtroLoan = ref('')
 const dataInicio = ref('')
 const dataFim = ref('')
-
-// Computed
-const comprovativosFiltrados = computed(() => {
-    return props.comprovativos.filter(comp => {
-        const searchTerm = filtro.value.search.toLowerCase()
-        const matchesSearch =
-            (comp.usuario && comp.usuario.toLowerCase().includes(searchTerm)) ||
-            (comp.lnr && comp.lnr.toString().includes(searchTerm)) ||
-            (comp.referencia && comp.referencia.toLowerCase().includes(searchTerm)) ||
-            (comp.metodologia && comp.metodologia.toLowerCase().includes(searchTerm))
-
-        const matchesLnr = !filtro.value.lnr || (comp.lnr && comp.lnr.toString().includes(filtro.value.lnr))
-        const matchesEstado = !filtro.value.estado || comp.estado === filtro.value.estado
-
-        return matchesSearch && matchesLnr && matchesEstado
-    })
+const dataInicioInput = ref(props.dataInicioInput || '')
+const dataFimInput = ref(props.dataFimInput || '')
+const dateError = ref('')
+const erros = ref({
+    dataInicio: '',
+    dataFim: ''
 })
+
+
+const comprovativosFiltrados = computed(() => {
+    return props.comprovativos // Agora usamos diretamente os comprovativos recebidos do backend
+})
+const montanteTotalFiltrado = computed(() => {
+    return props.montanteFiltrado || 0 // Usamos o valor calculado no backend
+})
+
+
 
 const abrirModalObservacaoDCF = (comprovativo) => {
     comprovativoSelecionado.value = comprovativo
     showModalObservacao.value = true
 }
 
+// Métodos
+
+
+function formatCurrency(value) {
+    if (value == null) return '';
+
+    if (typeof value === 'string') {
+        value = value.replace(/\D/g, '');
+        if (!value) return '0,00';
+        value = parseFloat(value) / 100;
+    }
+
+    return value.toLocaleString('pt-PT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
 const calcularNumeroLinha = (index) => {
     return (paginaAtual.value - 1) * props.perPage + index + 1
 }
 
+
+const validarDatas = () => {
+    // Resetar erros
+    erros.value = {
+        dataInicio: '',
+        dataFim: ''
+    };
+
+    let isValid = true;
+
+    // Validar se as datas foram preenchidas
+    if (!filtro.value.dataInicioInput) {
+        erros.value.dataInicio = 'A data de início é obrigatória';
+        isValid = false;
+    }
+
+    if (!filtro.value.dataFimInput) {
+        erros.value.dataFim = 'A data de fim é obrigatória';
+        isValid = false;
+    }
+
+    // Validar se a data de início é maior que a data de fim
+    if (filtro.value.dataInicioInput && filtro.value.dataFimInput) {
+        const dataInicio = new Date(filtro.value.dataInicioInput);
+        const dataFim = new Date(filtro.value.dataFimInput);
+
+        if (dataInicio > dataFim) {
+            erros.value.dataInicio = 'A data de início não pode ser maior que a data de fim';
+            erros.value.dataFim = 'A data de fim não pode ser menor que a data de início';
+            isValid = false;
+        }
+    }
+
+    return isValid;
+};
+
+
+
+// Função aplicarFiltros modificada
 const aplicarFiltros = () => {
+    if (!validarDatas()) return;
+
     router.get('/comprovativos', {
-        ...filtro.value,
-        page: 1
+        search_input: filtro.value.search,
+        lnr_imput: filtro.value.lnr,
+        estado_input: filtro.value.estado,
+        agencia_imput: filtro.value.agencia,
+        data_inicio_imput: filtro.value.dataInicioInput,
+        data_fim_imput: filtro.value.dataFimInput,
+        tipo: 4
     }, {
         preserveState: true,
-        replace: true
-    })
-}
+        replace: true,
+        onSuccess: () => {
+            paginaAtual.value = 1; // Resetar paginação
+        }
+    });
+};
 
+// Função resetarFiltros
 const resetarFiltros = () => {
     filtro.value = {
         search: '',
         lnr: '',
-        estado: '',
-        data_inicio: '',
-        data_fim: ''
-    }
-    aplicarFiltros()
-}
+        estado: 28,
+        agencia: 'T',
+        dataInicioInput: '',
+        dataFimInput: ''
+    };
 
-const mudarPagina = (novaPagina) => {
     router.get('/comprovativos', {
-        ...filtro.value,
-        page: novaPagina
+        page: 1
     }, {
         preserveState: true,
         replace: true
-    })
-}
+    });
+};
 
 // Exportar para Excel (mantido como está)
 const exportarParaExcel = () => {
-    const dadosFormatados = comprovativosFiltrados.value.map((comprovativo, index) => ({
-        '#': calcularNumeroLinha(index),
-        'Data Registro': comprovativo.data,
-        'Usuário': comprovativo.usuario,
-        'Loan Number': comprovativo.lnr,
-        'Produto': comprovativo.metodologia,
-        'Montante': comprovativo.montante,
-        'Voucher': comprovativo.referencia || '-',
-        'Estado': comprovativo.estado,
-        'Arquivo': comprovativo.file ? 'Sim' : 'Não'
-    }))
+    try {
+        // Acessando a lista_comprovativo corretamente (dependendo do seu contexto)
+        let listaCompleta;
 
-    const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Comprovativos")
+        // Opção 1: Se estiver usando Inertia.js em Composition API
+        if (typeof usePage !== 'undefined') {
+            const { props } = usePage();
+            listaCompleta = props.value.lista_comprovativo;
+        }
+        // Opção 2: Se estiver usando Options API
+        else if (this && this.$page && this.$page.props) {
+            listaCompleta = this.$page.props.lista_comprovativo;
+        }
+        // Opção 3: Se a lista estiver disponível como prop no componente
+        else if (props && props.lista_comprovativo) {
+            listaCompleta = props.lista_comprovativo;
+        }
+        // Opção 4: Se estiver disponível diretamente no escopo
+        else if (typeof lista_comprovativo !== 'undefined') {
+            listaCompleta = lista_comprovativo;
+        }
+        else {
+            throw new Error('Não foi possível encontrar a lista de comprovativos');
+        }
 
-    const nomeArquivo = `comprovativos_${new Date().toISOString().split('T')[0]}.xlsx`
-    XLSX.writeFile(wb, nomeArquivo)
-}
+        // Verifica se há dados
+        if (!listaCompleta || listaCompleta.length === 0) {
+            alert('Nenhum dado disponível para exportar');
+            return;
+        }
+
+        console.log('Total de registros a exportar:', listaCompleta.length);
+
+        // Formata os dados
+        const dadosFormatados = listaCompleta.map((comprovativo, index) => {
+            try {
+                return {
+                    '#': index + 1,
+                    'Data': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleString('pt-PT') : '-',
+                    'Agência': comprovativo.agencia || '-',
+                    'Registado Por': comprovativo.usuario || '-',
+                    'Loan Number': comprovativo.lnr || '-',
+                    'Cliente': comprovativo.cliente || '-',
+                    'Produto': comprovativo.metodologia || '-',
+                    'Voucher': comprovativo.voucher || '-',
+                    'Descrição da DCF': comprovativo.descricao || '-',
+                    'Banco': comprovativo.banco || '-',
+                    'Conta Bancaria': comprovativo.conta || '-',
+                    'Observação da DCF': comprovativo.observacao || '-',
+                    'Montante': comprovativo.montante || '0,00',
+                    'Estado': comprovativo.estado || '-',
+
+                };
+            } catch (error) {
+                console.error('Erro ao formatar registro:', comprovativo, error);
+                return null;
+            }
+        }).filter(record => record !== null);
+
+        if (dadosFormatados.length === 0) {
+            alert('Nenhum dado válido para exportar após formatação');
+            return;
+        }
+
+        // Cria a planilha
+        const ws = XLSX.utils.json_to_sheet(dadosFormatados);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Comprovativos");
+
+        // Gera o nome do arquivo
+        const dataHoje = new Date().toISOString().split('T')[0];
+        const nomeArquivo = `comprovativos_DOP_completa_${dataHoje}.xlsx`;
+
+        // Faz o download
+        XLSX.writeFile(wb, nomeArquivo);
+
+    } catch (error) {
+        console.error('Erro detalhado ao exportar para Excel:', error);
+        alert(`Erro ao exportar: ${error.message || 'Verifique o console para mais detalhes'}`);
+    }
+};
 const novoComprovativo = ref({
     ls: 'Loan',
     selectBase: '',
@@ -554,22 +851,58 @@ const buscarPorDatas = () => {
     }, { preserveState: true })
     showModalData.value = false
 }
-// Watchers
+
+watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInicio, newFim]) => {
+    if (newInicio && newFim && newInicio > newFim) {
+        alert('A data de início não pode ser maior que a data de fim');
+        filtro.value.dataInicioInput = '';
+        filtro.value.dataFimInput = '';
+    }
+});
+
+// Watcher para sincronizar quando as props forem atualizadas
 watch(() => props.filters, (newFilters) => {
-    filtro.value.search = newFilters.search || ''
-    filtro.value.lnr = newFilters.lnr || ''
-    filtro.value.estado = newFilters.estado || ''
-    filtro.value.data_inicio = newFilters.data_inicio || ''
-    filtro.value.data_fim = newFilters.data_fim || ''
-})
+    filtro.value = {
+        search: newFilters.search || '',
+        lnr: newFilters.lnr || '',
+        estado: newFilters.estado || 28,
+        agencia: newFilters.agencia || 'T',
+        dataInicioInput: newFilters.data_inicio || '',
+        dataFimInput: newFilters.data_fim || ''
+    }
+}, { immediate: true, deep: true })
 
 watch(() => props.page, (newPage) => {
     paginaAtual.value = newPage
 })
 
-watch(() => props.total, (newTotal) => {
-    totalItens.value = newTotal
+
+// Validação das datas
+const validateDates = () => {
+    if (dataInicioInput.value && dataFimInput.value) {
+        if (new Date(dataInicioInput.value) > new Date(dataFimInput.value)) {
+            dateError.value = 'A data de início não pode ser maior que a data de fim'
+            return false
+        }
+    }
+    dateError.value = ''
+    return true
+}
+
+// Watchers para validação
+watch([dataInicioInput, dataFimInput], () => {
+    validateDates()
 })
+
+watch(() => props.dataInicioInput, (newVal) => {
+    dataInicioInput.value = newVal || ''
+})
+
+watch(() => props.dataFimInput, (newVal) => {
+    dataFimInput.value = newVal || ''
+})
+
+
 
 // Restante do código (modais, formulários) mantido como está
 </script>
@@ -687,5 +1020,9 @@ watch(() => props.total, (newTotal) => {
 
 .to-greenkixi-300 {
     --tw-gradient-to: #08583d;
+}
+
+.btn-outline-consulta {
+    @apply border border-gray-300 bg-white text-cyan-800 hover:bg-gray-50;
 }
 </style>

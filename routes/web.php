@@ -20,24 +20,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'carregamentoInicial'])->name('dashboard');
 
-    /*Route::get('/dashboard', function () {
-        // Recupera os dados da session
-        $bases_opecionais = session('bases_opecionais');
-        $agencia_p = session('agencia_principal');
-
-        $user = auth()->user();  // Exemplo de dados do usuário
-        $flashMessage = session('flash_message');  // Exemplo de flash message
-
-        // Passa para o Vue via Inertia
-        return Inertia::render('Dashboard', [
-            'bases_opecionais' => $bases_opecionais,
-            'agencia' =>$agencia_p,
-            'user' => $user,
-            'flashMessage' => $flashMessage,  // Passando uma mensagem flash como exemplo
-            'errors' => session('errors'),  // Passando erros se existirem
-            'auth' => auth()->user(),  // Passando dados de autenticação
-        ]);
-    });*/
 
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');

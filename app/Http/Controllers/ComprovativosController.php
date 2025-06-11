@@ -25,7 +25,7 @@ class ComprovativosController extends Controller
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
-        $filtros = $request->only(['search', 'data_inicio', 'data_fim']);
+      //  $filtros = $request->only(['search', 'data_inicio', 'data_fim']);
 
 
         $tipoDeBusca = $request->tipo;
@@ -40,7 +40,7 @@ class ComprovativosController extends Controller
         $dataActual = date("Y-m-d", strtotime($hoje));
         $sistema_aberto = true;
 
-         $estados = EstadosModel::getEstadosDCF('DCF');
+        $estados = EstadosModel::getEstadosDCF('DCF');
         $ids_estados = $estados->pluck('id')->implode(',');
 
 
@@ -51,7 +51,7 @@ class ComprovativosController extends Controller
         }
 
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
-         $ESTADO = "'" . $ids_estados . "'";
+        $ESTADO = "'" . $ids_estados . "'";
         $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
         $TIPO = 0;
@@ -60,7 +60,7 @@ class ComprovativosController extends Controller
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
         if ($tipoDeBusca == 1) {
-            $DataInicio =date("Y-m-d 00:00:00", strtotime($request->data_inicio));
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
 
@@ -71,6 +71,22 @@ class ComprovativosController extends Controller
             $LOAN = "'" . $request->loan . "'";
             $TIPO = $tipoDeBusca;
         }
+          if ($tipoDeBusca == 4) {
+
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+
+            if ($request->estado_input !== '28') {
+                $ESTADO = $request->estado_input;
+                // dd($request->estado_input);
+            }
+            if ($request->agencia_imput !== 'T') {
+                $Bases = "'" . $request->agencia_imput . "'";
+            }
+
+            $TIPO = $tipoDeBusca;
+        }
+
 
 
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO);
@@ -79,46 +95,73 @@ class ComprovativosController extends Controller
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
-        $estados=EstadosModel::getEstadosDCF('DCF');
+        $estados = EstadosModel::getEstadosDCF('DCF');
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+           $total = sizeof($lista_comprovativo);
+        $totalMontante = collect($lista_comprovativo)->sum('BuMontante');
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
         ];
 
+
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             return [
                 'id' => $item->id,
                 'data' => $item->dataRegistoFomatada,
+                'agencia' => $item->OfNombre,
+                'basedelacamento' => $item->basedelacamento,
                 'file' => $item->filecomprovativo,
                 'usuario' => $item->UtNome,
                 'lnr' => $item->BuDadoOrigem,
                 'estado' => $item->estado,
                 'color' => $item->color,
+                'cliente' => $item->infoadicional,
                 'observacao' => $item->observacao,
                 'metodologia' => $item->PoAgrupado,
+                'banco' => $item->BaSigla,
+                'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
-                'montante' => number_format($item->BuMontante, 2, ',', '.'),
-                'cliente' => $item->infoadicional
+                'voucher' => $item->voucher,
+                'descricao' => $item->descricao,
+                'operadordcf' => $item->operadordcf,
+                'datareconciliacao' => $item->datareconciliacao,
+                'montante' => $item->BuMontante,
+                // Mantenha todos os campos necessários para filtros client-side
+                'CiFecha' => $item->CiFecha, // Para filtro por data
+                'estado_id' => $item->idestado, // Para filtro por estado
+                'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
+                'BuMontante' => $item->BuMontante // Para cálculos
             ];
         });
 
 
-        $NumeroPaginator = 30;
-        $paginado = $comprovativos_list->forPage($request->input('page', 1), $NumeroPaginator)->values();
 
+        $NumeroPaginator = 30;
+      //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
         return Inertia::render('Comprovativos', [
-            'comprovativos' => $paginado,
-            'filters' => $filtros,
+            'lista_comprovativo' => $comprovativos_list,
+            // 'comprovativos' => $paginado,
+            'filters' => [
+                'search' => $request->input('search_input', ''),
+                'lnr' => $request->input('lnr_imput', ''),
+                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
+                'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
+                'data_inicio' => $request->input('data_inicio_imput', ''),
+                'data_fim' => $request->input('data_fim_imput', '')
+            ],
             'page' => (int) $request->input('page', 1),
             'bases' => $BasesOperacaoAgencias,
             'produtos' => $lista_produtos,
-            'formaspagamentos' => $lista_das_formaspagamento,
             'bancos' => $lista_banco,
             'contas' => $lista_bancos_contas,
             'tipocomprovativos' => $TipoComprovativo,
             'estados' => $estados,
-            'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
+            //  'lista_comprovativo' => $lista_comprovativo,
+            'total' => $total,
+            'montantetotal' => $totalMontante,
+            'formaspagamentos'=>$lista_das_formaspagamento
+            //'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
         ]);
     }
 
