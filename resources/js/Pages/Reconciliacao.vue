@@ -256,9 +256,9 @@
                                     Cliente
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 data-label="LNR">
-                                <div class="flex items-center gap-1">
+                                <div class="flex  items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -311,8 +311,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 font-thin">
-                        <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
-                            class="hover:bg-gray-50">
+                        <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"  class="hover:bg-gray-50">
                             <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
                                 {{ calcularNumeroLinha(index) }}
                             </td>
@@ -340,7 +339,7 @@
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.cliente || '-' }}
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">
 
 
 
@@ -489,7 +488,7 @@ const props = defineProps({
     user: Object,
     dataInicioInput: String,
     dataFimInput: String,
-    montanteFiltrado: Number, // Adicionado para receber o montante filtrado do backend
+    montanteFiltrado: Number
 })
 
 // Estados

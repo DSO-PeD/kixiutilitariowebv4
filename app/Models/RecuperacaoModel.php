@@ -111,140 +111,138 @@ class RecuperacaoModel extends Model
         return $DadosRecuperadores;
     }
 
-    //Funcão: listar todas recuperações Owner: WSA 
-    public static function getRecuperacoes($tipo,$estado = null,$agencia = null,$dataInicio = null,$dataFim = null)
-    { 
-        //Pega a base do utilizador logado, pois a recuperação é em função disso, cada um vê a base em tutela, somente os UtAgencia=0 vêem todas
-        //$base = TKxAgenciaModel::getAgencias(Auth::user());
-        //$base = $base[0]->OfIdentificador;
+    //Funcão: listar todas recuperações Owner: WSA
+    public static function getRecuperacoes($NumeroRegistroTabela, $tipo, $estado = null, $agencia = null, $dataInicio = null, $dataFim = null, $loan_number)
+    {
+
+
 
         $query = DB::table('recuperacao as rec')
-                    ->join('estado as est','est.id','=','rec.id_estado')
-                    ->join('recuperador as r','r.id','=','rec.id_recuperador')
-                    ->join('tkxusutilizador as util','util.UtCodigo','=','rec.UtCodigo')
-                    ->join('comprovativos as comp','comp.id','=','id_comprovativo');
-                
-                    if ($tipo == 3 && $dataInicio && $dataFim) { //Tipo: 1 vem do filtro Estado e Agencia | Tipo: 3 vem do filtro em função das datas 
-                        $query->whereBetween('rec.CiFecha', [$dataInicio, $dataFim]);
-                        $query->where('rec.id_estado', $estado);
-                        if(Auth::user()->UtAgencia >0){ //Utilizador com Agencia única p/ex.: UE,MB,HH, etc...
-                            $query->where('rec.BaseOperacao',$agencia);
-                        }else{ //Utilizador Adm que vê todas agencias
-                            if($agencia !='KC'){
-                                $query->where('rec.BaseOperacao',$agencia);
-                            }
-                        }
-                    } else {
-                        if ($estado) {
-                            $query->where('rec.id_estado', $estado);
-                        }
-                        if ($agencia && $agencia !='KC') {
-                            $query->where('rec.BaseOperacao', $agencia);
-                        }
-                    }
+            ->join('estado as est', 'est.id', '=', 'rec.id_estado')
+            ->join('recuperador as r', 'r.id', '=', 'rec.id_recuperador')
+            ->join('tkxusutilizador as util', 'util.UtCodigo', '=', 'rec.UtCodigo')
+            ->join('comprovativos as comp', 'comp.id', '=', 'id_comprovativo')
+            ->join('tkxagencias as ag', 'ag.OfIdentificador', '=', 'rec.BaseOperacao')
+            ->select(
+                'rec.id',
+                'rec.CiFecha',
+                'util.UtCodigo',
+                'util.UtNome',
+                'rec.ReBuDadoOrigem',
+                'rec.ReBuReferencia',
+                'rec.ReBuMontante',
+                'rec.ReBuData',
+                'rec.ReBuDataLPF',
+                'r.nome_recuperador',
+                'rec.id_comprovativo',
+                'est.descricao_estado as estado',
+                'rec.id_estado',
+                'rec.BaseOperacao',
+                'rec.obs',
+                'util.obs_regista',
+                'comp.infoadicional',
+                'est.color as color',
+                'est.fa_icon',
+                'est.dias_epe',
+                'est.elimina_registro',
+                'ag.OfNombre'
+            )
+            ->orderByDesc('CiFecha');
 
-                    return $query->select(
-                            'rec.id',
-                            'rec.CiFecha',
-                            'util.UtCodigo',
-                            'util.UtNome',
-                            'rec.ReBuDadoOrigem',
-                            'rec.ReBuReferencia',
-                            'rec.ReBuMontante',
-                            'rec.ReBuData',
-                            'rec.ReBuDataLPF',
-                            'r.nome_recuperador',
-                            'rec.id_comprovativo',
-                            'est.descricao_estado as estado',
-                            'rec.id_estado',
-                            'rec.BaseOperacao',
-                            'rec.obs',
-                            'util.obs_regista',
-                            'comp.infoadicional',
-                            'est.color as color',
-                            'est.fa_icon',
-                            'est.dias_epe',
-                            'est.elimina_registro'
-                        )
-                        ->paginate(10);
+        if ($tipo == 3) {
+            $query->where('rec.ReBuDadoOrigem', '=', $loan_number);
+        } elseif ($tipo == 4) {
+
+            $agenciaArray = explode(',', $agencia);
+            $estadoArray = explode(',', $estado);
+            $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray);
+        } else {
+            $query->limit($NumeroRegistroTabela);
+        }
+
+        $results = $query->get();
+
+
+
+        return $results;
     }
-    
-    //Funcão: pegar montante e quantidade de recuperações de uma agencia e estado especifico Owner: WSA 
-    public static function getRecuperacoesEstatistica($tipo,$estado,$agencia,$dataInicio,$dataFim)
+
+    //Funcão: pegar montante e quantidade de recuperações de uma agencia e estado especifico Owner: WSA
+    public static function getRecuperacoesEstatistica($tipo, $estado, $agencia, $dataInicio, $dataFim)
     {
         //Pega a base do utilizador logado, pois a recuperação é em função disso, cada um vê a base em tutela, somente os UtAgencia=0 vêem todas
         //$agenciaBase = TKxAgenciaModel::getAgencias(Auth::user());
         //$agenciaBase = $agenciaBase[0]->OfIdentificador;
-        
-        if($tipo==3){
-            if(Auth::user()->UtAgencia >0){
+
+        if ($tipo == 3) {
+            if (Auth::user()->UtAgencia > 0) {
                 $query = DB::table('recuperacao as rec')
-                        ->whereBetween('rec.CiFecha', [$dataInicio,$dataFim])
-                        ->where('rec.BaseOperacao',$agencia)
-                        ->where('rec.id_estado',$estado); 
-            }else{
+                    ->whereBetween('rec.CiFecha', [$dataInicio, $dataFim])
+                    ->where('rec.BaseOperacao', $agencia)
+                    ->where('rec.id_estado', $estado);
+            } else {
                 $query = DB::table('recuperacao as rec')
-                        ->whereBetween('rec.CiFecha', [$dataInicio,$dataFim])
-                        ->where('id_estado',$estado);
-                        if($agencia !='KC'){
-                            $query->where('rec.BaseOperacao',$agencia);
-                        } 
-            }            
-        }else{
-            if($agencia !='KC'){ //KC significa filtragem para todas bases Kixicredito
+                    ->whereBetween('rec.CiFecha', [$dataInicio, $dataFim])
+                    ->where('id_estado', $estado);
+                if ($agencia != 'KC') {
+                    $query->where('rec.BaseOperacao', $agencia);
+                }
+            }
+        } else {
+            if ($agencia != 'KC') { //KC significa filtragem para todas bases Kixicredito
                 $query = DB::table('recuperacao as rec')
-                            ->where('rec.id_estado', $estado)
-                            ->where('rec.BaseOperacao', $agencia);
-            }else{
+                    ->where('rec.id_estado', $estado)
+                    ->where('rec.BaseOperacao', $agencia);
+            } else {
                 $query = DB::table('recuperacao as rec')
-                            ->where('rec.id_estado', $estado);
-            }        
+                    ->where('rec.id_estado', $estado);
+            }
         }
-        
+
         return [
             'total' => $query->count(),
             'somaMontante' => $query->sum('rec.ReBuMontante')
         ];
     }
 
-    //Funcão Owner: WSA 
+    //Funcão Owner: WSA
     public static function getRecuperacoesParaMudarEstado()
     {
         //$recuperacao = DB::select("CALL PKxURecuperacoesParaMudarEstado(" . $idRecuperacao . ")");
         //return $recuperacao;
-        return DB::table('recuperacao as rec')->where('rec.id_estado',1)
-                    ->join('estado as est','est.id','=','rec.id_estado')
-                    ->join('recuperador as r','r.id','=','rec.id_recuperador')
-                    ->join('tkxusutilizador as util','util.UtCodigo','=','rec.UtCodigo')
-                    ->join('comprovativos as comp','comp.id','=','id_comprovativo')
-                    ->where('rec.id_estado',1)
-                    ->select(
-                        'rec.CiFecha',
-                        'rec.id',
-                        'util.UtCodigo',
-                        'util.UtNome',
-                        'rec.ReBuDadoOrigem',
-                        'rec.ReBuReferencia',
-                        'rec.ReBuMontante',
-                        'rec.ReBuData',
-                        'rec.ReBuDataLPF',
-                        'r.nome_recuperador',
-                        'r.id as reCuperadorUtCodigo',
-                        'r.UtCodigo as UtCodigoRecuperador',
-                        'r.Localidade',
-                        'rec.id_comprovativo',
-                        'est.descricao_estado as estado',
-                        'rec.id_estado',
-                        'rec.BaseOperacao',
-                        'rec.obs',
-                        'util.obs_regista',
-                        'comp.infoadicional',
-                        'est.color as color',
-                        'est.fa_icon',
-                        'est.dias_epe',
-                        'est.elimina_registro'
-                    )
-                    ->get();
+        return DB::table('recuperacao as rec')->where('rec.id_estado', 1)
+            ->join('estado as est', 'est.id', '=', 'rec.id_estado')
+            ->join('recuperador as r', 'r.id', '=', 'rec.id_recuperador')
+            ->join('tkxusutilizador as util', 'util.UtCodigo', '=', 'rec.UtCodigo')
+            ->join('comprovativos as comp', 'comp.id', '=', 'id_comprovativo')
+            ->where('rec.id_estado', 1)
+            ->select(
+                'rec.CiFecha',
+                'rec.id',
+                'util.UtCodigo',
+                'util.UtNome',
+                'rec.ReBuDadoOrigem',
+                'rec.ReBuReferencia',
+                'rec.ReBuMontante',
+                'rec.ReBuData',
+                'rec.ReBuDataLPF',
+                'r.nome_recuperador',
+                'r.id as reCuperadorUtCodigo',
+                'r.UtCodigo as UtCodigoRecuperador',
+                'r.Localidade',
+                'rec.id_comprovativo',
+                'est.descricao_estado as estado',
+                'rec.id_estado',
+                'rec.BaseOperacao',
+                'rec.obs',
+                'util.obs_regista',
+                'comp.infoadicional',
+                'est.color as color',
+                'est.fa_icon',
+                'est.dias_epe',
+                'est.elimina_registro'
+            )
+            ->get();
     }
 
     public static function getComprovativosPorDataRegistroBaseTodas($Bases, $DataInicio, $DataFim, $estadoAConsultar)
@@ -311,9 +309,9 @@ class RecuperacaoModel extends Model
         return $status;
     }
 
-    //Funcão Owner: WSA 
+    //Funcão Owner: WSA
     public static function mudarEstadoParaExportado($id, $sql)
-    {   
+    {
         $statusU = false;
         $affectedeMotivo = DB::table('recuperacao')
             ->where('id', $id)

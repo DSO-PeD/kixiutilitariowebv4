@@ -135,7 +135,7 @@
             <!-- Cabeçalho do Card -->
 
 
- <!-- Paginação -->
+            <!-- Paginação -->
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <div class="text-sm text-gray-600">
                     Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
@@ -161,7 +161,8 @@
                                 stroke="currentColor" class="size-5">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                            </svg> <span>Total Valor de Desembolos: </span> &ThickSpace; {{ formatCurrency(montantetotal) }}
+                            </svg> <span>Total Valor de Desembolos: </span> &ThickSpace; {{
+                                formatCurrency(montantetotal) }}
                         </span>
                     </div>
 
@@ -209,10 +210,12 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Produto
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Valor de Desembolso
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Ref. de Pagamento
                             </th>
                             <th
@@ -224,7 +227,7 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr v-for="(item, index) in extratosPaginados" :key="index" class="hover:bg-gray-50">
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                 {{ calcularNumeroLinha(index) }}
+                                {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ formatarData(item.CiFecha) }}
@@ -296,7 +299,7 @@
             </div>
 
             <!-- Paginação -->
-           <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <div class="text-sm text-gray-600">
                     Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
                     de {{ totalItens }} registros
@@ -346,11 +349,12 @@
     <ModalActivarReferencia :show="showModalActivarRefencia" @close="showModalActivarRefencia = false"
         :extratoref="extratoSelecionado" />
 
-            <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan" v-model="filtroLoan" />
+    <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan" v-model="filtroLoan" />
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import * as XLSX from 'xlsx'
 import { router, useForm } from '@inertiajs/vue3'
 import ModalFiltrarData from './Layouts/components/ExtratosComponents/ModalFiltrarData.vue'
 import ModalNovoCalculo from './Layouts/components/ExtratosComponents/ModalNovoCalculo.vue'
@@ -619,24 +623,110 @@ const submitForm = (form) => {
 }
 
 const exportarParaExcel = () => {
-    const dadosFormatados = extratosFiltrados.value.map((item, index) => ({
-        '#': (lista_extrato.current_page - 1) * lista_extrato.per_page + index + 1,
-        'Data': formatarData(item.CiFecha),
-        'Loan': item.Lnr,
-        'Cliente': item.Cliente,
-        'Produto': item.Produto,
-        'Valor': formatCurrency(item.ValorTotalCredito),
-        'Referência': item.referenciapagamento,
-        'Status': item.RefPgtActivo === 1 ? 'Ativo' : 'Inativo'
-    }))
+    try {
+        // Acessando a lista_comprovativo corretamente (dependendo do seu contexto)
+        let listaCompleta;
 
-    const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Desembolsos")
+        // Opção 1: Se estiver usando Inertia.js em Composition API
+        if (typeof usePage !== 'undefined') {
+            const { props } = usePage();
+            listaCompleta = props.value.lista_extrato;
+        }
+        // Opção 2: Se estiver usando Options API
+        else if (this && this.$page && this.$page.props) {
+            listaCompleta = this.$page.props.lista_extrato;
+        }
+        // Opção 3: Se a lista estiver disponível como prop no componente
+        else if (props && props.lista_extrato) {
+            listaCompleta = props.lista_extrato;
+        }
+        // Opção 4: Se estiver disponível diretamente no escopo
+        else if (typeof lista_extrato !== 'undefined') {
+            listaCompleta = lista_extrato;
+        }
+        else {
+            throw new Error('Não foi possível encontrar a lista de comprovativos');
+        }
 
-    const nomeArquivo = `desembolsos_${new Date().toISOString().split('T')[0]}.xlsx`
-    XLSX.writeFile(wb, nomeArquivo)
-}
+        // Verifica se há dados
+        if (!listaCompleta || listaCompleta.length === 0) {
+            alert('Nenhum dado disponível para exportar');
+            return;
+        }
+
+
+
+        // Formata os dados
+        const dadosFormatados = listaCompleta.map((extrato, index) => {
+            // alert(extrato.CiFecha)
+            try {
+                return {
+                    '#': index + 1,
+                    'Data': extrato.CiFecha ? new Date(extrato.CiFecha).toLocaleString('pt-PT') : '-',
+                    'Registado': extrato.UtCodigo || '-',
+                    'OficialCredito': extrato.OficialCredito || '-',
+                    'Loan Number': extrato.Lnr || '-',
+                    'Cliente': extrato.Cliente || '-',
+                    'Produto': extrato.Produto || '-',
+                    'Valor Credito No Contrato': extrato.ValorCreditoNoContrato || '-',
+                    'Colateral': extrato.PercColateral || '-',
+                    'Valor Do Colateral': extrato.ValorDoColateral || '-',
+                    'Colateral Deduzido': extrato.PercColateralDeduzido || '-',
+                    'Valor Do Colateral Deduzido': extrato.ValorDoColateralDeduzido || '-',
+                    'Valor Do Credito': extrato.ValorDoCredito || '-',
+                    'Valor Total Credito': extrato.ValorTotalCredito || '-',
+                    'Tipo da Taxa Processamento': extrato.TaxaProcessamento || '-',
+                    'Taxa de Processamento': extrato.TXAProcePercenta || '-',
+                    'Valor da Taxa de Processamento': extrato.TXAProcePercentaValor || '-',
+                    'Valor IVA Taxa Processamento': extrato.ValorIVATaxaProcessamento || '-',
+                    'Taxa Processamento Antecipado': extrato.TaxaProcessamentoAnte || '-',
+                    '% Taxa de Processamento Antecipado': extrato.TXAProcePercentaAnte || '-',
+                    'Valor  Taxa de Processamento Antecipado': extrato.TXAProcePercentaValorAnte || '-',
+                    'Valor IVA Taxa Processamento Antecipado': extrato.ValorIVATaxaProcessamentoAnte || '-',
+                    'Taxa Imprevisto': extrato.TaxaImprevisto || '-',
+                    'TXAImprePercenta': extrato.TXAImprePercenta || '-',
+                    'TXAImprePercentaValor': extrato.TXAImprePercentaValor || '-',
+                    'ValorIVATaxaImprevisto': extrato.ValorIVATaxaImprevisto || '-',
+
+                    'Actividade Economica': extrato.DescricaoActividadeEconomica || '-',
+                    'Codigo Atividade Economica': extrato.CodigoAtividade || '-',
+                    'Sector': extrato.Sector || '-',
+                    'Magnitude': extrato.Magnitude || '-',
+                    'RendaMensal': extrato.RendaMensal || '-',
+
+                    'PPE': extrato.ppe || '-',
+                    'Referencia de Pagamento': extrato.referenciapagamento || '-'
+
+
+                };
+            } catch (error) {
+                console.error('Erro ao formatar registro:', extrato, error);
+                return null;
+            }
+        }).filter(record => record !== null);
+
+        if (dadosFormatados.length === 0) {
+            alert('Nenhum dado válido para exportar após formatação');
+            return;
+        }
+
+        // Cria a planilha
+        const ws = XLSX.utils.json_to_sheet(dadosFormatados);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Extrato");
+
+        // Gera o nome do arquivo
+        const dataHoje = new Date().toISOString().split('T')[0];
+        const nomeArquivo = `extratos_DOP_completa_${dataHoje}.xlsx`;
+
+        // Faz o download
+        XLSX.writeFile(wb, nomeArquivo);
+
+    } catch (error) {
+        console.error('Erro detalhado ao exportar para Excel:', error);
+        alert(`Erro ao exportar: ${error.message || 'Verifique o console para mais detalhes'}`);
+    }
+};
 
 
 watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInicio, newFim]) => {

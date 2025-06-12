@@ -21,60 +21,129 @@ class RecuperacaoController extends Controller
     }
 
 
-    //Funcão: altera para exportado e cria script KR_DATA_HOJE.sql Owner: Wawingi   
+    //Funcão: altera para exportado e cria script KR_DATA_HOJE.sql Owner: Wawingi
     public function viewRecuperacoes(Request $request)
     {
-        //Pega dado por parametro tipo:1-Estado-Agencia | tipo:2-Data
-        /*if($request->query('tipo')==3){
-            dd($request);
-        }*/
+        $authenticatedUser = Auth::user();
 
-        $tipo = $request->query('tipo');
-        $estado = $request->query('estado');
-        $agencia = $request->query('agencia');
-        $dataIn = $request->query('dataIn');
-        $dataF = $request->query('dataF');
-        
-        $lista_recuperacoes = RecuperacaoModel::getRecuperacoes($tipo,$estado,$agencia,$dataIn,$dataF)
-                                ->appends($request->only(['tipo','estado','agencia','dataIn','dataF']));
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
+
+        // $estados = EstadosModel::getEstadosRecupecao($resultagencia_user->rec_viewestados);
+        $ids_estados = $authenticatedUser->rec_viewestados;
+
+        $Bases = $resultagencia_user->BasesOperacao;
+        $ESTADO = $ids_estados;
+
+
+        $tipo = $request->tipo;
+        $estado = $request->estado_input;
+        $agencia = $request->agencia_imput;
+        $dataIn = null;
+        $dataF = null;
+        $loan = $request->loan;
+
+        if ($tipo == 4) {
+            $dataIn = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+            $dataF = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+
+            if ($estado == '28') {
+                $estado = $ESTADO;
+
+                // dd($request->estado_input);
+            }
+            if ($agencia == 'T') {
+                $agencia = $Bases;
+            }
+
+
+        }
+
+        $lista_recuperacoes = RecuperacaoModel::getRecuperacoes($NumeroRegistroTabela, $tipo, $estado, $agencia, $dataIn, $dataF, $loan);
+
 
         //Estatistica em função do tipo de filtro da recuperação
-        $estatistica = RecuperacaoModel::getRecuperacoesEstatistica($tipo,$estado,$agencia,$dataIn,$dataF);
+        $estatistica = RecuperacaoModel::getRecuperacoesEstatistica($tipo, $estado, $agencia, $dataIn, $dataF);
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $this->user->UtAgencia)->first();
-      
+
 
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
         $ConsultaBaseConsulta = "'" . $resultagencia_user->BasesOperacao . "'";
         $dataFecho = date("Y-m-d", strtotime($resultagencia_user->DataFecho));
         $hoje = date('Y-m-d');
-        $sistema_aberto = ($dataFecho != $hoje);     
+        $sistema_aberto = ($dataFecho != $hoje);
 
-        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela; 
+        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
         $sigla_agencia_base = $resultagencia_user->OfIdentificador;
-        $rec_viewestado = explode(',', $resultagencia_user->rec_viewestados);
+        $rec_viewestado = explode(',', $authenticatedUser->rec_viewestados);
 
         $listar_recuperador = RecuperadorModel::getRecuperadores($sigla_agencia_base);
         $listar_voucher_para_recuperacao = RecuperacaoModel::listarVoucherParaRecuperacao($ConsultaBaseConsulta, $this->user->rec_registra);
-      
+
         $listar_estados = RecuperacaoModel::listarEstadoDeConsultaUsuario($rec_viewestado);
         $lista_agencias_consultas = RecuperacaoModel::listarBasesDeConsultaRecuperacao();
-        
+        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+
+        $total = $lista_recuperacoes->count();
+        $totalMontante = $lista_recuperacoes->sum('ReBuMontante');
+
+
+
+        //dd($totalMontante);
+
+        $recuperacoes_list = $lista_recuperacoes->map(function ($item) {
+            return [
+                'id' => $item->id,
+                //'data' => $item->CiFecha,
+                'UtCodigo' => $item->UtCodigo,
+                //'basedelacamento' => $item->basedelacamento,
+                'ReBuDataLPF' => $item->ReBuDataLPF,
+                'UtNome' => $item->UtNome,
+                'ReBuDadoOrigem' => $item->ReBuDadoOrigem,
+                'estado' => $item->estado,
+                'color' => $item->color,
+                'infoadicional' => $item->infoadicional,
+                'ReBuData' => $item->ReBuData,
+                'nome_recuperador' => $item->nome_recuperador,
+                'id_comprovativo' => $item->id_comprovativo,
+                'id_estado' => $item->id_estado,
+                'referencia' => $item->ReBuReferencia,
+                //'voucher' => $item->voucher,
+                'BaseOperacao' => $item->BaseOperacao,
+                'dias_epe' => $item->dias_epe,
+                'OfNombre' => $item->OfNombre,
+                // 'datareconciliacao' => $item->datareconciliacao,
+                // 'montante' => $item->ReBuMontante,
+                // Mantenha todos os campos necessários para filtros client-side
+                'CiFecha' => $item->CiFecha, // Para filtro por data
+                'estado_id' => $item->id_estado, // Para filtro por estado
+                // 'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
+                'ReBuMontante' => $item->ReBuMontante // Para cálculos
+            ];
+        });
+
+
         return Inertia::render('Recuperacoes', [
-            'lista_recuperacoes' => $lista_recuperacoes,
-            'filtros' => [
-                'tipo' => $tipo,
-                'estado' => $estado,
-                'agencia' => $agencia,
-                'dataIn' => $dataIn,
-                'dataF' => $dataF,
+            'lista_recuperacoes' => $recuperacoes_list,
+            'filters' => [
+                'search' => $request->input('search_input', ''),
+                'lnr' => $request->input('lnr_imput', ''),
+                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
+                'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
+                'data_inicio' => $request->input('data_inicio_imput', ''),
+                'data_fim' => $request->input('data_fim_imput', '')
             ],
             'listar_recuperador' => $listar_recuperador,
             'listar_estados' => $listar_estados,
             'BasesOperacao' => $BasesOperacao,
             'lista_agencias_consultas' => $lista_agencias_consultas,
             'listar_voucher_para_recuperacao' => $listar_voucher_para_recuperacao,
-            'estatistica' => $estatistica
+           'estatistica' => $estatistica,
+            'page' => (int) $request->input('page', 1),
+            'bases' => $BasesOperacaoAgencias,
+            'total' => $total,
+            'montantetotal' => $totalMontante,
         ]);
     }
 
@@ -167,14 +236,14 @@ class RecuperacaoController extends Controller
         return $dias;
     }
 
-    //Funcão: altera para exportado e cria script KR_DATA_HOJE.sql Owner: Wawingi   
+    //Funcão: altera para exportado e cria script KR_DATA_HOJE.sql Owner: Wawingi
     public static function alteracaoEstadoExportar()
     {
         $ano_hoje = date("Ymd");
         $hora_hoje = date("His", strtotime('now'));
 
-        $nome_arquivo = "KR-" . $ano_hoje . "-" . $hora_hoje. ".sql";
-       
+        $nome_arquivo = "KR-" . $ano_hoje . "-" . $hora_hoje . ".sql";
+
         if (file_exists(storage_path() . '/app/scripts/' . $nome_arquivo)) {
             unlink(storage_path() . '/app/scripts/' . $nome_arquivo);
         }
@@ -183,7 +252,7 @@ class RecuperacaoController extends Controller
 
         $data_array = RecuperacaoModel::getRecuperacoesParaMudarEstado();
 
-        $count_range  = count($data_array);
+        $count_range = count($data_array);
         $count_total_exportados = 0;
         $status = false;
         $INSERT_SQL = "\n";
@@ -191,7 +260,7 @@ class RecuperacaoController extends Controller
 
         for ($i = 0; $i < $count_range; $i++) {
             $localiza_recuperacao = $data_array[$i];
-            
+
             if ($localiza_recuperacao) {
                 $loan_number = "'" . $localiza_recuperacao->ReBuDadoOrigem . "'";
                 $UtCodigoRecuperador = "'" . $localiza_recuperacao->UtCodigoRecuperador . "'";
@@ -208,7 +277,7 @@ class RecuperacaoController extends Controller
                 $DataRegistro = "'" . date_format($data_registro, "Ymd H:i:s") . "'";
 
                 $INSERT_SQL .= "INSERT INTO tKxLoRecuperador (PeCodigo, UtCodigo, PagData, PagMontante, OfCodigo, Localidade, Ordem, Registo) VALUES ((select dbo.fduUsCodigo(4,$agencia_moeda,$loan_number)), $UtCodigoRecuperador, $DatLPF, $Montante, $Agencia, $Localidade, 1, $DataRegistro)";
-                
+
                 if ($localiza_recuperacao->id_estado == 1) {
                     $status = RecuperacaoModel::mudarEstadoParaExportado($localiza_recuperacao->id, $INSERT_SQL);
                     $MensagemDeErro = "Ups! ocorreu um erro ao exportar dados da recuperação: [ Nº de Registro:" . $localiza_recuperacao->id . " <> Loan Number: " . $loan_number . " ] contactar a DSO!";
@@ -229,7 +298,7 @@ class RecuperacaoController extends Controller
         if ($status) {
             //Baixar o ficheiro
             $path = storage_path() . '/app/scripts/' . $nome_arquivo;
-            if (!file_exists($path)){
+            if (!file_exists($path)) {
                 abort(404, 'File not found.');
             }
             return response()->download($path);
@@ -239,22 +308,25 @@ class RecuperacaoController extends Controller
         }
     }
 
-    public function listarEstados(){
+    public function listarEstados()
+    {
         $estados = EstadosModel::getEstados();
         return response()->json($estados);
     }
-    
-    public function listarAgencias(){
+
+    public function listarAgencias()
+    {
         $agencias = TKxAgenciaModel::getAgencias($this->user);
         return response()->json($agencias);
     }
 
-    public function confirmarRecuperacao(Request $request){
+    public function confirmarRecuperacao(Request $request)
+    {
         $id = $tipo = $request->query('id');
-        if($id){
+        if ($id) {
             $recup = RecuperacaoModel::find($id);
             $recup->id_estado = 3;
-            if($recup->save()){
+            if ($recup->save()) {
                 return Redirect::back()->with('success', 'Confirmado com sucesso!');
             }
             return Redirect::back()->with('error', 'Erro ao Confirmar');

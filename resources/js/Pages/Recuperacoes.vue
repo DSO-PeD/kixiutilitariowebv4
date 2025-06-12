@@ -1,7 +1,7 @@
 <template>
 
     <Head title="Recuperações" />
-    <div class="container mx-auto px-0 py-6">
+    <div class="container mx-auto py-6 max-w-full">
 
         <!-- Formulário de Recuperação -->
         <div class="bg-white rounded-lg shadow-md p-4 mb-6">
@@ -24,7 +24,7 @@
                     <div class="flex flex-col">
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             <i class="fa-solid fa-receipt mr-1 text-gray-500"></i>
-                            Borderoux ID
+                            Voucher
                         </label>
                         <input v-model="formRecuperacao.txtVoucher" type="text" class="form-input bg-gray-100" readonly
                             required />
@@ -118,18 +118,125 @@
         </div>
 
         <!-- Alertas -->
-        <div v-if="$page.props.flash.success" class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-200" role="alert">
+        <div v-if="$page.props.flash.success" class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-200"
+            role="alert">
             <i class="fa fa-info-circle"></i> {{ $page.props.flash.success }}
         </div>
 
-        <div v-if="$page.props.flash.error" class="p-4 mb-4 text-sm text-green-800 font-meddium rounded-lg bg-green-200" role="alert">
+        <div v-if="$page.props.flash.error" class="p-4 mb-4 text-sm text-green-800 font-meddium rounded-lg bg-green-200"
+            role="alert">
             <i class="fa fa-info-circle"></i> {{ $page.props.flash.error }}
         </div>
 
         <!-- Tabela de Recuperações -->
         <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
             <!-- Cabeçalho do Card -->
-            <div class="flex justify-between mb-6 gap-4">
+
+
+            <hr />
+            <!-- Filtro Avançado -->
+            <div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg ">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3  ">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Loan Number
+                        </label>
+                        <button class="btn btn-outline-consulta flex items-center gap-2" @click="showModalLoan = true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            Clicar Aqui
+                        </button>
+
+
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+
+
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Data de Início -->
+                            <div class="space-y-1">
+                                <label class="block text-sm font-medium text-gray-700">Periodo de Início*</label>
+                                <div class="relative">
+                                    <input v-model="filtro.dataInicioInput" type="date" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition"
+                                        :max="filtro.dataFimInput" @change="validarDatas" />
+                                    <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio
+                                        }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Data de Fim -->
+                            <div class="space-y-1">
+                                <label class="block text-sm font-medium text-gray-700">Periodo de Fim*</label>
+                                <div class="relative">
+                                    <input v-model="filtro.dataFimInput" type="date" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition"
+                                        :min="filtro.dataInicioInput" @change="validarDatas" />
+                                    <span v-if="erros.dataFim" class="text-red-500 text-xs">{{ erros.dataFim }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+
+
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Estado
+                        </label>
+
+
+
+                        <select v-model="filtro.estado" class="input input-bordered w-full">
+                            <option disabled :value="'s/e'">Escolha estado</option>
+                            <option v-for="estado in $page.props.listar_estados" :value="Number(estado.id)"
+                                :key="estado.id">
+                                {{ estado.descricao_estado }}
+                            </option>
+                            <option :value="28">Todos estados</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Agência/Base
+                        </label>
+                        <select v-model="filtro.agencia" class="input input-bordered w-full">
+                            <option disabled :value="'s/a'">Escolha agência</option>
+
+                            <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
+                                :key="agencia.OfIdentificador">
+                                {{ agencia.OfIdentificador }} - {{ agencia.OfNombre }}
+                            </option>
+                            <option :value="'T'">Todas que tenho acesso</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
+                        Limpar Filtros
+                    </button>
+                    <button @click="aplicarFiltros" class="btn btn-primary">
+                        Aplicar Filtros &MediumSpace;
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                    </button>
+
+                </div>
+
+
+
+            </div>
+
+            <!--div class="flex justify-between mb-6 gap-4">
                 <div class="flex space-x-4">
                     <select v-model="estado" @change="filtrarPorEstado($event)" class="form-select pr-8">
                         <option disabled selected :value="''">Escolha estado</option>
@@ -148,7 +255,7 @@
                         class="px-4 text-blue-500 hover:text-blue-600"><i class="fa-solid fa-database"></i> Exportar
                         Script</a>
                     <button class="btn btn-outline-secondary flex items-center gap-2" @click="showModalData = true">
-                        <!-- SVG Icon -->
+
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -157,9 +264,12 @@
                         Consultar por Data
                     </button>
                 </div>
-            </div>
-            <hr class="py-2">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            </div-->
+
+
+
+
+            <!--div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <div
                     class="bg-gray-100 rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start" data-v-644ea457="">
@@ -167,7 +277,7 @@
                             <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wider" data-v-644ea457="">Nº
                                 Recuperações </h3>
                             <p class="text-3xl font-bold mt-2 text-gray-800" data-v-644ea457="">{{ estatistica["total"]
-                                }}</p>
+                            }}</p>
                         </div>
                         <div class="bg-green-100 p-2 rounded-full" data-v-644ea457=""><svg
                                 class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -194,6 +304,78 @@
                             </svg></div>
                     </div>
                 </div>
+            </div-->
+
+            <!-- Paginação -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
+                    de {{ totalItens }} registros
+                </div>
+                <div class="text-sm text-green-500 ">
+                    <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        Exportar Dados da tabela para Excel
+                    </button>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="text-wrap">
+
+                        <span class="bg-blue-50  text-blue-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg> &ThinSpace;<span>Quantidade de Recuperação: </span> &ThickSpace; {{
+                                formatCurrency(total) }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="text-wrap">
+
+                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg> &ThinSpace;<span>Total de Montante: </span> &ThickSpace; {{
+                                formatCurrency(montantetotal) }}
+                        </span>
+                    </div>
+
+                </div>
+                <div class="flex gap-2">
+
+                    <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        Anterior
+                    </button>
+                    <div class="flex items-center">
+                        <span class="mx-2">Página {{ paginaAtual }}</span>
+                    </div>
+                    <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
+                        Próxima
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!--Tabela listagem recuperações-->
@@ -201,6 +383,10 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px]">
+                                #
+                            </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -220,6 +406,20 @@
                                     </svg>
 
                                     Por
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
+                                    </svg>
+
+
+                                    Agencia
                                 </div>
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -256,7 +456,7 @@
                                     Montante
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <!--th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -266,7 +466,7 @@
 
                                     Bordereau
                                 </div>
-                            </th>
+                            </th-->
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -312,22 +512,27 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="rec in lista_recuperacoes.data" :key="rec.id" class="hover:bg-gray-50">
+                        <tr v-for="(rec, index) in recuperacoesPaginados" :key="rec.id" class="hover:bg-gray-50">
+
+                            <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
+                                {{ calcularNumeroLinha(index) }}
+                            </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(rec.CiFecha) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.UtCodigo }}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.OfNombre }}</td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{
                                 rec.ReBuDadoOrigem }}</td>
                             <td class="px-4 py-4 text-sm text-gray-500">
                                 {{ rec.infoadicional }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">{{
-                                formatMoney(rec.ReBuMontante) }}</td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.ReBuReferencia }}</td>
+                                formatCurrency(rec.ReBuMontante) }}</td>
+                            <!--td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.ReBuReferencia }}</td -->
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ rec.ReBuData }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ rec.ReBuDataLPF
-                                }}</td>
+                            }}</td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.nome_recuperador }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -343,7 +548,7 @@
                                 </a>
                             </td>
                         </tr>
-                        <tr v-if="lista_recuperacoes.length === 0">
+                        <tr v-if="recuperacoesPaginados.length === 0">
                             <td colspan="12" class="px-4 py-4 text-center text-sm text-gray-500">
                                 Nenhum registro encontrado
                             </td>
@@ -352,30 +557,45 @@
                 </table>
             </div>
 
-            <!--Paginação-->
-            <div class="mt-4 flex items-center justify-between">
-                <p class="text-md  text-blue-500 font-medium">
-                    <span class="font-medium">Página: </span> {{ lista_recuperacoes.current_page }} de {{
-                        lista_recuperacoes.last_page }}
-                </p>
-                <div class="mt-4 space-x-2">
-                    <button v-if="lista_recuperacoes.prev_page_url"
-                        @click="$inertia.visit(lista_recuperacoes.prev_page_url)"
-                        class="px-2 py-1 bg-blue-500 rounded text-white">
-                        << Anterior </button>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
+                    de {{ totalItens }} registros
+                </div>
 
-                            <button v-if="lista_recuperacoes.next_page_url"
-                                @click="$inertia.visit(lista_recuperacoes.next_page_url)"
-                                class="px-2 py-1 bg-blue-500 rounded text-white">
-                                Seguinte >>
-                            </button>
+
+
+                <div class="flex gap-2">
+
+                    <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        Anterior
+                    </button>
+                    <div class="flex items-center">
+                        <span class="mx-2">Página {{ paginaAtual }}</span>
+                    </div>
+                    <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)" class="btn btn-outline"
+                        :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
+                        Próxima
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
 
+        <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan"
+            v-model="filtroLoan" />
         <!-- ... (modais mantidos iguais) ... -->
         <ModalDate :isOpen="showModalData" @close="showModalData = false" @search="buscarPorDatas"
-            v-model:dataInicio="dataInicio" v-model:dataFim="dataFim" v-model:estadoModal="estadoModal" v-model:agenciaModal="agenciaModal" />
+            v-model:dataInicio="dataInicio" v-model:dataFim="dataFim" v-model:estadoModal="estadoModal"
+            v-model:agenciaModal="agenciaModal" />
         <!-- Modal de Seleção de Cliente -->
         <Modal :show="showClientModal" @close="closeClientModal" maxWidth="3xl">
             <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-t-lg">
@@ -393,11 +613,12 @@
                     </button>
                 </div>
             </div>
-            
+
             <div class="bg-gray-800 p-4">
                 <div class="overflow-x-auto">
                     <div class="py-4">
-                        <input v-model="nome_cliente" type="text" placeholder="pesquisar cliente" class="flex justify-end bg-white border border-gray-300 text-gray-900 text-sm rounded-2xl focus:ring-blue-500 focus:border-blue-500 px-3 py-1">
+                        <input v-model="nome_cliente" type="text" placeholder="pesquisar cliente"
+                            class="flex justify-end bg-white border border-gray-300 text-gray-900 text-sm rounded-2xl focus:ring-blue-500 focus:border-blue-500 px-3 py-1">
                     </div>
                     <table class="min-w-full divide-y divide-gray-700">
                         <thead class="bg-gray-700">
@@ -417,8 +638,8 @@
                             </tr>
                         </thead>
                         <tbody class="bg-gray-800 divide-y divide-gray-700">
-                            <tr v-for="voucher in clientesFiltrados"
-                                :key="voucher.idComprovativo" class="hover:bg-gray-700">
+                            <tr v-for="voucher in clientesFiltrados" :key="voucher.idComprovativo"
+                                class="hover:bg-gray-700">
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{{ voucher.BuDadoOrigem }}
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">{{ voucher.BuReferencia }}
@@ -447,33 +668,167 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref, computed } from 'vue'
+import { onMounted, reactive, ref, computed, watch } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import { router, usePage } from '@inertiajs/vue3'
 import Modal from '@/Components/Modal.vue';
+import * as XLSX from 'xlsx'
 import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vue'
+import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
 import Pagination from '@/Components/Pagination.vue'; // Componente de paginação
 
 // Props recebidas do backend
-defineProps({
-    lista_recuperacoes: Object, // Agora é um objeto com paginação
+const props = defineProps({
+    lista_recuperacoes: {
+        type: Array,
+        required: true
+    },
     listar_recuperador: Array,
     listar_estados: Array,
     BasesOperacao: Array,
     lista_agencias_consultas: Array,
     listar_voucher_para_recuperacao: Array,
-    estatistica: Array,
-    auth: Object
+    estatistica: Object,
+    auth: Object,
+    dataInicioInput: String,
+    dataFimInput: String,
+    montantetotal: Number,
+    total: Number,
+    errors: Object,
+    session: Object,
+    flash: Object,
+    user: Object,
+    bases: Array,
+    filters: Object,
+    page: Number,
+    perPage: {
+        type: Number,
+        default: 100
+    },
 });
 
 const showModalData = ref(false)
-
+const showModalLoan = ref(false)
 // Estados de controle
 const errors = ref({})
 const loading = ref(false)
 const successMessage = ref('')
+// Configuração da paginação
+const perPage = ref(100);
+const paginaAtual = ref(1);
+
+
+const filtroLoan = ref('')
 
 const estados = ref([]);
+// Dados locais para paginação
+const dadosLocais = ref([]);
+
+// Watch para atualizar dadosLocais quando lista_recuperacoes mudar
+watch(() => props.lista_recuperacoes, (newVal) => {
+    dadosLocais.value = newVal;
+    paginaAtual.value = 1; // Resetar para primeira página
+}, { immediate: true });
+
+// Computed property para os dados paginados
+const recuperacoesPaginados = computed(() => {
+    const start = (paginaAtual.value - 1) * perPage.value;
+    const end = start + perPage.value;
+    return dadosLocais.value.slice(start, end);
+});
+
+// Computed properties auxiliares
+const totalItens = computed(() => dadosLocais.value.length);
+const hasMorePages = computed(() => paginaAtual.value * perPage.value < dadosLocais.value.length);
+
+// Função para mudar de página (client-side)
+const mudarPagina = (novaPagina) => {
+    paginaAtual.value = novaPagina;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+
+// Filtros
+const filtro = ref({
+
+    search: props.filters?.search || '',
+    lnr: props.filters?.lnr || '',
+    estado: props.filters?.estado || 28,
+    agencia: props.filters?.agencia || 'T',
+    dataInicioInput: props.filters?.data_inicio || '',
+    dataFimInput: props.filters?.data_fim || ''
+
+
+})
+
+const recuperacoesFiltrados = computed(() => {
+    return props.recuperacoes // Agora usamos diretamente os recuperacoes recebidos do backend
+})
+const montanteTotalFiltrado = computed(() => {
+    return props.montanteFiltrado || 0 // Usamos o valor calculado no backend
+})
+
+const calcularNumeroLinha = (index) => {
+    return (paginaAtual.value - 1) * props.perPage + index + 1
+}
+
+// Função aplicarFiltros modificada
+const aplicarFiltros = () => {
+    if (!validarDatas()) return;
+
+    router.get('/recuperacoes', {
+        search_input: filtro.value.search,
+        lnr_imput: filtro.value.lnr,
+        estado_input: filtro.value.estado,
+        agencia_imput: filtro.value.agencia,
+        data_inicio_imput: filtro.value.dataInicioInput,
+        data_fim_imput: filtro.value.dataFimInput,
+        tipo: 4
+    }, {
+        preserveState: true,
+        replace: true,
+        onSuccess: () => {
+            paginaAtual.value = 1; // Resetar paginação
+        }
+    });
+};
+
+
+// Função resetarFiltros
+const resetarFiltros = () => {
+    filtro.value = {
+        search: '',
+        lnr: '',
+        estado: 28,
+        agencia: 'T',
+        dataInicioInput: '',
+        dataFimInput: ''
+    };
+
+    router.get('/recuperacoes', {
+        page: 1
+    }, {
+        preserveState: true,
+        replace: true
+    });
+};
+
+const buscarPorLoan = () => {
+    router.get('/recuperacoes', { tipo: 3, loan: filtroLoan.value }, { preserveState: true })
+    showModalLoan.value = false
+}
+
+
+watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInicio, newFim]) => {
+    if (newInicio && newFim && newInicio > newFim) {
+        alert('A data de início não pode ser maior que a data de fim');
+        filtro.value.dataInicioInput = '';
+        filtro.value.dataFimInput = '';
+    }
+});
+
+
+
 const listarEstados = async () => {
     const res = await fetch('/listarEstados');
     const json = await res.json();
@@ -488,13 +843,13 @@ const listarAgencias = async () => {
 }
 
 //recebe de volta os parametros escolhidos na select para ficar estático mesmo que demos next na paginação
-const props = usePage().props
-let estado = ref(props.filtros.estado || '');
-let agencia = ref(props.filtros.agencia || '');
+//const props = usePage().props
+//let estado = ref(props.filtros.estado || '');
+//let agencia = ref(props.filtros.agencia || '');
 
-let totalRecup = ref(props.estatistica["total"] || 0);
-let montanteRecup = ref(0);
-
+//let totalRecup = ref(props.estatistica["total"] || 0);
+//let montanteRecup = ref(0);
+/*
 const filtrarPorEstado = async (event) => {
     agencia.value = '';
 }
@@ -508,23 +863,23 @@ const filtrarPorAgencia = async (event) => {
         preserveState: true,
         preserveScroll: true,
     });
-}
+}*/
 
 // Função para buscar por datas
-const buscarPorDatas = async (dates) => {
+/*const buscarPorDatas = async (dates) => {
     try {
         agencia.value = '';
         estado.value = '';
         totalRecup.value = 0;
         montanteRecup.value = 0;
-        router.get('/recuperacoes', 
-            { 
-                tipo: 3, 
-                dataIn: dataInicio.value, 
+        router.get('/recuperacoes',
+            {
+                tipo: 3,
+                dataIn: dataInicio.value,
                 dataF: dataFim.value,
                 estado: estadoModal.value,
                 agencia: agenciaModal.value
-                
+
             }, {
             preserveState: true,
             preserveScroll: true,
@@ -533,7 +888,19 @@ const buscarPorDatas = async (dates) => {
     } catch (error) {
         console.error('Erro ao buscar por datas:', error);
     }
-};
+};*/
+
+const buscarPorDatas = (params) => {
+    router.get('/recuperacoes', {
+        tipo: 1,
+        data_inicio: params.data_inicio,
+        data_fim: params.data_fim,
+        estadoconsulta: params.estadoconsulta,
+        agenciaconsulta: params.agenciaconsulta
+    }, { preserveState: true })
+
+    showModalData.value = false
+}
 
 const confirmarRecuperacao = (idRecuperacao) => {
     router.get('/confirmarRecuperacao',
@@ -561,9 +928,9 @@ const formRecuperacao = reactive({
 //Filtrar cliente numa tabela de clientes para recuperação
 const nome_cliente = ref('');
 const clientesFiltrados = computed(() => {
-  return props.listar_voucher_para_recuperacao.filter(voucher =>
-    voucher.infoadicional.toLowerCase().includes(nome_cliente.value.toLowerCase())
-  );
+    return props.listar_voucher_para_recuperacao.filter(voucher =>
+        voucher.infoadicional.toLowerCase().includes(nome_cliente.value.toLowerCase())
+    );
 });
 
 // Função para submeter
@@ -605,13 +972,114 @@ const formatMoney = (amount) => {
     });
 };
 
+function formatCurrency(value) {
+    if (value == null) return '';
+
+    if (typeof value === 'string') {
+        value = value.replace(/\D/g, '');
+        if (!value) return '0,00';
+        value = parseFloat(value) / 100;
+    }
+
+    return value.toLocaleString('pt-PT', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
 // Funções de manipulação de modais
 const openClientModal = () => showClientModal.value = true;
 const closeClientModal = () => showClientModal.value = false;
 const dataInicio = ref('')
 const dataFim = ref('')
-const estadoModal = ref('')
+const estadoModal = ref(0)
 const agenciaModal = ref('')
+const error = ref(null);
+const dataInicioInput = ref(props.dataInicioInput || '')
+const dataFimInput = ref(props.dataFimInput || '')
+const dateError = ref('')
+const erros = ref({
+    dataInicio: '',
+    dataFim: ''
+})
+
+
+const validarDatas = () => {
+    // Resetar erros
+    erros.value = {
+        dataInicio: '',
+        dataFim: ''
+    };
+
+    let isValid = true;
+
+    // Validar se as datas foram preenchidas
+    if (!filtro.value.dataInicioInput) {
+        erros.value.dataInicio = 'A data de início é obrigatória';
+        isValid = false;
+    }
+
+    if (!filtro.value.dataFimInput) {
+        erros.value.dataFim = 'A data de fim é obrigatória';
+        isValid = false;
+    }
+
+    // Validar se a data de início é maior que a data de fim
+    if (filtro.value.dataInicioInput && filtro.value.dataFimInput) {
+        const dataInicio = new Date(filtro.value.dataInicioInput);
+        const dataFim = new Date(filtro.value.dataFimInput);
+
+        if (dataInicio > dataFim) {
+            erros.value.dataInicio = 'A data de início não pode ser maior que a data de fim';
+            erros.value.dataFim = 'A data de fim não pode ser menor que a data de início';
+            isValid = false;
+        }
+    }
+
+    return isValid;
+};
+
+// Watcher para sincronizar quando as props forem atualizadas
+watch(() => props.filters, (newFilters) => {
+    filtro.value = {
+        search: newFilters?.search || '',
+        lnr: newFilters?.lnr || '',
+        estado: newFilters?.estado || 28,
+        agencia: newFilters?.agencia || 'T',
+        dataInicioInput: newFilters?.data_inicio || '',
+        dataFimInput: newFilters?.data_fim || ''
+    }
+}, { immediate: true, deep: true })
+
+watch(() => props.page, (newPage) => {
+    paginaAtual.value = newPage
+})
+
+// Validação das datas
+const validateDates = () => {
+    if (dataInicioInput.value && dataFimInput.value) {
+        if (new Date(dataInicioInput.value) > new Date(dataFimInput.value)) {
+            dateError.value = 'A data de início não pode ser maior que a data de fim'
+            return false
+        }
+    }
+    dateError.value = ''
+    return true
+}
+
+// Watchers para validação
+watch([dataInicioInput, dataFimInput], () => {
+    validateDates()
+})
+
+watch(() => props.dataInicioInput, (newVal) => {
+    dataInicioInput.value = newVal || ''
+})
+
+watch(() => props.dataFimInput, (newVal) => {
+    dataFimInput.value = newVal || ''
+})
+
 
 const confirmDelete = () => {
     if (!selectedRecuperacao.value) return;
@@ -660,6 +1128,31 @@ onMounted(async () => {
     listarEstados();
     listarAgencias();
 });
+
+
+// Exportar para Excel (mantido como está)
+const exportarParaExcel = () => {
+    if (!props.lista_recuperacoes?.length) {
+        alert('Nenhum dado disponível para exportar');
+        return;
+    }
+
+    const dadosFormatados = props.lista_recuperacoes.map((rec, index) => ({
+        '#': index + 1,
+        'Data': rec.CiFecha ? new Date(rec.CiFecha).toLocaleString('pt-PT') : '-',
+        'Agência': rec.OfNombre || '-',
+        'Loan Number': rec.ReBuDadoOrigem || '-',
+        'Cliente': rec.infoadicional || '-',
+        'Montante': rec.ReBuMontante || '0,00',
+        'Estado': rec.estado || '-',
+        'Recuperador': rec.nome_recuperador || '-'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dadosFormatados);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Recuperacoes");
+    XLSX.writeFile(wb, `recuperacoes_${new Date().toISOString().split('T')[0]}.xlsx`);
+};
 </script>
 
 <style scoped>
@@ -703,6 +1196,9 @@ onMounted(async () => {
     @apply border border-green-900 bg-white text-green-900 hover:bg-green-50;
 }
 
+.input {
+    @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 w-full;
+}
 
 
 .btn-secondary {
@@ -711,6 +1207,10 @@ onMounted(async () => {
 
 .btn-danger {
     @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+.btn-outline-consulta {
+    @apply border border-gray-300 bg-white text-cyan-800 hover:bg-gray-50;
 }
 
 .btn-warning {
