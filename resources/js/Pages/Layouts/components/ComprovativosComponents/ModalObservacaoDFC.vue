@@ -161,6 +161,7 @@ watchEffect(() => {
             conta: props.comprovativoreconci.conta || '',
             referencia: props.comprovativoreconci.referencia || '',
             observacao: props.comprovativoreconci.observacao || '',
+            voucher:props.comprovativoreconci.voucher || '',
 
         }
     }

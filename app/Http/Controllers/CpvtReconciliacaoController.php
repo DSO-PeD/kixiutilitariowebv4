@@ -225,6 +225,7 @@ class CpvtReconciliacaoController extends Controller
             } else {
                 return back()->with('error', 'Ups!, não foi possível reconciliar o comprovativo');
             }
+
         }
     }
 

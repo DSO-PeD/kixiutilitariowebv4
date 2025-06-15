@@ -4,7 +4,7 @@
     <div class="container mx-auto py-6 max-w-full">
 
         <!-- Formulário de Recuperação -->
-        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6" v-if="$page.props.user.nova_recuperacao">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">
                     Nova Recuperação
@@ -164,7 +164,7 @@
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition"
                                         :max="filtro.dataFimInput" @change="validarDatas" />
                                     <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
 
@@ -311,6 +311,19 @@
                 <div class="text-sm text-gray-600">
                     Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
                     de {{ totalItens }} registros
+                </div>
+                <div class="text-sm text-green-500" v-if="$page.props.user.rec_exporta" >
+                    <a href="/exportar-recuperacao"  preserve-state preserve-scroll
+                        class="btn btn-outline-secondary px-4 text-blue-500 hover:text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                        </svg>
+
+                        Exportar
+                        Script</a>
+
                 </div>
                 <div class="text-sm text-green-500 ">
                     <button class="btn btn-outline-excel flex items-center gap-2 " @click="exportarParaExcel">
@@ -532,7 +545,7 @@
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ rec.ReBuData }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ rec.ReBuDataLPF
-                            }}</td>
+                                }}</td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.nome_recuperador }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">

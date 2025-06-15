@@ -73,7 +73,7 @@
                             <div class="flex items-center">
                                 <i class="fa-solid fa-file-circle-check text-blue-500 mr-2"></i>
                                 <span class="text-sm font-medium text-gray-700 truncate max-w-xs">{{ selectedFile.name
-                                    }}</span>
+                                }}</span>
                             </div>
                             <button type="button" @click="resetFileInput" class="text-red-500 hover:text-red-700">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -120,7 +120,8 @@
                                 Número {{ modelValue.ls === 'Loan' ? 'Loan' : 'Saving' }}
                             </label>
                             <div class="relative">
-                                <input type="text" v-model="modelValue.txtNumeroLoanSaving"  maxlength="5" placeholder="00000" minlength="5"  class="form-input w-full pl-3 pr-10" required />
+                                <input type="text" v-model="modelValue.txtNumeroLoanSaving" maxlength="5"
+                                    placeholder="00000" minlength="5" class="form-input w-full pl-3 pr-10" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-hashtag text-gray-400"></i>
                                 </div>
@@ -202,19 +203,57 @@
 
                     <!-- Montante, Data e Voucher -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex flex-col">
+                            <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Montante</label>
                             <div class="relative">
                                 <input type="hidden" :name="fieldName" :value="modelValue.txtMontante" />
 
                                 <input type="text" v-model="displayValue" @input="onInput" @blur="onBlur"
-                                    placeholder="0,00" class="form-input w-full pl-3 pr-10 text-right" :name="fieldName" required />
+                                    placeholder="0,00" class="form-input w-full pl-3 pr-10 text-right" :name="fieldName"
+                                    required />
 
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <!--span class="text-gray-500">KZ</span -->
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Banco de Pagamento (visível apenas para Depósito Bancário) -->
+                        <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" class="flex flex-col">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Banco de Pagamento</label>
+                            <div class="relative">
+                                <select v-model="modelValue.banco" class="form-select w-full pl-3 pr-10"  :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" >
+                                    <option value="" disabled selected>Selecione o banco</option>
+                                    <option v-for="banco in $page.props.bancos" :value="banco.BaCodigo"
+                                        :key="banco.BaCodigo">
+                                        {{ banco.BaSigla }} - {{ banco.BaNome }}
+                                    </option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fa-solid fa-building-columns text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Conta Bancária (visível apenas para Depósito Bancário) -->
+                        <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14"class="flex flex-col">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
+                            <div class="relative">
+                                <select v-model="modelValue.conta" :disabled="!modelValue.banco"
+                                    class="form-select w-full pl-3 pr-10" :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" >
+                                    <option value="" disabled selected>Selecione a conta</option>
+                                    <option v-for="conta in contasFiltradas" :value="conta.codigoConta"
+                                        :key="conta.codigoConta">
+                                        {{ conta.ContaBacaria }}
+                                    </option>
+                                </select>
+
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fa-solid fa-wallet text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Data do Reembolso</label>
@@ -227,16 +266,23 @@
                             </div>
                         </div>
 
-                        <!--<div class="flex flex-col">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">ID Borderoux</label>
+
+                        <div class="flex flex-col"
+                            v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
                             <div class="relative">
-                                <input type="text" v-model="modelValue.txtVoucher" placeholder="ID Borderoux"
-                                    class="form-input w-full pl-3 pr-10" required />
+                                <input type="text" v-model="modelValue.txtVoucher" placeholder="Voucher"
+                                    class="form-input w-full pl-3 pr-10"
+                                    :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-barcode text-gray-400"></i>
                                 </div>
                             </div>
-                        </div>-->
+                        </div>
+
+
+
+
                     </div>
 
                     <!-- Botões -->
@@ -266,7 +312,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick,computed } from 'vue';
 
 const fileInput = ref(null);
 const selectedFile = ref(null);
@@ -425,7 +471,23 @@ defineExpose({
     resetFileInput
 });
 
+// Adicione esta computed property para determinar se os campos de banco devem ser mostrados
+const showBankFields = computed(() => {
+    // Encontre o item "Depósito Bancário" no array formaspagamentos
+    const depositoBancario = props.formaspagamentos.find(
+        fp => fp.FormaPago == 14 ||
+            fp.FormaPago == 14
+    );
 
+    // Verifique se a forma de pagamento selecionada é "Depósito Bancário"
+    return depositoBancario && props.modelValue.selectFormaPagamento === depositoBancario.FormaPago;
+});
+
+// Atualize a computed property contasFiltradas para usar props.contas
+const contasFiltradas = computed(() => {
+    if (!props.modelValue.banco) return [];
+    return props.contas.filter(conta => conta.BaCodigo === props.modelValue.banco);
+});
 
 
 </script>
