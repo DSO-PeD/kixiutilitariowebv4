@@ -63,7 +63,7 @@ class TKxExtratoController extends Controller
         }
 
         if ($tipoDeBusca == 3) {
-            $LOAN = "'" .$request->loan. "'";
+            $LOAN = "'" . $request->loan . "'";
             $TIPO = $tipoDeBusca;
 
         }
@@ -487,27 +487,17 @@ class TKxExtratoController extends Controller
 
     }
 
-
-    public static function index()
-    {
-        $todos_extratos = TKxExtratoModel::all();
-        return $todos_extratos;
-    }
-
-    //Listas Todos Extratos por parametro
-    public static function show($DataInicio)
+    public function carregaExtratosKP(Request $request)
     {
 
-        $hoje = date('Y-m-d');
-        $Bases = "'DJA'";
-        $DataFim = $hoje;
-        $TIPO = 3;
-        $LOAN = "'DS/280890'";
+        $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
 
-        $listagem_extrat = TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, 0, $TIPO, $LOAN);
-        return $listagem_extrat;
+
+        $extratos = TKxExtratoModel::whereDate('CiFecha', '>=', $DataInicio)->where('Eliminado', 0)->get();
+
+        return response()->json($extratos);
+
     }
-
 
 
 

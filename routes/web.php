@@ -47,3 +47,10 @@ Route::post('/novoutilizador', [AuthController::class, 'cadastrar']);
 
 
 
+Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
+Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP'])->name('extrato_kxu');
+
+
+
+
+

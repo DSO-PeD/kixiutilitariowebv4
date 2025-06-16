@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
+use function Pest\Laravel\get;
+
 class ComprovativosController extends Controller
 {
     public function viewComprovativos(Request $request)
@@ -376,4 +378,21 @@ class ComprovativosController extends Controller
         $dias = floor($diferenca / (60 * 60 * 24));
         return $dias;
     }
+
+
+    public function carregaComprovativosKP(Request $request)
+    {
+
+        $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
+
+
+        $compravativos = ComprovativoModel::whereDate('CiFecha', '>=', $DataInicio)->where('Eliminado', 0)->get();
+
+        return response()->json($compravativos);
+
+    }
+
+
+
+
 }
