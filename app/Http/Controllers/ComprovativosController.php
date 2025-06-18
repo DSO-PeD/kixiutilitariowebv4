@@ -178,6 +178,7 @@ class ComprovativosController extends Controller
         $dataFinal = date('Y-m-d');
         $Mensagem = "";
         $pathArquivo = "";
+       // dd($request->calDataBorderoux);
         $dias_passado = $this->diasDatas($request->calDataBorderoux, $dataFinal);
         $NumeroDiaNecessario = 90;//$request->DiasMaximoRegistroComprovativo;
 
@@ -193,7 +194,7 @@ class ComprovativosController extends Controller
                 ->back()
                 ->with('error', $Mensagem);
         } else {
-            if ($dias_passado > $NumeroDiaNecessario) {
+            if (false) {
                 return redirect()
                     ->back()
                     ->with('error', 'Ups!,  Comprovativo Muito antigo, excedeu o número de dias permitido  para ser cadastrado!, infelizmente não foi cadastrado.');
@@ -243,6 +244,7 @@ class ComprovativosController extends Controller
                         $estadoRegistado = 8;
                         $_conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
                         $contaBancaria = $_conta->ContaBacaria;
+                         $voucher = $request->txtVoucher;
                     }
 
 
@@ -299,6 +301,7 @@ class ComprovativosController extends Controller
                         $estadoRegistado = 8;
                         $_conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
                         $contaBancaria = $_conta->ContaBacaria;
+                         $voucher = $request->txtVoucher;
                     }
 
 
@@ -329,7 +332,7 @@ class ComprovativosController extends Controller
 
 
                     if ($formapgt == 14) {
-
+                         $voucher = $request->txtVoucher;
                         // Esta inserção serve para reconciliação automática dos comprovativos depósitados, um processo acertado com a DCF
                         $insertReco = CpvtReconciliacaoModel::create([
                             'datareconciliacao' => now(),

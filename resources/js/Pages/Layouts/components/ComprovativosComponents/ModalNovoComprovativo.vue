@@ -24,7 +24,7 @@
 
             <!-- Corpo do Modal -->
             <div class="p-6">
-                <form @submit.prevent="$emit('save')" class="space-y-6">
+                <form @submit.prevent="handleSubmit" class="space-y-6">
                     <!-- Tipo (Loan/Saving) -->
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <label class="block text-sm font-medium text-green-950 mb-2">Gênero do Pagamento:</label>
@@ -83,27 +83,32 @@
 
                     <!-- Grid de campos -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Base</label>
                             <div class="relative">
-                                <select v-model="modelValue.selectBase" class="form-select w-full pl-3 pr-10" required>
+                                <select v-model="modelValue.selectBase" class="form-select w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.selectBase }" required>
                                     <option value="" disabled selected>Selecione a base</option>
                                     <option v-for="base in bases" :value="base.OfIdentificador"
                                         :key="base.OfIdentificador">
-                                        {{ base.OfIdentificador }}/
+                                        {{ base.OfIdentificador }}
                                     </option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-chevron-down text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.selectBase" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectBase }}
+                            </p>
                         </div>
 
                         <div v-if="modelValue.ls === 'Saving'" class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Grupo/Individual</label>
                             <div class="relative">
                                 <select v-model="modelValue.selectGrupoIndividual" class="form-select w-full pl-3 pr-10"
-                                    required>
+                                    :class="{ 'border-red-500': fieldErrors.selectGrupoIndividual }" required>
                                     <option value="" disabled selected>Selecione o tipo</option>
                                     <option v-for="(label, value) in tipocomprovativos" :key="value" :value="value">
                                         {{ label }}
@@ -113,6 +118,10 @@
                                     <i class="fa-solid fa-chevron-down text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.selectGrupoIndividual" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectGrupoIndividual
+                                }}
+                            </p>
                         </div>
 
                         <div class="flex flex-col">
@@ -121,46 +130,64 @@
                             </label>
                             <div class="relative">
                                 <input type="text" v-model="modelValue.txtNumeroLoanSaving" maxlength="5"
-                                    placeholder="00000" minlength="5" class="form-input w-full pl-3 pr-10" required />
+                                    placeholder="00000" minlength="5" class="form-input w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.txtNumeroLoanSaving }" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-hashtag text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.txtNumeroLoanSaving" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.txtNumeroLoanSaving
+                                }}
+                            </p>
                         </div>
+
                     </div>
 
                     <!-- Info cliente -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Nome do Cliente -->
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Cliente</label>
                             <div class="relative">
                                 <input v-model="modelValue.txtInfoAdicional" class="form-input w-full pl-3 pr-10"
-                                    maxlength="125" placeholder="Ex. Nome do cliente" required />
+                                    :class="{ 'border-red-500': fieldErrors.txtInfoAdicional }" maxlength="125"
+                                    placeholder="Ex. Nome do cliente" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-user text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.txtInfoAdicional" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.txtInfoAdicional }}
+                            </p>
                         </div>
 
+                        <!-- Telefone -->
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                             <div class="relative">
-                                <input v-model="modelValue.telefone" class="form-input w-full pl-3 pr-10" maxlength="9"
+                                <input v-model="modelValue.telefone" class="form-input w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.telefone }" maxlength="9"
                                     placeholder="Ex. 921500000" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-phone text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.telefone" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.telefone }}
+                            </p>
                         </div>
                     </div>
 
                     <!-- Produto e Forma de Pagamento -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Produto -->
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Produto</label>
                             <div class="relative">
                                 <select v-if="modelValue.ls === 'Loan'" v-model="modelValue.selectProdutoLoan"
-                                    class="form-select w-full pl-3 pr-10" required>
+                                    class="form-select w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.selectProdutoLoan }" required>
                                     <option value="" disabled selected>Selecione o produto</option>
                                     <option
                                         v-for="produto in produtos.filter(p => p.TipoProduto === 'L' || p.TipoProduto === 'G')"
@@ -169,7 +196,8 @@
                                     </option>
                                 </select>
                                 <select v-else v-model="modelValue.selectProdutoSaving"
-                                    class="form-select w-full pl-3 pr-10" required>
+                                    class="form-select w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.selectProdutoSaving }" required>
                                     <option value="" disabled selected>Selecione o produto</option>
                                     <option
                                         v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
@@ -181,13 +209,20 @@
                                     <i class="fa-solid fa-box-open text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.selectProdutoLoan || fieldErrors.selectProdutoSaving"
+                                class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                                {{ modelValue.ls === 'Loan' ? fieldErrors.selectProdutoLoan :
+                                    fieldErrors.selectProdutoSaving }}
+                            </p>
                         </div>
 
+                        <!-- Forma de Pagamento -->
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
                             <div class="relative">
                                 <select v-model="modelValue.selectFormaPagamento" class="form-select w-full pl-3 pr-10"
-                                    required>
+                                    :class="{ 'border-red-500': fieldErrors.selectFormaPagamento }" required>
                                     <option value="" disabled selected>Selecione a forma</option>
                                     <option v-for="formapgt in formaspagamentos" :value="formapgt.FormaPago"
                                         :key="formapgt.FormaPago">
@@ -198,31 +233,38 @@
                                     <i class="fa-solid fa-money-bill-wave text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.selectFormaPagamento" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectFormaPagamento
+                                }}
+                            </p>
                         </div>
                     </div>
 
                     <!-- Montante, Data e Voucher -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex flex-col">
+                        <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Montante</label>
                             <div class="relative">
-                                <input type="hidden" :name="fieldName" :value="modelValue.txtMontante" />
-
-                                <input type="text" v-model="displayValue" @input="onInput" @blur="onBlur"
-                                    placeholder="0,00" class="form-input w-full pl-3 pr-10 text-right" :name="fieldName"
-                                    required />
-
+                                <input type="text" v-model="displayValue" @input="onInput" @blur="validateAmount"
+                                    placeholder="0,00" class="form-input w-full pl-3 pr-10 text-right"
+                                    :class="{ 'border-red-500': amountError }" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <!--span class="text-gray-500">KZ</span -->
+                                    <!--span class="text-gray-500">Kz</span-->
                                 </div>
                             </div>
+                            <p v-if="amountError" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ amountError }}
+                            </p>
                         </div>
-
                         <!-- Banco de Pagamento (visível apenas para Depósito Bancário) -->
-                        <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" class="flex flex-col">
+                        <!-- Banco de Pagamento -->
+                        <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14"
+                            class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Banco de Pagamento</label>
                             <div class="relative">
-                                <select v-model="modelValue.banco" class="form-select w-full pl-3 pr-10"  :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" >
+                                <select v-model="modelValue.banco" class="form-select w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.banco }"
+                                    :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
                                     <option value="" disabled selected>Selecione o banco</option>
                                     <option v-for="banco in $page.props.bancos" :value="banco.BaCodigo"
                                         :key="banco.BaCodigo">
@@ -233,56 +275,89 @@
                                     <i class="fa-solid fa-building-columns text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.banco" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.banco }}
+                            </p>
                         </div>
 
-                        <!-- Conta Bancária (visível apenas para Depósito Bancário) -->
-                        <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14"class="flex flex-col">
+                        <!-- Conta Bancária -->
+                        <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14"
+                            class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
                             <div class="relative">
                                 <select v-model="modelValue.conta" :disabled="!modelValue.banco"
-                                    class="form-select w-full pl-3 pr-10" :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" >
+                                    class="form-select w-full pl-3 pr-10"
+                                    :class="{ 'border-red-500': fieldErrors.conta }"
+                                    :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
                                     <option value="" disabled selected>Selecione a conta</option>
                                     <option v-for="conta in contasFiltradas" :value="conta.codigoConta"
                                         :key="conta.codigoConta">
                                         {{ conta.ContaBacaria }}
                                     </option>
                                 </select>
-
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-wallet text-gray-400"></i>
                                 </div>
                             </div>
+                            <p v-if="fieldErrors.conta" class="mt-1 text-sm text-red-600">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.conta }}
+                            </p>
                         </div>
 
 
-                        <div class="flex flex-col">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Data do Reembolso</label>
-                            <div class="relative">
-                                <input type="date" v-model="modelValue.calDataBorderoux"
-                                    class="form-input w-full pl-3 pr-10" required />
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <i class="fa-solid fa-calendar-days text-gray-400"></i>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Data do Reembolso -->
+                            <div class="flex flex-col">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Data do Reembolso</label>
+                                <div class="relative">
+                                    <input type="date" v-model="dateValue" @change="validateDate"
+                                        class="form-input w-full pl-3 pr-10"
+                                        :class="{ 'border-red-500': fieldErrors.calDataBorderoux }" required />
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <i class="fa-solid fa-calendar-days text-gray-400"></i>
+                                    </div>
                                 </div>
+                                <p v-if="fieldErrors.calDataBorderoux" class="mt-1 text-sm text-red-600">
+                                    <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.calDataBorderoux
+                                    }}
+                                </p>
+                            </div>
+
+                            <!-- Voucher -->
+                            <div class="flex flex-col"
+                                v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
+                                <div class="relative">
+                                    <input type="text" v-model="modelValue.txtVoucher" placeholder="Voucher"
+                                        class="form-input w-full pl-3 pr-10"
+                                        :class="{ 'border-red-500': fieldErrors.txtVoucher }"
+                                        :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" />
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <i class="fa-solid fa-barcode text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <p v-if="fieldErrors.txtVoucher" class="mt-1 text-sm text-red-600">
+                                    <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.txtVoucher }}
+                                </p>
                             </div>
                         </div>
 
 
-                        <div class="flex flex-col"
-                            v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
-                            <div class="relative">
-                                <input type="text" v-model="modelValue.txtVoucher" placeholder="Voucher"
-                                    class="form-input w-full pl-3 pr-10"
-                                    :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14" />
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <i class="fa-solid fa-barcode text-gray-400"></i>
-                                </div>
+
+
+                    </div>
+
+                    <div v-if="fieldErrors.general" class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    {{ fieldErrors.general }}
+                                </p>
                             </div>
                         </div>
-
-
-
-
                     </div>
 
                     <!-- Botões -->
@@ -295,15 +370,25 @@
                             </svg>
                             &ThickSpace; Cancelar
                         </button>
-                        <button type="submit" class="btn btn-primary flex items-center justify-center">
+                        <button type="submit" :disabled="isSubmitting"
+                            class="btn btn-primary flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+                                    d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
                             </svg>
-                            &ThickSpace; Guardar
+                            &ThickSpace;
+
+                            <span v-if="!isSubmitting">Guardar</span>
+                            <span v-else>
+                                <i class="fa-solid fa-spinner fa-spin mr-1"></i> Processando...
+                            </span>
                         </button>
+
+
                     </div>
+
+
                 </form>
             </div>
         </div>
@@ -312,7 +397,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick,computed } from 'vue';
+import { ref, watch, nextTick, computed } from 'vue';
 
 const fileInput = ref(null);
 const selectedFile = ref(null);
@@ -338,9 +423,203 @@ const props = defineProps({
     }
 });
 
+const isSubmitting = ref(false);
+
+function handleSubmit(event) {
+    if (isSubmitting.value) return;
+    isSubmitting.value = true;
+    try {
+        // 1. Garantir que o event existe
+        if (!event) {
+            console.error('Evento não definido');
+            return;
+        }
+
+        // 2. Resetar todos os erros visuais
+        resetAllErrors();
+
+        // 3. Validar campos passo a passo
+        let isValid = true;
+
+        // Validação do montante
+        if (!validateAmountField()) {
+            isValid = false;
+        }
+
+        // Validação dos campos required
+        if (!validateRequiredFields()) {
+            isValid = false;
+        }
+
+        // Validação específica do telefone
+        if (!validatePhoneField()) {
+            isValid = false;
+        }
+
+        // 4. Se inválido, mostrar primeiro erro
+        if (!isValid) {
+            focusFirstError();
+            return;
+        }
+
+        // 5. Se tudo válido, emitir evento
+        emit('save');
+
+    } catch (error) {
+        console.error('Erro durante a submissão:', error);
+        // Mostrar mensagem de erro genérico para o usuário
+        showGeneralError('Ocorreu um erro ao processar o formulário');
+    }finally {
+        isSubmitting.value = false; // Reativa o botão
+    }
+}
+
+// Funções auxiliares:
+
+function resetAllErrors() {
+    const errorElements = document.querySelectorAll('.text-red-600');
+    errorElements.forEach(el => el.remove());
+
+    const errorInputs = document.querySelectorAll('.border-red-500');
+    errorInputs.forEach(input => input.classList.remove('border-red-500'));
+}
+
+function validateAmountField() {
+    const amountInput = document.querySelector('input[name="txtMontante"]');
+    if (!validateAmount()) {
+        amountInput.classList.add('border-red-500');
+        const errorMsg = amountError.value || 'O montante deve ser maior que zero';
+        showError(amountInput, errorMsg);
+        return false;
+    }
+    return true;
+}
+
+function validateRequiredFields() {
+    const form = document.querySelector('form');
+    const requiredInputs = form.querySelectorAll('[required]');
+    let isValid = true;
+
+    requiredInputs.forEach(input => {
+        if (!input.value) {
+            input.classList.add('border-red-500');
+            showError(input, 'Este campo é obrigatório');
+            isValid = false;
+        }
+    });
+
+    return isValid;
+}
+
+function validatePhoneField() {
+    const phoneInput = document.querySelector('input[v-model="telefone"]');
+    if (phoneInput && phoneInput.value && phoneInput.value.length !== 9) {
+        phoneInput.classList.add('border-red-500');
+        showError(phoneInput, 'O telefone deve ter 9 dígitos');
+        return false;
+    }
+    return true;
+}
+
+function showError(inputElement, message) {
+    let errorElement = inputElement.nextElementSibling;
+    if (!errorElement || !errorElement.classList.contains('text-red-600')) {
+        errorElement = document.createElement('p');
+        errorElement.className = 'mt-1 text-sm text-red-600';
+        inputElement.parentNode.insertBefore(errorElement, inputElement.nextElementSibling);
+    }
+    errorElement.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> ${message}`;
+}
+
+function focusFirstError() {
+    nextTick(() => {
+        const firstError = document.querySelector('.border-red-500');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+    });
+}
+
+function showGeneralError(message) {
+    // Implemente conforme necessário (pode ser um toast, alerta, etc.)
+    console.error(message);
+    // Exemplo com um alerta:
+    alert(message);
+}
 
 const emit = defineEmits(['update:modelValue', 'close', 'save']);
 
+const dateError = ref('');
+const dateValue = ref('');
+const amountError = ref('');
+
+const fieldErrors = ref({
+    selectBase: '',
+    selectGrupoIndividual: '',
+    txtNumeroLoanSaving: '',
+    txtInfoAdicional: '',
+    telefone: '',
+    selectProdutoLoan: '',
+    selectProdutoSaving: '',
+    selectFormaPagamento: '',
+    calDataBorderoux: '',
+    banco: '',
+    conta: '',
+    txtVoucher: '',
+    general: '' // Erro geral
+});
+
+
+// Método para validar o montante
+function validateAmount() {
+    const numericValue = unformatCurrency(displayValue.value);
+
+    if (numericValue <= 0) {
+        amountError.value = 'O montante deve ser superior a zero';
+        return false;
+    }
+
+    amountError.value = '';
+    return true;
+}
+
+// Converter entre formato ISO (YYYY-MM-DD) e DD/MM/YYYY
+function toDDMMYYYY(isoDate) {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('-');
+    return `${day}/${month}/${year}`;
+}
+
+function toISODate(ddmmyyyy) {
+    if (!ddmmyyyy) return '';
+    const [day, month, year] = ddmmyyyy.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+
+// Validação da data
+function validateDate() {
+    dateError.value = '';
+    if (!dateValue.value) {
+        dateError.value = 'A data é obrigatória';
+        return;
+    }
+
+    // Atualiza o modelValue no formato DD/MM/YYYY
+    emit('update:modelValue', {
+        ...props.modelValue,
+        calDataBorderoux: toDDMMYYYY(dateValue.value)
+    });
+}
+
+// Watcher para sincronizar quando o modelValue mudar externamente
+watch(() => props.modelValue.calDataBorderoux, (newVal) => {
+    if (newVal) {
+        dateValue.value = toISODate(newVal);
+    } else {
+        dateValue.value = '';
+    }
+}, { immediate: true });
 
 // Create a display value ref
 // Initialize display value
@@ -382,6 +661,7 @@ watch(() => props.modelValue.txtMontante, (newVal) => {
 // Atualização durante a digitação
 function onInput(event) {
     let value = event.target.value;
+    amountError.value = '';
 
     // Mantém apenas números e vírgula
     value = value.replace(/[^\d,]/g, '');
@@ -419,10 +699,17 @@ function onInput(event) {
 
 
 function onBlur() {
+
     // Converte o valor formatado para numérico
-    const numericValue = parseFloat(
-        displayValue.value.replace(/\./g, '').replace(',', '.')
-    ) || 0;
+    const numericValue = unformatCurrency(displayValue.value);
+
+    // Valida o montante
+    if (!validateAmount()) {
+        return;
+    }
+
+
+
 
     // Atualiza o v-model
     emit('update:modelValue', {
@@ -489,10 +776,41 @@ const contasFiltradas = computed(() => {
     return props.contas.filter(conta => conta.BaCodigo === props.modelValue.banco);
 });
 
-
+watch(fieldErrors, (newErrors) => {
+    console.log('Erros atuais:', newErrors);
+}, { deep: true });
 </script>
 
 <style scoped>
+/* Adicione isto ao seu <style scoped> */
+.border-red-500 {
+    border-color: #ef4444 !important;
+    border-width: 1px !important;
+}
+
+/* Garanta que as classes do input não estão sobrescrevendo */
+.form-input {
+    border-width: 1px !important;
+}
+
+/* Garante que o input date tenha a mesma aparência que outros inputs */
+input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    min-height: 42px;
+    /* Ajuste conforme necessário */
+}
+
+/* Esconde o ícone de calendário nativo em alguns navegadores */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
 .form-select,
 .form-input,
 .form-textarea {
@@ -543,5 +861,14 @@ const contasFiltradas = computed(() => {
 /* Drag and drop styles */
 .drag-active {
     @apply border-blue-500 bg-blue-50/50;
+}
+
+.form-input.border-red-500 {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 1px #ef4444;
+}
+
+.text-red-600 {
+    color: #dc2626;
 }
 </style>
