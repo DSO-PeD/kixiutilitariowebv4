@@ -432,8 +432,7 @@
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Conta Bancária (TP) <span
                                     class="text-red-500">*</span></label>
-                            <select v-model="internalForm.selectContaBancariaBorderoux_TP" class="form-select" required
-                                :disabled="!internalForm.selectBancoBorderoux_TP">
+                            <select v-model="internalForm.selectContaBancariaBorderoux_TP" class="form-select" required>
                                 <option disabled value="">Escolha...</option>
                                 <option v-for="conta in contasFiltradasTP" :key="conta.codigoConta"
                                     :value="conta.codigoConta">
@@ -540,8 +539,7 @@
 
                             <div class="space-y-1">
                                 <label class="block text-sm font-medium text-gray-700">Conta Bancária (TI)</label>
-                                <select v-model="internalForm.selectContaBancariaBorderoux_TI" class="form-select"
-                                    :disabled="!internalForm.selectBancoBorderoux_TI">
+                                <select v-model="internalForm.selectContaBancariaBorderoux_TI" class="form-select">
                                     <option disabled value="">Escolha...</option>
                                     <option v-for="conta in contasFiltradasTI" :key="conta.codigoConta"
                                         :value="conta.codigoConta">
@@ -809,14 +807,17 @@ const updateReference = () => {
 };
 
 const contasFiltradasTP = computed(() => {
-    if (!internalForm.value.selectBancoBorderoux_TP) return [];
-    return props.contas.filter(conta =>
-        conta.BaCodigo === internalForm.value.selectBancoBorderoux_TP
+
+    if (internalForm.value.selectBancoBorderoux_TP === null || internalForm.value.selectBancoBorderoux_TP === undefined) return [];
+
+    return props.contas.filter(conta => conta.BaCodigo === internalForm.value.selectBancoBorderoux_TP
     );
 });
 
 const contasFiltradasTI = computed(() => {
-    if (!internalForm.value.selectBancoBorderoux_TI) return [];
+
+     if (internalForm.value.selectBancoBorderoux_TI === null || internalForm.value.selectBancoBorderoux_TI === undefined) return [];
+
     return props.contas.filter(conta =>
         conta.BaCodigo === internalForm.value.selectBancoBorderoux_TI
     );

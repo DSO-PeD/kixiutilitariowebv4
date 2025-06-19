@@ -207,6 +207,7 @@ class AuthController extends Controller
             'lista_nes_grupo' => $lista_nes_grupo,
             'lista_nes_tipo' => $lista_nes_tipo,
             'lista_bancos_contas' => $lista_bancos_contas,
+            'lista_banco' => $lista_banco,
             'lista_actividade_economica' => $lista_actividade_economica,
             'BasesOperacao' => explode(',', $resultagencia_user->BasesOperacao),
             'bases' => $BasesOperacaoAgencias,

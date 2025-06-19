@@ -73,7 +73,7 @@
                             <div class="flex items-center">
                                 <i class="fa-solid fa-file-circle-check text-blue-500 mr-2"></i>
                                 <span class="text-sm font-medium text-gray-700 truncate max-w-xs">{{ selectedFile.name
-                                }}</span>
+                                    }}</span>
                             </div>
                             <button type="button" @click="resetFileInput" class="text-red-500 hover:text-red-700">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -262,11 +262,11 @@
                             class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Banco de Pagamento</label>
                             <div class="relative">
-                                <select v-model="modelValue.banco" class="form-select w-full pl-3 pr-10"
+                                <select v-model.number="modelValue.banco" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.banco }"
                                     :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
                                     <option value="" disabled selected>Selecione o banco</option>
-                                    <option v-for="banco in $page.props.bancos" :value="banco.BaCodigo"
+                                    <option v-for="banco in $page.props.bancos" :value="Number(banco.BaCodigo)"
                                         :key="banco.BaCodigo">
                                         {{ banco.BaSigla }} - {{ banco.BaNome }}
                                     </option>
@@ -284,8 +284,8 @@
                         <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14"
                             class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
-                            <div class="relative">
-                                <select v-model="modelValue.conta" :disabled="!modelValue.banco"
+                            <div class="relative" >
+                                <select v-model="modelValue.conta"
                                     class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.conta }"
                                     :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
@@ -469,7 +469,7 @@ function handleSubmit(event) {
         console.error('Erro durante a submissão:', error);
         // Mostrar mensagem de erro genérico para o usuário
         showGeneralError('Ocorreu um erro ao processar o formulário');
-    }finally {
+    } finally {
         isSubmitting.value = false; // Reativa o botão
     }
 }
@@ -564,8 +564,8 @@ const fieldErrors = ref({
     selectProdutoSaving: '',
     selectFormaPagamento: '',
     calDataBorderoux: '',
-    banco: '',
-    conta: '',
+    banco: null,
+    conta: null,
     txtVoucher: '',
     general: '' // Erro geral
 });
@@ -772,8 +772,13 @@ const showBankFields = computed(() => {
 
 // Atualize a computed property contasFiltradas para usar props.contas
 const contasFiltradas = computed(() => {
-    if (!props.modelValue.banco) return [];
-    return props.contas.filter(conta => conta.BaCodigo === props.modelValue.banco);
+    // Verifica se o banco está definido (incluindo 0)
+    if (props.modelValue.banco === null || props.modelValue.banco === undefined) return [];
+
+    // Converte para número e compara
+    return props.contas.filter(conta =>
+        Number(conta.BaCodigo) === Number(props.modelValue.banco)
+    );
 });
 
 watch(fieldErrors, (newErrors) => {

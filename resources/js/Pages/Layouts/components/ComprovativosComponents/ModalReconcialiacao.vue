@@ -204,7 +204,7 @@
                     <div class="flex flex-col">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
                         <div class="relative w-full">
-                            <select v-model="form.conta" :disabled="!form.banco" class="form-select w-full pl-3 pr-10"
+                            <select v-model="form.conta"  class="form-select w-full pl-3 pr-10"
                                 required>
                                 <option value="" disabled selected>Selecione a conta</option>
                                 <option v-for="conta in contasFiltradas" :value="conta.codigoConta"

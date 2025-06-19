@@ -106,8 +106,7 @@ class ComprovativosController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-
-
+//dd($lista_bancos_contas );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             return [
                 'id' => $item->id,
@@ -229,7 +228,7 @@ class ComprovativosController extends Controller
                     $banco = $request->banco;
 
                     $money = $request->txtMontante;
-                    $dataBorderoux = $request->calDataBorderoux;
+                    $dataBorderoux =date('Y-m-d', strtotime($request->calDataBorderoux));
                     $voucher = $request->txtVoucher;
                     $contaBancaria = $request->conta;
 
@@ -286,7 +285,7 @@ class ComprovativosController extends Controller
                     $banco = $request->banco;
                     $money = str_replace('.', '', $request->txtMontante);
                     $money = str_replace(",", ".", $money);
-                    $dataBorderoux = $request->calDataBorderoux;
+                    $dataBorderoux = date('Y-m-d', strtotime($request->calDataBorderoux));
                     $voucher = null;
                     $contaBancaria = $request->conta;
                     $infoadicional = $request->txtInfoAdicional;
