@@ -27,7 +27,116 @@
                     Novo Comprovativo
                 </button>
             </div>
+
+
+
         </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"
+            v-if="$page.props.user.view_pendentes && $page.props.totalPendente > 0">
+            <div class="alert bg-red-50 border-l-4 border-red-500 text-red-700 p-4">
+                <div class="flex items-start">
+                    <svg class="flex-shrink-0 h-5 w-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clip-rule="evenodd" />
+                    </svg>
+
+
+                    <p class="text-sm">
+                        Identificamos que os reembolsos abaixo <b>aplicados no Kixi Utilitário não foram aplicados no
+                            LPF</b> ou existe uma possível
+                        diferença nas informações como: <i class="text-orange-950">Loan Number, Voucher e Montante</i>.
+                        &ThickSpace;Clique sobre o <span
+                            class="badge bg-orange-100 text-orange-600 rounded-full px-3 py-1 text-xs font-medium">
+                            Loan Number</span> apresentado
+                        para mais detalhe do comprovativo.
+                        <br />
+
+                        <!-- Agrupamento para manter tudo na mesma linha -->
+                        <span class="inline-flex flex-wrap items-center gap-1">
+                            [
+                            <span v-for="_pendente in pendentesVisiveis" :key="_pendente.Lnr"
+                                class="relative inline-block mx-1">
+                                <span @click="toggleDetails(_pendente.id)"
+                                    class="badge bg-orange-100 text-orange-600 rounded-full px-3 py-1 text-xs font-bold cursor-pointer hover:bg-red-200 transition">
+                                    {{ _pendente.Lnr }}
+                                </span>
+
+                                <!-- Tooltip Detalhes -->
+                                <div v-if="activeDetails === _pendente.id"
+                                    class="absolute z-10 left-0 mt-2 w-64 bg-white shadow-lg rounded-md border border-gray-200 p-3">
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <span class="text-gray-500">Voucher:</span>
+                                        <span class="font-medium">{{ _pendente.voucher }}</span>
+
+                                        <span class="text-gray-500">Montante:</span>
+                                        <span class="font-medium">{{ _pendente.montante }}</span>
+
+                                        <span class="text-gray-500">Data do Comp.:</span>
+                                        <span class="font-medium">{{ _pendente.budata }}</span>
+                                    </div>
+                                    <div class="mt-2 pt-2 border-t border-gray-100 text-right">
+                                        <button @click.stop="closeDetails"
+                                            class="text-xs text-red-600 hover:text-red-800">
+                                            Fechar
+                                        </button>
+                                    </div>
+                                </div>
+                            </span>
+
+                            <!-- Botão de ver mais/ver menos -->
+                            <button @click="mostrarTodos = !mostrarTodos"
+                                class="flex items-center gap-1 text-blue-600 hover:underline">
+                                <!-- Transição de ícone -->
+                                <transition name="fade-icon" mode="out-in">
+                                    <!-- Ícone olho (ver mais) -->
+                                    <svg v-if="!mostrarTodos" key="ver" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5
+                                                12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0
+                                                .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+
+                                    <!-- Ícone olho cortado (ver menos) -->
+                                    <svg v-else key="ocultar" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338
+                                            7.244 19.5 12 19.5c.993 0 1.953-.138
+                                            2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12
+                                            4.5c4.756 0 8.773 3.162 10.065 7.498a10.522
+                                            10.522 0 0 1-4.293 5.774M6.228 6.228 3
+                                            3m3.228 3.228 3.65 3.65m7.894
+                                            7.894L21 21m-3.228-3.228-3.65-3.65m0
+                                            0a3 3 0 1 0-4.243-4.243m4.242
+                                            4.242L9.88 9.88" />
+                                    </svg>
+                                </transition>
+
+                                {{ mostrarTodos ? 'Ver menos' : 'Ver mais...' }}
+                            </button>]
+                        </span>
+                    </p>
+
+
+
+                    <br /><br />
+
+
+
+
+                </div>
+
+                <p class="mt-1 text-sm font-medium">
+                    Por favor, regularize-os para evitar transtornos futuros. Atenção! é necessário que as informações,
+                    como Loan Number, Voucher e Montante, estejam iguais no Kixi Utilitário e no LPF.
+                </p>
+            </div>
+        </div>
+
+
 
         <hr />
         <!-- Filtro Avançado -->
@@ -352,7 +461,7 @@
                         <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
                             class="hover:bg-gray-50">
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                               {{ calcularNumeroLinha(index) }}
+                                {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
@@ -415,7 +524,7 @@
                 </table>
             </div>
 
-           <!-- Paginação -->
+            <!-- Paginação -->
             <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
                 <div class="text-sm text-gray-600">
                     Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
@@ -476,6 +585,7 @@ import ModalObservacaoDFC from './Layouts/components/ComprovativosComponents/Mod
 import ModalNovoComprovativo from './Layouts/components/ComprovativosComponents/ModalNovoComprovativo.vue'
 
 
+
 const props = defineProps({
     comprovativos: Array,
     filters: Object,
@@ -489,6 +599,7 @@ const props = defineProps({
         type: Array,
         required: true
     },
+
     total: Number,
     dataInicioInput: String,
     dataFimInput: String,
@@ -506,6 +617,7 @@ const props = defineProps({
     user: Object,
     dataInicioInput: String,
     dataFimInput: String,
+    lista_pendentes: Object
 })
 
 // Estados
@@ -523,6 +635,28 @@ const paginaAtual = ref(1);
 
 // Dados locais para paginação
 const dadosLocais = ref([]);
+const showDialog = ref(false);
+const activeDetails = ref(null);
+
+const mostrarTodos = ref(false)
+const limite = 10
+
+const listaCompleta = props.lista_pendentes
+
+const pendentesVisiveis = computed(() => {
+    return mostrarTodos.value ? listaCompleta : listaCompleta.slice(0, limite)
+})
+
+const toggleDetails = (id) => {
+    activeDetails.value = id
+}
+
+const closeDetails = () => {
+    activeDetails.value = null
+}
+
+
+
 
 
 // Watch para atualizar dadosLocais quando lista_comprovativo mudar
@@ -688,6 +822,8 @@ const resetarFiltros = () => {
 
 // Exportar para Excel (mantido como está)
 const exportarParaExcel = () => {
+
+
     try {
         // Acessando a lista_comprovativo corretamente (dependendo do seu contexto)
         let listaCompleta;
@@ -906,9 +1042,29 @@ watch(() => props.dataFimInput, (newVal) => {
 
 
 // Restante do código (modais, formulários) mantido como está
+
+
+
 </script>
 
 <style scoped>
+.fade-icon-enter-active,
+.fade-icon-leave-active {
+    transition: all 0.2s ease;
+}
+
+.fade-icon-enter-from,
+.fade-icon-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.fade-icon-enter-to,
+.fade-icon-leave-from {
+    opacity: 1;
+    transform: scale(1);
+}
+
 /* Estilos melhorados */
 .alert {
     @apply p-4 rounded-lg mb-4 border-l-4;
@@ -919,7 +1075,13 @@ watch(() => props.dataFimInput, (newVal) => {
 }
 
 .alert-danger {
-    @apply bg-red-50 text-red-800 border-red-500;
+    @apply bg-red-50 border-l-4 border-red-500 text-red-700 p-4;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.2s;
 }
 
 .btn {

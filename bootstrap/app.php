@@ -16,8 +16,21 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
+        $middleware->statefulApi([
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        ]);
+        $middleware->validateCsrfTokens(except: [
+            'api/*',                // Rotas API
+            'sanctum/csrf-cookie',  // Rota do Sanctum para SPAs
+            'login',                // Seu endpoint de login
+            'logout',               // Seu endpoint de logout
+        ]);
+        $middleware->statefulApi();
         //
     })
+    ->withProviders([
+        Laravel\Sanctum\SanctumServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

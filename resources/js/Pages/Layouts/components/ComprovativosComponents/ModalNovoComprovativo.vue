@@ -73,7 +73,7 @@
                             <div class="flex items-center">
                                 <i class="fa-solid fa-file-circle-check text-blue-500 mr-2"></i>
                                 <span class="text-sm font-medium text-gray-700 truncate max-w-xs">{{ selectedFile.name
-                                    }}</span>
+                                }}</span>
                             </div>
                             <button type="button" @click="resetFileInput" class="text-red-500 hover:text-red-700">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -129,8 +129,9 @@
                                 Número {{ modelValue.ls === 'Loan' ? 'Loan' : 'Saving' }}
                             </label>
                             <div class="relative">
-                                <input type="text" v-model="modelValue.txtNumeroLoanSaving" maxlength="5"
-                                    placeholder="00000" minlength="5" class="form-input w-full pl-3 pr-10"
+                                <input type="text" v-model="modelValue.txtNumeroLoanSaving"
+                                    @input="modelValue.txtNumeroLoanSaving = $event.target.value.replace(/[^0-9]/g, '')"
+                                    maxlength="5" placeholder="00000" minlength="5" class="form-input w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.txtNumeroLoanSaving }" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-hashtag text-gray-400"></i>
@@ -284,9 +285,8 @@
                         <div v-if="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14"
                             class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
-                            <div class="relative" >
-                                <select v-model="modelValue.conta"
-                                    class="form-select w-full pl-3 pr-10"
+                            <div class="relative">
+                                <select v-model="modelValue.conta" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.conta }"
                                     :required="modelValue.selectBase === 'AC' || modelValue.selectFormaPagamento === 14">
                                     <option value="" disabled selected>Selecione a conta</option>

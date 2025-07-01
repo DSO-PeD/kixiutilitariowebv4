@@ -6,15 +6,18 @@ use App\Models\ComprovativoModel;
 use App\Models\CpvtReconciliacaoModel;
 use App\Models\EstadosModel;
 use App\Models\RecuperacaoModel;
+use App\Models\TKuPendentesModel;
 use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
 use App\Models\TKxClTipopagamentoModel;
 use App\Models\TKxUsUtilizadorModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -54,6 +57,8 @@ class ComprovativosController extends Controller
         }
 
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+
+
         $ESTADO = "'" . $ids_estados . "'";
         $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
@@ -102,11 +107,13 @@ class ComprovativosController extends Controller
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
         $totalMontante = collect($lista_comprovativo)->sum('BuMontante');
+        $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
+        //dd($lista_pendentes->count());
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
         ];
-//dd($lista_bancos_contas );
+        //dd($lista_bancos_contas );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             return [
                 'id' => $item->id,
@@ -134,6 +141,7 @@ class ComprovativosController extends Controller
                 'estado_id' => $item->idestado, // Para filtro por estado
                 'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
                 'BuMontante' => $item->BuMontante // Para cálculos
+
             ];
         });
 
@@ -162,8 +170,10 @@ class ComprovativosController extends Controller
             //  'lista_comprovativo' => $lista_comprovativo,
             'total' => $total,
             'montantetotal' => $totalMontante,
-            'formaspagamentos' => $lista_das_formaspagamento
+            'formaspagamentos' => $lista_das_formaspagamento,
             //'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
+            'lista_pendentes' => $lista_pendentes,
+            'totalPendente'=>$lista_pendentes->count()
         ]);
     }
 
@@ -177,8 +187,12 @@ class ComprovativosController extends Controller
         $dataFinal = date('Y-m-d');
         $Mensagem = "";
         $pathArquivo = "";
-       // dd($request->calDataBorderoux);
-        $dias_passado = $this->diasDatas($request->calDataBorderoux, $dataFinal);
+
+        $dataFormatadaBuData = Carbon::createFromFormat('d/m/Y', $request->calDataBorderoux)->format('Y-m-d');
+
+        $dias_passado = $this->diasDatas($dataFormatadaBuData, $dataFinal);
+
+
         $NumeroDiaNecessario = 90;//$request->DiasMaximoRegistroComprovativo;
 
         $loan_number_v = "";
@@ -228,7 +242,7 @@ class ComprovativosController extends Controller
                     $banco = $request->banco;
 
                     $money = $request->txtMontante;
-                    $dataBorderoux =date('Y-m-d', strtotime($request->calDataBorderoux));
+                    $dataBorderoux = $dataFormatadaBuData;
                     $voucher = $request->txtVoucher;
                     $contaBancaria = $request->conta;
 
@@ -243,7 +257,7 @@ class ComprovativosController extends Controller
                         $estadoRegistado = 8;
                         $_conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
                         $contaBancaria = $_conta->ContaBacaria;
-                         $voucher = $request->txtVoucher;
+                        $voucher = $request->txtVoucher;
                     }
 
 
@@ -258,7 +272,7 @@ class ComprovativosController extends Controller
                         'BuDadoOrigem' => $loan_number,
                         'BuReferencia' => $voucher,
                         'BuMontante' => $money,
-                        'BuData' => $dataBorderoux,
+                        'BuData' => $dataFormatadaBuData,
                         'BuContaBancaria' => $contaBancaria,
                         'Eliminado' => 0,
                         'idestado' => $estadoRegistado,
@@ -285,7 +299,7 @@ class ComprovativosController extends Controller
                     $banco = $request->banco;
                     $money = str_replace('.', '', $request->txtMontante);
                     $money = str_replace(",", ".", $money);
-                    $dataBorderoux = date('Y-m-d', strtotime($request->calDataBorderoux));
+                    $dataBorderoux = $dataFormatadaBuData;
                     $voucher = null;
                     $contaBancaria = $request->conta;
                     $infoadicional = $request->txtInfoAdicional;
@@ -300,7 +314,7 @@ class ComprovativosController extends Controller
                         $estadoRegistado = 8;
                         $_conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
                         $contaBancaria = $_conta->ContaBacaria;
-                         $voucher = $request->txtVoucher;
+                        $voucher = $request->txtVoucher;
                     }
 
 
@@ -315,7 +329,7 @@ class ComprovativosController extends Controller
                         'BuDadoOrigem' => $loan_number,
                         'BuReferencia' => $voucher,
                         'BuMontante' => $money,
-                        'BuData' => $dataBorderoux,
+                        'BuData' => $dataFormatadaBuData,
                         'BuContaBancaria' => $contaBancaria,
                         'Eliminado' => 0,
                         'idestado' => $estadoRegistado,
@@ -331,7 +345,7 @@ class ComprovativosController extends Controller
 
 
                     if ($formapgt == 14) {
-                         $voucher = $request->txtVoucher;
+                        $voucher = $request->txtVoucher;
                         // Esta inserção serve para reconciliação automática dos comprovativos depósitados, um processo acertado com a DCF
                         $insertReco = CpvtReconciliacaoModel::create([
                             'datareconciliacao' => now(),
@@ -393,6 +407,7 @@ class ComprovativosController extends Controller
         return response()->json($compravativos);
 
     }
+
 
 
 

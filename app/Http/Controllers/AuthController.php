@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ComprovativoModel;
 use App\Models\RecuperacaoModel;
+use App\Models\TKuPendentesModel;
 use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
@@ -56,7 +57,7 @@ class AuthController extends Controller
             // Verificando diretamente o usuário autenticado
             $authenticatedUser = Auth::user();  // O usuário logado
             $agencia = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)->first();
-
+            //  $token_carregamentos = $authenticatedUser->createToken('scscscscscscs')->plainTextToken;
             session(['agencia_principal' => $agencia->OfNombre]);
             $basesOperacaoIDs = explode(',', $agencia->BasesOperacao);
 
@@ -131,6 +132,7 @@ class AuthController extends Controller
         $cpvtDOP = null;
         $extrato = null;
         $cpvtRecupe = null;
+        $cpvtPendentes = null;
 
 
 
@@ -152,7 +154,7 @@ class AuthController extends Controller
             $cpvtDOP = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('Eliminado', 0);
             $extrato = TKxExtratoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('Eliminado', 0);
 
-            $cpvtRecupe = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('id_estado','<>', 6)->where('Eliminado', 0);
+            $cpvtRecupe = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('id_estado', '<>', 6)->where('Eliminado', 0);
 
 
 
@@ -170,7 +172,9 @@ class AuthController extends Controller
 
 
         }
-
+        $cpvtPendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R');
+        $TotalValordeReembolsosPendentes = $cpvtPendentes->sum('montante');
+        $TotaldeRegistosdeReembolsosPendentes = $cpvtPendentes->count();
 
         $TotalValordeRegistossemParacer = $cpvtDFC->sum('BuMontante');
         $TotaldeRegistossemParacer = $cpvtDFC->count();
@@ -213,7 +217,7 @@ class AuthController extends Controller
             'bases' => $BasesOperacaoAgencias,
             'QtdRegistosComprovativos' => $QtdRegistosComprovativos,
             'QtdValorRegistosComprovativos' => $QtdValorRegistosComprovativos,
-             'QtdRegistosDesembosos' => $QtdRegistosDesembosos,
+            'QtdRegistosDesembosos' => $QtdRegistosDesembosos,
             'QtdValorRegistosDesembosos' => $QtdValorRegistosDesembosos,
             'TotaldeRegistossemParacer' => $TotaldeRegistossemParacer,
             'TotalValordeRegistossemParacer' => $TotalValordeRegistossemParacer,
@@ -222,7 +226,9 @@ class AuthController extends Controller
             'TotaldeReconciliaNaoFinalizado' => $TotaldeReconciliaNaoFinalizado,
             'TotalValorReconciliaNaoFinalizado' => $TotalValorReconciliaNaoFinalizado,
             'QtdRegistosRecuperacoes' => $QtdRegistosRecuperacoes,
-            'QtdValorRegistosRecuperacoes' => $QtdValorRegistosRecuperacoes
+            'QtdValorRegistosRecuperacoes' => $QtdValorRegistosRecuperacoes,
+            'TotalValordeReembolsosPendentes' => $TotalValordeReembolsosPendentes,
+            'TotaldeRegistosdeReembolsosPendentes' => $TotaldeRegistosdeReembolsosPendentes
         ]);
     }
     public function logout(Request $request)

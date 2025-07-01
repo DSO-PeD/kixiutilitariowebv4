@@ -57,6 +57,7 @@
                                 </select>
                                 <span class="text-gray-400">/</span>
                                 <input v-model="internalForm.txtNumeroLoan" type="text"
+                                    @input="internalForm.txtNumeroLoan = $event.target.value.replace(/[^0-9]/g, '')"
                                     class="form-input w-24 text-center" maxlength="5" placeholder="00000" minlength="5"
                                     required />
                             </div>
@@ -816,7 +817,7 @@ const contasFiltradasTP = computed(() => {
 
 const contasFiltradasTI = computed(() => {
 
-     if (internalForm.value.selectBancoBorderoux_TI === null || internalForm.value.selectBancoBorderoux_TI === undefined) return [];
+    if (internalForm.value.selectBancoBorderoux_TI === null || internalForm.value.selectBancoBorderoux_TI === undefined) return [];
 
     return props.contas.filter(conta =>
         conta.BaCodigo === internalForm.value.selectBancoBorderoux_TI

@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
+use App\Http\Controllers\PgtRefNotificacaoController;
 use App\Http\Controllers\RecuperacaoController;
 use App\Http\Controllers\ReportDomPDFController;
+use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
+use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Request;
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
@@ -49,6 +53,11 @@ Route::post('/novoutilizador', [AuthController::class, 'cadastrar']);
 
 Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
 Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP'])->name('extrato_kxu');
+
+//Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP']);
+Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
 
 
 
