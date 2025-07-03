@@ -31,7 +31,7 @@
 
 
         </div>
-
+<hr class="py-4"/>
         <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"
             v-if="$page.props.user.view_pendentes && $page.props.totalPendente > 0">
             <div class="alert bg-red-50 border-l-4 border-red-500 text-red-700 p-4">
@@ -93,7 +93,8 @@
                                     <!-- Ícone olho (ver mais) -->
                                     <svg v-if="!mostrarTodos" key="ver" xmlns="http://www.w3.org/2000/svg" fill="none"
                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5
                                                 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0
                                                 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -117,9 +118,20 @@
 
                                 {{ mostrarTodos ? 'Ver menos' : 'Ver mais...' }}
                             </button>]
+
+
                         </span>
                     </p>
-
+                    <!-- Botão de exportar para Excel -->
+                    <button @click="exportToExcel"
+                        class=" btn btn-outline-excelP  flex items-center gap-1 text-white px-3 py-1 rounded text-sm ml-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Exportar Pendentes Para Excel
+                    </button>
 
 
                     <br /><br />
@@ -133,12 +145,16 @@
                     Por favor, regularize-os para evitar transtornos futuros. Atenção! é necessário que as informações,
                     como Loan Number, Voucher e Montante, estejam iguais no Kixi Utilitário e no LPF.
                 </p>
+
+
+
+
             </div>
         </div>
 
 
 
-        <hr />
+
         <!-- Filtro Avançado -->
         <div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg ">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3  ">
@@ -641,10 +657,10 @@ const activeDetails = ref(null);
 const mostrarTodos = ref(false)
 const limite = 10
 
-const listaCompleta = props.lista_pendentes
+const listaCompletaPendentes = props.lista_pendentes
 
 const pendentesVisiveis = computed(() => {
-    return mostrarTodos.value ? listaCompleta : listaCompleta.slice(0, limite)
+    return mostrarTodos.value ? listaCompletaPendentes : listaCompletaPendentes.slice(0, limite)
 })
 
 const toggleDetails = (id) => {
@@ -905,6 +921,69 @@ const exportarParaExcel = () => {
         alert(`Erro ao exportar: ${error.message || 'Verifique o console para mais detalhes'}`);
     }
 };
+
+const exportToExcel = () => {
+
+
+    try {
+
+        // Verifica se há dados
+        if (!listaCompletaPendentes || listaCompletaPendentes.length === 0) {
+            alert('Nenhum dado disponível para exportar');
+            return;
+        }
+
+        console.log('Total de registros a exportar:', listaCompletaPendentes.length);
+
+        // Formata os dados
+        const dadosFormatados = listaCompletaPendentes.map((comprovativo, index) => {
+            try {
+                return {
+                    '#': index + 1,
+                    'Data de Registo': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleString('pt-PT') : '-',
+                    //'Agência': comprovativo.agencia || '-',
+                    //'Registado Por': comprovativo.usuario || '-',
+                    'Loan Number': comprovativo.Lnr || '-',
+                    //'Cliente': comprovativo.cliente || '-',
+                    //'Produto': comprovativo.metodologia || '-',
+                    'Voucher': comprovativo.voucher === 'null' || comprovativo.voucher == null ? 'não registado' : comprovativo.voucher,
+                    //'Descrição da DCF': comprovativo.descricao || '-',
+                    //'Banco': comprovativo.banco || '-',
+                    //'Conta Bancaria': comprovativo.conta || '-',
+                    //'Observação da DCF': comprovativo.observacao || '-',
+                    'Montante': comprovativo.montante || '0,00',
+                    'Data do Comprovativo': comprovativo.budata ? new Date(comprovativo.budata).toLocaleString('pt-PT') : '-'
+                    //'Estado': comprovativo.estado || '-',
+
+                };
+            } catch (error) {
+                console.error('Erro ao formatar registro:', comprovativo, error);
+                return null;
+            }
+        }).filter(record => record !== null);
+
+        if (dadosFormatados.length === 0) {
+            alert('Nenhum dado válido para exportar após formatação');
+            return;
+        }
+
+        // Cria a planilha
+        const ws = XLSX.utils.json_to_sheet(dadosFormatados);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Comprovativos");
+
+        // Gera o nome do arquivo
+        const dataHoje = new Date().toISOString().split('T')[0];
+        const nomeArquivo = `comprovativos_Pendentes_completa_${dataHoje}.xlsx`;
+
+        // Faz o download
+        XLSX.writeFile(wb, nomeArquivo);
+
+    } catch (error) {
+        console.error('Erro detalhado ao exportar para Excel:', error);
+        alert(`Erro ao exportar: ${error.message || 'Verifique o console para mais detalhes'}`);
+    }
+};
 const novoComprovativo = ref({
     ls: 'Loan',
     selectBase: '',
@@ -1092,6 +1171,10 @@ watch(() => props.dataFimInput, (newVal) => {
     @apply bg-gradient-to-r from-green-900 to-greenkixi-300 text-white hover:from-green-800 shadow-md hover:shadow-lg;
 }
 
+.btn-primarykxu {
+    @apply bg-gradient-to-r from-orange-500 to-greenkixi-300 text-white hover:from-orange-800 shadow-md hover:shadow-lg;
+}
+
 .btn-outline {
     @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
 }
@@ -1103,7 +1186,9 @@ watch(() => props.dataFimInput, (newVal) => {
 .btn-outline-excel {
     @apply border border-green-900 bg-white text-green-900 hover:bg-green-50;
 }
-
+.btn-outline-excelP {
+    @apply border border-orange-950  bg-orange-100 text-orange-600 hover:bg-orange-50;
+}
 .btn-action {
     @apply px-3 py-1.5 rounded-md text-sm font-medium transition-colors;
 }

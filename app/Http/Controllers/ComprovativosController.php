@@ -115,6 +115,7 @@ class ComprovativosController extends Controller
         ];
         //dd($lista_bancos_contas );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
+
             return [
                 'id' => $item->id,
                 'data' => $item->dataRegistoFomatada,
