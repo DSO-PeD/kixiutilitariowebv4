@@ -34,13 +34,14 @@ class ComprovativoModel extends Model
         'telefonecliente',
         'observacao',
         'idestado',
+        'TtCodigo',
         'estado',
         'color'
     ];
 
-    public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN,$ESTADO)
+    public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO)
     {
-        $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'".$DataInicio."','".$DataFim."'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN .",".$ESTADO. ")");
+        $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . "," . $ESTADO . ")");
 
 
         return $comprovativos2;

@@ -106,7 +106,17 @@ class ComprovativosController extends Controller
         $estados = EstadosModel::getEstadosDCF('DCF');
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
-        $totalMontante = collect($lista_comprovativo)->sum('BuMontante');
+
+        $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
+        $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
+        $DataInicio = collect($lista_comprovativo)->max('CiFecha');
+        $DataFim = collect($lista_comprovativo)->min('CiFecha');
+
+        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
+        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
+
+
+
         $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
         //dd($lista_pendentes->count());
         $TipoComprovativo = [
@@ -171,10 +181,13 @@ class ComprovativosController extends Controller
             //  'lista_comprovativo' => $lista_comprovativo,
             'total' => $total,
             'montantetotal' => $totalMontante,
+            'totalMontantePoupanca' => $totalMontantePoupanca,
             'formaspagamentos' => $lista_das_formaspagamento,
             //'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
             'lista_pendentes' => $lista_pendentes,
-            'totalPendente'=>$lista_pendentes->count()
+            'totalPendente' => $lista_pendentes->count(),
+            'dataInicioPeriodo' => $DataInicioFormatada,
+            'dataFimPeriodo' => $DataFimFormatada
         ]);
     }
 

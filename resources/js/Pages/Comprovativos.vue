@@ -31,7 +31,7 @@
 
 
         </div>
-<hr class="py-4"/>
+        <hr class="py-4" />
         <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"
             v-if="$page.props.user.view_pendentes && $page.props.totalPendente > 0">
             <div class="alert bg-red-50 border-l-4 border-red-500 text-red-700 p-4">
@@ -254,6 +254,60 @@
 
         </div>
 
+
+        <div class=" rounded-lg  p-4  ">
+             <div class="flex items-center gap-3 py-4">
+
+                    <div class="bg-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>REEMBOLSOS DO PERÍODO DE:</span><span class=" text-green-900 font-bold "    style="font-size: 15px;">  {{ dataFimPeriodo }} <span class=" text-gray-900 font-normal " >à</span>  {{ dataInicioPeriodo }}</span>
+
+                    </div>
+                </div>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Card 1 - Total Montante Reembolsos -->
+                <div
+                    class="flex items-center p-4 bg-gradient-to-r from-green-50 to-yellow-50 rounded-lg border border-green-100 shadow-sm hover:shadow-md transition-all">
+                    <div class="bg-green-100/80 p-2 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6 text-green-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-500 font-medium">TOTAL REEMBOLSOS (Principal+Juros)</p>
+                        <p class="text-xl font-bold text-green-700">{{ formatCurrency(montantetotal) }} AKZ</p>
+                    </div>
+
+                </div>
+
+                <!-- Card 2 - Total Montante Poupanças -->
+                <div
+                    class="flex items-center p-4 bg-gradient-to-r from-cyan-50 to-green-50 rounded-lg border border-green-100 shadow-sm hover:shadow-md transition-all">
+                    <div class="bg-cyan-100/80 p-2 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6 text-cyan-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-500 font-medium">TOTAL POUPANÇAS</p>
+                        <p class="text-xl font-bold text-cyan-700">{{ formatCurrency(totalMontantePoupanca) }} AKZ</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
         <!-- Card Principal -->
         <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
             <!-- Cabeçalho do Card -->
@@ -306,20 +360,12 @@
                     </button>
                 </div>
 
-                <div class="flex gap-4">
-                    <div class="text-wrap">
 
-                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                            </svg> <span>Total Montante: </span> &ThickSpace; {{ formatCurrency(montantetotal) }}
-                        </span>
-                    </div>
 
-                </div>
+
+
+
                 <div class="flex gap-2">
 
                     <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
@@ -620,6 +666,7 @@ const props = defineProps({
     dataInicioInput: String,
     dataFimInput: String,
     montantetotal: Number,
+    totalMontantePoupanca: Number,
     bases: Array,
     produtos: Array,
     bancos: Array,
@@ -633,7 +680,10 @@ const props = defineProps({
     user: Object,
     dataInicioInput: String,
     dataFimInput: String,
-    lista_pendentes: Object
+    lista_pendentes: Object,
+    dataInicioPeriodo:String,
+    dataFimPeriodo:String
+
 })
 
 // Estados
@@ -1186,9 +1236,11 @@ watch(() => props.dataFimInput, (newVal) => {
 .btn-outline-excel {
     @apply border border-green-900 bg-white text-green-900 hover:bg-green-50;
 }
+
 .btn-outline-excelP {
-    @apply border border-orange-950  bg-orange-100 text-orange-600 hover:bg-orange-50;
+    @apply border border-orange-950 bg-orange-100 text-orange-600 hover:bg-orange-50;
 }
+
 .btn-action {
     @apply px-3 py-1.5 rounded-md text-sm font-medium transition-colors;
 }

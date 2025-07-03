@@ -11,6 +11,7 @@ use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
+use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -117,7 +118,15 @@ class CpvtReconciliacaoController extends Controller
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
-        $totalMontante = collect($lista_comprovativo)->sum('BuMontante');
+
+
+        $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
+        $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
+        $DataInicio = collect($lista_comprovativo)->max('CiFecha');
+        $DataFim = collect($lista_comprovativo)->min('CiFecha');
+
+        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
+        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
 
 
         $TipoComprovativo = [
@@ -182,6 +191,9 @@ class CpvtReconciliacaoController extends Controller
             'estados' => $estados,
             'total' => $total,
             'montantetotal' => $totalMontante,
+            'dataInicioPeriodo' => $DataInicioFormatada,
+            'dataFimPeriodo' => $DataFimFormatada,
+            'totalMontantePoupanca' => $totalMontantePoupanca
 
         ]);
     }
