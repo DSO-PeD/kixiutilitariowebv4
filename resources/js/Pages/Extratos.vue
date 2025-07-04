@@ -82,20 +82,6 @@
 
 
 
-                <!--div class="col-span-2 sm:col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Estado
-                    </label>
-
-
-
-                    <select v-model="filtro.estado" class="input input-bordered w-full">
-                        <option disabled :value="'s/e'">Escolha estado</option>
-                        <option v-for="estado in $page.props.estados" :value="Number(estado.id)" :key="estado.id">
-                            {{ estado.descricao_estado }}
-                        </option>
-                        <option :value="28">Todos estados</option>
-                    </select>
-                </div-->
 
                 <div class="col-span-2 sm:col-span-1">
                     <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Base </label>
@@ -130,6 +116,71 @@
 
         </div>
 
+
+
+
+
+        <div class="rounded-lg p-4 w-full bg-gray-100 border border-white shadow-sm ">
+            <!-- Cabeçalho do período -->
+            <div class="flex items-center justify-between pb-4 border-b border-white">
+                <div class="bg-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 border border-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="font-medium text-gray-700">DESEMBOLSOS DO PERÍODO:</span>
+                    <span class="text-green-800 font-bold text-base">{{ dataFimPeriodo }} </span>
+                    <span class="text-gray-600 font-normal">à</span>
+                    <span class="text-green-800 font-bold text-base">{{ dataInicioPeriodo }}</span>
+                </div>
+            </div>
+
+            <!-- Cards de métricas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 w-full">
+                <!-- Card 1 - Total Montante Reembolsos -->
+                <div
+                    class="flex items-center p-5 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="bg-green-100 p-3 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6 text-green-700">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-600 font-medium uppercase tracking-wider">TOTAL DE MONTANTE
+                            DESEMBOLSADO</p>
+                        <p class="text-xl font-bold text-green-900 mt-1">{{ formatCurrency(montantetotal) }} <span
+                                class="text-sm font-normal">AKZ</span></p>
+                    </div>
+                </div>
+
+                <!-- Você pode adicionar mais 3 cards aqui mantendo o mesmo padrão -->
+                <!-- Exemplo de card adicional (substitua com seus dados reais) -->
+                <div
+                    class="flex items-center p-5 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-all">
+                    <div class="bg-blue-100 p-3 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6 text-blue-700">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-600 font-medium uppercase tracking-wider">TOTAL DE PROCESSOS
+                            APLICADOS</p>
+                        <p class="text-xl font-bold text-blue-900 mt-1">{{ formatCurrency(total) }}  <span
+                                class="text-sm font-normal">itens</span></p>
+                    </div>
+                </div>
+
+                <!-- Adicione mais cards conforme necessário -->
+            </div>
+        </div>
+
+        <br />
+
         <!-- Card Principal -->
         <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
             <!-- Cabeçalho do Card -->
@@ -152,21 +203,7 @@
                     </button>
                 </div>
 
-                <div class="flex gap-4">
-                    <div class="text-wrap">
 
-                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex">
-
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                            </svg> <span>Total Valor de Desembolos: </span> &ThickSpace; {{
-                                formatCurrency(montantetotal) }}
-                        </span>
-                    </div>
-
-                </div>
                 <div class="flex gap-2">
 
                     <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
@@ -397,6 +434,8 @@ const props = defineProps({
         type: Number,
         default: 100
     },
+    dataInicioPeriodo: String,
+    dataFimPeriodo: String
 
 })
 

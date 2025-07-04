@@ -9,6 +9,7 @@ use App\Models\TKxClProdutoModel;
 use App\Models\TKxCodigoCaeModel;
 use App\Models\TKxExtratoModel;
 use App\Services\IziPayService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -86,13 +87,19 @@ class TKxExtratoController extends Controller
 
 
 
-
         // $page = request()->get('page', 1);
         // $perPage = 30;
 
         $extratos = collect(TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
         // $paginados = $extratos->forPage($page, $perPage)->values();
         //  $paginados->transform(fn($item) => (array) $item);
+
+        $DataInicio = collect($extratos)->max('CiFecha');
+        $DataFim = collect($extratos)->min('CiFecha');
+
+        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
+        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
+
 
         $lista_produtos = TKxClProdutoModel::getProdutosDesembolsos();
         $lista_banco = TKxBancoModel::getBancos();
@@ -103,7 +110,7 @@ class TKxExtratoController extends Controller
         $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
         $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
 
-        $total = sizeof($extratos);
+        $total = $extratos->count();
         $totalMontante = collect($extratos)->sum('ValorTotalCredito');
 
         $extrato_list = $extratos->map(function ($item) {
@@ -192,6 +199,8 @@ class TKxExtratoController extends Controller
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
+            'dataInicioPeriodo' => $DataInicioFormatada,
+            'dataFimPeriodo' => $DataFimFormatada
         ]);
 
 

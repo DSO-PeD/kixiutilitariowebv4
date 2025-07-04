@@ -35,6 +35,14 @@ class ComprovativosController extends Controller
 
 
         $tipoDeBusca = $request->tipo;
+        $tipoProdutoPP = $request->filtrar_poupancas;
+        $tipoProdutoPT = $request->filtrar_prestacoes;
+
+
+        $produto_poupancas = "";
+        $produto_prestacoes = "";
+        $lista_produtos = TKxClProdutoModel::getProdutos();
+
 
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
@@ -48,6 +56,14 @@ class ComprovativosController extends Controller
 
         $estados = EstadosModel::getEstadosDCF('DCF');
         $ids_estados = $estados->pluck('id')->implode(',');
+
+        $produto_poupancas_busca = collect($lista_produtos)->where('TipoProduto', '=', 'S');
+        $produto_poupancas_busca = "'" . $produto_poupancas_busca->pluck('Metodologia')->implode(',') . "'";
+
+        $produto_prestacoes_busca = collect($lista_produtos)->where('TipoProduto', '=', 'L');
+        $produto_prestacoes_busca = "'" . $produto_prestacoes_busca->pluck('Metodologia')->implode(',') . "'";
+
+        $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
 
 
         if ($dataFecho == $dataActual) {
@@ -66,6 +82,8 @@ class ComprovativosController extends Controller
         $LOAN = "'DS/280890'";
 
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
+
+
 
         if ($tipoDeBusca == 1) {
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
@@ -92,14 +110,29 @@ class ComprovativosController extends Controller
                 $Bases = "'" . $request->agencia_imput . "'";
             }
 
+            if ($tipoProdutoPT) {
+                if ($request->produto_prestacao !== 'TL') {
+                    $produto_prestacoes_busca = "'" . $request->produto_prestacao . "'";
+
+                }
+                $produtos_geral_busca = $produto_prestacoes_busca;
+            }
+
+            if ($tipoProdutoPP) {
+                if ($request->produto_poupanca !== 'TS') {
+                    $produto_poupancas_busca = "'" . $request->produto_poupanca . "'";
+                }
+                $produtos_geral_busca = $produto_poupancas_busca;
+            }
+
             $TIPO = $tipoDeBusca;
         }
 
 
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO);
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca);
 
-        $lista_produtos = TKxClProdutoModel::getProdutos();
+
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
@@ -169,7 +202,9 @@ class ComprovativosController extends Controller
                 'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
                 'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
                 'data_inicio' => $request->input('data_inicio_imput', ''),
-                'data_fim' => $request->input('data_fim_imput', '')
+                'data_fim' => $request->input('data_fim_imput', ''),
+                'filtrar_prestacoes' => (bool) $request->input('filtrar_prestacoes', true),
+                'filtrar_poupancas' => (bool) $request->input('filtrar_poupancas', true),
             ],
             'page' => (int) $request->input('page', 1),
             'bases' => $BasesOperacaoAgencias,
@@ -187,7 +222,8 @@ class ComprovativosController extends Controller
             'lista_pendentes' => $lista_pendentes,
             'totalPendente' => $lista_pendentes->count(),
             'dataInicioPeriodo' => $DataInicioFormatada,
-            'dataFimPeriodo' => $DataFimFormatada
+            'dataFimPeriodo' => $DataFimFormatada,
+
         ]);
     }
 
