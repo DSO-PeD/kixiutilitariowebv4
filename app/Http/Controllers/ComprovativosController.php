@@ -200,7 +200,8 @@ class ComprovativosController extends Controller
                 'search' => $request->input('search_input', ''),
                 'lnr' => $request->input('lnr_imput', ''),
                 'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
-                'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
+                'agencia' => $request->input('agencia_imput', default: 'T'), // Valor padrão 'T' (Todas)
+                'formaPagamento' => $request->input('forma_pagamento', 'TP'), // Valor padrão 'T' (Todas)
                 'data_inicio' => $request->input('data_inicio_imput', ''),
                 'data_fim' => $request->input('data_fim_imput', ''),
                 'filtrar_prestacoes' => (bool) $request->input('filtrar_prestacoes', true),
