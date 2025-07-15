@@ -29,8 +29,20 @@ class RecuperacaoModel extends Model
         'BaseOperacao',
         'estado',
         'color',
-        'dias_epe'
+        'dias_epe',
+        'id_comissoestaxas',
+        'comissao_bruta',
+        'desconto_IRT',
+        'valor_a_receber'
     ];
+
+
+    public static function listarComissoesETaxas()
+    {
+        $comissoes = DB::select("SELECT * FROM comissoesmaturidade");
+
+        return $comissoes;
+    }
 
     public static function listarBasesDeConsultaRecuperacao()
     {
@@ -112,7 +124,7 @@ class RecuperacaoModel extends Model
     }
 
     //Funcão: listar todas recuperações Owner: WSA
-    public static function getRecuperacoes($NumeroRegistroTabela, $tipo, $estado = null, $agencia = null, $dataInicio = null, $dataFim = null, $loan_number)
+    public static function getRecuperacoes($NumeroRegistroTabela, $tipo, $estado = null, $agencia = null, $dataInicio = null, $dataFim = null, $loan_number, $recuperador)
     {
 
 
@@ -123,6 +135,84 @@ class RecuperacaoModel extends Model
             ->join('tkxusutilizador as util', 'util.UtCodigo', '=', 'rec.UtCodigo')
             ->join('comprovativos as comp', 'comp.id', '=', 'id_comprovativo')
             ->join('tkxagencias as ag', 'ag.OfIdentificador', '=', 'rec.BaseOperacao')
+            ->join('comissoesmaturidade as cm', 'cm.id', '=', 'rec.id_comissoestaxas')
+            ->join('cpvtreconciliacao as compr', 'compr.idcomprovativo', '=', 'rec.id_comprovativo')
+            ->select(
+                'rec.id',
+                'rec.CiFecha',
+                'util.UtCodigo',
+                'util.UtNome',
+                'rec.ReBuDadoOrigem',
+                'rec.ReBuReferencia',
+                'rec.ReBuMontante',
+                'rec.ReBuData',
+                'rec.id_recuperador',
+                'rec.ReBuDataLPF',
+                'r.nome_recuperador',
+                'r.Imagen',
+                'rec.id_comprovativo',
+                'rec.comissao_bruta',
+                'rec.desconto_IRT',
+                'rec.valor_a_receber',
+                'est.descricao_estado as estado',
+                'rec.id_estado',
+                'rec.BaseOperacao',
+                'rec.mes_ano_pagamento',
+                'rec.obs',
+                'util.obs_regista',
+                'comp.infoadicional',
+                'cm.prazo_maturidade',
+                'cm.taxa_comissao_percent',
+                'compr.voucher',
+                'est.color as color',
+                'est.fa_icon',
+                'est.dias_epe',
+                'est.elimina_registro',
+                'ag.OfNombre'
+
+            )
+            ->orderByDesc('CiFecha');
+
+        if ($tipo == 3) {
+            $query->where('rec.ReBuDadoOrigem', '=', $loan_number);
+        } elseif ($tipo == 4) {
+
+            $agenciaArray = explode(',', $agencia);
+            $estadoArray = explode(',', $estado);
+
+
+
+            if ($recuperador !== '0') {
+                $recuperadorArray = explode(',', $recuperador);
+                $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray)->whereIn('rec.id_recuperador', $recuperadorArray);
+            } else {
+                $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray);
+            }
+        } else {
+            $query->limit($NumeroRegistroTabela);
+        }
+
+        $results = $query->get();
+
+
+
+        return $results;
+    }
+
+
+    public static function getTesourariaRecuperacoes($NumeroRegistroTabela, $tipo, $estado = null, $agencia = null, $dataInicio = null, $dataFim = null, $loan_number)
+    {
+
+
+
+        $query = DB::table('recuperacao as rec')
+            ->join('estado as est', 'est.id', '=', 'rec.id_estado')
+            ->join('recuperador as r', 'r.id', '=', 'rec.id_recuperador')
+            ->join('tkxusutilizador as util', 'util.UtCodigo', '=', 'rec.UtCodigo')
+            ->join('comprovativos as comp', 'comp.id', '=', 'id_comprovativo')
+            ->join('tkxagencias as ag', 'ag.OfIdentificador', '=', 'rec.BaseOperacao')
+            ->join('comissoesmaturidade as cm', 'cm.id', '=', 'rec.id_comissoestaxas')
+            ->join('cpvtreconciliacao as compr', 'compr.idcomprovativo', '=', 'rec.id_comprovativo')
             ->select(
                 'rec.id',
                 'rec.CiFecha',
@@ -135,22 +225,33 @@ class RecuperacaoModel extends Model
                 'rec.ReBuDataLPF',
                 'r.nome_recuperador',
                 'rec.id_comprovativo',
+                'rec.comissao_bruta',
+                'rec.desconto_IRT',
+                'rec.valor_a_receber',
                 'est.descricao_estado as estado',
                 'rec.id_estado',
                 'rec.BaseOperacao',
+                'rec.mes_ano_pagamento',
                 'rec.obs',
                 'util.obs_regista',
                 'comp.infoadicional',
+                'cm.prazo_maturidade',
+                'cm.taxa_comissao_percent',
+                'compr.voucher',
                 'est.color as color',
                 'est.fa_icon',
                 'est.dias_epe',
                 'est.elimina_registro',
                 'ag.OfNombre'
+
             )
             ->orderByDesc('CiFecha');
 
+        $query->whereIn('rec.id_estado', [14, 15]);
+
+
         if ($tipo == 3) {
-            $query->where('rec.ReBuDadoOrigem', '=', $loan_number);
+            $query->where('rec.ReBuDadoOrigem', '=', $loan_number)->whereIn('rec.id_estado', [14, 15]);
         } elseif ($tipo == 4) {
 
             $agenciaArray = explode(',', $agencia);
@@ -166,6 +267,7 @@ class RecuperacaoModel extends Model
 
         return $results;
     }
+
 
     //Funcão: pegar montante e quantidade de recuperações de uma agencia e estado especifico Owner: WSA
     public static function getRecuperacoesEstatistica($tipo, $estado, $agencia, $dataInicio, $dataFim)

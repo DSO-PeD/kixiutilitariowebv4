@@ -11,6 +11,7 @@ use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
+use App\Models\TKxClTipopagamentoModel;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,7 @@ class CpvtReconciliacaoController extends Controller
         $tipoProdutoPT = $request->filtrar_prestacoes;
 
         $lista_produtos = TKxClProdutoModel::getProdutos();
+        $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
         $dataFecho = $resultagencia_user->DataFecho;
@@ -64,6 +66,7 @@ class CpvtReconciliacaoController extends Controller
         $produto_prestacoes_busca = "'" . $produto_prestacoes_busca->pluck('Metodologia')->implode(',') . "'";
 
         $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
+        $formaspagamento_geral = "'" . $lista_das_formaspagamento->pluck('FormaPago')->implode(',') . "'";
 
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
         $ESTADO = "'" . $ids_estados . "'";
@@ -117,7 +120,7 @@ class CpvtReconciliacaoController extends Controller
                 $Bases = "'" . $request->agencia_imput . "'";
             }
 
-            if ($tipoProdutoPT) {
+            if ($tipoProdutoPT && !$tipoProdutoPP) {
                 if ($request->produto_prestacao !== 'TL') {
                     $produto_prestacoes_busca = "'" . $request->produto_prestacao . "'";
 
@@ -125,19 +128,23 @@ class CpvtReconciliacaoController extends Controller
                 $produtos_geral_busca = $produto_prestacoes_busca;
             }
 
-            if ($tipoProdutoPP) {
+            if ($tipoProdutoPP && !$tipoProdutoPT) {
                 if ($request->produto_poupanca !== 'TS') {
                     $produto_poupancas_busca = "'" . $request->produto_poupanca . "'";
                 }
                 $produtos_geral_busca = $produto_poupancas_busca;
             }
+            if ($request->forma_pagamento !== 'TP') {
+                $formaspagamento_geral = "'" . $request->forma_pagamento . "'";
+            }
+
 
             $TIPO = $tipoDeBusca;
         }
 
 
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca);
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, $formaspagamento_geral);
 
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
@@ -179,6 +186,7 @@ class CpvtReconciliacaoController extends Controller
                 'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
                 'voucher' => $item->voucher,
+                'FormaPagoN' => $item->FormaPagoN,
                 'descricao' => $item->descricao,
                 'operadordcf' => $item->operadordcf,
                 'datareconciliacao' => $item->datareconciliacao,
@@ -208,6 +216,7 @@ class CpvtReconciliacaoController extends Controller
                 'data_fim' => $request->input('data_fim_imput', ''),
                 'filtrar_prestacoes' => (bool) $request->input('filtrar_prestacoes', true),
                 'filtrar_poupancas' => (bool) $request->input('filtrar_poupancas', true),
+                'formaPagamento' => $request->input('forma_pagamento', 'TP')
             ],
             'page' => (int) $request->input('page', 1),
             'bases' => $BasesOperacaoAgencias,
@@ -215,6 +224,7 @@ class CpvtReconciliacaoController extends Controller
             'bancos' => $lista_banco,
             'contas' => $lista_bancos_contas,
             'tipocomprovativos' => $TipoComprovativo,
+            'formaspagamentos' => $lista_das_formaspagamento,
             'estados' => $estados,
             'total' => $total,
             'montantetotal' => $totalMontante,

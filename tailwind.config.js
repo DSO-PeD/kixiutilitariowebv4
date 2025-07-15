@@ -6,7 +6,12 @@ export default {
         "./resources/**/*.vue",
     ],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                sans: ['Titillium Web', 'sans-serif'], // Define como fonte padrão
+                titillium: ['Titillium Web', 'sans-serif'] // Ou como uma classe separada
+            },
+        },
     },
     plugins: [],
 }

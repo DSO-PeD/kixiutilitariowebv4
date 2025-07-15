@@ -27,20 +27,22 @@
 
 
         <div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                <!-- Coluna 1: Loan Number -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Loan Number</label>
-                    <button class="btn btn-outline-consulta flex items-center gap-2 w-full justify-center"
-                        @click="showModalLoan = true">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        Clicar Aqui
-                    </button>
-                </div>
+            <!-- Filtros superiores -->
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <!-- Coluna 1: Botão Loan -->
+
+
+                <button class="btn btn-outline-consulta flex items-center gap-2 w-full justify-center"
+                    @click="showModalLoan = true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Loan Number
+                </button>
+
 
                 <!-- Coluna 2: Datas -->
                 <div class="col-span-2 sm:col-span-1">
@@ -69,126 +71,145 @@
                     </div>
                 </div>
 
-                <!-- Coluna 3: Estado -->
-                <div class="col-span-2 sm:col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar
-                        Agência</label>
-                    <select v-model="filtro.agencia"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px]">
-                        <option disabled :value="'s/a'">Escolha agência</option>
-                        <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
-                            :key="agencia.OfIdentificador">
-                            {{ agencia.OfIdentificador }} - {{ agencia.OfNombre }}
-                        </option>
-                        <option :value="'T'">Todas que tenho acesso</option>
-                    </select>
+                <!-- Coluna 3: Forma de Pagamento -->
+                <div class="space-y-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
+                    <div class="relative">
+                        <select v-model="filtro.formaPagamento"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
 
+                            <option v-for="formapgt in formaspagamentos" :value="formapgt.FormaPago"
+                                :key="formapgt.FormaPago">
+                                {{ formapgt.FormaPagoN }}
+                            </option>
+                            <option :value="'TP'">Todas formas</option>
 
-                </div>
-
-                <!-- Coluna 4: Agência + Checkboxes -->
-                <div class="col-span-2 sm:col-span-1">
-                    <div class="flex flex-col md:flex-row md:items-end gap-2 h-full">
-                        <!-- Combobox Agência -->
-                        <div class="flex-1 ">
-                            <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar
-                                Estado</label>
-                            <select v-model="filtro.estado" class="input input-bordered w-full text-sm py-2 h-[42px]">
-                                <option disabled :value="'s/e'">Escolha </option>
-                                <option v-for="estado in $page.props.estados" :value="Number(estado.id)"
-                                    :key="estado.id">
-                                    {{ estado.descricao_estado }}
-                                </option>
-                                <option :value="28">Todos </option>
-                            </select>
-                        </div>
-                        &VeryThinSpace;
-
-                        <!-- Checkboxes -->
-                        <div class="flex flex-col gap-2">
-
-                            <!-- Checkbox Prestações -->
-                            <div class="flex items-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" v-model="filtro.filtrarPrestacoes" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2
-                                        peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full
-                                        peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
-                                        after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
-                                        after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600">
-                                    </div>
-                                    <span
-                                        class="ml-2 text-sm text-gray-600 whitespace-nowrap font-semibold">Prestações(Capital+Juro)
-                                    </span>
-                                </label>
-                            </div>
-
-                            <!-- Checkbox Poupanças -->
-                            <div class="flex items-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" v-model="filtro.filtrarPoupancas" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2
-                                    peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full
-                                    peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
-                                    after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
-                                    after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600">
-                                    </div>
-                                    <span
-                                        class="ml-2 text-sm text-gray-600 whitespace-nowrap font-semibold">Poupanças</span>
-                                </label>
-                            </div>
-
-                        </div>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Coluna 5: Comboboxes condicionais -->
-                <div class="col-span-2 sm:col-span-1">
-                    <!-- Combobox Prestações -->
-                    <div v-if="filtro.filtrarPrestacoes && !filtro.filtrarPoupancas">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Produto de Prestações</label>
-                        <select v-model="filtro.produtoPrestacao"
-                            class="input input-bordered w-full bg-white border border-gray-300 rounded-md  shadow-sm focus:border-green-500 focus:ring-green-500 text-sm py-2 h-[42px]">
-                            <option value="TL">Todos os produtos</option>
-                            <option
-                                v-for="produto in produtos.filter(p => p.TipoProduto === 'L' || p.TipoProduto === 'G')"
-                                :key="produto.Metodologia" :value="produto.Metodologia">
-                                {{ produto.PoAgrupado }}
+                <!-- Coluna 4: Agência -->
+                <div class="space-y-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Agência</label>
+                    <div class="relative">
+                        <select v-model="filtro.agencia"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
+                            <option disabled :value="'s/a'">Escolha agência</option>
+                            <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
+                                :key="agencia.OfIdentificador">
+                                {{ agencia.OfIdentificador }} - {{ agencia.OfNombre }}
                             </option>
+                            <option :value="'T'">Todas que tenho acesso</option>
                         </select>
-
-
                     </div>
+                </div>
 
-                    <!-- Combobox Poupanças -->
-                    <div v-if="filtro.filtrarPoupancas && !filtro.filtrarPrestacoes">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Produto de Poupanças</label>
-                        <select v-model="filtro.produtoPoupanca"
-                            class="input input-bordered w-full bg-white border border-gray-300 rounded-md  shadow-sm focus:border-green-500 focus:ring-green-500 text-sm py-2 h-[42px]">
-                            <option value="TS">Todos os produtos</option>
-                            <option
-                                v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
-                                :key="produto.Metodologia" :value="produto.Metodologia">
-                                {{ produto.PoAgrupado }}
+                <!-- Coluna 5: Estado -->
+                <div class="space-y-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <div class="relative">
+                        <select v-model="filtro.estado"
+                            class="input input-bordered w-full text-sm py-2 h-[42px] bg-white">
+                            <option disabled :value="'s/e'">Escolha</option>
+                            <option v-for="estado in $page.props.estados" :value="Number(estado.id)" :key="estado.id">
+                                {{ estado.descricao_estado }}
                             </option>
+                            <option :value="28">Todos</option>
                         </select>
-
-
                     </div>
                 </div>
             </div>
 
-            <div class="mt-4 flex justify-end">
-                <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
+            <!-- Filtros inferiores (checkboxes e produtos) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+                <!-- Checkbox Prestações -->
+                <div class="flex items-center bg-white p-2 rounded border border-gray-200">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" v-model="filtro.filtrarPrestacoes" class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2
+                    peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full
+                    peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
+                    after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
+                    after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600">
+                        </div>
+                        <span class="ml-2 text-sm text-gray-600 whitespace-nowrap font-semibold">
+                            Prestações (Capital+Juro)
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Checkbox Poupanças -->
+                <div class="flex items-center bg-white p-2 rounded border border-gray-200">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" v-model="filtro.filtrarPoupancas" class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2
+                    peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full
+                    peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
+                    after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
+                    after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600">
+                        </div>
+                        <span class="ml-2 text-sm text-gray-600 whitespace-nowrap font-semibold">
+                            Poupanças
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Combobox Produtos (Conditional) -->
+                <div v-if="filtro.filtrarPrestacoes || filtro.filtrarPoupancas" class="space-y-1">
+                    <!--label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ filtro.filtrarPrestacoes && !filtro.filtrarPoupancas ? 'Produto de Prestações' :
+                            !filtro.filtrarPrestacoes && filtro.filtrarPoupancas ? 'Produto de Poupanças' : 'Produto' }}
+                    </label-->
+                    <select v-if="filtro.filtrarPrestacoes && !filtro.filtrarPoupancas"
+                        v-model="filtro.produtoPrestacao"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
+                        <option disabled :value="'s/pl'">
+                            {{ filtro.filtrarPrestacoes && !filtro.filtrarPoupancas ? 'Produtos de Prestações(Capital + Juros) ' : !filtro.filtrarPrestacoes && filtro.filtrarPoupancas ? 'Produto de Poupanças' :
+                            'Produto' }}
+                        </option>
+                        <option v-for="produto in produtos.filter(p => p.TipoProduto === 'L' || p.TipoProduto === 'G')"
+                            :key="produto.Metodologia" :value="produto.Metodologia">
+                            {{ produto.PoAgrupado }}
+                        </option>
+                        <option value="TL">Todos os produtos de Prestações</option>
+
+                    </select>
+
+                    <select v-else-if="filtro.filtrarPoupancas && !filtro.filtrarPrestacoes"
+                        v-model="filtro.produtoPoupanca"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
+
+
+                        <option disabled :value="'s/ts'">
+                            {{ filtro.filtrarPrestacoes && !filtro.filtrarPoupancas ? 'Produtos de Prestações(Capital +   Juros) ' : !filtro.filtrarPrestacoes && filtro.filtrarPoupancas ? 'Produto de Poupanças' :
+                            'Produto' }}
+                        </option>
+                        <option v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
+                            :key="produto.Metodologia" :value="produto.Metodologia">
+                            {{ produto.PoAgrupado }}
+                        </option>
+                        <option value="TS">Todos os produtos de Poupanças</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="mt-4 flex justify-end space-x-2">
+                <button @click="resetarFiltros" class="btn btn-outline-secondary flex items-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                     </svg>
                     Limpar Filtros
                 </button>
-                <button @click="aplicarFiltros" class="btn btn-primary">
-                    Aplicar Filtros &MediumSpace;
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
+                <button @click="aplicarFiltros" class="btn btn-primary flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
+                    Aplicar Filtros
                 </button>
             </div>
         </div>
@@ -200,7 +221,7 @@
         <div class="rounded-lg p-4 w-full bg-gray-100 border border-white shadow-sm ">
             <!-- Cabeçalho do período -->
             <div class="flex items-center justify-between  pb-4 border-b border-white">
-                <div class="bg-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 border border-gray-200">
+                <div class="bg-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 ">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -226,7 +247,8 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-gray-500 font-medium">TOTAL DE MONTANTE DE REEMBOLSOS (Principal+Juros)</p>
+                        <p class="text-xs text-gray-500 font-medium">TOTAL DE MONTANTE DE REEMBOLSOS (Principal+Juros)
+                        </p>
                         <p class="text-xl font-bold text-green-700">{{ formatCurrency(montantetotal) }} AKZ</p>
                     </div>
 
@@ -258,7 +280,7 @@
 
 
         <!-- Card Principal -->
-        <div class="bg-white rounded-lg shadow-md p-4 md:p-6 w-full min-w-max">
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
 
 
 
@@ -309,16 +331,16 @@
 
             <!-- Tabela Responsiva -->
             <div class="overflow-x-auto w-full">
-                <table class="w-full min-w-[1024px] divide-y divide-gray-200 lg:min-w-0">
+                <table class="w-full   divide-y divide-gray-200  table-auto">
                     <!-- lg:min-w-0 para desktop -->
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px]">
+                                class="w-12 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[10px]">
                                 #
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -328,8 +350,9 @@
                                     Arquivo
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider "
                                 data-label="Registado">
+
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -403,7 +426,7 @@
                                     Produto
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            <th class="w-28 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 data-label="Montante">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -415,7 +438,19 @@
                                     Montante
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            <th class="w-100 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                data-label="Forma de Pagamento">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
+                                    </svg>
+
+                                    Forma de Pagamento
+                                </div>
+                            </th>
+                            <th class="w-10 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 data-label="Estado">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -439,7 +474,7 @@
                             <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
                                 {{ calcularNumeroLinha(index) }}
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="px-4 py-4 whitespace-nowrap items-center">
                                 <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
                                     target="_blank" class="text-blue-600 hover:underline flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -447,9 +482,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                                     </svg>
-                                    Visualizar
+                                    Ver
                                 </a>
-                                <span v-else class="text-gray-400 italic">Sem arquivo</span>
+                                <span v-else class="text-gray-400 italic">S/A</span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.data }}
@@ -486,6 +521,9 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600 bg-yellow-50">
                                 {{ formatCurrency(comprovativo.montante) }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm ">
+                                {{ comprovativo.FormaPagoN }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
 
@@ -675,8 +713,9 @@ const filtro = ref({
         ? Boolean(Number(props.filters.filtrar_poupancas))
         : true,
 
-    produtoPrestacao: '',     // For loan products combobox
-    produtoPoupanca: ''       // For savings products combobox
+    produtoPrestacao: props.filters.produtoPrestacao || 'TL',     // For loan products combobox
+    produtoPoupanca: props.filters.produtoPoupanca || 'TS',       // For savings products combobox
+    formaPagamento: props.filters.formaPagamento || 'TP'
 
 
 })
@@ -735,6 +774,7 @@ const aplicarFiltros = () => {
         filtrar_poupancas: filtro.value.filtrarPoupancas ? 1 : 0,
         produto_prestacao: filtro.value.produtoPrestacao,
         produto_poupanca: filtro.value.produtoPoupanca,
+        forma_pagamento: filtro.value.formaPagamento,
         tipo: 4
     }, {
         preserveState: true,
@@ -753,7 +793,10 @@ const resetarFiltros = () => {
         estado: 28,
         agencia: 'T',
         dataInicioInput: '',
-        dataFimInput: ''
+        dataFimInput: '',
+        formaPagamento: 'TP',
+        produtoPrestacao: 'TL',
+        produtoPoupanca: 'TS',
     };
 
     router.get('/reconciliacao', {
@@ -836,6 +879,7 @@ const exportarParaExcel = () => {
                     'Cliente': comprovativo.cliente || '-',
                     'Produto': comprovativo.metodologia || '-',
                     'Voucher': comprovativo.voucher || '-',
+                    'Forma de Pagamento': comprovativo.FormaPagoN || '-',
                     'Descrição': comprovativo.descricao || '-',
                     'Banco': comprovativo.banco || '-',
                     'Conta Bancaria': comprovativo.conta || '-',
@@ -1009,7 +1053,10 @@ watch(() => props.filters, (newFilters) => {
         estado: newFilters.estado || 28,
         agencia: newFilters.agencia || 'T',
         dataInicioInput: newFilters.data_inicio || '',
-        dataFimInput: newFilters.data_fim || ''
+        dataFimInput: newFilters.data_fim || '',
+        formaPagamento: newFilters.formaPagamento || 'TP',
+        produtoPrestacao: newFilters.produtoPrestacao || 'TL',
+        produtoPoupanca: newFilters.produtoPoupanca || 'TS',
     }
 }, { immediate: true, deep: true })
 

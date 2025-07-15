@@ -209,11 +209,13 @@
                     <div class="relative">
                         <select v-model="filtro.formaPagamento"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
+
                             <option v-for="formapgt in formaspagamentos" :value="formapgt.FormaPago"
                                 :key="formapgt.FormaPago">
                                 {{ formapgt.FormaPagoN }}
                             </option>
-                            <option :value="'TP'">Todas</option>
+                            <option :value="'TP'">Todas formas</option>
+
                         </select>
                     </div>
                 </div>
@@ -293,21 +295,30 @@
                     <select v-if="filtro.filtrarPrestacoes && !filtro.filtrarPoupancas"
                         v-model="filtro.produtoPrestacao"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
-                        <option value="TL">Todos os produtos</option>
+                        <option disabled :value="'s/pl'">
+                            {{ filtro.filtrarPrestacoes && !filtro.filtrarPoupancas ? 'Produtos de  Prestações(Capital + Juros)' : !filtro.filtrarPrestacoes && filtro.filtrarPoupancas ? 'Produto de Poupanças' : 'Produto' }}
+                        </option>
                         <option v-for="produto in produtos.filter(p => p.TipoProduto === 'L' || p.TipoProduto === 'G')"
                             :key="produto.Metodologia" :value="produto.Metodologia">
                             {{ produto.PoAgrupado }}
                         </option>
+                        <option value="TL">Todos os produtos de Prestações</option>
+
                     </select>
 
                     <select v-else-if="filtro.filtrarPoupancas && !filtro.filtrarPrestacoes"
                         v-model="filtro.produtoPoupanca"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px] bg-white">
-                        <option value="TS">Todos os produtos</option>
+
+
+                        <option disabled :value="'s/ts'">
+                            {{ filtro.filtrarPrestacoes && !filtro.filtrarPoupancas ? 'Produtos de Prestações(Capital + Juros)' :  !filtro.filtrarPrestacoes && filtro.filtrarPoupancas ? 'Produto de Poupanças' : 'Produto' }}
+                        </option>
                         <option v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
                             :key="produto.Metodologia" :value="produto.Metodologia">
                             {{ produto.PoAgrupado }}
                         </option>
+                        <option value="TS">Todos os produtos de Poupanças</option>
                     </select>
                 </div>
             </div>
@@ -315,11 +326,11 @@
             <!-- Botões de ação -->
             <div class="mt-4 flex justify-end space-x-2">
                 <button @click="resetarFiltros" class="btn btn-outline-secondary flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                     </svg>
                     Limpar Filtros
                 </button>
                 <button @click="aplicarFiltros" class="btn btn-primary flex items-center">
@@ -734,6 +745,18 @@
                                 </div>
 
                             </th>
+                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
+                                    </svg>
+
+                                    Forma de Pagamento
+                                </div>
+
+                            </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -798,6 +821,9 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.voucher || '-' }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ comprovativo.FormaPagoN || '-' }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <button @click="abrirModalObservacaoDCF(comprovativo)"
@@ -1012,8 +1038,8 @@ const filtro = ref({
         ? Boolean(Number(props.filters.filtrar_poupancas))
         : true,
 
-    produtoPrestacao: '',     // For loan products combobox
-    produtoPoupanca: ''       // For savings products combobox
+    produtoPrestacao: props.filters.produtoPrestacao || 'TL',     // For loan products combobox
+    produtoPoupanca: props.filters.produtoPoupanca || 'TS',         // For savings products combobox
 })
 
 const filtroLoan = ref('')
@@ -1137,6 +1163,9 @@ const resetarFiltros = () => {
         lnr: '',
         estado: 28,
         agencia: 'T',
+        formaPagamento: 'TP',
+        produtoPrestacao: 'TL',
+        produtoPoupanca: 'TS',
         dataInicioInput: '',
         dataFimInput: ''
     };
@@ -1198,6 +1227,7 @@ const exportarParaExcel = () => {
                     'Cliente': comprovativo.cliente || '-',
                     'Produto': comprovativo.metodologia || '-',
                     'Voucher': comprovativo.voucher || '-',
+                    'Forma de Pagamento': comprovativo.FormaPagoN || '-',
                     'Descrição da DCF': comprovativo.descricao || '-',
                     'Banco': comprovativo.banco || '-',
                     'Conta Bancaria': comprovativo.conta || '-',
@@ -1396,6 +1426,9 @@ watch(() => props.filters, (newFilters) => {
         lnr: newFilters.lnr || '',
         estado: newFilters.estado || 28,
         agencia: newFilters.agencia || 'T',
+        formaPagamento: newFilters.formaPagamento || 'TP',
+        produtoPrestacao: newFilters.produtoPrestacao || 'TL',
+        produtoPoupanca: newFilters.produtoPoupanca || 'TS',
         dataInicioInput: newFilters.data_inicio || '',
         dataFimInput: newFilters.data_fim || ''
     }

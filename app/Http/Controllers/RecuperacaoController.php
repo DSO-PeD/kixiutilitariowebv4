@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ComissoesMaturidadeModel;
 use App\Models\RecuperacaoModel;
 use App\Models\RecuperadorModel;
 use App\Models\TKxAgenciaModel;
 use App\Models\EstadosModel;
+use App\Models\RecUtilizEstadModel;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -24,6 +28,8 @@ class RecuperacaoController extends Controller
     //Funcão: altera para exportado e cria script KR_DATA_HOJE.sql Owner: Wawingi
     public function viewRecuperacoes(Request $request)
     {
+
+
         $authenticatedUser = Auth::user();
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
@@ -34,6 +40,7 @@ class RecuperacaoController extends Controller
 
         $Bases = $resultagencia_user->BasesOperacao;
         $ESTADO = $ids_estados;
+        $RECUPERADOR = '0';
 
 
         $tipo = $request->tipo;
@@ -57,15 +64,18 @@ class RecuperacaoController extends Controller
             }
 
 
+
+
         }
 
-        $lista_recuperacoes = RecuperacaoModel::getRecuperacoes($NumeroRegistroTabela, $tipo, $estado, $agencia, $dataIn, $dataF, $loan);
+        $lista_recuperacoes = RecuperacaoModel::getRecuperacoes($NumeroRegistroTabela, $tipo, $estado, $agencia, $dataIn, $dataF, $loan, $RECUPERADOR);
 
 
         //Estatistica em função do tipo de filtro da recuperação
         $estatistica = RecuperacaoModel::getRecuperacoesEstatistica($tipo, $estado, $agencia, $dataIn, $dataF);
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $this->user->UtAgencia)->first();
+        $listacomissoes_taxas = RecuperacaoModel::listarComissoesETaxas();
 
 
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
@@ -90,9 +100,40 @@ class RecuperacaoController extends Controller
 
 
 
-        //dd($totalMontante);
 
+
+        // dd($lista_recuperacoes);
         $recuperacoes_list = $lista_recuperacoes->map(function ($item) {
+
+            $meses = [
+                '01' => 'Janeiro',
+                '02' => 'Fevereiro',
+                '03' => 'Março',
+                '04' => 'Abril',
+                '05' => 'Maio',
+                '06' => 'Junho',
+                '07' => 'Julho',
+                '08' => 'Agosto',
+                '09' => 'Setembro',
+                '10' => 'Outubro',
+                '11' => 'Novembro',
+                '12' => 'Dezembro',
+            ];
+
+            if (!empty($item->mes_ano_pagamento)) {
+                $MES = explode('-', $item->mes_ano_pagamento);
+
+                // Garante que o valor do mês tenha dois dígitos (ex: 08)
+                $mes = str_pad($MES[1], 2, '0', STR_PAD_LEFT);
+
+                // Protege caso o mês seja inválido
+                $mesAnoFormatado = isset($meses[$mes])
+                    ? $meses[$mes] . '/' . $MES[0]
+                    : 'Mês inválido';
+            } else {
+                $mesAnoFormatado = 'Não definido';
+            }
+
             return [
                 'id' => $item->id,
                 //'data' => $item->CiFecha,
@@ -109,10 +150,18 @@ class RecuperacaoController extends Controller
                 'id_comprovativo' => $item->id_comprovativo,
                 'id_estado' => $item->id_estado,
                 'referencia' => $item->ReBuReferencia,
-                //'voucher' => $item->voucher,
+                'voucher' => $item->voucher,
+                'mes_ano_pagamento' => $mesAnoFormatado,
+                'valor_a_receber' => $item->valor_a_receber,
+                'desconto_IRT' => $item->desconto_IRT,
+                'comissao_bruta' => $item->comissao_bruta,
+                'prazo_maturidade' => $item->prazo_maturidade,
+                'taxa_comissao_percent' => $item->taxa_comissao_percent,
                 'BaseOperacao' => $item->BaseOperacao,
                 'dias_epe' => $item->dias_epe,
                 'OfNombre' => $item->OfNombre,
+                'obs'=>$item->obs,
+                'Imagen'=>$item->Imagen,
                 // 'datareconciliacao' => $item->datareconciliacao,
                 // 'montante' => $item->ReBuMontante,
                 // Mantenha todos os campos necessários para filtros client-side
@@ -139,11 +188,12 @@ class RecuperacaoController extends Controller
             'BasesOperacao' => $BasesOperacao,
             'lista_agencias_consultas' => $lista_agencias_consultas,
             'listar_voucher_para_recuperacao' => $listar_voucher_para_recuperacao,
-           'estatistica' => $estatistica,
+            'estatistica' => $estatistica,
             'page' => (int) $request->input('page', 1),
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
+            'listacomissoes_taxas' => $listacomissoes_taxas
         ]);
     }
 
@@ -172,6 +222,12 @@ class RecuperacaoController extends Controller
         $contaBancaria = $request->selectBancoConta;
         $baseOpercao = $request->textBaseOperacao;
         $baCodigo = $request->txtBaCodigo;
+
+        $ComissaoMaturidade = ComissoesMaturidadeModel::where('id', '=', $request->selectMaturidadeCredito)->first();
+
+        $comissao_bruta = $money * ($ComissaoMaturidade->taxa_comissao_percent / 100);
+        $desconto_IRT = $comissao_bruta * (6.5 / 100);
+        $valor_a_receber = $comissao_bruta - $desconto_IRT;
 
 
         $result_recuperacao = RecuperacaoModel::verificarSeBorderouxExisteNaRecuperacao($idComprovativo);
@@ -203,7 +259,11 @@ class RecuperacaoController extends Controller
                 'BuContaBancaria' => $contaBancaria,
                 'Eliminado' => 0,
                 'BaseOperacao' => $baseOpercao,
-                'UtCodigo' => $authenticatedUser->UtCodigo
+                'UtCodigo' => $authenticatedUser->UtCodigo,
+                'id_comissoestaxas' => $request->selectMaturidadeCredito,
+                'comissao_bruta' => $comissao_bruta,
+                'desconto_IRT' => $desconto_IRT,
+                'valor_a_receber' => $valor_a_receber
 
             ]);
         }
@@ -332,4 +392,59 @@ class RecuperacaoController extends Controller
             return Redirect::back()->with('error', 'Erro ao Confirmar');
         }
     }
+    public function confirmarMultiplas(Request $request)
+    {
+
+
+        //$month = $request->input('month');
+        //$year = $request->input('year');
+        $ids = $request->input('ids');
+        $estado_id = $request->input('id_estado');
+        $motivo_obs = $request->input('obs');
+
+
+        $MES_ANO_PAGAMENTO = $request->input('mes_para_pagamento');
+
+        $authenticatedUser = Auth::user();
+
+        try {
+            DB::beginTransaction();
+
+            // Update records
+            $updated = RecuperacaoModel::whereIn('id', $ids)
+                ->update([
+                    'mes_ano_pagamento' => $MES_ANO_PAGAMENTO,
+                    'id_estado' => $estado_id,
+                    'obs' => $motivo_obs
+                ]);
+
+            if ($updated) {
+
+                // Create records for each ID
+                foreach ($ids as $id) {
+
+                    RecUtilizEstadModel::create([
+                        'UtCodigo' => $authenticatedUser->UtCodigo,
+                        'id_recuperacao' => $id,
+                        'id_estado' => $estado_id,
+                        'observacoes'=>$motivo_obs
+                    ]);
+                }
+
+                DB::commit();
+                return back()->with('success', 'Recuperações confirmadas com sucesso!');
+            } else {
+                DB::rollBack();
+                return back()->with('error', 'Nenhum registro foi atualizado.');
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Ocorreu um erro ao confirmar recuperações: ' . $e->getMessage());
+        }
+
+
+    }
+
+
+
 }

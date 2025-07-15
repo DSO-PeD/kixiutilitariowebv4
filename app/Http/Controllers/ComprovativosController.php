@@ -42,6 +42,7 @@ class ComprovativosController extends Controller
         $produto_poupancas = "";
         $produto_prestacoes = "";
         $lista_produtos = TKxClProdutoModel::getProdutos();
+        $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
 
 
 
@@ -60,10 +61,12 @@ class ComprovativosController extends Controller
         $produto_poupancas_busca = collect($lista_produtos)->where('TipoProduto', '=', 'S');
         $produto_poupancas_busca = "'" . $produto_poupancas_busca->pluck('Metodologia')->implode(',') . "'";
 
+
         $produto_prestacoes_busca = collect($lista_produtos)->where('TipoProduto', '=', 'L');
         $produto_prestacoes_busca = "'" . $produto_prestacoes_busca->pluck('Metodologia')->implode(',') . "'";
 
         $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
+        $formaspagamento_geral = "'" . $lista_das_formaspagamento->pluck('FormaPago')->implode(',') . "'";
 
 
         if ($dataFecho == $dataActual) {
@@ -110,7 +113,7 @@ class ComprovativosController extends Controller
                 $Bases = "'" . $request->agencia_imput . "'";
             }
 
-            if ($tipoProdutoPT) {
+            if ($tipoProdutoPT && !$tipoProdutoPP) {
                 if ($request->produto_prestacao !== 'TL') {
                     $produto_prestacoes_busca = "'" . $request->produto_prestacao . "'";
 
@@ -118,11 +121,14 @@ class ComprovativosController extends Controller
                 $produtos_geral_busca = $produto_prestacoes_busca;
             }
 
-            if ($tipoProdutoPP) {
+            if ($tipoProdutoPP && !$tipoProdutoPT) {
                 if ($request->produto_poupanca !== 'TS') {
                     $produto_poupancas_busca = "'" . $request->produto_poupanca . "'";
                 }
                 $produtos_geral_busca = $produto_poupancas_busca;
+            }
+            if ($request->forma_pagamento !== 'TP') {
+                $formaspagamento_geral = "'" . $request->forma_pagamento . "'";
             }
 
             $TIPO = $tipoDeBusca;
@@ -130,12 +136,12 @@ class ComprovativosController extends Controller
 
 
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca);
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca,$formaspagamento_geral);
 
 
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
-        $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
+
         $estados = EstadosModel::getEstadosDCF('DCF');
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
@@ -176,6 +182,7 @@ class ComprovativosController extends Controller
                 'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
                 'voucher' => $item->voucher,
+                'FormaPagoN' => $item->FormaPagoN,
                 'descricao' => $item->descricao,
                 'operadordcf' => $item->operadordcf,
                 'datareconciliacao' => $item->datareconciliacao,
@@ -202,6 +209,8 @@ class ComprovativosController extends Controller
                 'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
                 'agencia' => $request->input('agencia_imput', default: 'T'), // Valor padrão 'T' (Todas)
                 'formaPagamento' => $request->input('forma_pagamento', 'TP'), // Valor padrão 'T' (Todas)
+                'produtoPrestacao' => $request->input('produto_prestacao', 'TL'),
+                'produtoPoupanca' => $request->input('produto_poupanca', 'TS'),
                 'data_inicio' => $request->input('data_inicio_imput', ''),
                 'data_fim' => $request->input('data_fim_imput', ''),
                 'filtrar_prestacoes' => (bool) $request->input('filtrar_prestacoes', true),

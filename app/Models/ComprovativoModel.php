@@ -39,9 +39,9 @@ class ComprovativoModel extends Model
         'color'
     ];
 
-    public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO,$PRODUTOS)
+    public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO,$PRODUTOS,$TIPOPAGAMENTOS)
     {
-        $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . "," . $ESTADO . "," .$PRODUTOS.")");
+        $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . "," . $ESTADO . "," .$PRODUTOS.",".$TIPOPAGAMENTOS.")");
 
 
         return $comprovativos2;

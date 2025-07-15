@@ -5,6 +5,7 @@ use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
 use App\Http\Controllers\RecuperacaoController;
 use App\Http\Controllers\ReportDomPDFController;
+use App\Http\Controllers\TesourariaController;
 use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
 use App\Http\Controllers\TokenController;
@@ -44,6 +45,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/listarEstados', [RecuperacaoController::class, 'listarEstados']);
     Route::get('/listarAgencias', [RecuperacaoController::class, 'listarAgencias']);
     Route::get('/confirmarRecuperacao', [RecuperacaoController::class, 'confirmarRecuperacao']);
+    Route::post('/confirmar-recuperacoes', [RecuperacaoController::class, 'confirmarMultiplas']);
+    Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
+
+
+    Route::get('/tesouraria', [TesourariaController::class, 'viewRecuperacoesTesouria'])->name('tesouraria');
+    Route::post('/confirmar-tesouraria', [TesourariaController::class, 'confirmarMultiplas']);
+
+
 });
 
 Route::inertia('/novoutilizador', 'Auth/Utilizador');
