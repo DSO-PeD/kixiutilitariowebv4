@@ -1,5 +1,6 @@
 <template>
-        <Head :title="`${$page.component}`" />
+
+    <Head :title="`${$page.component}`" />
 
 
 
@@ -8,16 +9,75 @@
 
 
         <!-- Main Content -->
-      <main class="flex-1 overflow-y-auto  ">
+        <main class="flex-1 overflow-y-auto  ">
             <!-- Welcome Banner -->
-            <div class="bg-gradient-to-r from-green-800 to-green-700  rounded-xl p-6 mb-8 text-white shadow-lg">
-                <div class="flex justify-between items-start">
-                    <div class="mb-3">
-                        <h1 class="text-2xl font-bold mb-2 text-orange-300">Olá, {{ $page.props.user.UtNome }}</h1>
-                        <p class="opacity-90 max-w-3xl text-gray-100">Seja Bem-vindo ao Kixi Utilitário - Sistema Para
-                            Controlo de Comprovativos e Cálculo de Desembolso</p>
+            <!-- Welcome Banner -->
+            <div
+                class="bg-gradient-to-r from-green-800 to-green-700 rounded-xl p-6 mb-8 text-white shadow-lg relative overflow-hidden">
+                <!-- Decorative elements -->
+                <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-white bg-opacity-10"></div>
+                <div class="absolute -right-5 -bottom-5 w-20 h-20 rounded-full bg-orange-300 bg-opacity-20"></div>
+
+                <div class="flex items-start relative z-10 gap-6">
+                    <!-- Icon container with better framing -->
+                    <div class="flex-shrink-0 p-3 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                            class="h-20 w-20 text-orange-300">
+                            <path fill-rule="evenodd"
+                                d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                                clip-rule="evenodd" />
+                        </svg>
                     </div>
-                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Versão 9</span>
+
+                    <!-- Main content area -->
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                            <!-- Text content -->
+                            <div class="space-y-2">
+                                <h1 class="text-3xl font-bold text-orange-300">Olá, {{ $page.props.user.UtNome }}</h1>
+                                <h4 class="text-xl font-thin text-orange-100 flex">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                        class="size-6">
+                                        <path fill-rule="evenodd"
+                                            d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0 1 12 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 0 1 7.5 5.455V5.25Zm7.5 0v.09a49.488 49.488 0 0 0-6 0v-.09a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5Zm-3 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                                            clip-rule="evenodd" />
+                                        <path
+                                            d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z" />
+                                    </svg>
+ &ThinSpace;
+                                    {{ $page.props.user.UtFuncao }}
+                                </h4>
+
+                                <div class="flex items-center gap-2 text-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                        class="w-5 h-5 text-orange-300">
+                                        <path
+                                            d="M19.006 3.705a.75.75 0 1 0-.512-1.41L6 6.838V3a.75.75 0 0 0-.75-.75h-1.5A.75.75 0 0 0 3 3v4.93l-1.006.365a.75.75 0 0 0 .512 1.41l16.5-6Z" />
+                                        <path fill-rule="evenodd"
+                                            d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <span>AGÊNCIA: {{ $page.props.session.agencia_principal }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Version info -->
+                            <div class="flex flex-col items-end">
+                                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">Kixi
+                                    Utilitário | Versão 9.1</span>
+                                <p class="text-xs text-white text-opacity-80 mt-2 text-right max-w-xs">
+                                    Seja Bem vindo,Sistema interno para o controlo de reembolsos,<br />
+                                    cálculos de desembolsos e recuperação de crédito.<br />
+                                    <span class="font-bold text-teal-300">Mais cliente, menos risco.</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Additional space for future content if needed -->
+                        <div class="mt-4 border-t border-white border-opacity-10 pt-3">
+                            <!-- Could add status indicators or quick actions here -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -45,7 +105,7 @@
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Seção DOP -->
-                <div class="bg-white rounded-xl shadow p-6">
+                <div class="bg-white rounded-xl shadow p-6" v-if="$page.props.user.UtAgencia !== 99">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="p-2 bg-blue-100 rounded-full">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
@@ -509,6 +569,7 @@ main::-webkit-scrollbar-thumb {
 .to-greenkixi-300 {
     --tw-gradient-to: #08583d;
 }
+
 .from-green-2808 {
     --tw-gradient-from: #28755a var(--tw-gradient-from-position);
     --tw-gradient-to: rgb(5 46 22 / 0) var(--tw-gradient-to-position);

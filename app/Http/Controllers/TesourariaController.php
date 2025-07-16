@@ -196,6 +196,8 @@ class TesourariaController extends Controller
 
 
         $ids = $request->input('ids');
+         $estado_id = $request->input('id_estado');
+        $motivo_obs = $request->input('obs');
 
 
         $MES_ANO_PAGAMENTO = $request->input('mes_para_pagamento');
@@ -209,7 +211,7 @@ class TesourariaController extends Controller
             $updated = RecuperacaoModel::whereIn('id', $ids)
                 ->update([
                     'data_do_pagamento' => $MES_ANO_PAGAMENTO,
-                    'id_estado' => 15
+                    'id_estado' => $estado_id
                 ]);
 
             if ($updated) {
@@ -220,12 +222,12 @@ class TesourariaController extends Controller
                     RecUtilizEstadModel::create([
                         'UtCodigo' => $authenticatedUser->UtCodigo,
                         'id_recuperacao' => $id,
-                        'id_estado' => 15
+                        'id_estado' => $estado_id
                     ]);
                 }
 
                 DB::commit();
-                return back()->with('success', 'Recuperações confirmadas com sucesso!');
+                return back()->with('success', 'Recuperações realizada com sucesso!');
             } else {
                 DB::rollBack();
                 return back()->with('error', 'Nenhum registro foi atualizado.');

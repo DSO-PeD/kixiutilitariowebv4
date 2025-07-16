@@ -1,18 +1,24 @@
 <template>
 
-    <Head title="Tesouraria Recuperações" />
+    <Head title="Recuperações DCF" />
     <div class="container mx-auto py-6 max-w-full">
 
 
         <!-- Cabeçalho -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
 
-                <h1 class="text-2xl font-bold text-green-950"> <i class="fas fa-cash-register text-5xl  text-green-950"></i> &ThinSpace;&ThinSpace; Tesouraria | Recuperações de Crédito</h1>
+                <h1 class="text-2xl font-bold text-green-950">
+
+                    <i class="fas fa-vote-yea text-5xl text-green-950"></i>
+                    &ThinSpace;&ThinSpace; Revisões de Recuperações de Créditos
+                </h1>
                 <p class="text-sm text-gray-600">Registros de Pagamentos </p>
             </div>
         </div>
         <hr class="py-2" />
+
+        <!-- Formulário de Recuperação -->
 
 
         <!-- Alertas -->
@@ -218,7 +224,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
-                       Validar Pagamento
+                        Validar Selecionados
                     </button>
                     <button @click="openPdfDialog" class="btn btn-outline-pdf flex items-center gap-2">
                         <i class="far fa-file-pdf"></i>
@@ -696,7 +702,7 @@
         <!-- Modal para seleção do mês de pagamento -->
         <Modal :show="showMonthDialog" @close="showMonthDialog = false" maxWidth="md">
             <div class="bg-white p-6 rounded-lg">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Validação de Pagamento - Recuperação</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Aprovar Recuperação</h3>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Estado <span
@@ -709,17 +715,17 @@
                     </select>
                 </div>
 
-                <!-- Input para mês de pagamento (mostrado apenas quando estado é "Pago") -->
-                <div class="mb-4" v-if="selectedEstado === 15">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Data de Pagamento<span
+                <!-- Input para mês de pagamento (mostrado apenas quando estado é "Confirmado")
+                <div class="mb-4" v-if="selectedEstado === 3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mês/Ano de Pagamento <span
                             class="text-red-500">*</span></label>
-                    <input type="date" v-model="selectedMonth"
+                    <input type="month" v-model="selectedMonth"
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         :min="minMonth" required />
-                </div>
+                </div>-->
 
-                <!-- Input para motivo (mostrado apenas quando estado é "Não confirmado") -->
-                <div class="mb-4" v-if="selectedEstado === 18">
+                <!-- Input para motivo (mostrado apenas quando estado é "Não Aprovado") -->
+                <div class="mb-4" v-if="selectedEstado === 16">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Motivo <span
                             class="text-red-500">*</span></label>
                     <textarea v-model="motivoNaoConfirmado"
@@ -1084,7 +1090,7 @@ const clientesFiltrados = computed(() => {
 });
 
 const estadosFiltrados = computed(() => {
-    return props.listar_estados.filter(estado => estado.id === 15 || estado.id === 18);
+    return props.listar_estados.filter(estado => estado.id === 14 || estado.id === 16);
 });
 
 // Função para submeter
@@ -1128,12 +1134,9 @@ const enviarConfirmacao = () => {
         return;
     }
 
-    if (selectedEstado.value === 15 && !selectedMonth.value) {
-        alert('Por favor, selecione a Data de pagamento');
-        return;
-    }
 
-    if (selectedEstado.value === 18 && !motivoNaoConfirmado.value) {
+
+    if (selectedEstado.value === 16 && !motivoNaoConfirmado.value) {
         alert('Por favor, digite o motivo da não confirmação');
         return;
     }
@@ -1142,11 +1145,10 @@ const enviarConfirmacao = () => {
     //const [year, month] = selectedMonth.value.split('-');
 
     // Enviar para o controlador
-    Inertia.post('/pagamento-tesouraria-recuperacao', {
+    Inertia.post('/aprovar-recuperacoes', {
         ids: selectedRecuperacoes.value,
         id_estado: selectedEstado.value,
-        mes_para_pagamento: selectedMonth.value,
-        obs: selectedEstado.value === 18 ? motivoNaoConfirmado.value : null
+        obs: selectedEstado.value === 16 ? motivoNaoConfirmado.value : null
     }, {
         onSuccess: () => {
             showMonthDialog.value = false;

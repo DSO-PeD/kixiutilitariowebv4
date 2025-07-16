@@ -32,7 +32,8 @@ class TKxUsUtilizadorModel extends Authenticatable
         'obs_regista',
         'rec_habilita_comprovativo',
         'view_pendentes',
-        'elimina_confirmado_exportado'
+        'elimina_confirmado_exportado',
+        'mn_recuperacoesDCF'
     ];
 
     protected $hidden = [

@@ -509,6 +509,54 @@ class TKxExtratoController extends Controller
     }
 
 
+    public function finalizaraeliminacao(Request $request)
+    {
+
+        $hoje = date('d/m/Y');
+        $Mensagem = "";
+        $authenticatedUser = Auth::user();
+
+
+        // Eliminação para utilizadores MASTERS cuidado
+        if ($authenticatedUser->elimina_confirmado_exportado) {
+
+
+            $ERASER = TKxExtratoModel::setEliminarExtratoMASTER($request->id);
+
+            if ($ERASER) {
+                return back()->with('success', 'Aplicação eliminado com  sucesso!');
+            } else {
+                return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar esta aplicação, por favor cotactar o P&D');
+            }
+
+
+
+        } else {
+
+            //Eliminação para utilizadores mini
+
+
+
+                $updated = TKxExtratoModel::where('id', $request->id)
+                    ->update([
+                        'Eliminado' => 1,
+                        'EliminadoPor' => $authenticatedUser->UtCodigo,
+
+                    ]);
+
+                if ($updated) {
+                    return back()->with('success', 'Comprovativo eliminado com  sucesso!');
+                } else {
+                    return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este comprovativo, por favor cotactar a DSO');
+                }
+
+
+
+        }
+
+    }
+
+
 
 
 

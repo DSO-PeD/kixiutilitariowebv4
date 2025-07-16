@@ -356,58 +356,62 @@ class RecuperacaoModel extends Model
     }
 
 
-    public static function setEliminarRecuperacao($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao)
+    public static function setEliminarRecuperacao($id)
     {
         $status = false;
 
-        /* $affectedEstadoeliminado = DB::table('recuperacao')
-            ->where('id', $id)
-            ->delete();*/
-
-
         $affectedEstadoeliminado = DB::table('recuperacao')
             ->where('id', $id)
-            ->update(['id_estado' => 6]);
-
-
+            ->delete();
 
         if ($affectedEstadoeliminado) {
             $status = true;
-        } else {
-            $status = false;
         }
 
+        /*
+               $affectedEstadoeliminado = DB::table('recuperacao')
+                   ->where('id', $id)
+                   ->update(['id_estado' => 6]);
 
-        $affectedeQuemEliminou = DB::table('recuperacao')
-            ->where('id', $id)
-            ->update(['UtCodigoEliminou' => $UtCodigo]);
 
-        if ($affectedeQuemEliminou) {
-            $status = true;
-        } else {
-            $status = false;
-        }
 
-        $affectedeMotivo = DB::table('recuperacao')
-            ->where('id', $id)
-            ->update(['DataEliminacao' => $DataEliminacao]);
+               if ($affectedEstadoeliminado) {
+                   $status = true;
+               } else {
+                   $status = false;
+               }
 
-        if ($affectedeMotivo) {
-            $status = true;
-        } else {
-            $status = false;
-        }
 
-        $affectedeMotivo = DB::table('recuperacao')
-            ->where('id', $id)
-            ->update(['Motivo' => $MotivoEliminacao]);
+               $affectedeQuemEliminou = DB::table('recuperacao')
+                   ->where('id', $id)
+                   ->update(['UtCodigoEliminou' => $UtCodigo]);
 
-        if ($affectedeMotivo) {
-            $status = true;
-        } else {
-            $status = false;
-        }
+               if ($affectedeQuemEliminou) {
+                   $status = true;
+               } else {
+                   $status = false;
+               }
 
+               $affectedeMotivo = DB::table('recuperacao')
+                   ->where('id', $id)
+                   ->update(['DataEliminacao' => $DataEliminacao]);
+
+               if ($affectedeMotivo) {
+                   $status = true;
+               } else {
+                   $status = false;
+               }
+
+               $affectedeMotivo = DB::table('recuperacao')
+                   ->where('id', $id)
+                   ->update(['Motivo' => $MotivoEliminacao]);
+
+               if ($affectedeMotivo) {
+                   $status = true;
+               } else {
+                   $status = false;
+               }
+       */
         return $status;
     }
 

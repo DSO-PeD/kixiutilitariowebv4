@@ -12,11 +12,16 @@
             {{ $page.props.flash.error }}
         </div>
 
+
+        <ConfirmationModalExtrato :show="showDeleteModal" :extratoData="selectedExtrato" :isDeleting="isDeleting"
+            @confirm="proceedWithDeletion" @cancel="cancelDeletion" />
         <!-- Cabeçalho -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-green-950">Aplicações de Desembolsos</h1>
-                <p class="text-sm text-gray-600">Visualização e gestão de desembolsos existentes</p>
+
+                <h1 class="text-2xl font-bold text-green-950"><i
+                        class="fas fa-money-bill-wave mr-3 text-3xl"></i>Aplicações de Desembolsos</h1>
+                <p class="text-sm text-gray-600">Gestão de desembolsos </p>
             </div>
 
             <div v-if="sistemaAberto" class="flex flex-col sm:flex-row gap-2">
@@ -98,13 +103,19 @@
             </div>
             <div class="mt-4 flex justify-end">
                 <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="h-4 w-4 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                    </svg>
                     Limpar Filtros
                 </button>
                 <button @click="aplicarFiltros" class="btn btn-primary">
+
                     Aplicar Filtros &MediumSpace;
 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
@@ -170,7 +181,7 @@
                     <div class="flex-1">
                         <p class="text-xs text-gray-600 font-medium uppercase tracking-wider">TOTAL DE PROCESSOS
                             APLICADOS</p>
-                        <p class="text-xl font-bold text-blue-900 mt-1">{{ formatCurrency(total) }}  <span
+                        <p class="text-xl font-bold text-blue-900 mt-1">{{ formatCurrency(total) }} <span
                                 class="text-sm font-normal">itens</span></p>
                     </div>
                 </div>
@@ -233,31 +244,103 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Data de Registo
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Loan
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Cliente
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Produto
+                            <th
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                    #
+                                </div>
                             </th>
                             <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Valor de Desembolso
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Data de Registo
+                                </div>
                             </th>
                             <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ref. de Pagamento
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Loan
+                                </div>
                             </th>
                             <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Cliente
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                    Produto
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Valor de Desembolso
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                    Ref. de Pagamento
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                    </svg>
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Ações
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -283,9 +366,9 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <button v-if="item.RefPgtActivo === 0" @click="abrirModalActivarRerencia(item)"
-                                    class="btn btn-outline-referencia flex items-center gap-2 mx-auto">
+                                    class="px-1.5 py-0.5 text-[0.7rem] btn btn-outline-referencia flex items-center gap-1 mx-auto">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-orange-500">
+                                        stroke-width="1.5" stroke="currentColor" class="w-3 h-3 text-orange-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                                     </svg>
@@ -293,10 +376,10 @@
                                 </button>
 
                                 <button v-else
-                                    class="btn btn-outline-referencia-activada flex items-center gap-2 mx-auto cursor-not-allowed"
+                                    class="px-1.5 py-0.5 text-[0.7rem] btn btn-outline-referencia-activada flex items-center gap-1 mx-auto cursor-not-allowed"
                                     disabled>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500">
+                                        stroke-width="1.5" stroke="currentColor" class="w-3 h-3 text-green-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="m4.5 12.75 6 6 9-13.5" />
                                     </svg>
@@ -304,20 +387,21 @@
                                 </button>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center">
-                                <div class="flex space-x-2 justify-center">
+                                <div class="flex space-x-1 justify-center">
                                     <a :href="`/reports/extrato/${item.Num}`"
-                                        class="btn btn-warning flex items-center gap-1" target="_blank">
+                                        class="px-1.5 py-0.5 text-[0.7rem] btn btn-warning flex items-center gap-1"
+                                        target="_blank">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="size-5">
+                                            stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                         </svg>
                                         PDF
                                     </a>
                                     <button @click="abrirModalDetalhes(item)"
-                                        class="btn btn-info flex items-center gap-1">
+                                        class="px-1.5 py-0.5 text-[0.7rem] btn btn-info flex items-center gap-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="size-5">
+                                            stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                                         </svg>
@@ -325,9 +409,24 @@
                                     </button>
                                 </div>
                             </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-center">
+                                <button @click="initiateDeletion(item)" :disabled="!podeEliminar(item)"
+                                    :class="{
+                                        'opacity-50 cursor-not-allowed': !podeEliminar(item),
+                                        'text-red-600 hover:text-red-900': podeEliminar(item),
+                                        'flex items-center gap-1': true
+                                    }" title="Eliminar comprovativo">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                    <span>Eliminar</span>
+                                </button>
+                            </td>
                         </tr>
                         <tr v-if="extratosPaginados.length === 0">
-                            <td colspan="8" class="px-4 py-4 text-center text-sm text-gray-500">
+                            <td colspan="9" class="px-4 py-4 text-center text-sm text-gray-500">
                                 Nenhum desembolso encontrado com os filtros aplicados
                             </td>
                         </tr>
@@ -398,6 +497,8 @@ import ModalNovoCalculo from './Layouts/components/ExtratosComponents/ModalNovoC
 import ModalDetalhesExtrato from './Layouts/components/ExtratosComponents/ModalDetalhesExtrato.vue'
 import ModalActivarReferencia from './Layouts/components/ExtratosComponents/ModalActivarReferencia.vue'
 import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
+import ConfirmationModalExtrato from './Layouts/components/ExtratosComponents/ConfirmationModalExtrato.vue'
+
 
 const props = defineProps({
     lista_extrato: Object,
@@ -468,6 +569,18 @@ const erros = ref({
 
 
 
+const showDeleteModal = ref(false)
+
+const selectedExtrato= ref({
+  lnr: '',
+  cliente: '',
+  montante: 0,
+  data: '',
+
+
+})
+
+
 // Watch para atualizar dadosLocais quando lista_comprovativo mudar
 watch(() => props.lista_extrato, (newVal) => {
     dadosLocais.value = newVal;
@@ -498,7 +611,69 @@ const extratoTotalFiltrado = computed(() => {
     return props.montanteFiltrado || 0 // Usamos o valor calculado no backend
 })
 
+const hoje = computed(() => new Date().toISOString().split('T')[0])
 
+const podeEliminar = (item) => {
+    const isRegistadoHoje = item.CiFecha === hoje.value
+    const temPermissao = props.user.elimina_confirmado_exportado == 1
+
+    return isRegistadoHoje || temPermissao
+}
+const initiateDeletion = (item) => {
+
+  if (!podeEliminar(item)) return
+
+  // Prepara os dados para exibir no modal
+  selectedExtrato.value = {
+    lnr: item.Lnr || 'N/A',
+    cliente: item.Cliente || 'N/A',
+    produto: item.Produto || 0,
+    data: item.CiFecha || 'N/A',
+    montante: item.ValorCreditoNoContrato || 'N/A',
+    id: item.Num,
+
+  }
+
+  showDeleteModal.value = true
+}
+const isDeleting = ref(false)
+
+const proceedWithDeletion = async () => {
+  isDeleting.value = true
+
+  try {
+
+    await router.post("/eliminar-extrato", {
+      id: selectedExtrato.value.id,
+
+    }, {
+      preserveScroll: true,
+      onSuccess: () => {
+        showDeleteModal.value = false
+        // Opcional: Mostrar notificação de sucesso
+      },
+      onError: (errors) => {
+        // Opcional: Mostrar notificação de erro
+        console.error('Erro ao eliminar:', errors)
+      }
+    })
+  } catch (error) {
+    console.error('Erro inesperado:', error)
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+const cancelDeletion = () => {
+  selectedExtrato.value = {
+    lnr: '',
+    cliente: '',
+    montante: 0,
+    data: ''
+
+  }
+  showDeleteModal.value = false
+}
 
 // Formulário
 const form = useForm({

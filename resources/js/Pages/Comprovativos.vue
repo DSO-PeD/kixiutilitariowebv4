@@ -3,6 +3,16 @@
     <Head title="Comprovativos" />
 
     <div class="container mx-auto py-6 max-w-full">
+
+   <!-- Modal com binding dos dados -->
+  <ConfirmationModal
+    :show="showDeleteModal"
+    :comprovativoData="selectedComprovativo"
+    :isDeleting="isDeleting"
+    @confirm="proceedWithDeletion"
+    @cancel="cancelDeletion"
+  />
+
         <!-- Alertas -->
         <div v-if="$page.props.flash.success" class="alert alert-success mb-4">
             {{ $page.props.flash.success }}
@@ -15,10 +25,11 @@
         <!-- Cabeçalho e Botão de Ação -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-green-950">Gestão dos Comprovativos</h1>
+                <h1 class="text-2xl font-bold text-green-950"><i class="fas fa-file-invoice-dollar mr-3 text-3xl"></i>Gestão dos Comprovativos</h1>
                 <p class="text-sm text-gray-600">Pagamentos de Créditos e Poupanças</p>
             </div>
-            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+
+            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" v-if="$page.props.user.rec_comprovativo">
                 <button class="btn btn-primary flex items-center gap-2" @click="abrirModalNovoComprovativo">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-5">
@@ -28,12 +39,10 @@
                 </button>
             </div>
 
-
-
         </div>
+
         <hr class="py-4" />
-        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"
-            v-if="$page.props.user.view_pendentes && $page.props.totalPendente > 0">
+        <div  v-if="$page.props.user.view_pendentes" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" >
             <div class="alert bg-red-50 border-l-4 border-red-500 text-red-700 p-4">
                 <div class="flex items-start">
                     <svg class="flex-shrink-0 h-5 w-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -44,7 +53,7 @@
 
 
                     <p class="text-sm">
-                        Identificamos que os reembolsos abaixo <b>aplicados no Kixi Utilitário não foram aplicados no
+                  | Identificamos que os reembolsos abaixo <b>aplicados no Kixi Utilitário não foram aplicados no
                             LPF</b> ou existe uma possível
                         diferença nas informações como: <i class="text-orange-950">Loan Number, Voucher e Montante</i>.
                         &ThickSpace;Clique sobre o <span
@@ -327,7 +336,7 @@
             <div class="mt-4 flex justify-end space-x-2">
                 <button @click="resetarFiltros" class="btn btn-outline-secondary flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    stroke-width="1.5" stroke="currentColor" class="h-4 w-4 mr-1">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
                      </svg>
@@ -343,192 +352,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- Checkboxes Row - Below the main filter row -->
-
-
-        <!--<div class="mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
-
-
-            <div class="col-span-21 sm:col-span-1">
-
-                <button class="btn btn-outline-consulta flex items-center gap-2 w-full justify-center"
-                    @click="showModalLoan = true">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                    Loan
-                </button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-
-
-
-                <div class="col-span-2 sm:col-span-1">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Período de Início*</label>
-                            <div class="relative">
-                                <input v-model="filtro.dataInicioInput" type="date" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition text-sm"
-                                    :max="filtro.dataFimInput" @change="validarDatas" />
-                                <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio }}</span>
-                            </div>
-                        </div>
-
-
-                        <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Período de Fim*</label>
-                            <div class="relative">
-                                <input v-model="filtro.dataFimInput" type="date" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition text-sm"
-                                    :min="filtro.dataInicioInput" @change="validarDatas" />
-                                <span v-if="erros.dataFim" class="text-red-500 text-xs">{{ erros.dataFim }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar por Tipo de
-                        Pagamento</label>
-                    <select v-model="filtro.formaPagamento"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px]">
-                        <option disabled :value="'s/p'">Selcionar a Forma</option>
-                        <option v-for="formapgt in formaspagamentos" :value="formapgt.FormaPago"
-                            :key="formapgt.FormaPago">
-                            {{ formapgt.FormaPagoN }}
-                        </option>
-                        <option :value="'TP'">Todas</option>
-                    </select>
-                </div>
-
-
-                <div class="col-span-2 sm:col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar
-                        Agência</label>
-                    <select v-model="filtro.agencia"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 text-sm h-[42px]">
-                        <option disabled :value="'s/a'">Escolha agência</option>
-                        <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
-                            :key="agencia.OfIdentificador">
-                            {{ agencia.OfIdentificador }} - {{ agencia.OfNombre }}
-                        </option>
-                        <option :value="'T'">Todas que tenho acesso</option>
-                    </select>
-
-
-                </div>
-
-
-                <div class="col-span-2 sm:col-span-1">
-                    <div class="flex flex-col md:flex-row md:items-end gap-2 h-full">
-
-                        <div class="flex-1 ">
-                            <label class="block text-sm font-medium text-gray-700 mb-1 truncate">Filtrar
-                                Estado</label>
-                            <select v-model="filtro.estado" class="input input-bordered w-full text-sm py-2 h-[42px]">
-                                <option disabled :value="'s/e'">Escolha </option>
-                                <option v-for="estado in $page.props.estados" :value="Number(estado.id)"
-                                    :key="estado.id">
-                                    {{ estado.descricao_estado }}
-                                </option>
-                                <option :value="28">Todos </option>
-                            </select>
-                        </div>
-                        &VeryThinSpace;
-
-
-                        <div class="flex flex-col gap-2">
-
-
-                            <div class="flex items-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" v-model="filtro.filtrarPrestacoes" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2
-                                        peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full
-                                        peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
-                                        after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
-                                        after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600">
-                                    </div>
-                                    <span
-                                        class="ml-2 text-sm text-gray-600 whitespace-nowrap font-semibold">Prestações(Capital+Juro)
-                                    </span>
-                                </label>
-                            </div>
-
-
-                            <div class="flex items-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" v-model="filtro.filtrarPoupancas" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2
-                                    peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full
-                                    peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
-                                    after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
-                                    after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600">
-                                    </div>
-                                    <span
-                                        class="ml-2 text-sm text-gray-600 whitespace-nowrap font-semibold">Poupanças</span>
-                                </label>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="col-span-2 sm:col-span-1">
-
-                    <div v-if="filtro.filtrarPrestacoes && !filtro.filtrarPoupancas">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Produto de Prestações</label>
-                        <select v-model="filtro.produtoPrestacao"
-                            class="input input-bordered w-full bg-white border border-gray-300 rounded-md  shadow-sm focus:border-green-500 focus:ring-green-500 text-sm py-2 h-[42px]">
-                            <option value="TL">Todos os produtos</option>
-                            <option
-                                v-for="produto in produtos.filter(p => p.TipoProduto === 'L' || p.TipoProduto === 'G')"
-                                :key="produto.Metodologia" :value="produto.Metodologia">
-                                {{ produto.PoAgrupado }}
-                            </option>
-                        </select>
-
-
-                    </div>
-
-
-                    <div v-if="filtro.filtrarPoupancas && !filtro.filtrarPrestacoes">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Produto de Poupanças</label>
-                        <select v-model="filtro.produtoPoupanca"
-                            class="input input-bordered w-full bg-white border border-gray-300 rounded-md  shadow-sm focus:border-green-500 focus:ring-green-500 text-sm py-2 h-[42px]">
-                            <option value="TS">Todos os produtos</option>
-                            <option
-                                v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
-                                :key="produto.Metodologia" :value="produto.Metodologia">
-                                {{ produto.PoAgrupado }}
-                            </option>
-                        </select>
-
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4 flex justify-end">
-                <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
-                    Limpar Filtros
-                </button>
-                <button @click="aplicarFiltros" class="btn btn-primary">
-                    Aplicar Filtros &MediumSpace;
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                </button>
-            </div>
-        </div>-->
 
 
 
@@ -781,6 +604,18 @@
                                 </div>
 
                             </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
+                                    </svg>
+
+
+                                </div>
+
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -843,6 +678,26 @@
                                     {{ comprovativo.estado }}
                                 </span>
                             </td>
+
+                            <td class="px-4 py-4 whitespace-nowrap">
+
+                            <button
+                            @click="initiateDeletion(comprovativo)"
+                            :disabled="!podeEliminar(comprovativo)"
+                            :class="{
+                                'opacity-50 cursor-not-allowed': !podeEliminar(comprovativo),
+                                'text-red-600 hover:text-red-900': podeEliminar(comprovativo),
+                                'flex items-center gap-1': true
+                            }"
+                            title="Eliminar comprovativo"
+                            >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                            </svg>
+                            <span>Eliminar</span>
+                            </button>
+
+                        </td>
                         </tr>
                         <tr v-if="comprovativosPaginados.length === 0">
                             <td colspan="9" class="px-4 py-4 text-center text-sm text-gray-500">
@@ -912,6 +767,7 @@ import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vu
 import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
 import ModalObservacaoDFC from './Layouts/components/ComprovativosComponents/ModalObservacaoDFC.vue'
 import ModalNovoComprovativo from './Layouts/components/ComprovativosComponents/ModalNovoComprovativo.vue'
+import ConfirmationModal from './Layouts/components/ComprovativosComponents/ConfirmationModal.vue'
 
 
 
@@ -934,6 +790,7 @@ const props = defineProps({
     dataFimInput: String,
     montantetotal: Number,
     totalMontantePoupanca: Number,
+    totalPendente:Number,
     bases: Array,
     produtos: Array,
     bancos: Array,
@@ -964,8 +821,18 @@ const showModalEliminar = ref(false)
 //const totalItens = ref(props.total || 0)
 const showModalObservacao = ref(false)
 const comprovativoSelecionado = ref(null)
+const showDeleteModal = ref(false)
 
-
+const comprovativoToDelete = ref(null)
+const selectedComprovativo = ref({
+  lnr: '',
+  cliente: '',
+  montante: 0,
+  data: '',
+  estado: '',
+  file: null,
+  idestado:0,
+})
 // Configuração da paginação
 const perPage = ref(100);
 const paginaAtual = ref(1);
@@ -1068,6 +935,73 @@ const abrirModalObservacaoDCF = (comprovativo) => {
     showModalObservacao.value = true
 }
 
+const hoje = computed(() => new Date().toISOString().split('T')[0])
+
+const podeEliminar = (comprovativo) => {
+  const isRegistadoHoje = comprovativo.estado_id === 1 && comprovativo.data === hoje.value
+  const temPermissao = props.user.elimina_confirmado_exportado == 1
+
+  return isRegistadoHoje || temPermissao
+}
+
+const initiateDeletion = (comprovativo) => {
+
+  if (!podeEliminar(comprovativo)) return
+
+  // Prepara os dados para exibir no modal
+  selectedComprovativo.value = {
+    lnr: comprovativo.lnr || 'N/A',
+    cliente: comprovativo.cliente || 'N/A',
+    montante: comprovativo.montante || 0,
+    data: comprovativo.data || 'N/A',
+    estado: comprovativo.estado || 'N/A',
+    file: comprovativo.file || null,
+    id: comprovativo.id,
+    idestado: comprovativo.estado_id
+  }
+
+  showDeleteModal.value = true
+}
+
+const isDeleting = ref(false)
+
+const proceedWithDeletion = async () => {
+  isDeleting.value = true
+
+  try {
+
+    await router.post("/eliminar-comprovativo", {
+      id: selectedComprovativo.value.id,
+      estado_id: selectedComprovativo.value.idestado
+    }, {
+      preserveScroll: true,
+      onSuccess: () => {
+        showDeleteModal.value = false
+        // Opcional: Mostrar notificação de sucesso
+      },
+      onError: (errors) => {
+        // Opcional: Mostrar notificação de erro
+        console.error('Erro ao eliminar:', errors)
+      }
+    })
+  } catch (error) {
+    console.error('Erro inesperado:', error)
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+const cancelDeletion = () => {
+  selectedComprovativo.value = {
+    lnr: '',
+    cliente: '',
+    montante: 0,
+    data: '',
+    estado: '',
+    id: null
+  }
+  showDeleteModal.value = false
+}
 // Métodos
 
 

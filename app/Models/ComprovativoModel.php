@@ -39,9 +39,9 @@ class ComprovativoModel extends Model
         'color'
     ];
 
-    public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO,$PRODUTOS,$TIPOPAGAMENTOS)
+    public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $PRODUTOS, $TIPOPAGAMENTOS)
     {
-        $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . "," . $ESTADO . "," .$PRODUTOS.",".$TIPOPAGAMENTOS.")");
+        $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . "," . $ESTADO . "," . $PRODUTOS . "," . $TIPOPAGAMENTOS . ")");
 
 
         return $comprovativos2;
@@ -102,25 +102,24 @@ class ComprovativoModel extends Model
             ->first();
         return $c;
     }
-    public static function setEliminarComprovativo($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao, $djascript, $loan)
+    public static function setEliminarComprovativoMASTER($id)
     {
 
 
         $statusEliminacao = false;
 
-        $insertEraser = TbldjascriptEraserModel::create(['script_recuperacao' => $djascript, 'UtCodigoEliminou' => $UtCodigo, 'DataEliminacao' => $DataEliminacao, 'Motivo' => $MotivoEliminacao]);
+        //$insertEraser = TbldjascriptEraserModel::create(['script_recuperacao' => $djascript, 'UtCodigoEliminou' => $UtCodigo, 'DataEliminacao' => $DataEliminacao, 'Motivo' => $MotivoEliminacao]);
 
-        if ($insertEraser) {
-            $deleteCpvtv = DB::table('comprovativos')->where('id', $id)->delete();
+        $deleterecuperacoes = DB::table('cpvtreconciliacao')->where('idcomprovativo', '=', $id)->delete();
+        $deletereconciliacao = DB::table('recuperacao')->where('id_comprovativo', '=', $id)->delete();
+        $deleteCpvtv = DB::table('comprovativos')->where('id', '=', $id)->delete();
 
-            if ($deleteCpvtv) {
-                $delete_eraser_excepcoes = DB::table('eraser_excepcoes')->where('Lnr', $loan)->delete();
 
-                if ($delete_eraser_excepcoes) {
-                    $statusEliminacao = true;
-                }
-                $statusEliminacao = true;
-            }
+        if ($deleteCpvtv) {
+
+
+            $statusEliminacao = true;
+
         }
 
 

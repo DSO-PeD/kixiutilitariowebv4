@@ -19,8 +19,11 @@ class EstadosModel extends Model
     {
 
         $contas = DB::table('estado')
-            ->where('habilita', $habilita)->get();
-
+            ->where(function ($query) use ($habilita) {
+                $query->where('habilita', $habilita)
+                    ->orWhere('habilita', 'DCF-DOP');
+            })
+            ->get();
         return $contas;
     }
 

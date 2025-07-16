@@ -31,7 +31,7 @@ class TKxExtratoModel extends Model
         'TaxaProcessamentoAnte',
         'TXAProcePercentaAnte',
         'TXAProcePercentaValorAnte',
-        'ValorIVATaxaProcessamentoAnte' ,
+        'ValorIVATaxaProcessamentoAnte',
         'TXAProceAnteBuReferencia',
         'TXAProceAnteBuBanco',
         'TXAProceAnteBuNumeroConta',
@@ -88,29 +88,15 @@ class TKxExtratoModel extends Model
     }
 
 
-    public static function setEliminarExtrato($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao, $djascript, $loan)
+    public static function setEliminarExtratoMASTER($id)
     {
         $statusEliminacao = false;
 
+        $deleteCpvtv = DB::table('tkxextrato')->where('Num', $id)->delete();
 
-
-        $insertEraser = TbldjascriptEraserModel::create(['script_recuperacao' => $djascript, 'UtCodigoEliminou' => $UtCodigo, 'DataEliminacao' => $DataEliminacao, 'Motivo' => $MotivoEliminacao]);
-
-        if ($insertEraser) {
-            $deleteCpvtv = DB::table('tkxextrato')->where('Num', $id)->delete();
-
-            if ($deleteCpvtv) {
-                $delete_eraser_excepcoes = DB::table('eraser_excepcoes')->where('Lnr', $loan)->delete();
-
-                if ($delete_eraser_excepcoes) {
-                    $statusEliminacao = true;
-                }
-            }
+        if ($deleteCpvtv) {
             $statusEliminacao = true;
         }
-
-
-
 
         return $statusEliminacao;
     }

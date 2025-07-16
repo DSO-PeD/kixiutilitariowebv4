@@ -3,7 +3,14 @@
     <Head title="Recuperações" />
     <div class="container mx-auto py-6 max-w-full">
 
-
+ <!-- Modal com binding dos dados -->
+  <ConfirmationModal
+    :show="showDeleteModal"
+    :comprovativoData="selectedRecuperacao"
+    :isDeleting="isDeleting"
+    @confirm="proceedWithDeletion"
+    @cancel="cancelDeletion"
+  />
         <!-- Cabeçalho -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
@@ -352,7 +359,7 @@
             <div class="overflow-x-auto -mx-4 sm:mx-0">
 
                 <div class="flex justify-between items-center mb-4">
-                    <button @click="confirmarSelecionados" :disabled="selectedRecuperacoes.length === 0"
+                    <button @click="confirmarSelecionados" :disabled="selectedRecuperacoes.length === 0" v-if="$page.props.user.rec_confirma"
                         class="btn btn-primary"
                         :class="{ 'opacity-50 cursor-not-allowed': selectedRecuperacoes.length === 0 }">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -533,7 +540,15 @@
                                     Mês de Pagamento
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+
+                            <th class="px-4 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                    </svg>
+                                </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -544,8 +559,14 @@
                                     Estado
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+
+                                </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -598,11 +619,7 @@
                             <td v-else class="px-4 py-4 text-sm text-gray-900 bg-slate-50">
                                 {{ rec.mes_ano_pagamento }}
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span :class="rec.color" class="px-2 py-1 text-xs font-medium rounded-full">
-                                    {{ rec.estado }}
-                                </span>
-                            </td>
+
 
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-center">
                                 <button @click="openDetails(rec)" class="btn btn-outline-secondary btn-sm">
@@ -616,6 +633,30 @@
                                     Detalhes
                                 </button>
                             </td>
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                <span :class="rec.color" class="px-2 py-1 text-xs font-medium rounded-full">
+                                    {{ rec.estado }}
+                                </span>
+                            </td>
+
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-center">
+                             <button
+                            @click="initiateDeletion(rec)"
+                            :disabled="!podeEliminar(rec)"
+                            :class="{
+                                'opacity-50 cursor-not-allowed': !podeEliminar(rec),
+                                'text-red-600 hover:text-red-900': podeEliminar(rec),
+                                'flex items-center gap-1': true
+                            }"
+                            title="Eliminar Recuperação"
+                            >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                            </svg>
+
+                            </button>
+                            </td>
+
                         </tr>
                         <tr v-if="recuperacoesPaginados.length === 0">
                             <td colspan="12" class="px-4 py-4 text-center text-sm text-gray-500">
@@ -969,6 +1010,7 @@ import * as XLSX from 'xlsx'
 import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vue'
 import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
 import Pagination from '@/Components/Pagination.vue'; // Componente de paginação
+import ConfirmationModal from './Layouts/components/ComprovativosComponents/ConfirmationModal.vue'
 
 // Props recebidas do backend
 const props = defineProps({
@@ -1437,7 +1479,70 @@ const gerarPdf = () => {
 };
 
 
+const podeEliminar = (rec) => {
+  const isRegistadoHoje = rec.id_estado === 1 && rec.CiFecha === hoje.value
+  const temPermissao = props.user.elimina_confirmado_exportado == 1
 
+  return isRegistadoHoje || temPermissao
+}
+
+const initiateDeletion = (rec) => {
+
+  if (!podeEliminar(rec)) return
+
+  // Prepara os dados para exibir no modal
+  selectedRecuperacao.value = {
+    lnr: rec.ReBuDadoOrigem || 'N/A',
+    cliente: rec.infoadicional || 'N/A',
+    montante: rec.ReBuMontante || 0,
+    data: rec.CiFecha || 'N/A',
+    estado: rec.estado || 'N/A',
+    id: rec.id,
+
+  }
+
+  showDeleteModal.value = true
+}
+
+const isDeleting = ref(false)
+
+const proceedWithDeletion = async () => {
+  isDeleting.value = true
+
+  try {
+
+    await router.post("/eliminar-recuperacao", {
+      id: selectedRecuperacao.value.id,
+
+    }, {
+      preserveScroll: true,
+      onSuccess: () => {
+        showDeleteModal.value = false
+        // Opcional: Mostrar notificação de sucesso
+      },
+      onError: (errors) => {
+        // Opcional: Mostrar notificação de erro
+        console.error('Erro ao eliminar:', errors)
+      }
+    })
+  } catch (error) {
+    console.error('Erro inesperado:', error)
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+const cancelDeletion = () => {
+  selectedRecuperacao.value = {
+    lnr: '',
+    cliente: '',
+    montante: 0,
+    data: '',
+    estado: '',
+    id: null
+  }
+  showDeleteModal.value = false
+}
 
 
 

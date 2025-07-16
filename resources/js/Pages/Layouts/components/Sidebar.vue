@@ -39,11 +39,17 @@
                     :class="{ 'active': $page.url.startsWith('/recuperacoes') }" title="Recuperações">
                     <i class="fas fa-hand-holding-usd text-lg"></i>
                 </a>
+                <!-- Recuperações DCF-->
+                <a v-if="$page.props.user.mn_recuperacoesDCF" href="/dcfrecuperacoes" class="nav-link-icon"
+                    :class="{ 'active': $page.url.startsWith('/dcfrecuperacoes') }" title="RecuperaçõesDCF">
 
+                    <i class="fas fa-vote-yea text-lg"></i>
+                </a>
                   <!-- Tesouraria -->
                 <a v-if="$page.props.user.mn_tesouraria" href="/tesouraria" class="nav-link-icon"
                     :class="{ 'active': $page.url.startsWith('/tesouraria') }" title="Tesouria">
-                    <i class="fas fa-cash-register text-lg"></i>
+                       <i class="fas fa-cash-register text-lg"></i>
+
                 </a>
 
                 <!-- Configurações
@@ -98,6 +104,14 @@
                     :class="{ 'active': $page.url.startsWith('/recuperacoes') }">
                     <i class="fas fa-hand-holding-usd mr-3"></i>
                     <span>Recuperações</span>
+                </a>
+
+                   <!-- Recuperações DCF-->
+                <a v-if="$page.props.user.mn_recuperacoesDCF" href="/dcfrecuperacoes" class="nav-link"
+                    :class="{ 'active': $page.url.startsWith('/dcfrecuperacoes') }">
+
+                    <i class="fas fa-vote-yea mr-3"></i>
+                    <span>Recuperações DCF</span>
                 </a>
 
                   <!-- Tesouraria -->

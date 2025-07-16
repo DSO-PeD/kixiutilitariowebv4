@@ -136,7 +136,7 @@ class ComprovativosController extends Controller
 
 
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca,$formaspagamento_geral);
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, $formaspagamento_geral);
 
 
         $lista_banco = TKxBancoModel::getBancos();
@@ -162,7 +162,7 @@ class ComprovativosController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-        //dd($lista_bancos_contas );
+        // dd($lista_comprovativo );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
 
             return [
@@ -428,25 +428,61 @@ class ComprovativosController extends Controller
         }
     }
 
-    public function finalizaraeliminacao(Request $request, $id)
+    public function finalizaraeliminacao(Request $request)
     {
+
         $hoje = date('d/m/Y');
         $Mensagem = "";
+        $authenticatedUser = Auth::user();
 
-        $verica_existe_recupercao = RecuperacaoModel::where('id_comprovativo', $id)->first();
 
-        if ($verica_existe_recupercao) {
-            $Mensagem = " Ups!, O comprovativo não pode ser eliminado porque esta associado a uma recuperação! [   Loan Number: " . $verica_existe_recupercao->ReBuDadoOrigem . " | Voucher: " . $verica_existe_recupercao->ReBuReferencia . " | Montante: " . $verica_existe_recupercao->ReBuMontante . " | Cod. Recuperador: " . $verica_existe_recupercao->id_recuperador . " ] => Por favor contactar a DSO para  esclarecer esta situação.";
-            return back()->with('error', $Mensagem);
-        } else {
-            $eliminar_comprovativo = ComprovativoModel::setEliminarComprovativo($id, session('LoggedUser'), $hoje, $request->txtMotivo, $request->txtDadosEliminado, $request->txtLoan);
+        // Eliminação para utilizadores MASTERS cuidado
+        if ($authenticatedUser->elimina_confirmado_exportado) {
 
-            if ($eliminar_comprovativo) {
+
+            $ERASER = ComprovativoModel::setEliminarComprovativoMASTER($request->id);
+
+            if ($ERASER) {
                 return back()->with('success', 'Comprovativo eliminado com  sucesso!');
             } else {
-                return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este comprovativo, por favor cotactar a DSO');
+                return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este comprovativo, por favor cotactar o P&D');
             }
+
+
+
+        } else {
+
+            //Eliminação para utilizadores mini
+
+            $verica_existe_recupercao = RecuperacaoModel::where('id_comprovativo', $request->id)->first();
+            $verica_existe_reconciliacao = CpvtReconciliacaoModel::where('idcomprovativo', $request->id)->first();
+
+            if ($verica_existe_recupercao) {
+                $Mensagem = " Ups!, O comprovativo não pode ser eliminado porque esta associado a uma recuperação! [   Loan Number: " . $verica_existe_recupercao->ReBuDadoOrigem . " | Voucher: " . $verica_existe_recupercao->ReBuReferencia . " | Montante: " . $verica_existe_recupercao->ReBuMontante . " | Cod. Recuperador: " . $verica_existe_recupercao->id_recuperador . " ] => Por favor contactar a DSO para  esclarecer esta situação.";
+                return back()->with('error', $Mensagem);
+            } elseif ($verica_existe_reconciliacao) {
+                $Mensagem = " Ups!, O comprovativo não pode ser eliminado porque já foi feito a reconciliação! [   Voucher: " . $verica_existe_reconciliacao->voucher . " | Data de reconciliacao: " . $verica_existe_reconciliacao->datareconciliacao . "  | Cod. Reconciliador: " . $verica_existe_reconciliacao->UtCodigo . " ] => Por favor contactar a DSO para  esclarecer esta situação.";
+                return back()->with('error', $Mensagem);
+            } else {
+
+                $updated = ComprovativoModel::where('id', $request->id)
+                    ->update([
+                        'Eliminado' => 1,
+                        'Motivo' => "Detalhe no Kixi Agenda",
+                        'UtCodigoEliminou' => $authenticatedUser->UtCodigo,
+                        'DataEliminacao' => now()
+                    ]);
+
+                if ($updated) {
+                    return back()->with('success', 'Comprovativo eliminado com  sucesso!');
+                } else {
+                    return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este comprovativo, por favor cotactar a DSO');
+                }
+            }
+
+
         }
+
     }
     public static function diasDatas($data_inicial = '2013-08-01', $data_final = '2013-08-16')
     {

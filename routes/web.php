@@ -4,6 +4,7 @@ use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
 use App\Http\Controllers\RecuperacaoController;
+use App\Http\Controllers\RecuperacaoDCFController;
 use App\Http\Controllers\ReportDomPDFController;
 use App\Http\Controllers\TesourariaController;
 use App\Http\Controllers\TKuPendentesController;
@@ -32,6 +33,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/listarCpvtDetalheDCF', [CpvtReconciliacaoController::class, 'listarDetalhesComprovativosDCF']);
     Route::get('/extratos', [TKxExtratoController::class, 'viewExtrato'])->name('extratos');
     Route::post('/guardar-comprovativo', [ComprovativosController::class, 'guardar']);
+    Route::post('/eliminar-comprovativo', [ComprovativosController::class, 'finalizaraeliminacao'])  ->name('comprovativos.eliminar');
+    Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])  ->name('extrato.eliminar');
+    Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
 
     Route::post('/guardar-extrato', [TKxExtratoController::class, 'guardarDataExtrato']);
     Route::post('/comprovativos/{id}/finalizaraeliminacao', [ComprovativosController::class, 'finalizaraeliminacao']);
@@ -50,7 +54,10 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/tesouraria', [TesourariaController::class, 'viewRecuperacoesTesouria'])->name('tesouraria');
-    Route::post('/confirmar-tesouraria', [TesourariaController::class, 'confirmarMultiplas']);
+    Route::post('/pagamento-tesouraria-recuperacao', [TesourariaController::class, 'confirmarMultiplas']);
+
+    Route::get('/dcfrecuperacoes', [RecuperacaoDCFController::class, 'viewRecuperacoesDCF'])->name('dcfrecuperacoes');
+    Route::post('/aprovar-recuperacoes', [RecuperacaoDCFController::class, 'confirmarMultiplas']);
 
 
 });

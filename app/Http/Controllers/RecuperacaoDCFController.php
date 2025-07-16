@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
-class RecuperacaoController extends Controller
+class RecuperacaoDCFController extends Controller
 {
     protected $user;
 
@@ -26,7 +26,7 @@ class RecuperacaoController extends Controller
 
 
     //Funcão: altera para exportado e cria script KR_DATA_HOJE.sql Owner: Wawingi
-    public function viewRecuperacoes(Request $request)
+    public function viewRecuperacoesDCF(Request $request)
     {
 
 
@@ -91,8 +91,7 @@ class RecuperacaoController extends Controller
         $listar_recuperador = RecuperadorModel::getRecuperadores($sigla_agencia_base);
         $listar_voucher_para_recuperacao = RecuperacaoModel::listarVoucherParaRecuperacao($ConsultaBaseConsulta, $this->user->rec_registra);
 
-        $listar_estados = EstadosModel::getEstadosDCF('DOP');
-
+        $listar_estados = RecuperacaoModel::listarEstadoDeConsultaUsuario($rec_viewestado);
         $lista_agencias_consultas = RecuperacaoModel::listarBasesDeConsultaRecuperacao();
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
 
@@ -161,8 +160,8 @@ class RecuperacaoController extends Controller
                 'BaseOperacao' => $item->BaseOperacao,
                 'dias_epe' => $item->dias_epe,
                 'OfNombre' => $item->OfNombre,
-                'obs' => $item->obs,
-                'Imagen' => $item->Imagen,
+                'obs'=>$item->obs,
+                'Imagen'=>$item->Imagen,
                 // 'datareconciliacao' => $item->datareconciliacao,
                 // 'montante' => $item->ReBuMontante,
                 // Mantenha todos os campos necessários para filtros client-side
@@ -174,7 +173,7 @@ class RecuperacaoController extends Controller
         });
 
 
-        return Inertia::render('Recuperacoes', [
+        return Inertia::render('RecuperacoesDCF', [
             'lista_recuperacoes' => $recuperacoes_list,
             'filters' => [
                 'search' => $request->input('search_input', ''),
@@ -404,7 +403,6 @@ class RecuperacaoController extends Controller
         $motivo_obs = $request->input('obs');
 
 
-        $MES_ANO_PAGAMENTO = $request->input('mes_para_pagamento');
 
         $authenticatedUser = Auth::user();
 
@@ -414,8 +412,7 @@ class RecuperacaoController extends Controller
             // Update records
             $updated = RecuperacaoModel::whereIn('id', $ids)
                 ->update([
-                    'mes_ano_pagamento' => $MES_ANO_PAGAMENTO,
-                    'id_estado' => $estado_id,
+                   'id_estado' => $estado_id,
                     'obs' => $motivo_obs
                 ]);
 
@@ -428,12 +425,12 @@ class RecuperacaoController extends Controller
                         'UtCodigo' => $authenticatedUser->UtCodigo,
                         'id_recuperacao' => $id,
                         'id_estado' => $estado_id,
-                        'observacoes' => $motivo_obs
+                        'observacoes'=>$motivo_obs
                     ]);
                 }
 
                 DB::commit();
-                return back()->with('success', 'Recuperações confirmadas com sucesso!');
+                return back()->with('success', 'Recuperações aprovado com sucesso!');
             } else {
                 DB::rollBack();
                 return back()->with('error', 'Nenhum registro foi atualizado.');
@@ -445,43 +442,4 @@ class RecuperacaoController extends Controller
 
 
     }
-    public function finalizaraeliminacao(Request $request)
-    {
-
-        $hoje = date('d/m/Y');
-        $Mensagem = "";
-        $authenticatedUser = Auth::user();
-
-
-        // Eliminação para utilizadores MASTERS cuidado
-        if ($authenticatedUser->elimina_confirmado_exportado) {
-
-
-            $ERASER = RecuperacaoModel::setEliminarRecuperacao($request->id);
-
-            if ($ERASER) {
-                return back()->with('success', 'Recuperação eliminado com  sucesso!');
-            } else {
-                return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este recuperação, por favor cotactar o P&D');
-            }
-
-
-
-        } else {
-
-            //Eliminação para utilizadores mini
-
-            $ERASER = RecuperacaoModel::setEliminarRecuperacao($request->id);
-
-            if ($ERASER) {
-                return back()->with('success', 'Recuperação eliminado com  sucesso!');
-            } else {
-                return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar esta recuperação, por favor cotactar o P&D');
-            }
-
-        }
-
-    }
-
-
 }
