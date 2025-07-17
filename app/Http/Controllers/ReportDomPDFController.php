@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadosModel;
 use App\Models\RecuperacaoModel;
 use App\Models\RecuperadorModel;
 use App\Models\TKxAgenciaModel;
@@ -94,64 +95,46 @@ class ReportDomPDFController extends Controller
     {
 
         $authenticatedUser = Auth::user();
-        $IMPRENSSO = $authenticatedUser->UtNome;
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
-
-        $sigla_agencia_base = $resultagencia_user->OfIdentificador;
-
-
-
-        $ids_estados = $authenticatedUser->rec_viewestados;
-
         $Bases = $resultagencia_user->BasesOperacao;
-        $ESTADO = $ids_estados;
+        $listar_estados = EstadosModel::getEstadosDCF('DOP'); // os IDs DOP tambem servem para DPP
+        $ids_estados = collect($listar_estados)->pluck('id')->implode(',');
 
-
-
-
+        $IMPRENSSO = $authenticatedUser->UtNome;
         $agencia = $request->agencia;
         $estado = $request->estado;
         $recuperador = $request->recuperador;
         $data_inicio = $request->data_inicio;
         $data_fim = $request->data_fim;
-        $listar_recuperador = RecuperadorModel::getRecuperadores($sigla_agencia_base);
-        $RECUPERADORES = collect($listar_recuperador)->pluck('id')->implode(',');
+        $listar_recuperador = "";
 
-        /*$filtros = [
-            'recuperador' => $request->recuperador,
-            'agencia' => $request->agencia,
-            'estado' => $request->estado,
-            'data_inicio' => $request->data_inicio,
-            'data_fim' => $request->data_fim
-        ];*/
 
-        /* $recuperacoes = RecuperacaoModel::query()
-             ->when($filtros['recuperador'], fn($q) => $q->whereIn('id_recuperador', $recuperadorArray))
-             ->when($filtros['agencia'], fn($q) => $q->whereIn('BaseOperacao', $agenciaArray ))
-             ->when($filtros['estado'], fn($q) => $q->whereIn('id_estado', $estadoArray))
-             ->when($filtros['data_inicio'], fn($q) => $q->whereDate('CiFecha', '>=', $filtros['data_inicio']))
-             ->when($filtros['data_fim'], fn($q) => $q->whereDate('CiFecha', '<=', $filtros['data_fim']))
-             ->get();*/
-        if ($request->estado == '28') {
-            $estado = $ESTADO;
-
-            // dd($request->estado_input);
-        }
         if ($agencia == 'T') {
             $agencia = $Bases;
         }
         if ($recuperador == 'TR') {
-            $recuperador = $RECUPERADORES;
+
+            $listar_recuperador = RecuperadorModel::getRecuperadores($resultagencia_user->BasesOperacao);
+
+            $recuperador =  collect($listar_recuperador)->pluck('id')->implode(',');
         }
+        if ($estado == '28') {
+
+            $estado = $ids_estados;
+
+
+        }
+
+
+
 
 
 
         $Dados_Recuperador = RecuperacaoModel::getRecuperacoes(0, 4, $estado, $agencia, $data_inicio, $data_fim, 'DS/02808', $recuperador);
         $RECUPERADORES = collect($Dados_Recuperador)->pluck('id_recuperador')->implode(',');
         $RECUPERADORES = explode(',', $RECUPERADORES);
-
         $listar_recuperador_com_recuperacao = RecuperadorModel::whereIn('id', $RECUPERADORES)->get();
-//dd( $listar_recuperador_com_recuperacao );
+
         $dataFormatadaIni = Carbon::parse($request->data_inicio)->format('d-m-Y');
         $dataFormatadaFim = Carbon::parse($request->data_fim)->format('d-m-Y');
 
@@ -167,19 +150,6 @@ class ReportDomPDFController extends Controller
         ];
 
 
-        /*$pdf = PDF::loadView('recuperacoes.pdf', [
-            'recuperacoes' => $recuperacoes,
-            'filtros' => $filtros
-        ]);
-
-        return $pdf->download('relatorio-recuperacoes-' . now()->format('Y-m-d') . '.pdf');
-
-
-
-        $pdf = PDF::loadView('reports.reportRecuperacoesRecuperador', [
-            'recuperacoes' => $recuperacoes,
-            'filtros' => $filtros
-        ]);*/
 
         $pdf = PDF::loadView('reports.reportRecuperacoesRecuperador', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif']);
 

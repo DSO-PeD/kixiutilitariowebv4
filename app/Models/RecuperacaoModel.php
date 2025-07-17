@@ -180,14 +180,14 @@ class RecuperacaoModel extends Model
             $agenciaArray = explode(',', $agencia);
             $estadoArray = explode(',', $estado);
 
+            $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray);
 
-
-            if ($recuperador !== '0') {
+            /*if ($recuperador !== '0') {
                 $recuperadorArray = explode(',', $recuperador);
                 $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray)->whereIn('rec.id_recuperador', $recuperadorArray);
-            } else {
+             } else {
                 $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray);
-            }
+            }*/
         } else {
             $query->limit($NumeroRegistroTabela);
         }

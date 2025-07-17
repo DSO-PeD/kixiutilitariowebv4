@@ -3,20 +3,15 @@
     <Head title="Recuperações" />
     <div class="container mx-auto py-6 max-w-full">
 
- <!-- Modal com binding dos dados -->
-  <ConfirmationModal
-    :show="showDeleteModal"
-    :comprovativoData="selectedRecuperacao"
-    :isDeleting="isDeleting"
-    @confirm="proceedWithDeletion"
-    @cancel="cancelDeletion"
-  />
+        <!-- Modal com binding dos dados -->
+        <ConfirmationModal :show="showDeleteModal" :comprovativoData="selectedRecuperacao" :isDeleting="isDeleting"
+            @confirm="proceedWithDeletion" @cancel="cancelDeletion" />
         <!-- Cabeçalho -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
 
                 <h1 class="text-2xl font-bold text-green-950">
-                    <i class="fas fa-hand-holding-usd text-5xl  text-green-950"></i>
+                    <i class="fas fa-hand-holding-usd text-3xl  text-green-950"></i>
                     &ThinSpace;&ThinSpace; Recuperações de Créditos
                 </h1>
                 <p class="text-sm text-gray-600">Registros de Pagamentos </p>
@@ -253,6 +248,13 @@
                 </div>
                 <div class="mt-4 flex justify-end">
                     <button @click="resetarFiltros" class="btn btn-outline-secondary mr-2">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="h-4 w-4 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                        </svg>
+
                         Limpar Filtros
                     </button>
                     <button @click="aplicarFiltros" class="btn btn-primary">
@@ -306,11 +308,14 @@
                 <div class="flex gap-4">
                     <div class="text-wrap">
 
-                        <span class="bg-blue-50  text-blue-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
+                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
 
-                            <i class="fas fa-hand-holding-usd"></i> &ThinSpace;&ThinSpace;<span>Quantidade de
-                                Recuperação: </span> &ThickSpace; {{
-                                    formatCurrency(total) }}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg> &ThinSpace;<span>Total de Valor Recuperado: </span> &ThickSpace; {{
+                                formatCurrency(montantetotal) }}
                         </span>
                     </div>
 
@@ -319,18 +324,17 @@
                 <div class="flex gap-4">
                     <div class="text-wrap">
 
-                        <span class="bg-yellow-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
+                        <span class="bg-blue-50  text-blue-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                            </svg> &ThinSpace;<span>Total de Montante: </span> &ThickSpace; {{
-                                formatCurrency(montantetotal) }}
+                            <i class="fas fa-hand-holding-usd"></i> &ThinSpace;&ThinSpace;<span>Quantidade de
+                                Recuperação Listados: </span> &ThickSpace; {{
+                                    formatCurrency(total) }}
                         </span>
                     </div>
 
                 </div>
+
+
                 <div class="flex gap-2">
 
                     <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)" class="btn btn-outline"
@@ -359,15 +363,15 @@
             <div class="overflow-x-auto -mx-4 sm:mx-0">
 
                 <div class="flex justify-between items-center mb-4">
-                    <button @click="confirmarSelecionados" :disabled="selectedRecuperacoes.length === 0" v-if="$page.props.user.rec_confirma"
-                        class="btn btn-primary"
+                    <button @click="confirmarSelecionados" :disabled="selectedRecuperacoes.length === 0"
+                        v-if="$page.props.user.rec_confirma" class="btn btn-primary"
                         :class="{ 'opacity-50 cursor-not-allowed': selectedRecuperacoes.length === 0 }">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5 mr-2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
-                        Confirmar Selecionados
+                        Validar Selecionado(s)
                     </button>
                     <button @click="openPdfDialog" class="btn btn-outline-pdf flex items-center gap-2">
                         <i class="far fa-file-pdf"></i>
@@ -380,7 +384,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px]">
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[50px] flex">
                                 <input type="checkbox" v-model="selectAll" @change="toggleSelectAll"
                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" /> #
                             </th>
@@ -394,31 +398,7 @@
                                     Registado
                                 </div>
                             </th>
-                            <!--  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                    </svg>
 
-                                    Por
-                                </div>
-                            </th>-->
-                            <!-- <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
-                                    </svg>
-
-
-                                    Agencia
-                                </div>
-                            </th>-->
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-yellow-100">
                                 <div class="flex items-center gap-1">
@@ -470,43 +450,36 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                    </svg>
+
+                                    Data Borderoux
+                                </div>
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
 
                                     Maturidade do Crédito
 
                                 </div>
                             </th>
-                            <!--th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
+                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                                     </svg>
 
-                                    Bordereau
+                                    Data LPF
                                 </div>
-                            </th-->
-                            <!-- <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                    </svg>
-                                    Data PGT
-                                </div>
-                            </th>-->
-                            <!-- <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                    </svg> Data LPF
-                                </div>
-                            </th>-->
+                            </th>
+
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-slate-100">
                                 <div class="flex items-center gap-1">
@@ -541,14 +514,15 @@
                                 </div>
                             </th>
 
-                            <th class="px-4 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                                    </svg>
-                                </th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                </svg>
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -559,28 +533,29 @@
                                     Estado
                                 </div>
                             </th>
-                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
 
-                                </th>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr v-for="(rec, index) in recuperacoesPaginados" :key="rec.id" class="hover:bg-gray-50">
 
-                            <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
+                            <td class="px-4 py-4 whitespace-normal text-sm text-gray-500 flex">
                                 <input type="checkbox" v-model="selectedRecuperacoes" :value="rec.id"
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" /> {{
-                                        calcularNumeroLinha(index) }}
+                                    v-if="estadosPermitidos.includes(rec.id_estado)"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(rec.CiFecha) }}
                             </td>
-                            <!-- <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.UtCodigo }}</td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ rec.OfNombre }}</td>-->
+
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-yellow-100">{{
                                 rec.ReBuDadoOrigem }}</td>
                             <td class="px-4 py-4 text-sm text-gray-500 bg-yellow-100">
@@ -590,26 +565,24 @@
                                 formatCurrency(rec.ReBuMontante) }}</td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-yellow-50">{{ rec.voucher }}
                             </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-yellow-50">{{ rec.ReBuData
+                            }} </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-yellow-50">{{
                                 rec.prazo_maturidade }}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-yellow-50">{{
+                                rec.ReBuDataLPF }} </td>
 
-                            <!--<td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ rec.ReBuData }} </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ rec.ReBuDataLPF
-                            }}</td>-->
-                          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-slate-100">
-                            <div class="flex items-center">
-                                <!-- Imagem com fallback -->
-                                <div class="flex-shrink-0 h-10 w-10 mr-3 ">
-                                    <img
-                                        :src="rec.Imagen ? `/imagens/imgsrecuperadores/${rec.Imagen}` : '/imagens/imgsrecuperadores/sem-foto.jpg'"
-                                        :alt="rec.nome_recuperador || 'Sem foto'"
-                                        class="foto-perfil h-10 w-10 rounded-full object-cover bg-slate-300"
-
-                                    />
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-slate-100">
+                                <div class="flex items-center">
+                                    <!-- Imagem com fallback -->
+                                    <div class="flex-shrink-0 h-10 w-10 mr-3 ">
+                                        <img :src="rec.Imagen ? `/imagens/imgsrecuperadores/${rec.Imagen}` : '/imagens/imgsrecuperadores/sem-foto.jpg'"
+                                            :alt="rec.nome_recuperador || 'Sem foto'"
+                                            class="foto-perfil h-10 w-10 rounded-full object-cover bg-slate-300" />
+                                    </div>
+                                    <span>{{ rec.nome_recuperador }}</span>
                                 </div>
-                                <span>{{ rec.nome_recuperador }}</span>
-                            </div>
-                        </td>
+                            </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600 bg-slate-50">{{
                                 formatCurrency(rec.valor_a_receber) }}</td>
                             <td v-if="rec.mes_ano_pagamento == 'Não definido'"
@@ -633,28 +606,25 @@
                                     Detalhes
                                 </button>
                             </td>
-                                <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="px-4 py-4 whitespace-nowrap">
                                 <span :class="rec.color" class="px-2 py-1 text-xs font-medium rounded-full">
                                     {{ rec.estado }}
                                 </span>
                             </td>
 
-                                <td class="px-4 py-4 whitespace-nowrap text-sm text-center">
-                             <button
-                            @click="initiateDeletion(rec)"
-                            :disabled="!podeEliminar(rec)"
-                            :class="{
-                                'opacity-50 cursor-not-allowed': !podeEliminar(rec),
-                                'text-red-600 hover:text-red-900': podeEliminar(rec),
-                                'flex items-center gap-1': true
-                            }"
-                            title="Eliminar Recuperação"
-                            >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-                            </svg>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-center">
+                                <button @click="initiateDeletion(rec)" :disabled="!podeEliminar(rec)" :class="{
+                                    'opacity-50 cursor-not-allowed': !podeEliminar(rec),
+                                    'text-red-600 hover:text-red-900': podeEliminar(rec),
+                                    'flex items-center gap-1': true
+                                }" title="Eliminar Recuperação">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
 
-                            </button>
+                                </button>
                             </td>
 
                         </tr>
@@ -712,61 +682,66 @@
                         </svg>
                     </button>
                 </div>
+                <!-- Agência -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Agência/Base <span
+                            class="text-red-500">*</span></label>
+                    <select v-model="pdfFilters.agencia" @change="resetRecuperador" class="form-select" required>
+                        <option value="T">Todas</option>
+                        <option v-for="ag in bases" :key="ag.OfIdentificador" :value="ag.OfIdentificador">
+                            {{ ag.OfIdentificador }} - {{ ag.OfNombre }}
+                        </option>
+                    </select>
+                    <span v-if="errors.agencia" class="text-red-500 text-xs">{{ errors.agencia }}</span>
+                </div>
+                <!-- Recuperador -->
+                <div class="space-y-2 py-2">
+                    <label class="block text-sm font-medium text-gray-700">Recuperador <span
+                            class="text-red-500">*</span></label>
+                    <select v-model="pdfFilters.recuperador" class="form-select" required>
+                        <option value="TR">Todos</option>
+                        <option v-for="rec in filteredRecuperadores" :key="rec.id" :value="rec.id">
+                            {{ rec.nome_recuperador }}
+                        </option>
+                    </select>
+                    <span v-if="errors.recuperador" class="text-red-500 text-xs">{{ errors.recuperador }}</span>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Recuperador -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Recuperador <span
-                                class="text-red-500">*</span></label>
-                        <select v-model="pdfFilters.recuperador" class="form-select" required>
-                            <option value="">Selecione um recuperador</option>
-                            <option value="TR">Todos</option>
-                            <option v-for="rec in listar_recuperador" :key="rec.id" :value="rec.id">
-                                {{ rec.nome_recuperador }}
-                            </option>
-                        </select>
-                        <span v-if="errors.recuperador" class="text-red-500 text-xs">{{ errors.recuperador }}</span>
-                    </div>
 
-                    <!-- Agência -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Agência/Base <span
-                                class="text-red-500">*</span></label>
-                        <select v-model="pdfFilters.agencia" class="form-select" required>
-                            <option value="">Selecione uma agência</option>
-                            <option value="T">Todas</option>
-                            <option v-for="ag in bases" :key="ag.OfIdentificador" :value="ag.OfIdentificador">
-                                {{ ag.OfIdentificador }} - {{ ag.OfNombre }}
-                            </option>
-                        </select>
-                        <span v-if="errors.agencia" class="text-red-500 text-xs">{{ errors.agencia }}</span>
-                    </div>
+                <!-- Estado -->
+                <div class="space-y-2 py-2">
+                    <label class="block text-sm font-medium text-gray-700">Estado <span
+                            class="text-red-500">*</span></label>
+                    <select v-model="pdfFilters.estado" class="form-select" required>
 
-                    <!-- Estado -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Estado <span
-                                class="text-red-500">*</span></label>
-                        <select v-model="pdfFilters.estado" class="form-select" required>
-                            <option value="">Selecione um estado</option>
-                            <option value="28">Todos</option>
-                            <option v-for="est in listar_estados" :key="est.id" :value="est.id">
-                                {{ est.descricao_estado }}
-                            </option>
-                        </select>
-                        <span v-if="errors.estado" class="text-red-500 text-xs">{{ errors.estado }}</span>
-                    </div>
+                        <option value="28">Todos</option>
+                        <option v-for="est in listar_estados" :key="est.id" :value="est.id">
+                            {{ est.descricao_estado }}
+                        </option>
+                    </select>
+                    <span v-if="errors.estado" class="text-red-500 text-xs">{{ errors.estado }}</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-2">
 
                     <!-- Período -->
                     <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Período <span
+                        <label class="block text-sm font-medium text-gray-700">Início <span
                                 class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 gap-2">
                             <div>
                                 <input v-model="pdfFilters.dataInicio" type="date" class="form-input"
                                     placeholder="Data Início" required>
                                 <span v-if="errors.dataInicio" class="text-red-500 text-xs">{{ errors.dataInicio
                                 }}</span>
                             </div>
+
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Fim <span
+                                class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-1 gap-2">
+
                             <div>
                                 <input v-model="pdfFilters.dataFim" type="date" class="form-input"
                                     placeholder="Data Fim" required>
@@ -774,9 +749,11 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
 
-                <div class="mt-6 flex justify-end space-x-3">
+                <div class="mt-6 flex justify-end space-x-3 py-2">
                     <button @click="showPdfDialog = false" type="button" class="btn btn-secondary">
                         Cancelar
                     </button>
@@ -833,13 +810,15 @@
                             <p class="text-sm text-gray-900">{{ formatCurrency(selectedRecuperacaoDetails.ReBuMontante)
                                 }}</p>
                         </div>
-                         <div>
+                        <div>
                             <p class="text-sm font-medium text-gray-500">Data do Borderoux</p>
-                            <p class="text-sm text-gray-900"> {{ formatApenasDate(selectedRecuperacaoDetails.ReBuData) }}</p>
+                            <p class="text-sm text-gray-900"> {{ formatApenasDate(selectedRecuperacaoDetails.ReBuData)
+                            }}</p>
                         </div>
-                         <div>
+                        <div>
                             <p class="text-sm font-medium text-gray-500">Data do LPF</p>
-                            <p class="text-sm text-gray-900"> {{ formatApenasDate(selectedRecuperacaoDetails.ReBuDataLPF) }}</p>
+                            <p class="text-sm text-gray-900"> {{
+                                formatApenasDate(selectedRecuperacaoDetails.ReBuDataLPF) }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500">Comissão bruta</p>
@@ -877,51 +856,59 @@
 
 
         <!-- Modal para seleção do mês de pagamento -->
+
         <Modal :show="showMonthDialog" @close="showMonthDialog = false" maxWidth="md">
-            <div class="bg-white p-6 rounded-lg">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Confirmar Recuperação</h3>
+    <div class="bg-white p-6 rounded-lg">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Validar Recuperação</h3>
+<hr/>
+      <div class="mb-4 py-2">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Estado <span
+            class="text-red-500">*</span></label>
+        <select v-model="selectedEstado" class="form-select" required>
+          <option value="" disabled selected>Selecione o estado</option>
+          <option v-for="est in listar_estados_operacionais" :key="est.id" :value="est.id">
+            {{ est.descricao_estado }} -{{ est.id }}
+          </option>
+        </select>
+      </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado <span
-                            class="text-red-500">*</span></label>
-                    <select v-model="selectedEstado" @change="handleEstadoChange" class="form-select" required>
-                        <option value="" disabled selected>Selecione o estado</option>
-                        <option v-for="est in estadosFiltrados" :key="est.id" :value="est.id">
-                            {{ est.descricao_estado }}
-                        </option>
-                    </select>
-                </div>
+      <!-- Input para mês de pagamento -->
+      <div class="mb-4" v-if="habilitaMesPagamento && selectedEstado">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Mês/Ano de Pagamento <span
+            class="text-red-500">*</span></label>
+        <input type="month" v-model="selectedMonth"
+          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          :min="minMonth" required />
+      </div>
 
-                <!-- Input para mês de pagamento (mostrado apenas quando estado é "Confirmado") -->
-                <div class="mb-4" v-if="selectedEstado === 3">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Mês/Ano de Pagamento <span
-                            class="text-red-500">*</span></label>
-                    <input type="month" v-model="selectedMonth"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        :min="minMonth" required />
-                </div>
+      <div class="mb-4" v-if="habilitaDataPagamento && selectedEstado">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Data de Pagamento <span
+            class="text-red-500">*</span></label>
+        <input type="date" v-model="selectedDataPagamento"
+          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          :min="minMonth" required />
+      </div>
 
-                <!-- Input para motivo (mostrado apenas quando estado é "Não confirmado") -->
-                <div class="mb-4" v-if="selectedEstado === 17">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Motivo <span
-                            class="text-red-500">*</span></label>
-                    <textarea v-model="motivoNaoConfirmado"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Digite o motivo da não confirmação" required></textarea>
-                </div>
+      <div class="mb-4" v-if="habilitaMotivo && selectedEstado">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Motivo <span
+            class="text-red-500">*</span></label>
+        <textarea v-model="motivoNaoConfirmado"
+          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          placeholder="Digite o motivo da não confirmação" required></textarea>
+      </div>
 
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button @click="showMonthDialog = false" type="button"
-                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Cancelar
-                    </button>
-                    <button @click="enviarConfirmacao" type="button"
-                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Finalizar
-                    </button>
-                </div>
-            </div>
-        </Modal>
+      <div class="flex justify-end space-x-3 mt-6">
+       <button @click="showMonthDialog = false" type="button"
+        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+       <i class="far fa-times-circle"></i> Cancelar
+    </button>
+        <button @click="enviarConfirmacao" type="button"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+         <i class="fas fa-check"></i> Finalizar
+        </button>
+      </div>
+    </div>
+  </Modal>
 
 
         <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan"
@@ -1024,10 +1011,17 @@ const props = defineProps({
         required: false,
         default: () => []
     },
+    listar_estados_operacionais: {
+        type: Array,
+        required: false,
+        default: () => []
+    },
     listacomissoes_taxas: Array,
     BasesOperacao: Array,
     lista_agencias_consultas: Array,
     listar_voucher_para_recuperacao: Array,
+    id_estados_operacionais: String,
+    id_estados_anterior_que_opera: String,
     estatistica: Object,
     auth: Object,
     dataInicioInput: String,
@@ -1046,6 +1040,8 @@ const props = defineProps({
         default: 100
     },
 });
+// Emits
+const emit = defineEmits(['close', 'confirm'])
 
 const showModalData = ref(false);
 const showModalLoan = ref(false);
@@ -1069,7 +1065,7 @@ const dadosLocais = ref([]);
 const selectedRecuperacoes = ref([]);
 const selectAll = ref(false);
 const showMonthDialog = ref(false);
-const selectedMonth = ref('');
+
 
 const openDetails = (recuperacao) => {
     selectedRecuperacaoDetails.value = recuperacao;
@@ -1077,16 +1073,63 @@ const openDetails = (recuperacao) => {
 };
 
 
+const selectedMonth = ref('')
+const selectedEstado = ref('');
+const motivoNaoConfirmado = ref('');
+const selectedDataPagamento = ref('')
+//const minMonth = ref(new Date().toISOString().slice(0, 7)) // Formato YYYY-MM
+
+// Flags para habilitar campos
+const habilitaMesPagamento = ref(false)
+const habilitaDataPagamento = ref(false)
+const habilitaMotivo = ref(false)
 
 const minMonth = computed(() => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 });
 
+// Sincroniza o estado do checkbox "Selecionar Todos"
+watch(selectedRecuperacoes, (newVal) => {
+    const idsPermitidos = props.id_estados_anterior_que_opera.split(',').map(id => parseInt(id.trim()));
+    const itensPermitidos = props.lista_recuperacoes.filter(item => idsPermitidos.includes(item.id_estado));
+
+    selectAll.value = newVal.length > 0 &&
+                      newVal.length === itensPermitidos.length &&
+                      itensPermitidos.every(item => newVal.includes(item.id));
+}, { deep: true });
+
+// Watcher para mudanças no estado selecionado
+watch(selectedEstado, (newVal) => {
+    if (!newVal) return
+
+    const estadoSelecionado = props.listar_estados_operacionais.find(
+        est => est.id === newVal
+    )
+
+    if (estadoSelecionado) {
+        habilitaMesPagamento.value = estadoSelecionado.habilita_mes_pagamento
+        habilitaDataPagamento.value = estadoSelecionado.habilita_data_pagamento
+        habilitaMotivo.value = estadoSelecionado.habilita_motivo
+
+        // Resetar valores quando desabilitado
+        if (!habilitaMesPagamento.value) selectedMonth.value = ''
+        if (!habilitaDataPagamento.value) selectedDataPagamento.value = ''
+        if (!habilitaMotivo.value) motivoNaoConfirmado.value = ''
+    }
+})
+
+
 // Função para alternar seleção de todos
 const toggleSelectAll = () => {
     if (selectAll.value) {
-        selectedRecuperacoes.value = recuperacoesPaginados.value.map(rec => rec.id);
+        // Converte a string de IDs em um array de números
+        const idsPermitidos = props.id_estados_anterior_que_opera.split(',').map(id => parseInt(id.trim()));
+
+        // Seleciona apenas itens cujo estado está na lista de permissões
+        selectedRecuperacoes.value = props.lista_recuperacoes
+            .filter(item => idsPermitidos.includes(item.id_estado))
+            .map(item => item.id);
     } else {
         selectedRecuperacoes.value = [];
     }
@@ -1208,21 +1251,21 @@ watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInic
 });
 
 
+const filteredRecuperadores = computed(() => {
 
-const listarEstados = async () => {
-    const res = await fetch('/listarEstados');
-    const json = await res.json();
-    estados.value = json;
-}
+    if (!pdfFilters.agencia || pdfFilters.agencia === 'T') {
+        return props.listar_recuperador;
+    }
 
-const agencias = ref([]);
-const listarAgencias = async () => {
-    const res = await fetch('/listarAgencias');
-    const json = await res.json();
-    agencias.value = json;
-}
+    // Filtra os recuperadores que pertencem à agência selecionada
+    return props.listar_recuperador.filter(recuperador =>
+        recuperador.BasesOperacao === pdfFilters.agencia
+    );
+});
 
-
+const resetRecuperador = () => {
+    pdfFilters.recuperador = '';
+};
 
 const buscarPorDatas = (params) => {
     router.get('/recuperacoes', {
@@ -1236,15 +1279,6 @@ const buscarPorDatas = (params) => {
     showModalData.value = false
 }
 
-const confirmarRecuperacao = (idRecuperacao) => {
-    router.get('/confirmarRecuperacao',
-        {
-            id: idRecuperacao
-        }, {
-        preserveState: true,
-        preserveScroll: true,
-    });
-}
 
 // Estado do formulário
 const formRecuperacao = reactive({
@@ -1267,9 +1301,7 @@ const clientesFiltrados = computed(() => {
     );
 });
 
-const estadosFiltrados = computed(() => {
-    return props.listar_estados.filter(estado => estado.id === 3 || estado.id === 17);
-});
+
 
 // Função para submeter
 function guardarRecuperacao() {
@@ -1292,8 +1324,7 @@ function guardarRecuperacao() {
 }
 
 
-const selectedEstado = ref('');
-const motivoNaoConfirmado = ref('');
+
 
 const handleEstadoChange = () => {
     // Reset fields when estado changes
@@ -1311,26 +1342,29 @@ const enviarConfirmacao = () => {
         alert('Por favor, selecione o estado');
         return;
     }
+    const estado = props.listar_estados_operacionais.find(e => e.id === selectedEstado.value)
 
-    if (selectedEstado.value === 3 && !selectedMonth.value) {
-        alert('Por favor, selecione o mês de pagamento');
-        return;
+    if (estado.habilita_mes_pagamento && !selectedMonth.value) {
+        alert('Por favor, informe o mês/ano de pagamento')
+        return
     }
 
-    if (selectedEstado.value === 17 && !motivoNaoConfirmado.value) {
-        alert('Por favor, digite o motivo da não confirmação');
-        return;
+
+    if (estado.habilita_data_pagamento && !selectedDataPagamento.value) {
+        alert('Por favor, informe a data de pagamento')
+        return
     }
-
-    // Extrair ano e mês do valor selecionado
-    //const [year, month] = selectedMonth.value.split('-');
-
+    if (estado.habilita_motivo && !motivoNaoConfirmado.value.trim()) {
+        alert('Por favor, informe o motivo')
+        return
+    }
     // Enviar para o controlador
     Inertia.post('/confirmar-recuperacoes', {
         ids: selectedRecuperacoes.value,
         id_estado: selectedEstado.value,
         mes_para_pagamento: selectedMonth.value,
-        obs: selectedEstado.value === 17 ? motivoNaoConfirmado.value : null
+        dataPagamento: selectedDataPagamento.value,
+        obs: motivoNaoConfirmado.value
     }, {
         onSuccess: () => {
             showMonthDialog.value = false;
@@ -1364,12 +1398,7 @@ const formatApenasDate = (date) => {
     return d.toLocaleDateString('pt-PT')
 };
 
-const formatMoney = (amount) => {
-    return parseFloat(amount).toLocaleString('pt-PT', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-};
+
 
 function formatCurrency(value) {
     if (value == null) return '';
@@ -1478,70 +1507,70 @@ const gerarPdf = () => {
     showPdfDialog.value = false;
 };
 
-
+const hoje = computed(() => new Date().toISOString().split('T')[0])
 const podeEliminar = (rec) => {
-  const isRegistadoHoje = rec.id_estado === 1 && rec.CiFecha === hoje.value
-  const temPermissao = props.user.elimina_confirmado_exportado == 1
+    const isRegistadoHoje = rec.id_estado === 1 && rec.CiFecha === hoje.value
+    const temPermissao = props.user.elimina_confirmado_exportado == 1
 
-  return isRegistadoHoje || temPermissao
+    return isRegistadoHoje || temPermissao
 }
 
 const initiateDeletion = (rec) => {
 
-  if (!podeEliminar(rec)) return
+    if (!podeEliminar(rec)) return
 
-  // Prepara os dados para exibir no modal
-  selectedRecuperacao.value = {
-    lnr: rec.ReBuDadoOrigem || 'N/A',
-    cliente: rec.infoadicional || 'N/A',
-    montante: rec.ReBuMontante || 0,
-    data: rec.CiFecha || 'N/A',
-    estado: rec.estado || 'N/A',
-    id: rec.id,
+    // Prepara os dados para exibir no modal
+    selectedRecuperacao.value = {
+        lnr: rec.ReBuDadoOrigem || 'N/A',
+        cliente: rec.infoadicional || 'N/A',
+        montante: rec.ReBuMontante || 0,
+        data: rec.CiFecha || 'N/A',
+        estado: rec.estado || 'N/A',
+        id: rec.id,
 
-  }
+    }
 
-  showDeleteModal.value = true
+    showDeleteModal.value = true
 }
 
 const isDeleting = ref(false)
 
 const proceedWithDeletion = async () => {
-  isDeleting.value = true
+    isDeleting.value = true
 
-  try {
+    try {
 
-    await router.post("/eliminar-recuperacao", {
-      id: selectedRecuperacao.value.id,
+        await router.post("/eliminar-recuperacao", {
+            id: selectedRecuperacao.value.id,
 
-    }, {
-      preserveScroll: true,
-      onSuccess: () => {
-        showDeleteModal.value = false
-        // Opcional: Mostrar notificação de sucesso
-      },
-      onError: (errors) => {
-        // Opcional: Mostrar notificação de erro
-        console.error('Erro ao eliminar:', errors)
-      }
-    })
-  } catch (error) {
-    console.error('Erro inesperado:', error)
-  } finally {
-    isDeleting.value = false
-  }
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                showDeleteModal.value = false
+                // Opcional: Mostrar notificação de sucesso
+            },
+            onError: (errors) => {
+                // Opcional: Mostrar notificação de erro
+                console.error('Erro ao eliminar:', errors)
+            }
+        })
+    } catch (error) {
+        console.error('Erro inesperado:', error)
+    } finally {
+        isDeleting.value = false
+    }
 }
 
 const cancelDeletion = () => {
-  selectedRecuperacao.value = {
-    lnr: '',
-    cliente: '',
-    montante: 0,
-    data: '',
-    estado: '',
-    id: null
-  }
-  showDeleteModal.value = false
+    selectedRecuperacao.value = {
+        lnr: '',
+        cliente: '',
+        montante: 0,
+        data: '',
+        estado: '',
+        id: null
+    }
+    showDeleteModal.value = false
 }
 
 
@@ -1583,7 +1612,9 @@ const validarDatas = () => {
 
     return isValid;
 };
-
+const estadosPermitidos = computed(() => {
+    return props.id_estados_anterior_que_opera.split(',').map(id => parseInt(id.trim()));
+});
 // Watcher para sincronizar quando as props forem atualizadas
 watch(() => props.filters, (newFilters) => {
     filtro.value = {
@@ -1626,19 +1657,7 @@ watch(() => props.dataFimInput, (newVal) => {
 })
 
 
-const confirmDelete = () => {
-    if (!selectedRecuperacao.value) return;
 
-    Inertia.delete(`/recuperacoes/${selectedRecuperacao.value.id}`, {
-        onSuccess: () => {
-            loadRecuperacoes(); // Recarregar a lista após exclusão
-            showDeleteModal.value = false;
-        },
-        onError: () => {
-            alert('Erro ao excluir recuperação');
-        }
-    });
-};
 
 // Função para selecionar um cliente
 const selectClient = (client) => {
@@ -1675,10 +1694,7 @@ onMounted(async () => {
     listarAgencias();
 });
 
-const handleImageError = (event) => {
-    event.target.src = '/imagens/sem-foto.jpg'; // Imagem de fallback
-    event.target.alt = 'Imagem não disponível';
-};
+
 // Exportar para Excel (mantido como está)
 const exportarParaExcel = () => {
     if (!props.lista_recuperacoes?.length) {

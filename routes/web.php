@@ -53,11 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
 
 
-    Route::get('/tesouraria', [TesourariaController::class, 'viewRecuperacoesTesouria'])->name('tesouraria');
-    Route::post('/pagamento-tesouraria-recuperacao', [TesourariaController::class, 'confirmarMultiplas']);
+    Route::get('/tesouraria', [RecuperacaoController::class, 'viewRecuperacoes'])->name('tesouraria');
 
-    Route::get('/dcfrecuperacoes', [RecuperacaoDCFController::class, 'viewRecuperacoesDCF'])->name('dcfrecuperacoes');
-    Route::post('/aprovar-recuperacoes', [RecuperacaoDCFController::class, 'confirmarMultiplas']);
+
+
 
 
 });

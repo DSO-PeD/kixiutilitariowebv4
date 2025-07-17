@@ -417,15 +417,16 @@
     <table class="sub-table">
         <thead>
             <tr>
-                <th>Loan Number</th>
+                <th>Lnr</th>
                  <th>Cliente</th>
                   <th>Voucher</th>
                 <th>Valor Recuperado</th>
 
                 <th style="background-color: #dde7f5; color: #3d526d;">% PGT.</th>
                 <th style="background-color: #ebeff4; color: #3d526d;">Comissão Bruta</th>
-                <th style="background-color: #ebeff4; color: #3d526d;">Desconto IRT(6.5%)</th>
+                <th style="background-color: #ebeff4; color: #3d526d;">Desc. IRT(6.5%)</th>
                 <th style="background-color: #ebeff4; color: #3d526d;">Valor a Receber</th>
+                <th style="background-color: #ebeff4; color: #3d526d;">Situação</th>
             </tr>
         </thead>
         <tbody>
@@ -443,7 +444,7 @@
                         <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->comissao_bruta, 2, ',', '.') }}</td>
                         <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->desconto_IRT, 2, ',', '.') }}</td>
                         <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->valor_a_receber, 2, ',', '.') }}
-
+                        <td style="background-color: #dde7f5; color: #3d526d">{{$dd_recu->estado}} </td>
 
                         </td>
                     </tr>
@@ -462,6 +463,7 @@
                 <td class="numeric-cell"><strong>{{ number_format($totalComissao, 2, ',', '.') }}</strong></td>
                 <td class="numeric-cell"><strong>{{ number_format($totalIrt, 2, ',', '.') }}</strong></td>
                 <td class="numeric-cell"><strong>{{ number_format($totalReceber, 2, ',', '.') }}</strong></td>
+                <td></td>
             </tr>
                 @endif
             @endforeach

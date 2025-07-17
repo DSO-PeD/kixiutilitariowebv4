@@ -33,10 +33,15 @@ class RecuperacaoController extends Controller
         $authenticatedUser = Auth::user();
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
-        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
 
-        // $estados = EstadosModel::getEstadosRecupecao($resultagencia_user->rec_viewestados);
-        $ids_estados = $authenticatedUser->rec_viewestados;
+        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
+        $ids_estados = $authenticatedUser->recuperacao_estados_activos;
+        $id_estados_operacionais = $authenticatedUser->recuperacao_estados_operacao;
+        $id_estados_anterior_que_opera = $authenticatedUser->recuperacao_estados_anterior;
+
+        $listar_estados = EstadosModel::getEstadosRecuperacao($ids_estados );// EstadosModel::getEstadosDCF('DOP'); // os IDs DOP tambem servem para DPP
+        $listar_estados_operacionais= EstadosModel::getEstadosRecuperacao($id_estados_operacionais);
+
 
         $Bases = $resultagencia_user->BasesOperacao;
         $ESTADO = $ids_estados;
@@ -46,13 +51,13 @@ class RecuperacaoController extends Controller
         $tipo = $request->tipo;
         $estado = $request->estado_input;
         $agencia = $request->agencia_imput;
-        $dataIn = null;
-        $dataF = null;
+        $dataIn = $request->data_inicio_imput;
+        $dataF = $request->data_fim_imput;
         $loan = $request->loan;
 
         if ($tipo == 4) {
-            $dataIn = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
-            $dataF = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+            $dataIn = date("Y-m-d 00:00:00", strtotime($dataIn));
+            $dataF = date("Y-m-d 23:59:00", strtotime($dataF));
 
             if ($estado == '28') {
                 $estado = $ESTADO;
@@ -62,9 +67,6 @@ class RecuperacaoController extends Controller
             if ($agencia == 'T') {
                 $agencia = $Bases;
             }
-
-
-
 
         }
 
@@ -88,16 +90,20 @@ class RecuperacaoController extends Controller
         $sigla_agencia_base = $resultagencia_user->OfIdentificador;
         $rec_viewestado = explode(',', $authenticatedUser->rec_viewestados);
 
-        $listar_recuperador = RecuperadorModel::getRecuperadores($sigla_agencia_base);
+        $listar_recuperador = RecuperadorModel::getRecuperadores($resultagencia_user->BasesOperacao);
+
         $listar_voucher_para_recuperacao = RecuperacaoModel::listarVoucherParaRecuperacao($ConsultaBaseConsulta, $this->user->rec_registra);
 
-        $listar_estados = EstadosModel::getEstadosDCF('DOP');
+
+
+
 
         $lista_agencias_consultas = RecuperacaoModel::listarBasesDeConsultaRecuperacao();
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
 
         $total = $lista_recuperacoes->count();
         $totalMontante = $lista_recuperacoes->sum('ReBuMontante');
+
 
 
 
@@ -194,7 +200,10 @@ class RecuperacaoController extends Controller
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
-            'listacomissoes_taxas' => $listacomissoes_taxas
+            'listacomissoes_taxas' => $listacomissoes_taxas,
+            'id_estados_operacionais'=>$id_estados_operacionais,
+            'id_estados_anterior_que_opera'=>$id_estados_anterior_que_opera,
+            'listar_estados_operacionais'=>$listar_estados_operacionais
         ]);
     }
 
@@ -402,9 +411,13 @@ class RecuperacaoController extends Controller
         $ids = $request->input('ids');
         $estado_id = $request->input('id_estado');
         $motivo_obs = $request->input('obs');
-
-
         $MES_ANO_PAGAMENTO = $request->input('mes_para_pagamento');
+        $dataPagamento = $request->input('dataPagamento');
+
+
+
+
+
 
         $authenticatedUser = Auth::user();
 
@@ -416,7 +429,8 @@ class RecuperacaoController extends Controller
                 ->update([
                     'mes_ano_pagamento' => $MES_ANO_PAGAMENTO,
                     'id_estado' => $estado_id,
-                    'obs' => $motivo_obs
+                    'obs' => $motivo_obs,
+                    'data_do_pagamento'=> $dataPagamento
                 ]);
 
             if ($updated) {
@@ -433,10 +447,10 @@ class RecuperacaoController extends Controller
                 }
 
                 DB::commit();
-                return back()->with('success', 'Recuperações confirmadas com sucesso!');
+                return back()->with('success', 'Operação realizada com sucesso!');
             } else {
                 DB::rollBack();
-                return back()->with('error', 'Nenhum registro foi atualizado.');
+                return back()->with('error', 'Nenhuma operação foi realizada!.');
             }
         } catch (\Exception $e) {
             DB::rollBack();

@@ -9,6 +9,7 @@ class EstadosModel extends Model
 {
     //
     protected $table = 'estado';
+
     public static function getBancosContas()
     {
 
@@ -26,6 +27,16 @@ class EstadosModel extends Model
             ->get();
         return $contas;
     }
+    public static function getEstadosRecuperacao($estadoArray)
+    {
+        $estadoArray = explode(',', $estadoArray);
+
+        $contas = DB::table('estado')
+            ->whereIn('id', $estadoArray)
+            ->get();
+        return $contas;
+    }
+
 
     public static function getEstados()
     {
@@ -35,11 +46,5 @@ class EstadosModel extends Model
             ->get();
     }
 
-    public static function getEstadosRecupecao($ids_estados_view)
-    {
-        return DB::table('estado')
-            ->select('id', 'descricao_estado')
-            ->whereIn('id', [$ids_estados_view])
-            ->get();
-    }
+
 }
