@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -44,5 +47,10 @@ class AppServiceProvider extends ServiceProvider
             ],
 
         );
+
+        Response::macro('withNoIndex', function ($content = '') {
+            return response($content)->header('X-Robots-Tag', 'noindex, nofollow');
+        });
     }
+
 }

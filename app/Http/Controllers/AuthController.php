@@ -17,6 +17,7 @@ use App\Models\User;
 use App\TkxclProdutos;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -33,11 +34,11 @@ class AuthController extends Controller
             'UtCodigo' => ['required', 'string'],
             'UtSenha' => ['required', 'string'],
         ]);
-
+        $ip = $request->ip();
         $credentials = $request->only('UtCodigo', 'UtSenha');
 
         $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])
-            ->where('UtSenha', $credentials['UtSenha']) // sem hash
+            ->where('UtSenha', $credentials['UtSenha'])->where('activo', 1)->where('ip_utilizador', '=', $ip) // sem hash
             ->first();
 
         if (!$user) {
@@ -67,9 +68,10 @@ class AuthController extends Controller
             // Exibindo os dados
             session(['bases_operacionais' => $basesOperacionais->toArray()]);
 
-            //dd(session()->all());
-            //  dd( $resultagencia_user);
+
             return redirect()->intended('/dashboard');
+
+            //   return Response::withNoIndex(Inertia::render('Dashboard'));
 
         } else {
             return back()->withErrors([

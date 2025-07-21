@@ -364,7 +364,7 @@
 
                 <div class="flex justify-between items-center mb-4">
                     <button @click="confirmarSelecionados" :disabled="selectedRecuperacoes.length === 0"
-                        v-if="$page.props.user.rec_confirma" class="btn btn-primary"
+                        v-if="$page.props.user.recuperacao_btnvalidar" class="btn btn-primary"
                         :class="{ 'opacity-50 cursor-not-allowed': selectedRecuperacoes.length === 0 }">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5 mr-2">

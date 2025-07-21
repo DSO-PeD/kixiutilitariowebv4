@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
@@ -13,24 +14,31 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+        // Middleware global (executado em todas as requisições web)
         $middleware->web(append: [
             HandleInertiaRequests::class,
+            // \App\Http\Middleware\GeoBlockMiddleware::class, // Adicionado aqui
         ]);
-        $middleware->statefulApi([
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+
+        // Registra o GeoBlockMiddleware como um middleware de rota (nomeado)
+        $middleware->alias([
+            'geoblock' => \App\Http\Middleware\GeoBlockMiddleware::class,
         ]);
-        $middleware->validateCsrfTokens(except: [
-            'api/*',                // Rotas API
-            'sanctum/csrf-cookie',  // Rota do Sanctum para SPAs
-            'login',                // Seu endpoint de login
-            'logout',               // Seu endpoint de logout
-        ]);
+
+
+
+        // Middleware para APIs stateful (Sanctum)
         $middleware->statefulApi();
-        //
+
+        // Configuração de CSRF
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'sanctum/csrf-cookie',
+            'login',
+            'logout',
+        ]);
     })
-    ->withProviders([
-        Laravel\Sanctum\SanctumServiceProvider::class,
-    ])
+
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

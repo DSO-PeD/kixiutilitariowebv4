@@ -4,18 +4,14 @@ use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
 use App\Http\Controllers\RecuperacaoController;
-use App\Http\Controllers\RecuperacaoDCFController;
 use App\Http\Controllers\ReportDomPDFController;
-use App\Http\Controllers\TesourariaController;
 use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
-use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Request;
 
-Route::middleware('guest')->group(function () {
+
+Route::middleware(['guest', 'geoblock'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
@@ -23,7 +19,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 //Proteger o dashboard:
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'geoblock'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'carregamentoInicial'])->name('dashboard');
 
 
@@ -53,7 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
 
 
-    Route::get('/tesouraria', [RecuperacaoController::class, 'viewRecuperacoes'])->name('tesouraria');
+   // Route::get('/tesouraria', [RecuperacaoController::class, 'viewRecuperacoes'])->name('tesouraria');
 
 
 
