@@ -17,32 +17,33 @@ class TKxUsUtilizadorModel extends Authenticatable
     public $incrementing = false; // se o UtCodigo for string
 
     protected $fillable = [
-
-        'UtSenha ',
-        'UtNome ',
-        'UtFuncao ',
-        'UtAgencia ',
-        'rec_confirma ',
-        'rec_exporta ',
-        'rec_viewestados ',
-        'rec_validaregistos_antigos ',
-        'rec_registra ',
-        'rec_comprovativo ',
-        'rec_extrato ',
-        'rec_subsidio ',
-        'obs_regista ',
-        'rec_habilita_comprovativo ',
-        'view_pendentes ',
-        'elimina_confirmado_exportado ',
-        'reconci_habilita ',
-        'nova_recuperacao ',
-        'mn_tesouraria ',
-        'mn_recuperacoesDCF ',
-        'recuperacao_estados_activos ',
-        'recuperacao_estados_operacao ',
-        'recuperacao_estados_anterior ',
-        'activo  ',
-        'ip_utilizador'
+        'UtCodigo',
+        'UtNome',
+        'UtFuncao',
+        'UtAgencia',
+        'rec_confirma',
+        'rec_viewestados',
+        'rec_comprovativo',
+        'rec_extrato',
+        'rec_subsidio',
+        'view_pendentes',
+        'elimina_confirmado_exportado',
+        'reconci_habilita',
+        'nova_recuperacao',
+        'mn_tesouraria',
+        'mn_recuperacoesDCF',
+        'recuperacao_estados_activos',
+        'recuperacao_estados_operacao',
+        'recuperacao_estados_anterior',
+        'activo',
+        'ip_utilizador',
+        'remember_token',
+        'OfCodigo',
+        'OfIdentificador',
+        'OfNombre',
+        'BasesOperacao',
+        'DataFecho',
+        'NumeroRegistroTabela'
     ];
 
     protected $hidden = [
@@ -63,5 +64,15 @@ class TKxUsUtilizadorModel extends Authenticatable
 
     return $ipValidos;
 }
+
+    public static function getDJAIPKIXILAN()
+{
+    $ipValidos = DB::table('ipfaixas')
+        ->pluck('cidr') // retorna apenas os valores da coluna
+        ->toArray(); // converte para array
+
+    return $ipValidos;
+}
+
 
 }

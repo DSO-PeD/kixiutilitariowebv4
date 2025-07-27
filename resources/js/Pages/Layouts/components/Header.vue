@@ -3,7 +3,9 @@
         <!-- Left side - Logo -->
 
         <div class="flex items-center space-x-2">
-            <img src="/public/imagens/LogoKxCreditoTEla.png" alt="Logo" class="h-8 w-auto">
+
+            <img :src="LogoKxCredito" alt="Logo KixiCrédito" class="h-8 w-auto object-contain" />
+
 
         </div>
 
@@ -22,8 +24,7 @@
                 <span v-if="hasNotifications"
                     class="absolute top-0 right-0 inline-block w-2 h-2 bg-green-300 rounded-full"></span>
             </button>
-            <span class="text-xs text-orange-200 hidden sm:inline">AGÊNCIA: {{ $page.props.session.agencia_principal
-                }}</span>
+            <span class="text-xs text-orange-200 hidden sm:inline">AGÊNCIA: &ThinSpace;{{ $page.props.agencia_principal }}</span>
 
 
             <!-- User dropdown -->
@@ -98,10 +99,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref  } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { onClickOutside } from '@vueuse/core';
 import Modal from './ModalExit.vue';
+import LogoKxCredito from '../../../../../public/imagens/LogoKxCreditoTEla.png';
 
 const dropdownOpen = ref(false);
 const showModal = ref(false);
@@ -109,8 +111,11 @@ const showModalSMS = ref(false)
 const dropdownRef = ref(null);
 const hasNotifications = ref(false); // Você pode alterar isso conforme a lógica do seu app
 
-defineProps({
-    sidebarCollapsed: Boolean
+
+const props = defineProps({
+    sidebarCollapsed: Boolean,
+
+
 });
 
 onClickOutside(dropdownRef, () => {

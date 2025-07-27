@@ -10,8 +10,8 @@ use App\Http\Controllers\TKxExtratoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-
-Route::middleware(['guest', 'geoblock'])->group(function () {
+//'geoblock'
+Route::middleware(['guest'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
@@ -19,7 +19,8 @@ Route::middleware(['guest', 'geoblock'])->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 //Proteger o dashboard:
-Route::middleware(['auth', 'geoblock'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'carregamentoInicial'])->name('dashboard');
 
 
@@ -49,23 +50,15 @@ Route::middleware(['auth', 'geoblock'])->group(function () {
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
 
 
-   // Route::get('/tesouraria', [RecuperacaoController::class, 'viewRecuperacoes'])->name('tesouraria');
-
-
-
-
 
 });
-
-Route::inertia('/novoutilizador', 'Auth/Utilizador');
-Route::post('/novoutilizador', [AuthController::class, 'cadastrar']);
 
 
 
 Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
 Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP'])->name('extrato_kxu');
 
-//Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP']);
+
 Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 

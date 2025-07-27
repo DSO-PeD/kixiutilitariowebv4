@@ -38,6 +38,8 @@ return [
         'base_url' => env('IZIPAY_BASE_URL', 'https://api.izipay.ao/v1/referencias'),
         'secret' => env('IZIPAY_APP_SECRET'),
     ],
-
+    'ipinfo' => [
+        'token' => env('IPINFO_TOKEN'),
+    ],
 
 ];

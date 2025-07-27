@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ComprovativoModel;
-use App\Models\RecuperacaoModel;
-use App\Models\TKuPendentesModel;
-use App\Models\TKxAgenciaModel;
-use App\Models\TKxBancoContaModel;
-use App\Models\TKxBancoModel;
-use App\Models\TKxClProdutoModel;
-use App\Models\TKxClTipopagamentoModel;
-use App\Models\TKxCodigoCaeModel;
-use App\Models\TKxExtratoModel;
-use App\Models\TKxUsUtilizadorModel;
-use App\Models\User;
-use App\TkxclProdutos;
+use App\Models\{
+    ComprovativoModel,
+    RecuperacaoModel,
+    TKuPendentesModel,
+    TKxAgenciaModel,
+    TKxBancoContaModel,
+    TKxBancoModel,
+    TKxClProdutoModel,
+    TKxClTipopagamentoModel,
+    TKxCodigoCaeModel,
+    TKxExtratoModel,
+    TKxUsUtilizadorModel,
+    User
+};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -29,16 +30,14 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validação básica
-        $request->validate([
+        $credentials = $request->validate([
             'UtCodigo' => ['required', 'string'],
             'UtSenha' => ['required', 'string'],
         ]);
-        $ip = $request->ip();
-        $credentials = $request->only('UtCodigo', 'UtSenha');
 
         $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])
-            ->where('UtSenha', $credentials['UtSenha'])->where('activo', 1)->where('ip_utilizador', '=', $ip) // sem hash
+            ->where('UtSenha', $credentials['UtSenha'])
+            ->where('activo', 1)
             ->first();
 
         if (!$user) {
@@ -50,217 +49,219 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        // Verificando se o usuário está autenticado
-        if (Auth::check()) {
-
-
-
-            // Verificando diretamente o usuário autenticado
-            $authenticatedUser = Auth::user();  // O usuário logado
-            $agencia = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)->first();
-            //  $token_carregamentos = $authenticatedUser->createToken('scscscscscscs')->plainTextToken;
-            session(['agencia_principal' => $agencia->OfNombre]);
-            $basesOperacaoIDs = explode(',', $agencia->BasesOperacao);
-
-            $basesOperacionais = TKxAgenciaModel::whereIn('OfIdentificador', $basesOperacaoIDs)->get(['OfCodigo', 'OfIdentificador', 'OfNombre']); // pegar só os campos necessários
-
-
-            // Exibindo os dados
-            session(['bases_operacionais' => $basesOperacionais->toArray()]);
-
-
-            return redirect()->intended('/dashboard');
-
-            //   return Response::withNoIndex(Inertia::render('Dashboard'));
-
-        } else {
+        if (!Auth::check()) {
             return back()->withErrors([
                 'UtCodigo' => 'Falha na autenticação.',
             ]);
         }
 
-
-
+        $this->loadUserSessionData(Auth::user());
+        return redirect()->intended('/dashboard');
     }
+
+    protected function loadUserSessionData($user)
+    {
+        // Carrega todos os dados necessários da agência
+        $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)
+            ->first(); // Removi o select específico para pegar todos os campos
+
+        if ($agencia) {
+            $basesOperacionais = TKxAgenciaModel::whereIn(
+                'OfIdentificador',
+                explode(',', $agencia->BasesOperacao)
+            )
+                ->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
+
+            // Armazena mais dados da agência na sessão
+            session([
+                'bases_operacionais' => $basesOperacionais->toArray(),
+                'agencia_principal' => $agencia->OfNombre,
+                'agencia_data' => [ // Adiciona um array com todos os dados relevantes
+                    'codigo' => $agencia->OfCodigo,
+                    'nombre' => $agencia->OfNombre,
+                    'identificador' => $agencia->OfIdentificador,
+                    'bases_operacao' => $agencia->BasesOperacao
+                ]
+            ]);
+        }
+    }
+
     public function carregamentoInicial(Request $request)
     {
-        $filtros = $request->only(['search', 'start_date', 'end_date']);
+
+        // Acessando os dados antigos (continua funcionando)
+      //  $basesOperacionais = session('bases_operacionais');
+      //  $nomeAgencia = session('agencia_principal');
+
+        // Acessando os novos dados
+       // $agenciaData = session('agencia_data');
+      //  $codigoAgencia = $agenciaData['codigo'];
+       // $basesOperacao = $agenciaData['bases_operacao'];
 
 
         $authenticatedUser = Auth::user();
-        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+        $agenciaUser = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)
+            ->first(['BasesOperacao']);
 
-        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
-
-        $lista_banco = TKxBancoModel::getBancos();
-        $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
-        $lista_actividade_economica = TKxCodigoCaeModel::getActividadeEconomica();
-
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
-        $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
-        $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
-
-        $listaprdt = TKxClProdutoModel::getProdutosDesembolsos();
-
-        $lista_produtos = TKxClProdutoModel::getProdutos();
-        $lista_banco = TKxBancoModel::getBancos();
-        $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
-        $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
-
-        $QtdRegistosComprovativos = 0;
-        $QtdValorRegistosComprovativos = 0;
-
-        $QtdRegistosRecuperacoes = 0;
-        $QtdValorRegistosRecuperacoes = 0;
-
-        $QtdRegistosDesembosos = 0;
-        $QtdValorRegistosDesembosos = 0;
-
-
-        // DCF
-
-        $TotaldeRegistossemParacer = 0;
-        $TotalValordeRegistossemParacer = 0;
-
-        $TotaldeRegistosRespondidos = 0;
-        $TotalValordeRegistosRespondidos = 0;
-
-        $TotaldeReconciliaNaoFinalizado = 0;
-        $TotalValorReconciliaNaoFinalizado = 0;
-
-        $cpvtDFC = null;
-        $cpvtDFC2 = null;
-        $cpvtDFC3 = null;
-        $cpvtDOP = null;
-        $extrato = null;
-        $cpvtRecupe = null;
-        $cpvtPendentes = null;
-
-
-
-        $TipoComprovativo = [
-            'G' => 'G/',
-            'I' => 'I/'
-        ];
-        $hoje = date('Y-m-d 00:00:00');
-
-        if ($request->search == 1) {
-
-            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->start_date));
-            $DataFim = date("Y-m-d 23:59:00", strtotime($request->end_date));
-
-            $cpvtDFC = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('idestado', 1)->where('Eliminado', 0);
-            $cpvtDFC2 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('idestado', 8)->where('Eliminado', 0);
-            $cpvtDFC3 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('idestado', '<>', 8)->where('idestado', '<>', 1)->where('Eliminado', 0);
-
-            $cpvtDOP = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('Eliminado', 0);
-            $extrato = TKxExtratoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('Eliminado', 0);
-
-            $cpvtRecupe = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', '>=', $DataInicio)->whereDate('CiFecha', '<=', $DataFim)->where('id_estado', '<>', 6)->where('Eliminado', 0);
-
-
-
-
-        } else {
-            $cpvtDOP = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('Eliminado', 0);
-
-            $cpvtRecupe = RecuperacaoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('id_estado', '<>', 6)->where('Eliminado', 0);
-            $extrato = TKxExtratoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('Eliminado', 0);
-
-            $cpvtDFC = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('idestado', 1)->where('Eliminado', 0);
-            $cpvtDFC2 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('idestado', 8)->where('Eliminado', 0);
-
-            $cpvtDFC3 = ComprovativoModel::whereIn('BaseOperacao', $BasesOperacao)->whereDate('CiFecha', $hoje)->where('idestado', '<>', 8)->where('idestado', '<>', 1)->where('Eliminado', 0);
-
-
+        if (!$agenciaUser) {
+            return redirect()->back()->withErrors(['error' => 'Agência não encontrada']);
         }
-        $cpvtPendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R');
-        $TotalValordeReembolsosPendentes = $cpvtPendentes->sum('montante');
-        $TotaldeRegistosdeReembolsosPendentes = $cpvtPendentes->count();
 
-        $TotalValordeRegistossemParacer = $cpvtDFC->sum('BuMontante');
-        $TotaldeRegistossemParacer = $cpvtDFC->count();
+        $basesOperacao = explode(',', $agenciaUser->BasesOperacao);
 
-        $TotalValordeRegistosRespondidos = $cpvtDFC2->sum('BuMontante');
-        $TotaldeRegistosRespondidos = $cpvtDFC2->count();
+        // Carregar dados estáticos uma única vez
+        $staticData = $this->loadStaticData();
 
-        $TotalValorReconciliaNaoFinalizado = $cpvtDFC3->sum('BuMontante');
-        $TotaldeReconciliaNaoFinalizado = $cpvtDFC3->count();
+        // Processar dados dinâmicos
+        $dynamicData = $this->processDynamicData($request, $basesOperacao);
 
-
-        $QtdRegistosComprovativos = $cpvtDOP->count();
-        $QtdValorRegistosComprovativos = $cpvtDOP->sum('BuMontante');
-
-        $QtdRegistosRecuperacoes = $cpvtRecupe->count();
-        $QtdValorRegistosRecuperacoes = $cpvtRecupe->sum('ReBuMontante');
-
-        $QtdRegistosDesembosos = $extrato->count();
-        $QtdValorRegistosDesembosos = $extrato->sum('ValorDoCredito');
-
-
-        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
-
-
-
-        return Inertia::render('Dashboard', [
-
-            'produtosextratos' => $listaprdt,
-            'produtos' => $lista_produtos,
-            'formaspagamentos' => $lista_das_formaspagamento,
-            'bancos' => $lista_banco,
-            'contas' => $lista_bancos_contas,
-            'tipocomprovativos' => $TipoComprovativo,
-            'lista_nes_grupo' => $lista_nes_grupo,
-            'lista_nes_tipo' => $lista_nes_tipo,
-            'lista_bancos_contas' => $lista_bancos_contas,
-            'lista_banco' => $lista_banco,
-            'lista_actividade_economica' => $lista_actividade_economica,
-            'BasesOperacao' => explode(',', $resultagencia_user->BasesOperacao),
-            'bases' => $BasesOperacaoAgencias,
-            'QtdRegistosComprovativos' => $QtdRegistosComprovativos,
-            'QtdValorRegistosComprovativos' => $QtdValorRegistosComprovativos,
-            'QtdRegistosDesembosos' => $QtdRegistosDesembosos,
-            'QtdValorRegistosDesembosos' => $QtdValorRegistosDesembosos,
-            'TotaldeRegistossemParacer' => $TotaldeRegistossemParacer,
-            'TotalValordeRegistossemParacer' => $TotalValordeRegistossemParacer,
-            'TotaldeRegistosRespondidos' => $TotaldeRegistosRespondidos,
-            'TotalValordeRegistosRespondidos' => $TotalValordeRegistosRespondidos,
-            'TotaldeReconciliaNaoFinalizado' => $TotaldeReconciliaNaoFinalizado,
-            'TotalValorReconciliaNaoFinalizado' => $TotalValorReconciliaNaoFinalizado,
-            'QtdRegistosRecuperacoes' => $QtdRegistosRecuperacoes,
-            'QtdValorRegistosRecuperacoes' => $QtdValorRegistosRecuperacoes,
-            'TotalValordeReembolsosPendentes' => $TotalValordeReembolsosPendentes,
-            'TotaldeRegistosdeReembolsosPendentes' => $TotaldeRegistosdeReembolsosPendentes
+        // Combinar todos os dados para a view
+        $viewData = array_merge($staticData, $dynamicData, [
+            'BasesOperacao' => $basesOperacao,
+            'bases' => TKxAgenciaModel::whereIn('OfIdentificador', $basesOperacao)->get()
         ]);
+
+        return Inertia::render('Dashboard', $viewData);
     }
+
+    protected function loadStaticData()
+    {
+        return [
+            'produtosextratos' => TKxClProdutoModel::getProdutosDesembolsos(),
+            'produtos' => TKxClProdutoModel::getProdutos(),
+            'formaspagamentos' => TKxClTipopagamentoModel::getFormasDePamentos(),
+            'bancos' => TKxBancoModel::getBancos(),
+            'contas' => TKxBancoContaModel::getBancosContas(),
+            'tipocomprovativos' => ['G' => 'G/', 'I' => 'I/'],
+            'lista_nes_grupo' => TKxExtratoModel::getNecesidadesGrupo(),
+            'lista_nes_tipo' => TKxExtratoModel::getNecesidadesTipo(),
+            'lista_bancos_contas' => TKxBancoContaModel::getBancosContas(),
+            'lista_banco' => TKxBancoModel::getBancos(),
+            'lista_actividade_economica' => TKxCodigoCaeModel::getActividadeEconomica(),
+
+        ];
+    }
+
+    protected function processDynamicData(Request $request, array $basesOperacao)
+    {
+        $dateFilter = $this->getDateFilter($request);
+        $hoje = Carbon::today()->format('Y-m-d 00:00:00');
+
+        // Dados de comprovativos
+        $comprovativosData = $this->getComprovativosData($basesOperacao, $dateFilter, $hoje);
+
+        // Dados de recuperações
+        $recuperacoesData = $this->getRecuperacoesData($basesOperacao, $dateFilter, $hoje);
+
+        // Dados de extratos
+        $extratosData = $this->getExtratosData($basesOperacao, $dateFilter, $hoje);
+
+        // Dados pendentes
+        $pendentesData = $this->getPendentesData($basesOperacao);
+
+        return array_merge(
+            $comprovativosData,
+            $recuperacoesData,
+            $extratosData,
+            $pendentesData
+        );
+    }
+
+    protected function getDateFilter(Request $request)
+    {
+        if ($request->search == 1) {
+            return [
+                'start' => Carbon::parse($request->start_date)->startOfDay(),
+                'end' => Carbon::parse($request->end_date)->endOfDay()
+            ];
+        }
+        return null;
+    }
+
+    protected function getComprovativosData(array $basesOperacao, ?array $dateFilter, string $hoje)
+    {
+        $query = ComprovativoModel::whereIn('BaseOperacao', $basesOperacao)
+            ->where('Eliminado', 0);
+
+        if ($dateFilter) {
+            $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
+
+            $cpvtDFC = (clone $query)->where('idestado', 1);
+            $cpvtDFC2 = (clone $query)->where('idestado', 8);
+            $cpvtDFC3 = (clone $query)->whereNotIn('idestado', [1, 8]);
+        } else {
+            $query->whereDate('CiFecha', $hoje);
+
+            $cpvtDFC = (clone $query)->where('idestado', 1);
+            $cpvtDFC2 = (clone $query)->where('idestado', 8);
+            $cpvtDFC3 = (clone $query)->whereNotIn('idestado', [1, 8]);
+        }
+
+        return [
+            'QtdRegistosComprovativos' => $query->count(),
+            'QtdValorRegistosComprovativos' => $query->sum('BuMontante'),
+            'TotaldeRegistossemParacer' => $cpvtDFC->count(),
+            'TotalValordeRegistossemParacer' => $cpvtDFC->sum('BuMontante'),
+            'TotaldeRegistosRespondidos' => $cpvtDFC2->count(),
+            'TotalValordeRegistosRespondidos' => $cpvtDFC2->sum('BuMontante'),
+            'TotaldeReconciliaNaoFinalizado' => $cpvtDFC3->count(),
+            'TotalValorReconciliaNaoFinalizado' => $cpvtDFC3->sum('BuMontante'),
+        ];
+    }
+
+    protected function getRecuperacoesData(array $basesOperacao, ?array $dateFilter, string $hoje)
+    {
+        $query = RecuperacaoModel::whereIn('BaseOperacao', $basesOperacao)
+            ->where('id_estado', '<>', 6)
+            ->where('Eliminado', 0);
+
+        if ($dateFilter) {
+            $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
+        } else {
+            $query->whereDate('CiFecha', $hoje);
+        }
+
+        return [
+            'QtdRegistosRecuperacoes' => $query->count(),
+            'QtdValorRegistosRecuperacoes' => $query->sum('ReBuMontante'),
+        ];
+    }
+
+    protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
+    {
+        $query = TKxExtratoModel::whereIn('BaseOperacao', $basesOperacao)
+            ->where('Eliminado', 0);
+
+        if ($dateFilter) {
+            $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
+        } else {
+            $query->whereDate('CiFecha', $hoje);
+        }
+
+        return [
+            'QtdRegistosDesembosos' => $query->count(),
+            'QtdValorRegistosDesembosos' => $query->sum('ValorDoCredito'),
+        ];
+    }
+
+    protected function getPendentesData(array $basesOperacao)
+    {
+        $cpvtPendentes = TKuPendentesModel::whereIn('BaseOperacao', $basesOperacao)
+            ->where('Tipo', 'R');
+
+        return [
+            'TotalValordeReembolsosPendentes' => $cpvtPendentes->sum('montante'),
+            'TotaldeRegistosdeReembolsosPendentes' => $cpvtPendentes->count(),
+        ];
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login'); // redireciona para /
-    }
-    public function cadastrar(Request $request)
-    {
-
-
-        //Validação
-        $dados = $request->validate([
-            'name' => ['required', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users'],
-            'password' => ['required']
-        ]);
-
-        //Registar
-        $user = User::create($dados);
-
-        //Login
-        Auth::login($user);
-
-        //  dd($request);
-
-        return redirect()->route('Home');
+        return redirect()->route('login');
     }
 
 

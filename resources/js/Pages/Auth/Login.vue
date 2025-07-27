@@ -2,6 +2,12 @@
 import { ref } from 'vue'
 import { Head, useForm } from '@inertiajs/vue3'
 
+import LoginLayout from '../Layouts/LoginLayout.vue';
+import LogoKxCredito from '../../../../public/imagens/LogoKxCredito.png';
+import SmallLogo from '../../../../public/imagens/smalllogo.png';
+
+defineOptions({ layout: LoginLayout });
+
 const form = useForm({
     UtCodigo: '',
     UtSenha: '',
@@ -48,8 +54,7 @@ function closeToastSuccess() {
     toastSuccess.value = ''
 }
 
-import LoginLayout from '../Layouts/LoginLayout.vue';
-defineOptions({ layout: LoginLayout });
+
 </script>
 
 <template>
@@ -95,16 +100,15 @@ defineOptions({ layout: LoginLayout });
             <div class="w-full max-w-md bg-white rounded-2xl overflow-hidden shadow-lg mx-4">
                 <!-- Parte superior verde -->
                 <div class="bg-greenkixi-solid py-4 md:py-6 px-4 flex justify-center items-center">
-                    <img src="/public/imagens/LogoKxCredito.png" alt="Logo KixiCrédito"
-                        class="h-12 md:h-16 object-contain" />
+
+                    <img :src="LogoKxCredito" alt="Logo KixiCrédito" class="h-12 md:h-16 object-contain" />
                 </div>
 
                 <!-- Parte inferior com formulário -->
                 <div class="p-6 md:p-8 space-y-4 md:space-y-6">
                     <div class="mb-4 md:mb-6 text-center">
                         <div class="flex justify-center">
-                            <img src="/public/imagens/smalllogo.png" alt="Logo Utilitario"
-                                class="h-8 md:h-10 object-contain" />
+                          <img :src="SmallLogo" alt="Logo Utilitario" class="h-8 md:h-10 object-contain" />
                         </div>
                         <h3 class="text-2xl md:text-3xl font-bold text-greenkixi-solid">
                             Kixi<span class="text-greenkixi-solid">Utilitário</span>

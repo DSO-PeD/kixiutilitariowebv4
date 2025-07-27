@@ -2,29 +2,69 @@
 
 namespace App\Providers;
 
-
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\{
+    App,
+    Auth,
+    DB,
+    Log,
+    RateLimiter,
+    Request as RequestFacade,
+    Response,
+    Route,
+    URL,
+    View
+};
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\View\Compilers\BladeCompiler;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Response;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
+        // Registro de serviços específicos para produção
+        if (App::environment('production')) {
+            $this->app->singleton('cleaner', function () {
+                return new class {
+                    public function clean()
+                    {
+                        gc_collect_cycles();
+                    }
+                };
+            });
+
+            $this->app->terminating(fn() => app('cleaner')->clean());
+        }
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot()
+    public function boot(): void
     {
-        // Compartilhando os dados do usuário autenticado com todas as páginas
-        Inertia::share(
+        if (App::environment('production')) {
+            $this->applyProductionOptimizations();
+        }
+
+        $this->shareDataWithInertia();
+        $this->registerRequestMacros();
+        $this->registerResponseMacros();
+        $this->registerRateLimiting();
+        $this->monitorSlowQueries();
+    }
+
+    protected function applyProductionOptimizations(): void
+    {
+        // Força cache de longo prazo em produção
+        Route::prependMiddlewareToGroup('web', 'cache.headers:public;max_age=31536000');
+
+
+    }
+
+    protected function shareDataWithInertia(): void
+    {
+        Inertia::version(fn() => md5_file(public_path('mix-manifest.json')));
+
+       Inertia::share(
             [
                 'auth.user' => function () {
                     return Auth::user();  // Isso retorna os dados do usuário autenticado
@@ -48,9 +88,44 @@ class AppServiceProvider extends ServiceProvider
 
         );
 
-        Response::macro('withNoIndex', function ($content = '') {
-            return response($content)->header('X-Robots-Tag', 'noindex, nofollow');
-        });
+
     }
 
+    protected function registerRequestMacros(): void
+    {
+        RequestFacade::macro('wantsInertia', fn() => $this->header('X-Inertia') === 'true');
+    }
+
+    protected function registerResponseMacros(): void
+    {
+        Response::macro(
+            'withNoIndex',
+            fn($content = '') =>
+            response($content)
+                ->header('X-Robots-Tag', 'noindex, nofollow')
+                ->header('Cache-Control', 'public, max-age=300')
+        );
+    }
+
+    protected function registerRateLimiting(): void
+    {
+        RateLimiter::for(
+            'login',
+            fn(Request $request) =>
+            Limit::perMinute(5)->by($request->ip())
+        );
+    }
+
+    protected function monitorSlowQueries(): void
+    {
+        DB::listen(function ($query) {
+            if ($query->time > 100) {
+                Log::channel('slow_queries')->warning('Slow Query', [
+                    'sql' => $query->sql,
+                    'bindings' => $query->bindings,
+                    'time' => $query->time . 'ms',
+                ]);
+            }
+        });
+    }
 }

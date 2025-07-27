@@ -73,7 +73,7 @@
                             <div class="flex items-center">
                                 <i class="fa-solid fa-file-circle-check text-blue-500 mr-2"></i>
                                 <span class="text-sm font-medium text-gray-700 truncate max-w-xs">{{ selectedFile.name
-                                }}</span>
+                                    }}</span>
                             </div>
                             <button type="button" @click="resetFileInput" class="text-red-500 hover:text-red-700">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -370,8 +370,9 @@
                             </svg>
                             &ThickSpace; Cancelar
                         </button>
-                        <button type="submit" :disabled="isSubmitting"
-                            class="btn btn-primary flex items-center justify-center">
+                        <button type="submit" :disabled="isSaveDisabled"
+                            class="btn btn-primary flex items-center justify-center"
+                            :class="{ 'opacity-50 cursor-not-allowed': isSaveDisabled }">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -424,6 +425,34 @@ const props = defineProps({
 });
 
 const isSubmitting = ref(false);
+const displayValue = ref(formatCurrency(props.modelValue.txtMontante || '0'));
+const amountError = ref('');
+const dateError = ref('');
+const dateValue = ref('');
+
+const isSaveDisabled = computed(() => {
+      if (!displayValue.value) return true;
+
+    const numericValue = unformatCurrency(displayValue.value);
+    return numericValue > 7000000 || amountError.value !== '' || isSubmitting.value;
+});
+// Método para validar o montante
+function validateAmount() {
+    const numericValue = unformatCurrency(displayValue.value);
+
+    if (numericValue <= 0) {
+        amountError.value = 'O montante deve ser superior a zero';
+        return false;
+    }
+
+    if (numericValue > 7000000) {
+        amountError.value = 'O montante não pode exceder 7.000.000';
+        return false;
+    }
+
+    amountError.value = '';
+    return true;
+}
 
 function handleSubmit(event) {
     if (isSubmitting.value) return;
@@ -488,7 +517,7 @@ function validateAmountField() {
     const amountInput = document.querySelector('input[name="txtMontante"]');
     if (!validateAmount()) {
         amountInput.classList.add('border-red-500');
-        const errorMsg = amountError.value || 'O montante deve ser maior que zero';
+        const errorMsg = amountError.value || 'O montante deve ser maior que 0 e abaixoou igual a 7.000.0000';
         showError(amountInput, errorMsg);
         return false;
     }
@@ -550,9 +579,7 @@ function showGeneralError(message) {
 
 const emit = defineEmits(['update:modelValue', 'close', 'save']);
 
-const dateError = ref('');
-const dateValue = ref('');
-const amountError = ref('');
+
 
 const fieldErrors = ref({
     selectBase: '',
@@ -571,18 +598,15 @@ const fieldErrors = ref({
 });
 
 
-// Método para validar o montante
-function validateAmount() {
-    const numericValue = unformatCurrency(displayValue.value);
 
-    if (numericValue <= 0) {
-        amountError.value = 'O montante deve ser superior a zero';
-        return false;
+
+watch(displayValue, (newValue) => {
+    const numericValue = unformatCurrency(newValue);
+    if (numericValue > 7000000) {
+        // Mostrar alerta
+        alert('O montante não pode exceder 7.000.000');
     }
-
-    amountError.value = '';
-    return true;
-}
+});
 
 // Converter entre formato ISO (YYYY-MM-DD) e DD/MM/YYYY
 function toDDMMYYYY(isoDate) {
@@ -621,9 +645,7 @@ watch(() => props.modelValue.calDataBorderoux, (newVal) => {
     }
 }, { immediate: true });
 
-// Create a display value ref
-// Initialize display value
-const displayValue = ref(formatCurrency(props.modelValue.txtMontante || '0'));
+
 
 // Função de formatação
 function formatCurrency(value) {
@@ -680,11 +702,17 @@ function onInput(event) {
         value = parts.join(',');
     }
 
+    // Verifica se o valor excede o limite
+    const numericValue = unformatCurrency(value);
+    if (numericValue > 7000000) {
+        amountError.value = 'O montante não pode exceder 7.000.000';
+        return;
+    }
+
     // Atualiza o valor exibido
     displayValue.value = value;
 
     // Emite o valor numérico
-    const numericValue = unformatCurrency(value);
     emit('update:modelValue', {
         ...props.modelValue,
         txtMontante: numericValue

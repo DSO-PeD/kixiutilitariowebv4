@@ -11,7 +11,7 @@
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto  ">
             <!-- Welcome Banner -->
-            <!-- Welcome Banner -->
+
             <div
                 class="bg-gradient-to-r from-green-800 to-green-700 rounded-xl p-6 mb-8 text-white shadow-lg relative overflow-hidden">
                 <!-- Decorative elements -->
@@ -44,7 +44,7 @@
                                         <path
                                             d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z" />
                                     </svg>
- &ThinSpace;
+                                    &ThinSpace;
                                     {{ $page.props.user.UtFuncao }}
                                 </h4>
 
@@ -57,7 +57,7 @@
                                             d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z"
                                             clip-rule="evenodd" />
                                     </svg>
-                                    <span>AGÊNCIA: {{ $page.props.session.agencia_principal }}</span>
+                                    <span>AGÊNCIA:&space  {{ $page.props.agencia_principal }}</span>
                                 </div>
                             </div>
 
@@ -105,7 +105,7 @@
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Seção DOP -->
-                <div class="bg-white rounded-xl shadow p-6" v-if="$page.props.user.UtAgencia !== 99">
+                <div class="bg-white rounded-xl shadow p-6" v-if="$page.props.auth.user?.UtAgencia !== 99">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="p-2 bg-blue-100 rounded-full">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
@@ -118,21 +118,21 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <StatCard title="Reembolsos Pendentes" :value="$page.props.TotaldeRegistosdeReembolsosPendentes"
-                            :secondaryValue="formatCurrency($page.props.TotalValordeReembolsosPendentes) + ' Kz'"
-                            iconColor="red" icon="clock" />
+                        <StatCard title="Reembolsos Pendentes" :value="TotaldeRegistosdeReembolsosPendentes"
+                            :secondaryValue="formatCurrency(TotalValordeReembolsosPendentes) + ' Kz'" iconColor="red"
+                            icon="clock" />
 
-                        <StatCard title="Recuperações" :value="$page.props.QtdRegistosRecuperacoes"
-                            :secondaryValue="formatCurrency($page.props.QtdValorRegistosRecuperacoes) + ' Kz'"
-                            iconColor="green" icon="check-circle" />
+                        <StatCard title="Recuperações" :value="QtdRegistosRecuperacoes"
+                            :secondaryValue="formatCurrency(QtdValorRegistosRecuperacoes) + ' Kz'" iconColor="green"
+                            icon="check-circle" />
 
-                        <StatCard title="Reembolsos" :value="$page.props.QtdRegistosComprovativos"
-                            :secondaryValue="formatCurrency($page.props.QtdValorRegistosComprovativos) + ' Kz'"
-                            iconColor="yellow" icon="currency-dollar" />
+                        <StatCard title="Reembolsos" :value="QtdRegistosComprovativos"
+                            :secondaryValue="formatCurrency(QtdValorRegistosComprovativos) + ' Kz'" iconColor="yellow"
+                            icon="currency-dollar" />
 
-                        <StatCard title="Desembolsos" :value="$page.props.QtdRegistosDesembosos"
-                            :secondaryValue="formatCurrency($page.props.QtdValorRegistosDesembosos) + ' Kz'"
-                            iconColor="purple" icon="arrow-down" />
+                        <StatCard title="Desembolsos" :value="QtdRegistosDesembosos"
+                            :secondaryValue="formatCurrency(QtdValorRegistosDesembosos) + ' Kz'" iconColor="purple"
+                            icon="arrow-down" />
                     </div>
                 </div>
 
@@ -150,17 +150,16 @@
                     </div>
 
                     <div class="grid grid-cols-1 gap-4">
-                        <StatCard title="Comprovativos sem Parecer" :value="$page.props.TotaldeRegistossemParacer"
-                            :secondaryValue="formatCurrency($page.props.TotalValordeRegistossemParacer) + ' Kz'"
-                            iconColor="red" icon="exclamation" />
+                        <StatCard title="Comprovativos sem Parecer" :value="TotaldeRegistossemParacer"
+                            :secondaryValue="formatCurrency(TotalValordeRegistossemParacer) + ' Kz'" iconColor="red"
+                            icon="exclamation" />
 
-                        <StatCard title="Comprovativos Respondidos" :value="$page.props.TotaldeRegistosRespondidos"
-                            :secondaryValue="formatCurrency($page.props.TotalValordeRegistosRespondidos) + ' Kz'"
-                            iconColor="blue" icon="c-respo" />
+                        <StatCard title="Comprovativos Respondidos" :value="TotaldeRegistosRespondidos"
+                            :secondaryValue="formatCurrency(TotalValordeRegistosRespondidos) + ' Kz'" iconColor="blue"
+                            icon="c-respo" />
 
-                        <StatCard title="Reconciliações Não Finalizadas"
-                            :value="$page.props.TotaldeReconciliaNaoFinalizado"
-                            :secondaryValue="formatCurrency($page.props.TotalValorReconciliaNaoFinalizado) + ' Kz'"
+                        <StatCard title="Reconciliações Não Finalizadas" :value="TotaldeReconciliaNaoFinalizado"
+                            :secondaryValue="formatCurrency(TotalValorReconciliaNaoFinalizado) + ' Kz'"
                             iconColor="orange" icon="exclamation-triangle" />
                     </div>
                 </div>
@@ -209,11 +208,12 @@
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-semibold text-gray-800 mb-6">Ações Rápidas</h2>
                     <div class="space-y-3">
-                        <QuickActionButton v-if="$page.props.user.rec_comprovativo" @click="abrirModalNovoComprovativo"
-                            color="blue" label="Novo Reembolso" shortcut="Ctrl+R" icon="plus-circle" />
+                        <QuickActionButton v-if="$page.props.auth.user?.rec_comprovativo"
+                            @click="abrirModalNovoComprovativo" color="blue" label="Novo Reembolso" shortcut="Ctrl+R"
+                            icon="plus-circle" />
 
-                        <QuickActionButton v-if="$page.props.user.rec_extrato" @click="showModal = true" color="green"
-                            label="Efetuar Aplicação" shortcut="Ctrl+A" icon="calculator" />
+                        <QuickActionButton v-if="$page.props.auth.user?.rec_extrato" @click="showModal = true"
+                            color="green" label="Efetuar Aplicação" shortcut="Ctrl+A" icon="calculator" />
 
                         <QuickActionButton @click="sms" color="purple" label="Fecho Diário" shortcut="Ctrl+F"
                             icon="lock-closed" />
@@ -328,17 +328,49 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { router, useForm } from '@inertiajs/vue3'
-import * as XLSX from 'xlsx'
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import ModalNovoComprovativo from './Layouts/components/ComprovativosComponents/ModalNovoComprovativo.vue'
 import ModalNovoCalculo from './Layouts/components/ExtratosComponents/ModalNovoCalculo.vue'
 import Modal from './Layouts/components/ModalExit.vue';
 import StatCard from '../Pages/Layouts/components/StatCard.vue'
 import QuickActionButton from '../Pages/Layouts/components/QuickActionButton.vue'
 
-// Componentes e lógica mantidos do código anterior
+
+// Dados da página
+const page = usePage()
+
+ //Acessando os dados do novo AuthController
+const {
+  QtdRegistosComprovativos,
+  QtdValorRegistosComprovativos,
+  QtdRegistosRecuperacoes,
+  QtdValorRegistosRecuperacoes,
+  QtdRegistosDesembosos,
+  QtdValorRegistosDesembosos,
+  TotaldeRegistossemParacer,
+  TotalValordeRegistossemParacer,
+  TotaldeRegistosRespondidos,
+  TotalValordeRegistosRespondidos,
+  TotaldeReconciliaNaoFinalizado,
+  TotalValorReconciliaNaoFinalizado,
+  TotaldeRegistosdeReembolsosPendentes,
+  TotalValordeReembolsosPendentes,
+  bases,
+  produtos,
+  bancos,
+  contas,
+  formaspagamentos,
+  produtosextratos,
+  lista_banco,
+  lista_bancos_contas,
+  lista_actividade_economica,
+  lista_nes_grupo,
+  lista_nes_tipo,
+  tipocomprovativos
+} = page.props
+
 
 
 const dataFormatada = ref('');
@@ -364,18 +396,23 @@ onMounted(() => {
     // Você pode chamar aplicarFiltro() aqui se quiser carregar os dados automaticamente
 });
 
-const showAllBases = ref(false);
 
 const props = defineProps({
     session: Object
 });
 
-const displayedBases = computed(() => {
+/*const displayedBases = computed(() => {
     if (!props.session.bases_operacionais) return [];
     return showAllBases.value
         ? props.session.bases_operacionais
         : props.session.bases_operacionais.slice(0, 5); // mostra só os 5 primeiros
-});
+});*/
+
+// Bases operacionais
+const showAllBases = ref(false)
+const displayedBases = computed(() => {
+  return showAllBases.value ? bases : bases.slice(0, 5)
+})
 
 
 
@@ -384,6 +421,8 @@ const modalNovoComprovativoRef = ref(null);
 const showModal = ref(false);
 const showModalSMS = ref(false)
 const showModalDate = ref(false)
+
+
 
 const sms = () => {
     showModalSMS.value = true;
