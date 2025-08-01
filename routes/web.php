@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 //'geoblock'
-Route::middleware(['guest'])->group(function () {
+Route::middleware(['guest','web'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
@@ -34,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])  ->name('extrato.eliminar');
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
 
+    Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
+
+
     Route::post('/guardar-extrato', [TKxExtratoController::class, 'guardarDataExtrato']);
     Route::post('/comprovativos/{id}/finalizaraeliminacao', [ComprovativosController::class, 'finalizaraeliminacao']);
     Route::post('/criar-referencia', [TKxExtratoController::class, 'criarReferencia']);
@@ -48,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirmarRecuperacao', [RecuperacaoController::class, 'confirmarRecuperacao']);
     Route::post('/confirmar-recuperacoes', [RecuperacaoController::class, 'confirmarMultiplas']);
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
+
 
 
 

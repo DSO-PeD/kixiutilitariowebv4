@@ -42,21 +42,16 @@ class AuthController extends Controller
 
         if (!$user) {
             return back()->withErrors([
-                'UtCodigo' => 'Utilizador ou senha inválidos.',
+                'UtCodigo' => 'Credenciais inválidas.',
             ]);
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        Auth::login($user, $request->remember ?? false);
 
-        if (!Auth::check()) {
-            return back()->withErrors([
-                'UtCodigo' => 'Falha na autenticação.',
-            ]);
-        }
-
-        $this->loadUserSessionData(Auth::user());
-        return redirect()->intended('/dashboard');
+        // Debug - verifique se a sessão está sendo criada
+      ///  \Log::info('Session ID after login:', ['session_id' => session()->getId()]);
+$this->loadUserSessionData($user);
+        return redirect()->intended(route('dashboard'));
     }
 
     protected function loadUserSessionData($user)
@@ -89,14 +84,7 @@ class AuthController extends Controller
     public function carregamentoInicial(Request $request)
     {
 
-        // Acessando os dados antigos (continua funcionando)
-      //  $basesOperacionais = session('bases_operacionais');
-      //  $nomeAgencia = session('agencia_principal');
 
-        // Acessando os novos dados
-       // $agenciaData = session('agencia_data');
-      //  $codigoAgencia = $agenciaData['codigo'];
-       // $basesOperacao = $agenciaData['bases_operacao'];
 
 
         $authenticatedUser = Auth::user();
@@ -116,9 +104,13 @@ class AuthController extends Controller
         $dynamicData = $this->processDynamicData($request, $basesOperacao);
 
         // Combinar todos os dados para a view
+
+
         $viewData = array_merge($staticData, $dynamicData, [
+            'auth' => ['user' => Auth::user()], // Adiciona o usuário no formato esperado pelo frontend
             'BasesOperacao' => $basesOperacao,
-            'bases' => TKxAgenciaModel::whereIn('OfIdentificador', $basesOperacao)->get()
+            'bases' => TKxAgenciaModel::whereIn('OfIdentificador', $basesOperacao)->get(),
+            'agencia_principal' => session('agencia_principal')
         ]);
 
         return Inertia::render('Dashboard', $viewData);
@@ -126,6 +118,7 @@ class AuthController extends Controller
 
     protected function loadStaticData()
     {
+
         return [
             'produtosextratos' => TKxClProdutoModel::getProdutosDesembolsos(),
             'produtos' => TKxClProdutoModel::getProdutos(),
@@ -138,6 +131,7 @@ class AuthController extends Controller
             'lista_bancos_contas' => TKxBancoContaModel::getBancosContas(),
             'lista_banco' => TKxBancoModel::getBancos(),
             'lista_actividade_economica' => TKxCodigoCaeModel::getActividadeEconomica(),
+            'agencia_principal' => session('agencia_principal')
 
         ];
     }

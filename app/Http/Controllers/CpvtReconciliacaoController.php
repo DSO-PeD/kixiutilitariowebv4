@@ -82,7 +82,17 @@ class CpvtReconciliacaoController extends Controller
             'montantetotal' => $totals['montante_total'],
             'dataInicioPeriodo' => $totals['data_inicio_formatada'],
             'dataFimPeriodo' => $totals['data_fim_formatada'],
-            'totalMontantePoupanca' => $totals['montante_poupanca']
+            'totalMontantePoupanca' => $totals['montante_poupanca'],
+
+
+            'totalMontanteRegistado' =>  $totals['totalMontanteRegistado'],
+            'totalMontantePoupancaRegistado' =>  $totals['totalMontantePoupancaRegistado'],
+
+            'totalMontanteReflete' => $totals['totalMontanteReflete'],
+            'totalMontantePoupancaReflete' => $totals['totalMontantePoupancaReflete'],
+
+            'totalMontanteInregulares' =>  $totals['totalMontanteInregulares'],
+            'totalMontantePoupancaInregulares' =>  $totals['totalMontantePoupancaInregulares'],
         ]);
     }
 
@@ -134,7 +144,12 @@ class CpvtReconciliacaoController extends Controller
             if ($request->forma_pagamento && $request->forma_pagamento != 'TP') {
                 $defaults['formaspagamento_geral'] = "'" . $request->forma_pagamento . "'";
             }
+        } elseif ($tipoDeBusca == 500000) {
+            $defaults['TIPO'] = $tipoDeBusca;
+        } elseif ($tipoDeBusca == 7000000) {
+            $defaults['TIPO'] = $tipoDeBusca;
         }
+
 
         return $defaults;
     }
@@ -207,6 +222,12 @@ class CpvtReconciliacaoController extends Controller
         return [
             'montante_total' => $collection->where('TtCodigo', 'L04')->sum('BuMontante'),
             'montante_poupanca' => $collection->where('TtCodigo', 'S01')->sum('BuMontante'),
+            'totalMontanteRegistado' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 1)->sum('BuMontante'),
+            'totalMontantePoupancaRegistado' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 1)->sum('BuMontante'),
+            'totalMontanteReflete' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante'),
+            'totalMontantePoupancaReflete' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante'),
+            'totalMontanteInregulares' => $collection->where('TtCodigo', '=', 'L04')->whereNotIn('idestado', [1, 8])->sum('BuMontante'),
+            'totalMontantePoupancaInregulares' => $collection->where('TtCodigo', '=', 'S01')->whereNotIn('idestado', [1, 8])->sum('BuMontante'),
             'data_inicio_formatada' => Carbon::parse($collection->max('CiFecha'))->format('d/m/Y'),
             'data_fim_formatada' => Carbon::parse($collection->min('CiFecha'))->format('d/m/Y')
         ];
@@ -227,15 +248,17 @@ class CpvtReconciliacaoController extends Controller
         ];
     }
 
-      public function validarComprovativo(Request $request)
+    public function validarComprovativo(Request $request)
     {
         $authenticatedUser = Auth::user();
         $hoje = date('Y-m-d H:i:s');
 
         // Verificação otimizada de duplicação
-        if (CpvtReconciliacaoModel::where('idcomprovativo', $request->id)
-            ->where('idestado', $request->estado)
-            ->exists()) {
+        if (
+            CpvtReconciliacaoModel::where('idcomprovativo', $request->id)
+                ->where('idestado', $request->estado)
+                ->exists()
+        ) {
             return back()->with('error', 'Ups!, não foi possível reconciliar o comprovativo, duplicação de estado');
         }
 

@@ -41,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+      // \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+        //\Illuminate\Support\Facades\URL::forceScheme('https'); // Se usar HTTPS
+
         if (App::environment('production')) {
             $this->applyProductionOptimizations();
         }
@@ -73,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
                 'session' => function () {
                     //return session()->all();  // Isso retorna todos os dados da sessão
                     return [
-                        'agencia_principal' => session('agencia_principal'),
+                         'agencia_principal' => fn () => session('agencia_principal'),
                         'bases_operacionais' => session('bases_operacionais'),
                     ];
                 },

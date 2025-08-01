@@ -57,7 +57,7 @@
                                             d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z"
                                             clip-rule="evenodd" />
                                     </svg>
-                                    <span>AGÊNCIA:&space  {{ $page.props.agencia_principal }}</span>
+                                    <span>AGÊNCIA:&ThinSpace;  {{agencia_principal }}</span>
                                 </div>
                             </div>
 
@@ -368,7 +368,8 @@ const {
   lista_actividade_economica,
   lista_nes_grupo,
   lista_nes_tipo,
-  tipocomprovativos
+  tipocomprovativos,
+  agencia_principal,
 } = page.props
 
 
@@ -398,7 +399,8 @@ onMounted(() => {
 
 
 const props = defineProps({
-    session: Object
+    session: Object,
+     agencia_principal: String,
 });
 
 /*const displayedBases = computed(() => {

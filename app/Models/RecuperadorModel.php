@@ -16,8 +16,8 @@ class RecuperadorModel extends Model
     ];
 
     public static function  getRecuperadores($base){
-        $base = "'%".$base."%'";
-
+        $base = "'".$base."'";
+//dd($base);
         $recuperadores = DB::select("CALL PKxListaRecuperadores(".$base.")");
 
         return $recuperadores;

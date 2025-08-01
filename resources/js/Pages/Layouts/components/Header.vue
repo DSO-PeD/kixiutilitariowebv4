@@ -12,7 +12,7 @@
         <!-- Right side - User area -->
         <div class="flex items-center space-x-3">
             <!-- Notifications -->
-            <button class="relative p-1 rounded-full hover:bg-gray-100">
+            <!--button class="relative p-1 rounded-full hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                     class="w-6 h-6 text-orange-500">
                     <path
@@ -24,7 +24,7 @@
                 <span v-if="hasNotifications"
                     class="absolute top-0 right-0 inline-block w-2 h-2 bg-green-300 rounded-full"></span>
             </button>
-            <span class="text-xs text-orange-200 hidden sm:inline">AGÊNCIA: &ThinSpace;{{ $page.props.agencia_principal }}</span>
+            <span class="text-xs text-orange-200 hidden sm:inline">AGÊNCIA: &ThinSpace;{{ $page.props.session.agencia_principal }}</span-->
 
 
             <!-- User dropdown -->

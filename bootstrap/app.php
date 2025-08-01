@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+
         // Middleware global (executado em todas as requisições web)
         // Middleware global com rate limiting
         $middleware->web(append: [

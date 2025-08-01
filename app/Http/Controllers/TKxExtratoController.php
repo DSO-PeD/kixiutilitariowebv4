@@ -94,8 +94,8 @@ class TKxExtratoController extends Controller
         // $paginados = $extratos->forPage($page, $perPage)->values();
         //  $paginados->transform(fn($item) => (array) $item);
 
-        $DataInicio = collect($extratos)->max('CiFecha');
-        $DataFim = collect($extratos)->min('CiFecha');
+        collect($extratos)->max('CiFecha');
+        collect($extratos)->min('CiFecha');
 
         $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
         $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
@@ -199,8 +199,8 @@ class TKxExtratoController extends Controller
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
-            'dataInicioPeriodo' => $DataInicioFormatada,
-            'dataFimPeriodo' => $DataFimFormatada
+            'dataInicioPeriodo' =>  $DataFimFormatada,
+            'dataFimPeriodo' => $DataInicioFormatada,
         ]);
 
 

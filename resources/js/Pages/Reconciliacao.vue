@@ -249,6 +249,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                         </svg>
+
                     </div>
                     <div class="flex-1">
                         <p class="text-xs text-gray-500 font-medium">TOTAL DE MONTANTE DE REEMBOLSOS (Principal+Juros)
@@ -278,6 +279,118 @@
 
                 <!-- Adicione mais cards conforme necessário -->
             </div>
+
+          <!--  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+   Card de Reembolsos
+    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+        <div class="flex items-start justify-between mb-5">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                <div class="p-2 bg-green-50 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="h-6 w-6 text-green-600">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                    </svg>
+                </div>
+                <span>Total de Montante de Reembolsos<br><span class="text-sm font-normal text-gray-500">(Principal + Juros)</span></span>
+            </h3>
+            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">Detalhe</span>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-blue-100 rounded-full">
+                        <i class="fas fa-file-export text-blue-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Registados</span>
+                    </div>
+                </div>
+                <span class="text-base font-bold text-blue-700">{{ formatCurrency(totalMontanteRegistado) }} <span class="text-sm font-normal">AKZ</span></span>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-green-100 rounded-full">
+                        <i class="fas fa-clipboard-check text-green-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Refletidos</span>
+                        <p class="text-xs text-gray-500 mt-1">Valores existentes no banco validados pelo DCF</p>
+                    </div>
+                </div>
+                <span class="text-base font-bold text-green-700">{{ formatCurrency(totalMontanteReflete) }} <span class="text-sm font-normal">AKZ</span></span>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-red-100 rounded-full">
+                        <i class="fas fa-thumbs-down text-red-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Lançamentos Irregulares</span>
+                    </div>
+                </div>
+                <span class="text-base font-bold text-red-700">{{ formatCurrency(totalMontanteInregulares) }} <span class="text-sm font-normal">AKZ</span></span>
+            </div>
+        </div>
+    </div>
+
+    Card de Poupanças
+    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+        <div class="flex items-start justify-between mb-5">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                <div class="p-2 bg-cyan-50 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <span>Total de Montante de Poupanças<br><span class="text-sm font-normal text-gray-500">Depósitos e Aplicações</span></span>
+            </h3>
+            <span class="text-xs px-2 py-1 bg-cyan-100 text-cyan-800 rounded-full font-medium">Detalhe</span>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-blue-100 rounded-full">
+                        <i class="fas fa-file-export text-blue-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Registados</span>
+                    </div>
+                </div>
+                <span class="text-base font-bold text-cyan-700">{{ formatCurrency(totalMontantePoupancaRegistado) }} <span class="text-sm font-normal">AKZ</span></span>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-green-100 rounded-full">
+                        <i class="fas fa-clipboard-check text-green-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Refletidos</span>
+                        <p class="text-xs text-gray-500 mt-1">Valores existentes no banco validados pelo DCF</p>
+                    </div>
+                </div>
+                <span class="text-base font-bold text-cyan-700">{{ totalMontantePoupancaReflete }} <span class="text-sm font-normal">AKZ</span></span>
+            </div>
+
+            <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 bg-red-100 rounded-full">
+                        <i class="fas fa-thumbs-down text-red-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Lançamentos Irregulares</span>
+                    </div>
+                </div>
+                <span class="text-base font-bold text-red-700">{{ formatCurrency(totalMontantePoupancaInregulares) }} <span class="text-sm font-normal">AKZ</span></span>
+            </div>
+        </div>
+    </div>
+</div>-->
         </div>
 
         <br />
@@ -335,227 +448,254 @@
 
             <!-- Tabela Responsiva -->
             <div class="overflow-x-auto w-full">
-                <table class="w-full   divide-y divide-gray-200  table-auto">
-                    <!-- lg:min-w-0 para desktop -->
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th
-                                class="w-12 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[10px]">
-                                #
-                            </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                    </svg>
-                                    Arquivo
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider "
-                                data-label="Registado">
-
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                    </svg>
-
-                                    Registado
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Agência">
-
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                                    </svg>
-
-
-                                    Agência
-                                </div>
-
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                    </svg>
-
-                                    Registado Por
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Cliente">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                                    </svg>
-
-
-                                    Cliente
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="LNR">
-                                <div class="flex  items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg>
-
-                                    LNR
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Produto">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-                                    </svg>
-
-                                    Produto
-                                </div>
-                            </th>
-                            <th class="w-28 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Montante">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                                    </svg>
-
-                                    Montante
-                                </div>
-                            </th>
-                            <th class="w-100 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Forma de Pagamento">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
-                                    </svg>
-
-                                    Forma de Pagamento
-                                </div>
-                            </th>
-                            <th class="w-10 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Estado">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
-                                    </svg>
-
-                                    Estado
-                                </div>
-                            </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                data-label="Ações">
-                                Ações
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 font-thin">
-                        <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
-                            class="hover:bg-gray-50">
-                            <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
-                                {{ calcularNumeroLinha(index) }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap items-center">
-                                <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
-                                    target="_blank" class="text-blue-600 hover:underline flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 mr-1 text-red-500">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                                    </svg>
-                                    Visualizar
-                                </a>
-                                <span v-else class="text-gray-400 italic">S/A</span>
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.data }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.agencia || '-' }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.usuario }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.cliente || '-' }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">
-
-
-
-                                <button @click="abrirModalReconciliacaoDetalhe(comprovativo.id)"
-                                    class="btn btn-action btn-detail flex items-center gap-1 mx-auto"
-                                    style="font-size:10px;">
-                                    {{ comprovativo.lnr }}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
+                <!-- Alertas condicionais acima da tabela -->
+                <!-- Alertas condicionais acima da tabela - agora em linha quando ambos existirem -->
+                    <div class="flex flex-wrap gap-4 mb-4">
+                    <div v-if="comprovativosPaginados.some(c => c.montante > 7000000)"
+                        class="flex-1 p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <p>Atenção! detectamos que existem Reembolsos que excedem <b>7.000.000,00</b> </p>
+                            <button
+                                    @click="aplicarFiltrosmexc7M"
+                                    class="ml-4 px-3 py-1 text-xs font-medium bg-white border border-red-300 rounded-md shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    title="Filtrar por valores > 7.000.000">
+                                    Listar todos
                                 </button>
+                        </div>
+                    </div>
 
-
-
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.metodologia }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600 bg-yellow-50">
-                                {{ formatCurrency(comprovativo.montante) }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm ">
-                                {{ comprovativo.FormaPagoN }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-
-                                <span :class="comprovativo.color" class="px-2 py-1 text-xs font-medium rounded-full">
-                                    {{ comprovativo.estado }}
-                                </span>
-
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-center">
-
-                                <button @click="abrirModalReconciliacao(comprovativo)"
-                                    class="btn btn-action btn-validate flex items-center gap-1 mx-auto"
-                                    :disabled="deveDesativarBotao(comprovativo.estado)">
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4">...</svg>
-                                    <span class="hidden sm:inline">Mudar Estado</span>
-                                    <span class="sm:hidden">Estado</span>
+                        <div v-if="comprovativosPaginados.some(c => c.montante >= 500000 && c.montante <= 7000000)"
+                            class="flex-1 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <p>Atenção! detectamos que existem Reembolsos iguais ou superiores a <b>500.000,00</b> </p>
+                                <button
+                                    @click="aplicarFiltrosmai5M"
+                                    class="ml-4 px-3 py-1 text-xs font-medium bg-white border border-yellow-300 rounded-md shadow-sm hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                    title="Filtrar por valores entre 500.000 e 7.000.000">
+                                    Listar todos
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="w-full divide-y divide-gray-200 table-auto">
+                        <!-- lg:min-w-0 para desktop -->
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="w-12 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[10px]">
+                                    #
+                                </th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                        </svg>
+                                        Arquivo
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider "
+                                    data-label="Registado">
+
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                        </svg>
+
+                                        Registado
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Agência">
+
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                        </svg>
 
 
-                            </td>
-                        </tr>
-                        <tr v-if="comprovativosPaginados.length === 0">
-                            <td colspan="11" class="px-4 py-4 text-center text-sm text-gray-500">
-                                Nenhum comprovativo encontrado.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                        Agência
+                                    </div>
+
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                        </svg>
+
+                                        Registado Por
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Cliente">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                        </svg>
+
+
+                                        Cliente
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="LNR">
+                                    <div class="flex  items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        </svg>
+
+                                        LNR
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Produto">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                                        </svg>
+
+                                        Produto
+                                    </div>
+                                </th>
+                                <th class="w-28 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Montante">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                                        </svg>
+
+                                        Montante
+                                    </div>
+                                </th>
+                                <th class="w-100 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Forma de Pagamento">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
+                                        </svg>
+
+                                        Forma de Pagamento
+                                    </div>
+                                </th>
+                                <th class="w-10 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Estado">
+                                    <div class="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
+                                        </svg>
+
+                                        Estado
+                                    </div>
+                                </th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    data-label="Ações">
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 font-thin">
+                            <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
+                                class="hover:bg-gray-50"
+                                :class="{
+                                    'bg-red-100': comprovativo.montante > 7000000,
+                                    'bg-yellow-100': comprovativo.montante >= 500000 && comprovativo.montante <= 7000000
+                                }">
+                                <td class="px-4 py-4 whitespace-normal text-sm text-gray-500">
+                                    {{ calcularNumeroLinha(index) }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap items-center">
+                                    <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
+                                        target="_blank" class="text-blue-600 hover:underline flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-5 mr-1 text-red-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                        </svg>
+                                        Visualizar
+                                    </a>
+                                    <span v-else class="text-gray-400 italic">S/A</span>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ comprovativo.data }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ comprovativo.agencia || '-' }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ comprovativo.usuario }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ comprovativo.cliente || '-' }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">
+                                    <button @click="abrirModalReconciliacaoDetalhe(comprovativo.id)"
+                                        class="btn btn-action btn-detail flex items-center gap-1 mx-auto"
+                                        style="font-size:10px;">
+                                        {{ comprovativo.lnr }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </button>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ comprovativo.metodologia }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+                                    {{ formatCurrency(comprovativo.montante) }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm ">
+                                    {{ comprovativo.FormaPagoN }}
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap">
+                                    <span :class="comprovativo.color" class="px-2 py-1 text-xs font-medium rounded-full">
+                                        {{ comprovativo.estado }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-center">
+                                    <button @click="abrirModalReconciliacao(comprovativo)"
+                                        class="btn btn-action btn-validate flex items-center gap-1 mx-auto"
+                                        :disabled="deveDesativarBotao(comprovativo.estado)">
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4">...</svg>
+                                        <span class="hidden sm:inline">Mudar Estado</span>
+                                        <span class="sm:hidden">Estado</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr v-if="comprovativosPaginados.length === 0">
+                                <td colspan="11" class="px-4 py-4 text-center text-sm text-gray-500">
+                                    Nenhum comprovativo encontrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
             </div>
 
             <!-- Paginação -->
@@ -658,7 +798,13 @@ const props = defineProps({
     dataFimInput: String,
     montanteFiltrado: Number,
     dataInicioPeriodo: String,
-    dataFimPeriodo: String
+    dataFimPeriodo: String,
+    totalMontantePoupancaRegistado:Number,
+    totalMontanteRegistado:Number,
+    totalMontanteReflete:Number,
+    totalMontantePoupancaReflete:Number,
+    totalMontanteInregulares:Number,
+    totalMontantePoupancaInregulares:Number,
 })
 
 // Estados
@@ -788,6 +934,31 @@ const aplicarFiltros = () => {
         }
     });
 };
+
+const aplicarFiltrosmai5M = () => {
+
+    router.get('/reconciliacao', {
+            tipo: 500000
+    }, {
+        preserveState: true,
+        replace: true,
+        onSuccess: () => {
+            paginaAtual.value = 1; // Resetar paginação
+        }
+    });
+};
+const aplicarFiltrosmexc7M= () => {
+
+    router.get('/reconciliacao', {
+            tipo: 7000000
+    }, {
+        preserveState: true,
+        replace: true,
+        onSuccess: () => {
+            paginaAtual.value = 1; // Resetar paginação
+        }
+    });
+}
 
 // Função resetarFiltros
 const resetarFiltros = () => {
