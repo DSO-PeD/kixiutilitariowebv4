@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -249,14 +253,36 @@ $this->loadUserSessionData($user);
         ];
     }
 
-    public function logout(Request $request)
+ /*   public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+
+
+
         return redirect()->route('login');
     }
+*/
 
+ public function logout(Request $request)
+{
+    // Registrar o logout na tabela de sessões
+    DB::table('sessions')
+        ->where('id', Session::getId())
+        ->update(['user_id' => null]);
+
+    // Limpar a autenticação
+    Auth::logout();
+
+    // Invalidar a sessão
+    $request->session()->invalidate();
+
+    // Regenerar o token
+    $request->session()->regenerateToken();
+
+    return redirect('/');
+}
 
 }

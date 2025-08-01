@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
            //   \Illuminate\Routing\Middleware\ThrottleRequests::class.':60,1', // 60 req/min
             // \App\Http\Middleware\GeoBlockMiddleware::class, // Adicionado aqui
+          //  \App\Http\Middleware\EnsureFreshSession::class,
+             \App\Http\Middleware\VerifyUserSession::class,
 
         ] );
 
