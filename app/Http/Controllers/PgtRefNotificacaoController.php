@@ -28,7 +28,7 @@ class PgtRefNotificacaoController extends Controller
 
             $apenasNumeros = preg_replace('/\D/', '', $item['refPagamento']);
             $referenciaKIXI = str_pad($apenasNumeros, 9, '0', STR_PAD_LEFT);
-
+            $codigo_voucher = 'KXU.PGTREF' . $referenciaKIXI;
             try {
                 $ExisteReferencia = TKxExtratoModel::where('referenciapagamento', '=', $referenciaKIXI)->first();
 
@@ -57,7 +57,7 @@ class PgtRefNotificacaoController extends Controller
                         'FormaPago' => 8,
                         'PoCodigo' => 'DJA',
                         'BuDadoOrigem' => $ExisteReferencia->Lnr,
-                        'BuReferencia' => $item['idTransacao'],
+                        'BuReferencia' => $codigo_voucher,
                         'BuMontante' => $item['montantePago'],
                         'BuData' => $dataFormatadaBuData,
                         'BuContaBancaria' => '2972939510001',
@@ -74,7 +74,7 @@ class PgtRefNotificacaoController extends Controller
                         $insertReco = CpvtReconciliacaoModel::create([
                             'datareconciliacao' => now(),
                             'CodigoConta' => 79,
-                            'voucher' => $item['idTransacao'],
+                            'voucher' => $codigo_voucher,
                             'descricao' => 'Inserção Automática',
                             'observacao' => 'Comprovativo com  Montante pago por Referencia',
                             'idcomprovativo' => $insert->id,
@@ -112,7 +112,7 @@ class PgtRefNotificacaoController extends Controller
                     'success' => false,
                     'Obs' => 'Erro ao processar o item',
                     'Id' => $item['Id'],
-                    'error' => $e->getMessage()
+                    'error' => 'Contactar da DSO'
                 ]);
 
 

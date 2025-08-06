@@ -9,16 +9,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GeoBlockMiddleware
 {
-    public function handle(Request $request, Closure $next)
+   public function handle(Request $request, Closure $next)
     {
-        $allowedCountry = 'AO'; // Apenas Angola
+        $allowedCountryAO = 'AO'; // Angola
+        $allowedCountryNA = 'NA'; // Namibia
 
         try {
             $countryCode = $this->getCountryCode();
 
-            if ($countryCode !== $allowedCountry) {
+            // Corrected condition - user must be from either AO or NA
+            if ($countryCode !== $allowedCountryAO && $countryCode !== $allowedCountryNA) {
                 return response()->json([
-                    'error' => 'Este serviço está disponível apenas em Angola',
+                    'error' => 'Este serviço está disponível apenas em Angola e Namíbia',
                     'country_detected' => $countryCode ?? 'Não identificado'
                 ], 403);
             }
