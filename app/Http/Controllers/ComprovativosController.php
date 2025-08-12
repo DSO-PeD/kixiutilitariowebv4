@@ -31,7 +31,7 @@ class ComprovativosController extends Controller
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
-        //  $filtros = $request->only(['search', 'data_inicio', 'data_fim']);
+
 
 
         $tipoDeBusca = $request->tipo;

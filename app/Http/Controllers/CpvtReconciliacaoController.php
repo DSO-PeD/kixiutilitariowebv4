@@ -15,12 +15,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
+use Clockwork;
+
 
 
 class CpvtReconciliacaoController extends Controller
 {
     public function viewComprovativosReconlicacao(Request $request)
     {
+
         // Cache de dados estáticos que raramente mudam
         $cacheKey = 'reconciliacao_static_data_' . Auth::id();
         $staticData = Cache::remember($cacheKey, 3600, function () {

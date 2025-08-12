@@ -867,7 +867,7 @@
         <select v-model="selectedEstado" class="form-select" required>
           <option value="" disabled selected>Selecione o estado</option>
           <option v-for="est in listar_estados_operacionais" :key="est.id" :value="est.id">
-            {{ est.descricao_estado }} -{{ est.id }}
+            {{ est.descricao_estado }}
           </option>
         </select>
       </div>
@@ -1122,6 +1122,7 @@ watch(selectedEstado, (newVal) => {
 
 // Função para alternar seleção de todos
 const toggleSelectAll = () => {
+
     if (selectAll.value) {
         // Converte a string de IDs em um array de números
         const idsPermitidos = props.id_estados_anterior_que_opera.split(',').map(id => parseInt(id.trim()));
@@ -1613,6 +1614,7 @@ const validarDatas = () => {
     return isValid;
 };
 const estadosPermitidos = computed(() => {
+
     return props.id_estados_anterior_que_opera.split(',').map(id => parseInt(id.trim()));
 });
 // Watcher para sincronizar quando as props forem atualizadas

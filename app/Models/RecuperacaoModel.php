@@ -133,7 +133,7 @@ class RecuperacaoModel extends Model
             ->join('estado as est', 'est.id', '=', 'rec.id_estado')
             ->join('recuperador as r', 'r.id', '=', 'rec.id_recuperador')
             ->join('tkxusutilizador as util', 'util.UtCodigo', '=', 'rec.UtCodigo')
-            ->join('comprovativos as comp', 'comp.id', '=', 'id_comprovativo')
+            ->join('comprovativos as comp', 'comp.id', '=', 'rec.id_comprovativo')
             ->join('tkxagencias as ag', 'ag.OfIdentificador', '=', 'rec.BaseOperacao')
             ->join('comissoesmaturidade as cm', 'cm.id', '=', 'rec.id_comissoestaxas')
             ->join('cpvtreconciliacao as compr', 'compr.idcomprovativo', '=', 'rec.id_comprovativo')
@@ -171,6 +171,7 @@ class RecuperacaoModel extends Model
                 'ag.OfNombre'
 
             )
+            ->where('compr.idestado','=',8)
             ->orderByDesc('CiFecha');
 
         if ($tipo == 3) {
