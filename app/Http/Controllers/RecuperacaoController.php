@@ -39,8 +39,8 @@ class RecuperacaoController extends Controller
         $id_estados_operacionais = $authenticatedUser->recuperacao_estados_operacao;
         $id_estados_anterior_que_opera = $authenticatedUser->recuperacao_estados_anterior;
 
-        $listar_estados = EstadosModel::getEstadosRecuperacao($ids_estados );// EstadosModel::getEstadosDCF('DOP'); // os IDs DOP tambem servem para DPP
-        $listar_estados_operacionais= EstadosModel::getEstadosRecuperacao($id_estados_operacionais);
+        $listar_estados = EstadosModel::getEstadosRecuperacao($ids_estados);// EstadosModel::getEstadosDCF('DOP'); // os IDs DOP tambem servem para DPP
+        $listar_estados_operacionais = EstadosModel::getEstadosRecuperacao($id_estados_operacionais);
 
 
         $Bases = $resultagencia_user->BasesOperacao;
@@ -63,18 +63,22 @@ class RecuperacaoController extends Controller
                 $estado = $ESTADO;
 
                 // dd($request->estado_input);
+            } else {
+                $ESTADO = $estado;
             }
             if ($agencia == 'T') {
                 $agencia = $Bases;
+            } else {
+                $Bases = $agencia;
             }
 
         }
 
-        $lista_recuperacoes = RecuperacaoModel::getRecuperacoes($NumeroRegistroTabela, $tipo, $estado, $agencia, $dataIn, $dataF, $loan, $RECUPERADOR);
+        $lista_recuperacoes = RecuperacaoModel::getRecuperacoes($NumeroRegistroTabela, $tipo, $ESTADO, $Bases, $dataIn, $dataF, $loan, $RECUPERADOR);
 
 
         //Estatistica em função do tipo de filtro da recuperação
-        $estatistica = RecuperacaoModel::getRecuperacoesEstatistica($tipo, $estado, $agencia, $dataIn, $dataF);
+        $estatistica = RecuperacaoModel::getRecuperacoesEstatistica($tipo, $ESTADO, $Bases, $dataIn, $dataF);
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $this->user->UtAgencia)->first();
         $listacomissoes_taxas = RecuperacaoModel::listarComissoesETaxas();
@@ -103,7 +107,7 @@ class RecuperacaoController extends Controller
 
         $total = $lista_recuperacoes->count();
         $totalMontante = $lista_recuperacoes->sum('ReBuMontante');
-
+         $totalMontanteApagar = $lista_recuperacoes->sum('valor_a_receber');
 
 
 
@@ -156,7 +160,7 @@ class RecuperacaoController extends Controller
                 'nome_recuperador' => $item->nome_recuperador,
                 'id_comprovativo' => $item->id_comprovativo,
                 'id_estado' => $item->id_estado,
-                'referencia' => $item->ReBuReferencia,
+                'referencia' => $item->voucher,
                 'voucher' => $item->voucher,
                 'mes_ano_pagamento' => $mesAnoFormatado,
                 'valor_a_receber' => $item->valor_a_receber,
@@ -200,10 +204,11 @@ class RecuperacaoController extends Controller
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
+            'montanteapagar'=>$totalMontanteApagar,
             'listacomissoes_taxas' => $listacomissoes_taxas,
-            'id_estados_operacionais'=>$id_estados_operacionais,
-            'id_estados_anterior_que_opera'=>$id_estados_anterior_que_opera,
-            'listar_estados_operacionais'=>$listar_estados_operacionais
+            'id_estados_operacionais' => $id_estados_operacionais,
+            'id_estados_anterior_que_opera' => $id_estados_anterior_que_opera,
+            'listar_estados_operacionais' => $listar_estados_operacionais
         ]);
     }
 
@@ -424,13 +429,23 @@ class RecuperacaoController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update records
+            // Atualiza mes_ano_pagamento apenas para registros com id_estado = 3
+            if ($estado_id == 3) {
+                RecuperacaoModel::whereIn('id', $ids)
+                    ->update(['mes_ano_pagamento' => $MES_ANO_PAGAMENTO]);
+            }
+
+            // Atualiza data_do_pagamento apenas para registros com id_estado = 15
+            if ($estado_id == 15) {
+                RecuperacaoModel::whereIn('id', $ids)
+                    ->update(['data_do_pagamento' => $dataPagamento]);
+            }
+
+            // Atualiza os campos comuns a todos os casos
             $updated = RecuperacaoModel::whereIn('id', $ids)
                 ->update([
-                    'mes_ano_pagamento' => $MES_ANO_PAGAMENTO,
                     'id_estado' => $estado_id,
-                    'obs' => $motivo_obs,
-                    'data_do_pagamento'=> $dataPagamento
+                    'obs' => $motivo_obs
                 ]);
 
             if ($updated) {

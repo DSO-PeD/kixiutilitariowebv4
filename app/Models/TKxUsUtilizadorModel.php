@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
@@ -10,11 +9,10 @@ use Illuminate\Support\Facades\DB;
 class TKxUsUtilizadorModel extends Authenticatable
 {
     use Notifiable;
-
-    protected $table = 'tkxusutilizador'; // nome da sua tabela
-
-    protected $primaryKey = 'UtCodigo';
-    public $incrementing = false; // se o UtCodigo for string
+    protected $table = 'tkxusutilizador';
+protected $primaryKey = 'UtCodigo';
+public $incrementing = false;
+protected $keyType = 'string';
 
     protected $fillable = [
         'UtCodigo',
@@ -38,6 +36,7 @@ class TKxUsUtilizadorModel extends Authenticatable
         'activo',
         'ip_utilizador',
         'remember_token',
+        'UtSenha',
         'OfCodigo',
         'OfIdentificador',
         'OfNombre',
@@ -56,23 +55,17 @@ class TKxUsUtilizadorModel extends Authenticatable
     }
 
     public static function getDJAIP()
-{
-    $ipValidos = DB::table('tkxusutilizador')
-        ->where('activo', 1)
-        ->pluck('ip_utilizador') // retorna apenas os valores da coluna
-        ->toArray(); // converte para array
-
-    return $ipValidos;
-}
+    {
+        return DB::table('tkxusutilizador')
+            ->where('activo', 1)
+            ->pluck('ip_utilizador')
+            ->toArray();
+    }
 
     public static function getDJAIPKIXILAN()
-{
-    $ipValidos = DB::table('ipfaixas')
-        ->pluck('cidr') // retorna apenas os valores da coluna
-        ->toArray(); // converte para array
-
-    return $ipValidos;
-}
-
-
+    {
+        return DB::table('ipfaixas')
+            ->pluck('cidr')
+            ->toArray();
+    }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Redis;
 
 //'geoblock'
 Route::middleware(['guest','web'])->group(function () {
@@ -66,8 +67,35 @@ Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP
 Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
+Route::get('/test-telescope', function() {
+    return class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)
+        ? "Telescope está instalado"
+        : "Telescope NÃO está instalado";
+});
 
 
+Route::get('/test-redis', function() {
+    try {
+        // Teste de conexão
+        Redis::set('laravel_test', now()->toDateTimeString());
+        $value = Redis::get('laravel_test');
 
+        // Teste de configuração
+        $config = config('database.redis');
+
+        return response()->json([
+            'status' => 'success',
+            'redis_version' => Redis::info()['redis_version'] ?? 'unknown',
+            'test_value' => $value,
+            'config' => $config
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'help' => 'O Redis pode não estar configurado no servidor'
+        ], 500);
+    }
+});
 
 

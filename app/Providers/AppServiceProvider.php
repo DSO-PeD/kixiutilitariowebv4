@@ -37,12 +37,15 @@ class AppServiceProvider extends ServiceProvider
 
             $this->app->terminating(fn() => app('cleaner')->clean());
         }
+
+
     }
 
     public function boot(): void
     {
-      // \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
-        //\Illuminate\Support\Facades\URL::forceScheme('https'); // Se usar HTTPS
+        DB::listen(function ($query) {
+            Log::info("SQL: " . $query->sql, $query->bindings);
+        });
 
         if (App::environment('production')) {
             $this->applyProductionOptimizations();
@@ -67,7 +70,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Inertia::version(fn() => md5_file(public_path('mix-manifest.json')));
 
-       Inertia::share(
+        Inertia::share(
             [
                 'auth.user' => function () {
                     return Auth::user();  // Isso retorna os dados do usuário autenticado
@@ -76,7 +79,7 @@ class AppServiceProvider extends ServiceProvider
                 'session' => function () {
                     //return session()->all();  // Isso retorna todos os dados da sessão
                     return [
-                         'agencia_principal' => fn () => session('agencia_principal'),
+                        'agencia_principal' => fn() => session('agencia_principal'),
                         'bases_operacionais' => session('bases_operacionais'),
                     ];
                 },

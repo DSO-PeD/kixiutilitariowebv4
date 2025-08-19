@@ -13,17 +13,13 @@ use App\Models\{
     TKxClTipopagamentoModel,
     TKxCodigoCaeModel,
     TKxExtratoModel,
-    TKxUsUtilizadorModel,
-    User
+    TKxUsUtilizadorModel
 };
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -39,58 +35,56 @@ class AuthController extends Controller
             'UtSenha' => ['required', 'string'],
         ]);
 
+        // Procurar utilizador ativo
         $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])
-            ->where('UtSenha', $credentials['UtSenha'])
             ->where('activo', 1)
             ->first();
 
+        // Validação de credenciais (usando Hash::check)
         if (!$user) {
             return back()->withErrors([
                 'UtCodigo' => 'Credenciais inválidas.',
             ]);
         }
 
-        Auth::login($user, $request->remember ?? false);
+        // Login do utilizador
+        Auth::login($user, $request->boolean('remember'));
 
-        // Debug - verifique se a sessão está sendo criada
-      ///  \Log::info('Session ID after login:', ['session_id' => session()->getId()]);
-$this->loadUserSessionData($user);
+        // Previne session fixation
+        $request->session()->regenerate();
+
+        // Carregar dados de sessão específicos do utilizador
+        $this->loadUserSessionData($user);
+
         return redirect()->intended(route('dashboard'));
     }
 
     protected function loadUserSessionData($user)
     {
-        // Carrega todos os dados necessários da agência
-        $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)
-            ->first(); // Removi o select específico para pegar todos os campos
+        $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)->first();
 
         if ($agencia) {
             $basesOperacionais = TKxAgenciaModel::whereIn(
                 'OfIdentificador',
                 explode(',', $agencia->BasesOperacao)
-            )
-                ->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
+            )->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
 
-            // Armazena mais dados da agência na sessão
+            // Armazenar na sessão com prefixo único (evita conflito com outras apps)
             session([
-                'bases_operacionais' => $basesOperacionais->toArray(),
-                'agencia_principal' => $agencia->OfNombre,
-                'agencia_data' => [ // Adiciona um array com todos os dados relevantes
+                'utilitario_v9.bases_operacionais' => $basesOperacionais->toArray(),
+                'utilitario_v9.agencia_principal' => $agencia->OfNombre,
+                'utilitario_v9.agencia_data' => [
                     'codigo' => $agencia->OfCodigo,
                     'nombre' => $agencia->OfNombre,
                     'identificador' => $agencia->OfIdentificador,
-                    'bases_operacao' => $agencia->BasesOperacao
-                ]
+                    'bases_operacao' => $agencia->BasesOperacao,
+                ],
             ]);
         }
     }
 
     public function carregamentoInicial(Request $request)
     {
-
-
-
-
         $authenticatedUser = Auth::user();
         $agenciaUser = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)
             ->first(['BasesOperacao']);
@@ -101,20 +95,14 @@ $this->loadUserSessionData($user);
 
         $basesOperacao = explode(',', $agenciaUser->BasesOperacao);
 
-        // Carregar dados estáticos uma única vez
         $staticData = $this->loadStaticData();
-
-        // Processar dados dinâmicos
         $dynamicData = $this->processDynamicData($request, $basesOperacao);
 
-        // Combinar todos os dados para a view
-
-
         $viewData = array_merge($staticData, $dynamicData, [
-            'auth' => ['user' => Auth::user()], // Adiciona o usuário no formato esperado pelo frontend
+            'auth' => ['user' => Auth::user()],
             'BasesOperacao' => $basesOperacao,
             'bases' => TKxAgenciaModel::whereIn('OfIdentificador', $basesOperacao)->get(),
-            'agencia_principal' => session('agencia_principal')
+            'agencia_principal' => session('utilitario_v9.agencia_principal'),
         ]);
 
         return Inertia::render('Dashboard', $viewData);
@@ -122,7 +110,6 @@ $this->loadUserSessionData($user);
 
     protected function loadStaticData()
     {
-
         return [
             'produtosextratos' => TKxClProdutoModel::getProdutosDesembolsos(),
             'produtos' => TKxClProdutoModel::getProdutos(),
@@ -135,8 +122,7 @@ $this->loadUserSessionData($user);
             'lista_bancos_contas' => TKxBancoContaModel::getBancosContas(),
             'lista_banco' => TKxBancoModel::getBancos(),
             'lista_actividade_economica' => TKxCodigoCaeModel::getActividadeEconomica(),
-            'agencia_principal' => session('agencia_principal')
-
+            'agencia_principal' => session('utilitario_v9.agencia_principal'),
         ];
     }
 
@@ -145,16 +131,9 @@ $this->loadUserSessionData($user);
         $dateFilter = $this->getDateFilter($request);
         $hoje = Carbon::today()->format('Y-m-d 00:00:00');
 
-        // Dados de comprovativos
         $comprovativosData = $this->getComprovativosData($basesOperacao, $dateFilter, $hoje);
-
-        // Dados de recuperações
         $recuperacoesData = $this->getRecuperacoesData($basesOperacao, $dateFilter, $hoje);
-
-        // Dados de extratos
         $extratosData = $this->getExtratosData($basesOperacao, $dateFilter, $hoje);
-
-        // Dados pendentes
         $pendentesData = $this->getPendentesData($basesOperacao);
 
         return array_merge(
@@ -183,13 +162,11 @@ $this->loadUserSessionData($user);
 
         if ($dateFilter) {
             $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
-
             $cpvtDFC = (clone $query)->where('idestado', 1);
             $cpvtDFC2 = (clone $query)->where('idestado', 8);
             $cpvtDFC3 = (clone $query)->whereNotIn('idestado', [1, 8]);
         } else {
             $query->whereDate('CiFecha', $hoje);
-
             $cpvtDFC = (clone $query)->where('idestado', 1);
             $cpvtDFC2 = (clone $query)->where('idestado', 8);
             $cpvtDFC3 = (clone $query)->whereNotIn('idestado', [1, 8]);
@@ -253,36 +230,13 @@ $this->loadUserSessionData($user);
         ];
     }
 
- /*   public function logout(Request $request)
+    public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-
-
-
-        return redirect()->route('login');
+        return redirect('/');
     }
-*/
-
- public function logout(Request $request)
-{
-    // Registrar o logout na tabela de sessões
-    DB::table('sessions')
-        ->where('id', Session::getId())
-        ->update(['user_id' => null]);
-
-    // Limpar a autenticação
-    Auth::logout();
-
-    // Invalidar a sessão
-    $request->session()->invalidate();
-
-    // Regenerar o token
-    $request->session()->regenerateToken();
-
-    return redirect('/');
-}
-
 }

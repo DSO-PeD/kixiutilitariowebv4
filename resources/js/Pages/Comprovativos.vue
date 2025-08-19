@@ -1302,6 +1302,7 @@ watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], () => {
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ comprovativo.voucher || '-' }}
+
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ comprovativo.FormaPagoN || '-' }}

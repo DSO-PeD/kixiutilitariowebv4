@@ -126,7 +126,8 @@ class RecuperacaoModel extends Model
     //Funcão: listar todas recuperações Owner: WSA
     public static function getRecuperacoes($NumeroRegistroTabela, $tipo, $estado = null, $agencia = null, $dataInicio = null, $dataFim = null, $loan_number, $recuperador)
     {
-
+        $agenciaArray = explode(',', $agencia);
+        $estadoArray = explode(',', $estado);
 
 
         $query = DB::table('recuperacao as rec')
@@ -136,14 +137,13 @@ class RecuperacaoModel extends Model
             ->join('comprovativos as comp', 'comp.id', '=', 'rec.id_comprovativo')
             ->join('tkxagencias as ag', 'ag.OfIdentificador', '=', 'rec.BaseOperacao')
             ->join('comissoesmaturidade as cm', 'cm.id', '=', 'rec.id_comissoestaxas')
-            ->join('cpvtreconciliacao as compr', 'compr.idcomprovativo', '=', 'rec.id_comprovativo')
             ->select(
                 'rec.id',
                 'rec.CiFecha',
                 'util.UtCodigo',
                 'util.UtNome',
                 'rec.ReBuDadoOrigem',
-                'rec.ReBuReferencia',
+                'rec.ReBuReferencia  as voucher',
                 'rec.ReBuMontante',
                 'rec.ReBuData',
                 'rec.id_recuperador',
@@ -163,18 +163,20 @@ class RecuperacaoModel extends Model
                 'comp.infoadicional',
                 'cm.prazo_maturidade',
                 'cm.taxa_comissao_percent',
-                'compr.voucher',
                 'est.color as color',
                 'est.fa_icon',
                 'est.dias_epe',
                 'est.elimina_registro',
                 'ag.OfNombre'
 
-            )
-            ->where('compr.idestado','=',8)
-            ->orderByDesc('CiFecha');
+            )->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray)
+             ->orderByDesc('rec.CiFecha');
+
+
+
 
         if ($tipo == 3) {
+
             $query->where('rec.ReBuDadoOrigem', '=', $loan_number);
         } elseif ($tipo == 4) {
 
@@ -183,19 +185,14 @@ class RecuperacaoModel extends Model
 
             $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray);
 
-            /*if ($recuperador !== '0') {
-                $recuperadorArray = explode(',', $recuperador);
-                $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray)->whereIn('rec.id_recuperador', $recuperadorArray);
-             } else {
-                $query->whereIn('rec.BaseOperacao', $agenciaArray)->whereIn('rec.id_estado', $estadoArray);
-            }*/
+
         } else {
             $query->limit($NumeroRegistroTabela);
         }
 
         $results = $query->get();
 
-
+        //dd($results);
 
         return $results;
     }

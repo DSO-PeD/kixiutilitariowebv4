@@ -129,10 +129,10 @@ class ComprovativosController extends Controller
             $TIPO = $tipoDeBusca;
         }
 
-        if($tipoDeBusca==500000){
+        if ($tipoDeBusca == 500000) {
             $TIPO = $tipoDeBusca;
         }
-        if($tipoDeBusca==7000000){
+        if ($tipoDeBusca == 7000000) {
             $TIPO = $tipoDeBusca;
         }
 
@@ -151,15 +151,15 @@ class ComprovativosController extends Controller
         $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
         $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
 
-        $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado',1)->sum('BuMontante');
-        $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado',1)->sum('BuMontante');
-        $totalMontanteReflete= collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado',8)->sum('BuMontante');
-        $totalMontantePoupancaReflete= collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado',8)->sum('BuMontante');
-        $totalMontanteInregulares= collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereNotIn('idestado',[1,8])->sum('BuMontante');
-        $totalMontantePoupancaInregulares= collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereNotIn('idestado',[1,8])->sum('BuMontante');
+        $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 1)->sum('BuMontante');
+        $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 1)->sum('BuMontante');
+        $totalMontanteReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante');
+        $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
+        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereNotIn('idestado', [1, 8])->sum('BuMontante');
+        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereNotIn('idestado', [1, 8])->sum('BuMontante');
 
         collect($lista_comprovativo)->max('CiFecha');
-         collect($lista_comprovativo)->min('CiFecha');
+        collect($lista_comprovativo)->min('CiFecha');
 
         $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
         $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
@@ -174,6 +174,13 @@ class ComprovativosController extends Controller
         ];
         // dd($lista_comprovativo );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
+            $vcr_view="-";
+
+           if($item->voucher == "" || $item->voucher == null) {
+                $vcr_view = $item->BuReferencia;
+            } else {
+                $vcr_view = $item->voucher;
+            }
 
             return [
                 'id' => $item->id,
@@ -191,13 +198,13 @@ class ComprovativosController extends Controller
                 'banco' => $item->BaSigla,
                 'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
-                'voucher' => $item->voucher,
+                'voucher' => $vcr_view,
                 'FormaPagoN' => $item->FormaPagoN,
                 'descricao' => $item->descricao,
                 'operadordcf' => $item->operadordcf,
                 'datareconciliacao' => $item->datareconciliacao,
                 'montante' => $item->BuMontante,
-                'TipoProduto'=>$item->TipoProduto,
+                'TipoProduto' => $item->TipoProduto,
                 // Mantenha todos os campos necessários para filtros client-side
                 'CiFecha' => $item->CiFecha, // Para filtro por data
                 'estado_id' => $item->idestado, // Para filtro por estado
@@ -238,12 +245,12 @@ class ComprovativosController extends Controller
             'total' => $total,
             'montantetotal' => $totalMontante,
             'totalMontantePoupanca' => $totalMontantePoupanca,
-            'totalMontanteRegistado'=>$totalMontanteRegistado,
-            'totalMontantePoupancaRegistado'=>$totalMontantePoupancaRegistado,
-            'totalMontanteReflete'=>$totalMontanteReflete,
-            'totalMontantePoupancaReflete'=>$totalMontantePoupancaReflete,
-            'totalMontanteInregulares'=>$totalMontanteInregulares,
-            'totalMontantePoupancaInregulares'=>$totalMontantePoupancaInregulares,
+            'totalMontanteRegistado' => $totalMontanteRegistado,
+            'totalMontantePoupancaRegistado' => $totalMontantePoupancaRegistado,
+            'totalMontanteReflete' => $totalMontanteReflete,
+            'totalMontantePoupancaReflete' => $totalMontantePoupancaReflete,
+            'totalMontanteInregulares' => $totalMontanteInregulares,
+            'totalMontantePoupancaInregulares' => $totalMontantePoupancaInregulares,
             'formaspagamentos' => $lista_das_formaspagamento,
             //'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
             'lista_pendentes' => $lista_pendentes,
@@ -339,6 +346,7 @@ class ComprovativosController extends Controller
 
 
 
+
                     $insert = ComprovativoModel::create([
                         'CiFecha' => now(),
                         'UtCodigo' => $authenticatedUser->UtCodigo,
@@ -358,6 +366,8 @@ class ComprovativosController extends Controller
                         'filecomprovativo' => $comprovativonome,
                         'telefonecliente' => $telefone
                     ]);
+
+
                     //} else {
 
                     // $Mensagem = "Comprovativo não foi cadastrado!, verificamos que não existe qualquer aplicação no Kixi Utiltário, do crédito: [" . $loan_number . "],  por favor faça primeiro  a aplicação em < Cálculo de Desembolso > depois tenta novamente cadastrar este comprovativo.";
@@ -444,24 +454,24 @@ class ComprovativosController extends Controller
             }
         }
     }
-public function editarMontante(Request $request)
-{
+    public function editarMontante(Request $request)
+    {
 
-    $request->validate([
-        'id' => 'required|exists:comprovativos,id',
-        'novo_montante' => 'required|numeric|min:0.01'
-    ]);
+        $request->validate([
+            'id' => 'required|exists:comprovativos,id',
+            'novo_montante' => 'required|numeric|min:0.01'
+        ]);
 
-    $comprovativo = ComprovativoModel::findOrFail($request->id);
+        $comprovativo = ComprovativoModel::findOrFail($request->id);
 
 
-    // Atualizar montante
-    $comprovativo->update([
-        'BuMontante' => $request->novo_montante
-    ]);
+        // Atualizar montante
+        $comprovativo->update([
+            'BuMontante' => $request->novo_montante
+        ]);
 
-    return back()->with('success', 'Montante atualizado com sucesso!');
-}
+        return back()->with('success', 'Montante atualizado com sucesso!');
+    }
     public function finalizaraeliminacao(Request $request)
     {
 

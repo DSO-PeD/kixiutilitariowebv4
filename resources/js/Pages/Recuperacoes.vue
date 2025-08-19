@@ -334,6 +334,21 @@
 
                 </div>
 
+                <div class="flex gap-4">
+                    <div class="text-wrap">
+
+                        <span class="bg-green-50  text-green-600 x-2 py-2 px-2 text-sm font-bold flex rounded-md">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg> &ThinSpace;<span>Total de Valor a pagar: </span> &ThickSpace; {{
+                                formatCurrency(montanteapagar) }}
+                        </span>
+                    </div>
+
+                </div>
 
                 <div class="flex gap-2">
 
@@ -771,6 +786,7 @@
 
 
         <!-- Modal de Detalhes da Recuperação -->
+        <!-- Modal de Detalhes da Recuperação -->
         <Modal :show="showDetailsModal" @close="showDetailsModal = false" maxWidth="md">
             <div class="bg-white p-6 rounded-lg">
                 <div class="flex justify-between items-center mb-4">
@@ -813,7 +829,7 @@
                         <div>
                             <p class="text-sm font-medium text-gray-500">Data do Borderoux</p>
                             <p class="text-sm text-gray-900"> {{ formatApenasDate(selectedRecuperacaoDetails.ReBuData)
-                            }}</p>
+                                }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500">Data do LPF</p>
@@ -846,9 +862,20 @@
                     </div>
                 </div>
 
-                <div class="mt-6 flex justify-end">
+                <div class="mt-6 flex justify-end space-x-3">
                     <button @click="showDetailsModal = false" class="btn btn-secondary">
                         Fechar
+                    </button>
+                    <!-- Add validation button if the recovery is in a valid state -->
+                    <button
+                        v-if="user.recuperacao_btnvalidar && selectedRecuperacaoDetails && estadosPermitidos.includes(selectedRecuperacaoDetails.id_estado)"
+                        @click="validarRecuperacaoIndividual(selectedRecuperacaoDetails.id)" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        Validar
                     </button>
                 </div>
             </div>
@@ -857,58 +884,112 @@
 
         <!-- Modal para seleção do mês de pagamento -->
 
+        <!-- Modal para validação -->
         <Modal :show="showMonthDialog" @close="showMonthDialog = false" maxWidth="md">
-    <div class="bg-white p-6 rounded-lg">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Validar Recuperação</h3>
-<hr/>
-      <div class="mb-4 py-2">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Estado <span
-            class="text-red-500">*</span></label>
-        <select v-model="selectedEstado" class="form-select" required>
-          <option value="" disabled selected>Selecione o estado</option>
-          <option v-for="est in listar_estados_operacionais" :key="est.id" :value="est.id">
-            {{ est.descricao_estado }}
-          </option>
-        </select>
-      </div>
+            <div class="bg-white p-6 rounded-lg">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Validar Recuperação</h3>
+                <hr />
 
-      <!-- Input para mês de pagamento -->
-      <div class="mb-4" v-if="habilitaMesPagamento && selectedEstado">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Mês/Ano de Pagamento <span
-            class="text-red-500">*</span></label>
-        <input type="month" v-model="selectedMonth"
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          :min="minMonth" required />
-      </div>
+                <!-- Seção de informações do comprovativo -->
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-3">Informações do Comprovativo</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Loan Number</p>
+                            <p class="text-sm font-semibold text-gray-900">{{ selectedRecuperacaoDetails?.ReBuDadoOrigem
+                                || 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Voucher</p>
+                            <p class="text-sm font-semibold text-gray-900">{{ selectedRecuperacaoDetails?.voucher ||
+                                'N/A' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Montante</p>
+                            <p class="text-sm font-semibold text-green-600">{{
+                                formatCurrency(selectedRecuperacaoDetails?.ReBuMontante) || '0,00' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Data Borderoux</p>
+                            <p class="text-sm font-semibold text-gray-900">{{
+                                formatApenasDate(selectedRecuperacaoDetails?.ReBuData) || 'N/A' }}</p>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="mb-4" v-if="habilitaDataPagamento && selectedEstado">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Data de Pagamento <span
-            class="text-red-500">*</span></label>
-        <input type="date" v-model="selectedDataPagamento"
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          :min="minMonth" required />
-      </div>
+                <!-- Seção de informações do recuperador -->
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-3">Informações do Recuperador</h4>
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-12 w-12 mr-3">
+                            <img :src="selectedRecuperacaoDetails?.Imagen ? `/imagens/imgsrecuperadores/${selectedRecuperacaoDetails.Imagen}` : '/imagens/imgsrecuperadores/sem-foto.jpg'"
+                                :alt="selectedRecuperacaoDetails?.nome_recuperador || 'Sem foto'"
+                                class="h-12 w-12 rounded-full object-cover bg-slate-300" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Nome</p>
+                            <p class="text-sm font-semibold text-gray-900">{{
+                                selectedRecuperacaoDetails?.nome_recuperador || 'N/A' }}</p>
+                        </div>
 
-      <div class="mb-4" v-if="habilitaMotivo && selectedEstado">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Motivo <span
-            class="text-red-500">*</span></label>
-        <textarea v-model="motivoNaoConfirmado"
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          placeholder="Digite o motivo da não confirmação" required></textarea>
-      </div>
+                    </div>
+                    <div>
+                        <br />
+                        <p class="text-sm font-medium text-gray-900">Montate a Receber por esta Recuperação</p>
+                        <p class="text-sm font-extrabold text-green-500">{{ formatCurrency(selectedRecuperacaoDetails?.valor_a_receber)
+                            || 'N/A' }}</p>
+                    </div>
+                </div>
 
-      <div class="flex justify-end space-x-3 mt-6">
-       <button @click="showMonthDialog = false" type="button"
-        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-       <i class="far fa-times-circle"></i> Cancelar
-    </button>
-        <button @click="enviarConfirmacao" type="button"
-          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-         <i class="fas fa-check"></i> Finalizar
-        </button>
-      </div>
-    </div>
-  </Modal>
+                <!-- Seção de validação -->
+                <div class="mb-4 py-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado <span
+                            class="text-red-500">*</span></label>
+                    <select v-model="selectedEstado" class="form-select" required>
+                        <option value="" disabled selected>Selecione o estado</option>
+                        <option v-for="est in listar_estados_operacionais" :key="est.id" :value="est.id">
+                            {{ est.descricao_estado }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Input para mês de pagamento -->
+                <div class="mb-4" v-if="habilitaMesPagamento && selectedEstado">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mês/Ano de Pagamento <span
+                            class="text-red-500">*</span></label>
+                    <input type="month" v-model="selectedMonth"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        :min="minMonth" required />
+                </div>
+
+                <div class="mb-4" v-if="habilitaDataPagamento && selectedEstado">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Data de Pagamento <span
+                            class="text-red-500">*</span></label>
+                    <input type="date" v-model="selectedDataPagamento"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        :min="minMonth" required />
+                </div>
+
+                <div class="mb-4" v-if="habilitaMotivo && selectedEstado">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Motivo <span
+                            class="text-red-500">*</span></label>
+                    <textarea v-model="motivoNaoConfirmado"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Digite o motivo da não confirmação" required></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button @click="showMonthDialog = false" type="button"
+                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="far fa-times-circle"></i> Cancelar
+                    </button>
+                    <button @click="enviarConfirmacao" type="button"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-check"></i> Finalizar
+                    </button>
+                </div>
+            </div>
+        </Modal>
 
 
         <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan"
@@ -1027,6 +1108,7 @@ const props = defineProps({
     dataInicioInput: String,
     dataFimInput: String,
     montantetotal: Number,
+    montanteapagar: Number,
     total: Number,
     errors: Object,
     session: Object,
@@ -1095,8 +1177,8 @@ watch(selectedRecuperacoes, (newVal) => {
     const itensPermitidos = props.lista_recuperacoes.filter(item => idsPermitidos.includes(item.id_estado));
 
     selectAll.value = newVal.length > 0 &&
-                      newVal.length === itensPermitidos.length &&
-                      itensPermitidos.every(item => newVal.includes(item.id));
+        newVal.length === itensPermitidos.length &&
+        itensPermitidos.every(item => newVal.includes(item.id));
 }, { deep: true });
 
 // Watcher para mudanças no estado selecionado
@@ -1696,6 +1778,42 @@ onMounted(async () => {
     listarAgencias();
 });
 
+const validarRecuperacaoIndividual = (id) => {
+    try {
+        // Encontra a recuperação selecionada nos props
+        const recuperacao = props.lista_recuperacoes.find(r => r.id === id);
+
+        if (!recuperacao) {
+            console.error('Recuperação não encontrada');
+            return;
+        }
+
+        // Atualiza os detalhes para exibir no modal
+        selectedRecuperacaoDetails.value = recuperacao;
+
+        // Prepara para validação
+        selectedRecuperacoes.value = [id];
+
+        // Reset dos campos de validação
+        const today = new Date();
+        selectedMonth.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        selectedEstado.value = '';
+        motivoNaoConfirmado.value = '';
+        selectedDataPagamento.value = '';
+
+        // Fecha o modal de detalhes primeiro
+        showDetailsModal.value = false;
+
+        // Abre o modal de validação após um pequeno delay para evitar conflitos de renderização
+        setTimeout(() => {
+            showMonthDialog.value = true;
+        }, 50);
+
+    } catch (error) {
+        console.error('Erro ao validar recuperação:', error);
+        // Você pode adicionar aqui uma notificação para o usuário
+    }
+};
 
 // Exportar para Excel (mantido como está)
 const exportarParaExcel = () => {

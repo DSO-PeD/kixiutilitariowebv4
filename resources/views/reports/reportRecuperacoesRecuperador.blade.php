@@ -429,69 +429,156 @@
                 <th style="background-color: #ebeff4; color: #3d526d;">Situação</th>
             </tr>
         </thead>
-        <tbody>
-
+      <tbody>
             @foreach ($Dados_Recuperador as $dd_recu)
                 @if ($dd_recu->id_recuperador == $dd_r->id)
-
                     <tr style="text-align: center; background-color: #f8f9fa;" >
                         <td>{{$dd_recu->ReBuDadoOrigem}}</td>
                         <td>{{$dd_recu->infoadicional}}</td>
-                           <td>{{$dd_recu->voucher}}</td>
+                        <td>{{$dd_recu->voucher}}</td>
                         <td>{{ number_format($dd_recu->ReBuMontante, 2, ',', '.') }}</td>
-
                         <td style="background-color: #dde7f5; color: #3d526d">{{$dd_recu->taxa_comissao_percent}} %</td>
                         <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->comissao_bruta, 2, ',', '.') }}</td>
                         <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->desconto_IRT, 2, ',', '.') }}</td>
-                        <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->valor_a_receber, 2, ',', '.') }}
-                        <td style="background-color: #dde7f5; color: #3d526d">{{$dd_recu->estado}} </td>
-
-                        </td>
+                        <td style="background-color: #dde7f5; color: #3d526d">{{ number_format($dd_recu->valor_a_receber, 2, ',', '.') }}</td>
+                        <td style="background-color: #dde7f5; color: #3d526d">{{$dd_recu->estado}}</td>
                     </tr>
+                @endif
+            @endforeach
 
-                             <!-- Linha de totais -->
-            <tr style="text-align: center; background-color: #dddddd; color: #000000; " >
+            <!-- Linha de totais (movida para fora do loop) -->
+            <tr style="text-align: center; background-color: #dddddd; color: #000000;">
                 <td style="border-left: none;" colspan="3">
-
                     <strong>TOTAL</strong>
-                <img src="imagens/icons8-right-arrow-48.png" alt="" style="width:16px;height:16px;float:right; " />
+                    <img src="imagens/icons8-right-arrow-48.png" alt="" style="width:16px;height:16px;float:right;" />
                 </td>
-
                 <td class="numeric-cell"><strong>{{ number_format($totalRecuperado, 2, ',', '.') }}</strong></td>
-                 <td></td>
-
+                <td></td>
                 <td class="numeric-cell"><strong>{{ number_format($totalComissao, 2, ',', '.') }}</strong></td>
                 <td class="numeric-cell"><strong>{{ number_format($totalIrt, 2, ',', '.') }}</strong></td>
                 <td class="numeric-cell"><strong>{{ number_format($totalReceber, 2, ',', '.') }}</strong></td>
                 <td></td>
             </tr>
-                @endif
-            @endforeach
         </tbody>
     </table>
 
     <hr/>
     @endforeach
+<!-- Quebra de página para o resumo -->
+<div style="page-break-before: always;"></div>
 
-    <!-- Rodapé
-    <table class="data-table">
-        <tr class="total-row">
-            <td>VALOR TOTAL</td>
-            <td></td>
-            <td class="text-right"><php echo number_format(0, 2, ',', '.'); ?></td>
+<!-- Cabeçalho da página de resumo -->
+<table class="comBordaSimples2" style="width:100%; margin-bottom: 20px;">
+    <tr>
+        <td rowspan="2"> <img src="imagens/logokx.jpg" alt="Kixi Crédito" style="width:111px; height:31px" /> </td>
+        <td rowspan="2" style="width: 550px;">
+            <div class='rounded2'>
+                <table style="width:100%;" class="comBordaSimples3">
+                    <tr>
+                        <td style="color:#005B3B;text-align:center;font-size:12px;">
+                            <b>RESUMO GERAL - PAGAMENTO DE RECUPERADORES</b>
+                        </td>
+                    </tr>
+                    <tr style="border-top: 0.25px Solid #666666;">
+                        <td style="color:#006666;text-align:center;font-size:11px;">
+                            Periodo: {{ $data_inicio }} à {{ $data_fim }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td rowspan="2" style="text-align:right">
+            <img src="imagens/lgkxu.jpg" alt="Kixi Utilitário" style="width:51px; height:51px;" />
+        </td>
+    </tr>
+</table>
+
+<!-- Tabela Resumo de Recuperadores -->
+<div class="section-title" style="font-size: 16px">
+   <img src="imagens/imgsrecuperadores/GM.jpg" alt="RESUM" style="width:51px; height:51px;" />:::::::::::::::: RESUMO DE DEPAGAMENTO DOS RECUPERADORES
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Recuperador</th>
+            <th class="text-right">Valor Recuperado</th>
+            <th class="text-right">Comissão Bruta</th>
+            <th class="text-right">Desc. IRT (6.5%)</th>
+            <th class="text-right">Valor a Pagar</th>
         </tr>
-    </table>
--->
-    <div class="signature-area">
-        <div>
-            <span class="signature-label">Verificado por:</span>
-            <span class="signature-line"></span>
-        </div>
-        <div>
-            <span class="signature-label">Aprovado:</span>
-            <span class="signature-line"></span>
-        </div>
+    </thead>
+    <tbody>
+        @php
+            $grandTotalRecuperado = 0;
+            $grandTotalComissao = 0;
+            $grandTotalIrt = 0;
+            $grandTotalReceber = 0;
+        @endphp
+
+        @foreach ($recuperadores as $dd_r)
+            @php
+                $totalRecuperado = 0;
+                $totalComissao = 0;
+                $totalIrt = 0;
+                $totalReceber = 0;
+
+                foreach ($Dados_Recuperador as $dd_recu) {
+                    if ($dd_recu->id_recuperador == $dd_r->id) {
+                        $totalRecuperado += $dd_recu->ReBuMontante;
+                        $totalComissao += $dd_recu->comissao_bruta;
+                        $totalIrt += $dd_recu->desconto_IRT;
+                        $totalReceber += $dd_recu->valor_a_receber;
+                    }
+                }
+
+                $grandTotalRecuperado += $totalRecuperado;
+                $grandTotalComissao += $totalComissao;
+                $grandTotalIrt += $totalIrt;
+                $grandTotalReceber += $totalReceber;
+            @endphp
+
+            <tr>
+                <td>{{ $dd_r->nome_recuperador }}</td>
+                <td class="text-right">{{ number_format($totalRecuperado, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($totalComissao, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($totalIrt, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($totalReceber, 2, ',', '.') }}</td>
+            </tr>
+        @endforeach
+
+        <!-- Linha de totais -->
+        <tr class="total-row">
+            <td><strong>TOTAL GERAL</strong></td>
+            <td class="text-right"><strong>{{ number_format($grandTotalRecuperado, 2, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format($grandTotalComissao, 2, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format($grandTotalIrt, 2, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format($grandTotalReceber, 2, ',', '.') }}</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Assinaturas alinhadas -->
+<div style="margin-top: 100px;">
+    <div style="float: left; width: 40%;">
+        <div class="signature-label">Aprovado por:</div>
+        <div class="signature-line" style="width: 250px;"></div>
+        <!--div style="text-align: center; font-size: 10px; margin-top: 5px;">Nome e Assinatura</div-->
     </div>
+
+    <div style="float: right; width: 40%; text-align: left;">
+        <div class="signature-label">Verificado por:</div>
+        <div class="signature-line" style="width: 250px; margin-left: auto;"></div>
+        <!--div style="text-align: center; font-size: 10px; margin-top: 5px;">Nome e Assinatura</div-->
+    </div>
+
+    <div style="clear: both;"></div>
+</div>
+
+<!-- Rodapé da página -->
+<div class="page-number" style="position: absolute; bottom: 20px; right: 20px;">
+    Página final
+</div>
 
     <!-- Número da página no rodapé -->
     <div class="page-number"></div>
