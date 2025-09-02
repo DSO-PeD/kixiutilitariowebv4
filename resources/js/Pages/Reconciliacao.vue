@@ -239,7 +239,7 @@
             </div>
 
             <!-- Cards de métricas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-5">
                 <!-- Card 1 - Total Montante Reembolsos -->
                 <div
                     class="flex items-center p-4 bg-gradient-to-r from-green-50 to-yellow-50 rounded-lg border border-green-100 shadow-sm hover:shadow-md transition-all">
@@ -277,120 +277,27 @@
 
                 </div>
 
+
+                  <div
+                    class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-50 rounded-lg border border-purple-100 shadow-sm hover:shadow-md transition-all">
+                    <div class="bg-purple-100/80 p-2 rounded-full mr-4">
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6 text-purple-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                                </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-500 font-medium">TOTAL DE MONTANTE DE OPERAÇÕES REALIZADAS VIA PAGAMENTO POR REFERÊNCIA</p>
+                        <p class="text-xl font-bold text-purple-700">{{ formatCurrency(totalMontantePGREF) }} AKZ
+                        </p>
+                    </div>
+
+                </div>
                 <!-- Adicione mais cards conforme necessário -->
             </div>
 
-          <!--  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-   Card de Reembolsos
-    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-        <div class="flex items-start justify-between mb-5">
-            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
-                <div class="p-2 bg-green-50 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="h-6 w-6 text-green-600">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                    </svg>
-                </div>
-                <span>Total de Montante de Reembolsos<br><span class="text-sm font-normal text-gray-500">(Principal + Juros)</span></span>
-            </h3>
-            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">Detalhe</span>
-        </div>
 
-        <div class="space-y-4">
-            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                    <div class="p-1.5 bg-blue-100 rounded-full">
-                        <i class="fas fa-file-export text-blue-500 text-sm"></i>
-                    </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Registados</span>
-                    </div>
-                </div>
-                <span class="text-base font-bold text-blue-700">{{ formatCurrency(totalMontanteRegistado) }} <span class="text-sm font-normal">AKZ</span></span>
-            </div>
-
-            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                    <div class="p-1.5 bg-green-100 rounded-full">
-                        <i class="fas fa-clipboard-check text-green-600 text-sm"></i>
-                    </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Refletidos</span>
-                        <p class="text-xs text-gray-500 mt-1">Valores existentes no banco validados pelo DCF</p>
-                    </div>
-                </div>
-                <span class="text-base font-bold text-green-700">{{ formatCurrency(totalMontanteReflete) }} <span class="text-sm font-normal">AKZ</span></span>
-            </div>
-
-            <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                    <div class="p-1.5 bg-red-100 rounded-full">
-                        <i class="fas fa-thumbs-down text-red-600 text-sm"></i>
-                    </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Lançamentos Irregulares</span>
-                    </div>
-                </div>
-                <span class="text-base font-bold text-red-700">{{ formatCurrency(totalMontanteInregulares) }} <span class="text-sm font-normal">AKZ</span></span>
-            </div>
-        </div>
-    </div>
-
-    Card de Poupanças
-    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-        <div class="flex items-start justify-between mb-5">
-            <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
-                <div class="p-2 bg-cyan-50 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <span>Total de Montante de Poupanças<br><span class="text-sm font-normal text-gray-500">Depósitos e Aplicações</span></span>
-            </h3>
-            <span class="text-xs px-2 py-1 bg-cyan-100 text-cyan-800 rounded-full font-medium">Detalhe</span>
-        </div>
-
-        <div class="space-y-4">
-            <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                    <div class="p-1.5 bg-blue-100 rounded-full">
-                        <i class="fas fa-file-export text-blue-500 text-sm"></i>
-                    </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Registados</span>
-                    </div>
-                </div>
-                <span class="text-base font-bold text-cyan-700">{{ formatCurrency(totalMontantePoupancaRegistado) }} <span class="text-sm font-normal">AKZ</span></span>
-            </div>
-
-            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                    <div class="p-1.5 bg-green-100 rounded-full">
-                        <i class="fas fa-clipboard-check text-green-600 text-sm"></i>
-                    </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Refletidos</span>
-                        <p class="text-xs text-gray-500 mt-1">Valores existentes no banco validados pelo DCF</p>
-                    </div>
-                </div>
-                <span class="text-base font-bold text-cyan-700">{{ totalMontantePoupancaReflete }} <span class="text-sm font-normal">AKZ</span></span>
-            </div>
-
-            <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                <div class="flex items-center gap-2">
-                    <div class="p-1.5 bg-red-100 rounded-full">
-                        <i class="fas fa-thumbs-down text-red-600 text-sm"></i>
-                    </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Lançamentos Irregulares</span>
-                    </div>
-                </div>
-                <span class="text-base font-bold text-red-700">{{ formatCurrency(totalMontantePoupancaInregulares) }} <span class="text-sm font-normal">AKZ</span></span>
-            </div>
-        </div>
-    </div>
-</div>-->
         </div>
 
         <br />
@@ -568,11 +475,9 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                     data-label="Produto">
                                     <div class="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-                                        </svg>
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                    </svg>
 
                                         Produto
                                     </div>
@@ -589,16 +494,36 @@
                                         Montante
                                     </div>
                                 </th>
-                                <th class="w-100 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div class="flex items-center gap-1">
+                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
+                                    </svg>
+
+                                    Voucher Dia
+                                    </div>
+
+                                </th>
+                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+                                </svg>
+
+                                    Voucher Transacao
+                                </div>
+
+                            </th>
+                                 <th class="w-100 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                     data-label="Forma de Pagamento">
                                     <div class="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
-                                        </svg>
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v7.5m2.25-6.466a9.016 9.016 0 0 0-3.461-.203c-.536.072-.974.478-1.021 1.017a4.559 4.559 0 0 0-.018.402c0 .464.336.844.775.994l2.95 1.012c.44.15.775.53.775.994 0 .136-.006.27-.018.402-.047.539-.485.945-1.021 1.017a9.077 9.077 0 0 1-3.461-.203M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                    </svg>
 
-                                        Forma de Pagamento
+                                        Pagamento
                                     </div>
                                 </th>
                                 <th class="w-10 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -671,6 +596,44 @@
                                 <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
                                     {{ formatCurrency(comprovativo.montante) }}
                                 </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex items-center">
+                                        <span>{{ comprovativo.voucher || '' }}</span>
+
+                                        <!-- Botão de alerta para Pagamento por Referência sem voucher -->
+                                        <button
+                                        v-if="isPagamentoReferenciaSemVoucher(comprovativo)"
+                                        @click="abrirModalEdicaoVoucher(comprovativo)"
+
+                                        class="btn btn-action btn-alertvoucher ml-2 flex items-center gap-1 mx-auto"
+                                        title="Voucher em falta - Pagamento por Referência"
+                                        >
+                                    <i class="fas fa-exclamation"></i>
+
+                                        add. voucher +
+                                        </button>
+
+                                        <!-- Botão normal de edição para outros casos (opcional) -->
+                                        <button
+                                        v-else-if="$page.props.user && $page.props.user.comprovativo_editar_voucher"
+                                        @click="abrirModalEdicaoVoucher(comprovativo)"
+                                        class="ml-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                        title="Editar voucher"
+                                        >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                        </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+
+                                <span>{{ comprovativo.vouchertransacao || '-' }}</span>
+
+
+
+                            </td>
+
                                 <td class="px-4 py-4 whitespace-nowrap text-sm ">
                                     {{ comprovativo.FormaPagoN }}
                                 </td>
@@ -748,6 +711,15 @@
 
     <ModalComprovativoDetalhe :isOpen="showModalDetalhe" @close="showModalDetalhe = false"
         :comprovativo="comprovativoDetalhe" @openReconciliation="abrirModalReconciliacao(comprovativoDetalhe)" />
+      <!-- Adicione este modal após os outros modais no template -->
+<ModalEdicaoVoucher
+  :show="showModalVoucherEdicao"
+  @close="fecharModalEdicaoVoucher"
+  @save="salvarEdicaoVoucher"
+  :comprovativo="comprovativoSelecionadoVoucher"
+  :novoVoucher="novoVoucher"
+/>
+
 
 
 </template>
@@ -764,6 +736,7 @@ import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vu
 import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
 import ModalReconcialiacao from './Layouts/components/ComprovativosComponents/ModalReconcialiacao.vue'
 import ModalComprovativoDetalhe from './Layouts/components/ComprovativosComponents/ModalComprovativoDetalhe.vue'
+import ModalEdicaoVoucher from './Layouts/components/ComprovativosComponents/ModalEdicaoVoucher.vue'
 
 
 
@@ -783,6 +756,7 @@ const props = defineProps({
     total: Number,
     montantetotal: Number,
     totalMontantePoupanca: Number,
+    totalMontantePGREF:Number,
     bases: Array,
     produtos: Array,
     bancos: Array,
@@ -805,6 +779,7 @@ const props = defineProps({
     totalMontantePoupancaReflete:Number,
     totalMontanteInregulares:Number,
     totalMontantePoupancaInregulares:Number,
+    formaspagamentos: Array
 })
 
 // Estados
@@ -813,6 +788,53 @@ const showModalData = ref(false)
 const showModalEliminar = ref(false)
 const showModalReconcialiacao = ref(false)
 const comprovativoSelecionado = ref(null)
+
+const showModalVoucherEdicao = ref(false)
+const novoVoucher = ref('')
+const comprovativoSelecionadoVoucher = ref(null)
+
+// Método para verificar se é Pagamento por Referência sem voucher
+const isPagamentoReferenciaSemVoucher = (comprovativo) => {
+  const formaPagamento = comprovativo.FormaPagoN || comprovativo.forma_pagamento || '';
+  const voucher = comprovativo.voucher || '';
+
+  return formaPagamento.includes('Referência') && (!voucher || voucher.trim() === '' || voucher === 'null');
+}
+
+// Adicione estes métodos:
+const abrirModalEdicaoVoucher = (comprovativo) => {
+  comprovativoSelecionadoVoucher.value = { ...comprovativo }
+  novoVoucher.value = comprovativo.voucher || ''
+  showModalVoucherEdicao.value = true
+}
+
+const fecharModalEdicaoVoucher = () => {
+  showModalVoucherEdicao.value = false
+  comprovativoSelecionadoVoucher.value = null
+  novoVoucher.value = ''
+}
+
+const salvarEdicaoVoucher = async (dados) => {
+
+
+  try {
+    await router.post('/alterarvoucherrec', {
+      id: dados.id,
+      novo_voucher: dados.novoVoucher
+    }, {
+      preserveScroll: true,
+      onSuccess: () => {
+        fecharModalEdicaoVoucher()
+        router.reload({ only: ['lista_comprovativo'] })
+      },
+      onError: (errors) => {
+        console.error('Erro ao editar voucher:', errors)
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao editar voucher:', error)
+  }
+}
 
 // Configuração da paginação
 const perPage = ref(100);
@@ -1053,7 +1075,8 @@ const exportarParaExcel = () => {
                     'LNR': comprovativo.lnr || '-',
                     'Cliente': comprovativo.cliente || '-',
                     'Produto': comprovativo.metodologia || '-',
-                    'Voucher': comprovativo.voucher || '-',
+                    'Voucher Dia': comprovativo.voucher || '-',
+                    'Voucher Transacao': comprovativo.vouchertransacao || '-',
                     'Forma de Pagamento': comprovativo.FormaPagoN || '-',
                     'Descrição': comprovativo.descricao || '-',
                     'Banco': comprovativo.banco || '-',
@@ -1311,8 +1334,12 @@ watch(() => props.dataFimInput, (newVal) => {
     @apply px-3 py-1.5 rounded-md text-sm font-medium transition-colors;
 }
 
+
 .btn-validate {
-    @apply bg-stone-50 text-stone-600 hover:bg-stone-500 border border-stone-200;
+    @apply bg-blue-50 text-blue-600 hover:bg-blue-300 border border-blue-200;
+}
+.btn-alertvoucher{
+    @apply bg-orange-50 text-orange-600 hover:bg-orange-300 border border-orange-200;
 }
 
 .btn-detail {

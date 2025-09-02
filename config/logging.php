@@ -129,10 +129,10 @@ return [
 
     ],
     'slow_queries' => [
-        'driver' => 'daily',
+        'driver' => 'single',
         'path' => storage_path('logs/slow_queries.log'),
-        'level' => 'warning',
-        'days' => 14,
+        'level' => 'warning'
+
     ],
 
 ];

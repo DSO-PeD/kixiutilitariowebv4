@@ -19,6 +19,7 @@ class ComprovativoModel extends Model
         'PoCodigo',
         'BuDadoOrigem',
         'BuReferencia',
+        'BuReferenciaTransacao',
         'BuMontante',
         'BuData',
         'BuContaBancaria',
@@ -88,17 +89,14 @@ class ComprovativoModel extends Model
            return $statusEliminacao;
        }*/
 
-    public static function verificarSeBorderouxExiste($BuReferencia, $BuData, $BaCodigo, $Eliminado)
+    public static function verificarSeBorderouxExiste($BuReferencia,  $Eliminado)
     {
 
         $comprovativo_existe = false;
 
         $c = DB::table('comprovativos')
-            ->where('BuReferencia', '=', $BuReferencia)
-            ->whereNotNull('BuReferencia')
-            //->where('BuData', '=', $BuData)
-            //->where('BaCodigo', '=', $BaCodigo)
-            ->where('Eliminado', '=', $Eliminado)
+            ->where('BuReferencia', $BuReferencia)
+            ->where('Eliminado', $Eliminado)
             ->first();
         return $c;
     }

@@ -28,10 +28,12 @@ class PgtRefNotificacaoController extends Controller
 
             $apenasNumeros = preg_replace('/\D/', '', $item['refPagamento']);
             $referenciaKIXI = str_pad($apenasNumeros, 9, '0', STR_PAD_LEFT);
-            $codigo_voucher = 'KXU.PGTREF' . $referenciaKIXI;
+            $dataFormatadaREF= Carbon::parse($item['dataTransaccaoCliente'])->format('dmY');
+
             try {
                 $ExisteReferencia = TKxExtratoModel::where('referenciapagamento', '=', $referenciaKIXI)->first();
-
+                 $codigo_voucher = 'PREF'.$dataFormatadaREF.'/'.$ExisteReferencia->Lnr;
+                  $codigo_voucher_dia = 'BMA'.$dataFormatadaREF;
                 if ($ExisteReferencia) {
                     $registro = PgtRefNotificacaoModel::create([
                         'idTransacao' => $item['idTransacao'],
@@ -57,7 +59,8 @@ class PgtRefNotificacaoController extends Controller
                         'FormaPago' => 8,
                         'PoCodigo' => 'DJA',
                         'BuDadoOrigem' => $ExisteReferencia->Lnr,
-                        'BuReferencia' => $codigo_voucher,
+                        'BuReferencia' => $codigo_voucher_dia,
+                        'BuReferenciaTransacao' => $codigo_voucher,
                         'BuMontante' => $item['montantePago'],
                         'BuData' => $dataFormatadaBuData,
                         'BuContaBancaria' => '2972939510001',
@@ -74,7 +77,8 @@ class PgtRefNotificacaoController extends Controller
                         $insertReco = CpvtReconciliacaoModel::create([
                             'datareconciliacao' => now(),
                             'CodigoConta' => 79,
-                            'voucher' => $codigo_voucher,
+                            'voucher' => $codigo_voucher_dia,
+                            'vouchertransacao' => $codigo_voucher,
                             'descricao' => 'Inserção Automática',
                             'observacao' => 'Comprovativo com  Montante pago por Referencia',
                             'idcomprovativo' => $insert->id,

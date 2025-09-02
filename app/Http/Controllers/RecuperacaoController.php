@@ -107,7 +107,7 @@ class RecuperacaoController extends Controller
 
         $total = $lista_recuperacoes->count();
         $totalMontante = $lista_recuperacoes->sum('ReBuMontante');
-         $totalMontanteApagar = $lista_recuperacoes->sum('valor_a_receber');
+        $totalMontanteApagar = $lista_recuperacoes->sum('valor_a_receber');
 
 
 
@@ -204,7 +204,7 @@ class RecuperacaoController extends Controller
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
-            'montanteapagar'=>$totalMontanteApagar,
+            'montanteapagar' => $totalMontanteApagar,
             'listacomissoes_taxas' => $listacomissoes_taxas,
             'id_estados_operacionais' => $id_estados_operacionais,
             'id_estados_anterior_que_opera' => $id_estados_anterior_que_opera,
@@ -221,10 +221,12 @@ class RecuperacaoController extends Controller
         $dias_passado = $this->diasDatas($request->txtDataLPF, $dataFinal);
         $estado_icial = 1;
 
+        /*
+        DJA desabilitei esta opção porque o processo será controlado pela Coleta e RISCO
         if ($dias_passado > 30) {
 
-            $estado_icial = 4;
-        }
+             $estado_icial = 4;
+         }*/
 
         $loan_number = $request->Loan;
 
@@ -240,9 +242,13 @@ class RecuperacaoController extends Controller
 
         $ComissaoMaturidade = ComissoesMaturidadeModel::where('id', '=', $request->selectMaturidadeCredito)->first();
 
-        $comissao_bruta = $money * ($ComissaoMaturidade->taxa_comissao_percent / 100);
-        $desconto_IRT = $comissao_bruta * (6.5 / 100);
-        $valor_a_receber = $comissao_bruta - $desconto_IRT;
+        /*  $comissao_bruta = $money * ($ComissaoMaturidade->taxa_comissao_percent / 100);
+          $desconto_IRT = $comissao_bruta * (6.5 / 100);
+          $valor_a_receber = $comissao_bruta - $desconto_IRT;*/
+
+        $comissao_bruta = bcmul((string) $money, bcdiv((string) $ComissaoMaturidade->taxa_comissao_percent, "100", 10), 10);
+        $desconto_IRT = bcmul($comissao_bruta, bcdiv("6.5", "100", 10), 10);
+        $valor_a_receber = bcsub($comissao_bruta, $desconto_IRT, 10);
 
 
         $result_recuperacao = RecuperacaoModel::verificarSeBorderouxExisteNaRecuperacao($idComprovativo);

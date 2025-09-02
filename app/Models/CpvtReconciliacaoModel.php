@@ -15,6 +15,7 @@ class CpvtReconciliacaoModel extends Model
         'datareconciliacao',
         'CodigoConta',
         'voucher',
+        'vouchertransacao',
         'descricao',
         'observacao',
         'idcomprovativo',

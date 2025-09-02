@@ -36,7 +36,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
 
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
-
+    Route::post('/alterardata', [ComprovativosController::class, 'editarDataRegistro'])->name('editar-dataregistro-comprovativo');
+    Route::post('/alterarvoucher', [ComprovativosController::class, 'editarVoucher'])->name('editar-voucher-comprovativo');
+    Route::post('/alterarvoucherrec', [CpvtReconciliacaoController::class, 'editarVoucherRec'])->name('editar-voucherrec-comprovativo');
 
     Route::post('/guardar-extrato', [TKxExtratoController::class, 'guardarDataExtrato']);
     Route::post('/comprovativos/{id}/finalizaraeliminacao', [ComprovativosController::class, 'finalizaraeliminacao']);
@@ -67,11 +69,7 @@ Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP
 Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
-Route::get('/test-telescope', function() {
-    return class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)
-        ? "Telescope está instalado"
-        : "Telescope NÃO está instalado";
-});
+
 
 
 Route::get('/test-redis', function() {

@@ -12,17 +12,19 @@ use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
 use App\Models\TKxClTipopagamentoModel;
-use App\Models\TKxUsUtilizadorModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
-use function Pest\Laravel\get;
 
+
+
+use Illuminate\Support\Facades\Log;
+
+
+use Exception;
 class ComprovativosController extends Controller
 {
     public function viewComprovativos(Request $request)
@@ -157,6 +159,7 @@ class ComprovativosController extends Controller
         $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
         $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereNotIn('idestado', [1, 8])->sum('BuMontante');
         $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereNotIn('idestado', [1, 8])->sum('BuMontante');
+        $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');
 
         collect($lista_comprovativo)->max('CiFecha');
         collect($lista_comprovativo)->min('CiFecha');
@@ -174,9 +177,9 @@ class ComprovativosController extends Controller
         ];
         // dd($lista_comprovativo );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
-            $vcr_view="-";
+            $vcr_view = "-";
 
-           if($item->voucher == "" || $item->voucher == null) {
+            if ($item->voucher == "" || $item->voucher == null) {
                 $vcr_view = $item->BuReferencia;
             } else {
                 $vcr_view = $item->voucher;
@@ -198,6 +201,7 @@ class ComprovativosController extends Controller
                 'banco' => $item->BaSigla,
                 'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
+                'referenciatransacao' => $item->BuReferenciaTransacao,
                 'voucher' => $vcr_view,
                 'FormaPagoN' => $item->FormaPagoN,
                 'descricao' => $item->descricao,
@@ -251,6 +255,7 @@ class ComprovativosController extends Controller
             'totalMontantePoupancaReflete' => $totalMontantePoupancaReflete,
             'totalMontanteInregulares' => $totalMontanteInregulares,
             'totalMontantePoupancaInregulares' => $totalMontantePoupancaInregulares,
+            'totalMontantePGREF' => $totalMontantePGREF,
             'formaspagamentos' => $lista_das_formaspagamento,
             //'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
             'lista_pendentes' => $lista_pendentes,
@@ -262,198 +267,180 @@ class ComprovativosController extends Controller
     }
 
 
-    public function guardar(Request $request)
+     public function guardar(Request $request)
     {
-        $authenticatedUser = Auth::user();
+        try {
+            $authenticatedUser = Auth::user();
+            $cadastrarTipo = $request->ls;
+            $montante = $request->txtMontante;
 
-        $cadastrar_o_que = $request->ls;
-        $hoje = date('Y-m-d H:i:s');
-        $dataFinal = date('Y-m-d');
-        $Mensagem = "";
-        $pathArquivo = "";
+            // Validações iniciais
+           /* $validator = Validator::make($request->all(), [
+                'anexo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+                'txtMontante' => 'required|numeric|min:0',
+                'calDataBorderoux' => 'required|date_format:d/m/Y',
+                'txtVoucher' => $cadastrarTipo === 'Loan' ? 'required' : 'nullable'
+            ]);
 
-        $dataFormatadaBuData = Carbon::createFromFormat('d/m/Y', $request->calDataBorderoux)->format('Y-m-d');
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }*/
 
-        $dias_passado = $this->diasDatas($dataFormatadaBuData, $dataFinal);
+            // Verificar se borderoux já existe
+            /*$borderouxExistente = ComprovativoModel::verificarSeBorderouxExiste($request->txtVoucher, 0);
 
+            if ($borderouxExistente) {
+                $mensagem = "Ups! Já existe um comprovativo com o voucher indicado: [Loan Number: {$borderouxExistente->BuDadoOrigem} | Voucher: {$borderouxExistente->BuReferencia} | Montante: {$borderouxExistente->BuMontante} | Data: {$borderouxExistente->BuData}] => Contacte a DCF para esclarecer.";
+                return redirect()->back()->with('error', $mensagem);
+            }*/
 
-        $NumeroDiaNecessario = 90;//$request->DiasMaximoRegistroComprovativo;
-
-        $loan_number_v = "";
-
-        $verificar_ = ComprovativoModel::verificarSeBorderouxExiste($request->txtVoucher, $request->calDataBorderoux, $request->selectBanco, 0);
-
-        if ($verificar_) {
-
-            $Mensagem = " Ups!, Já existe um comprovativo com o voucher indicado: [   Loan Number: " . $verificar_->BuDadoOrigem . " | Voucher: " . $verificar_->BuReferencia . " | Montante: " . $verificar_->BuMontante . " | Data do Borderoux: " . $verificar_->BuData . " ] => Por favor contactar a DCF para  esclarecer esta situação.";
-
-            return redirect()
-                ->back()
-                ->with('error', $Mensagem);
-        } else {
-            if (false) {
-                return redirect()
-                    ->back()
-                    ->with('error', 'Ups!,  Comprovativo Muito antigo, excedeu o número de dias permitido  para ser cadastrado!, infelizmente não foi cadastrado.');
-            } else {
-
-                $request->validate([
-
-                    'anexo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-                ]);
-
-                $estadoRegistado = 1;
-                $comprovativonome = "";
-                if ($request->hasFile('anexo')) {
-                    $pathArquivo = $request->file('anexo')->store('comprovativos', 'public');
-
-                    // Corrigido: Obtém apenas o nome do arquivo salvo
-                    $comprovativonome = basename($pathArquivo);
-                    // Salve $path no banco de dados
-                }
-                $_conta = 0;
-
-                if ($cadastrar_o_que == "Loan") {
-
-                    $siglabase = $request->selectBase;
-                    $numeroLoanSanving = $request->txtNumeroLoanSaving;
-                    $produto = $request->selectProdutoLoan;
-                    $infoadicional = $request->txtInfoAdicional;
-                    $formapgt = $request->selectFormaPagamento;
-                    $telefone = $request->telefone;
-
-                    $tipotransacao = "L04";
-                    $banco = $request->banco;
-
-                    $money = $request->txtMontante;
-                    $dataBorderoux = $dataFormatadaBuData;
-                    $voucher = $request->txtVoucher;
-                    $contaBancaria = $request->conta;
-
-                    $loan_number = $siglabase;
-                    $loan_number .= "/";
-                    $loan_number .= $numeroLoanSanving;
-
-                    // $_verifica_esta_aplicado_no_extrato = TKxextrato::verificarSeExtratoExiste($loan_number, $siglabase);
-                    // dd($contaBancaria);
-                    //  if (true) {
-                    if ($formapgt == 14) {
-                        $estadoRegistado = 8;
-                        $_conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
-                        $contaBancaria = $_conta->ContaBacaria;
-                        $voucher = $request->txtVoucher;
-                    }
-
-
-
-
-                    $insert = ComprovativoModel::create([
-                        'CiFecha' => now(),
-                        'UtCodigo' => $authenticatedUser->UtCodigo,
-                        'BaCodigo' => $banco,
-                        'TtCodigo' => $tipotransacao,
-                        'FormaPago' => $formapgt,
-                        'PoCodigo' => $produto,
-                        'BuDadoOrigem' => $loan_number,
-                        'BuReferencia' => $voucher,
-                        'BuMontante' => $money,
-                        'BuData' => $dataFormatadaBuData,
-                        'BuContaBancaria' => $contaBancaria,
-                        'Eliminado' => 0,
-                        'idestado' => $estadoRegistado,
-                        'BaseOperacao' => $siglabase,
-                        'infoadicional' => $infoadicional,
-                        'filecomprovativo' => $comprovativonome,
-                        'telefonecliente' => $telefone
-                    ]);
-
-
-                    //} else {
-
-                    // $Mensagem = "Comprovativo não foi cadastrado!, verificamos que não existe qualquer aplicação no Kixi Utiltário, do crédito: [" . $loan_number . "],  por favor faça primeiro  a aplicação em < Cálculo de Desembolso > depois tenta novamente cadastrar este comprovativo.";
-                    //   return redirect()->back()->with('error', $Mensagem);
-                    // }
-
-                } else {
-
-                    $formapgt = $request->selectFormaPagamento;
-                    $siglabase = $request->selectBase;
-                    $siglaIndividualgrupal = $request->selectGrupoIndividual;
-                    $siglaIndividualgrupal .= "/";
-                    $numeroLoanSanving = $request->txtNumeroLoanSaving;
-                    $produto = $request->selectProdutoSaving;
-                    $tipotransacao = "S01";
-                    $banco = $request->banco;
-                    $money = str_replace('.', '', $request->txtMontante);
-                    $money = str_replace(",", ".", $money);
-                    $dataBorderoux = $dataFormatadaBuData;
-                    $voucher = null;
-                    $contaBancaria = $request->conta;
-                    $infoadicional = $request->txtInfoAdicional;
-                    $telefone = $request->telefone;
-                    $loan_number = $siglabase;
-                    $loan_number .= "/";
-                    $loan_number .= $siglaIndividualgrupal;
-                    $loan_number .= $numeroLoanSanving;
-
-
-                    if ($formapgt == 14) {
-                        $estadoRegistado = 8;
-                        $_conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
-                        $contaBancaria = $_conta->ContaBacaria;
-                        $voucher = $request->txtVoucher;
-                    }
-
-
-                    // OUTRA FORMA DE CAPTURAR DADOS DO FORMULÁRIO E ARMAZENAR NA BASE DE DADOS
-                    $insert = ComprovativoModel::create([
-                        'CiFecha' => now(),
-                        'UtCodigo' => $authenticatedUser->UtCodigo,
-                        'BaCodigo' => $banco,
-                        'TtCodigo' => $tipotransacao,
-                        'FormaPago' => 1,
-                        'PoCodigo' => $produto,
-                        'BuDadoOrigem' => $loan_number,
-                        'BuReferencia' => $voucher,
-                        'BuMontante' => $money,
-                        'BuData' => $dataFormatadaBuData,
-                        'BuContaBancaria' => $contaBancaria,
-                        'Eliminado' => 0,
-                        'idestado' => $estadoRegistado,
-                        'BaseOperacao' => $siglabase,
-                        'infoadicional' => $infoadicional,
-                        'telefonecliente' => $telefone,
-                        'filecomprovativo' => $comprovativonome,
-
-                    ]);
-                }
-
-                if ($insert) {
-
-
-                    if ($formapgt == 14) {
-                        $voucher = $request->txtVoucher;
-                        // Esta inserção serve para reconciliação automática dos comprovativos depósitados, um processo acertado com a DCF
-                        $insertReco = CpvtReconciliacaoModel::create([
-                            'datareconciliacao' => now(),
-                            'CodigoConta' => $request->conta,
-                            'voucher' => $voucher,
-                            'descricao' => 'Inserção Automática',
-                            'observacao' => 'Comprovativo com  Montante Despósitado',
-                            'idcomprovativo' => $insert->id,
-                            'UtCodigo' => 'dcf',
-                            'idestado' => $estadoRegistado
-                        ]);
-                    }
-                    return Redirect::route('comprovativos')
-                        ->with('success', 'Dados guardados com sucesso!');
-                } else {
-                    return Redirect::back()
-                        ->with('error', 'Ups!, algo correu errado ao cadastrar comprovativo!');
-                }
+            // Validar montante máximo
+            if ($montante > 7000000) {
+                $montanteFormatado = number_format($montante, 2, ',', '.');
+                $mensagem = "Ups! O montante excede 7.000.000,00: [MONTANTE: {$montanteFormatado}] => Comprovativo não cadastrado.";
+                return redirect()->back()->with('error', $mensagem);
             }
+
+            // Processar arquivo
+            $nomeArquivo = null;
+            if ($request->hasFile('anexo')) {
+                $pathArquivo = $request->file('anexo')->store('comprovativos', 'public');
+                $nomeArquivo = basename($pathArquivo);
+            }
+
+            // Format data
+            $dataBorderoux = Carbon::createFromFormat('d/m/Y', $request->calDataBorderoux)->format('Y-m-d');
+
+            // Preparar dados comuns
+            $dadosComuns = [
+                'CiFecha' => now(),
+                'UtCodigo' => $authenticatedUser->UtCodigo,
+                'BuMontante' => $montante,
+                'BuData' => $dataBorderoux,
+                'Eliminado' => 0,
+                'filecomprovativo' => $nomeArquivo,
+                'telefonecliente' => $request->telefone,
+                'infoadicional' => $request->txtInfoAdicional
+            ];
+
+            // Processar por tipo (Loan ou Saving)
+            if ($cadastrarTipo === "Loan") {
+                $dados = $this->processarLoan($request, $dadosComuns);
+            } else {
+                $dados = $this->processarSaving($request, $dadosComuns);
+            }
+
+            // Inserir no banco de dados
+            $comprovativo = ComprovativoModel::create($dados);
+
+            if (!$comprovativo) {
+                throw new Exception('Falha ao inserir comprovativo');
+            }
+
+            // Processar reconciliação se necessário
+            if ($request->selectFormaPagamento == 14) {
+                $this->processarReconciliacao($request, $comprovativo->id);
+            }
+
+            return redirect()->route('comprovativos')
+                            ->with('success', 'Dados guardados com sucesso!');
+
+        } catch (Exception $e) {
+            Log::error('Erro ao guardar comprovativo: ' . $e->getMessage());
+            return redirect()->back()
+                            ->with('error', 'Erro ao processar comprovativo: ' . $e->getMessage())
+                            ->withInput();
         }
     }
+
+    /**
+     * Processar dados para Loan
+     */
+    private function processarLoan(Request $request, array $dadosBase)
+    {
+        $formaPagamento = $request->selectFormaPagamento;
+        $estado = $formaPagamento == 14 ? 8 : 1;
+
+        $loanNumber = $request->selectBase . '/' . $request->txtNumeroLoanSaving;
+
+        $contaBancaria = $request->conta;
+        $voucher = $request->txtVoucher;
+
+        if ($formaPagamento == 14) {
+            $conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
+            if ($conta) {
+                $contaBancaria = $conta->ContaBacaria;
+            }
+        }
+
+        return array_merge($dadosBase, [
+            'BaCodigo' => $request->banco,
+            'TtCodigo' => 'L04',
+            'FormaPago' => $formaPagamento,
+            'PoCodigo' => $request->selectProdutoLoan,
+            'BuDadoOrigem' => $loanNumber,
+            'BuReferencia' => $voucher,
+            'BuContaBancaria' => $contaBancaria,
+            'idestado' => $estado,
+            'BaseOperacao' => $request->selectBase
+        ]);
+    }
+
+    /**
+     * Processar dados para Saving
+     */
+    private function processarSaving(Request $request, array $dadosBase)
+    {
+        $formaPagamento = $request->selectFormaPagamento;
+        $estado = $formaPagamento == 14 ? 8 : 1;
+
+        $loanNumber = $request->selectBase . '/' .
+                     $request->selectGrupoIndividual . '/' .
+                     $request->txtNumeroLoanSaving;
+
+        $contaBancaria = $request->conta;
+        $voucher = null;
+
+        if ($formaPagamento == 14) {
+            $conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
+            if ($conta) {
+                $contaBancaria = $conta->ContaBacaria;
+                $voucher = $request->txtVoucher;
+            }
+        }
+
+        return array_merge($dadosBase, [
+            'BaCodigo' => $request->banco,
+            'TtCodigo' => 'S01',
+            'FormaPago' => $formaPagamento,
+            'PoCodigo' => $request->selectProdutoSaving,
+            'BuDadoOrigem' => $loanNumber,
+            'BuReferencia' => $voucher,
+            'BuContaBancaria' => $contaBancaria,
+            'idestado' => $estado,
+            'BaseOperacao' => $request->selectBase
+        ]);
+    }
+
+    /**
+     * Processar reconciliação
+     */
+    private function processarReconciliacao(Request $request, $idComprovativo)
+    {
+        return CpvtReconciliacaoModel::create([
+            'datareconciliacao' => now(),
+            'CodigoConta' => $request->conta,
+            'voucher' => $request->txtVoucher,
+            'descricao' => 'Inserção Automática',
+            'observacao' => 'Comprovativo com Montante Depositado',
+            'idcomprovativo' => $idComprovativo,
+            'UtCodigo' => 'dcf',
+            'idestado' => 8
+        ]);
+    }
+
+
+
     public function editarMontante(Request $request)
     {
 
@@ -471,6 +458,48 @@ class ComprovativosController extends Controller
         ]);
 
         return back()->with('success', 'Montante atualizado com sucesso!');
+    }
+    public function editarDataRegistro(Request $request)
+    {
+
+        $request->validate([
+            'id' => 'required|exists:comprovativos,id'
+
+        ]);
+
+        $comprovativo = ComprovativoModel::findOrFail($request->id);
+
+
+        // Atualizar montante
+        $comprovativo->update([
+            'updated_at' => $request->nova_data
+        ]);
+
+        return back()->with('success', 'Data actualizada com sucesso');
+    }
+    public function editarVoucher(Request $request)
+    {
+
+        $request->validate([
+            'id' => 'required|exists:comprovativos,id'
+
+        ]);
+
+        $comprovativo = ComprovativoModel::findOrFail($request->id);
+
+
+        // Atualizar voucher
+        $comprovativo->update([
+            'BuReferencia' => $request->novoVoucher
+        ]);
+
+        $reconciliacao = CpvtReconciliacaoModel::where('idcomprovativo', '=', $request->id);
+
+        $reconciliacao->update([
+            'voucher' => $request->novoVoucher
+        ]);
+
+        return back()->with('success', 'Data actualizada com sucesso');
     }
     public function finalizaraeliminacao(Request $request)
     {

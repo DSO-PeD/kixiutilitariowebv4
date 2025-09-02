@@ -244,6 +244,87 @@
             font-size: 9px;
             color: #666666;
         }
+
+        /* Estilo para a nova coluna de numeração */
+        .col-num {
+            width: 30px;
+            text-align: center;
+        }
+
+        /* Estilos para a página de resumo por BaseOperacao */
+        .base-operacao-header {
+            background-color: #e8f4f8;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 15px 0 10px 0;
+            font-weight: bold;
+            color: #005B3B;
+            font-size: 12px;
+            border-left: 4px solid #005B3B;
+        }
+
+        .base-total-row {
+            background-color: #f0f8ff;
+            font-weight: bold;
+        }
+
+        .recuperador-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .foto-perfil {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+        }
+
+        .recuperador-info {
+            flex: 1;
+        }
+
+        .recuperador-nome {
+            font-size: 13px;
+            font-weight: bold;
+            color: #005B3B;
+            margin-bottom: 5px;
+        }
+
+        .recuperador-banco {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-banco {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+        }
+
+        .dados-bancarios {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #555;
+        }
+
+        .separador {
+            color: #999;
+        }
+
+        .conta, .iban {
+            font-family: 'Courier New', monospace;
+        }
     </style>
 </head>
 
@@ -318,72 +399,9 @@
             </div>
             </td>
         </tr>
-
-
     </table>
-
-
 </div>
 
-<style type="text/css">
-    .recuperador-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-        padding: 10px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-    }
-
-    .foto-perfil {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #e0e0e0;
-    }
-
-    .recuperador-info {
-        flex: 1;
-    }
-
-    .recuperador-nome {
-        font-size: 13px;
-        font-weight: bold;
-        color: #005B3B;
-        margin-bottom: 5px;
-    }
-
-    .recuperador-banco {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .logo-banco {
-        width: 25px;
-        height: 25px;
-        object-fit: contain;
-    }
-
-    .dados-bancarios {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 11px;
-        color: #555;
-    }
-
-    .separador {
-        color: #999;
-    }
-
-    .conta, .iban {
-        font-family: 'Courier New', monospace;
-    }
-</style>
 @php
     $totalRecuperado = 0;
     $totalComissao = 0;
@@ -408,11 +426,9 @@
     $totalReceber2 = $totalReceber;
 @endphp
 
-
     <div class="section-note">
         <img src="imagens/back-128.png" class="small-icon">Dados da Recuperação<span style="float: right; font-size: 11px; color: #005B3B;">Total a Receber: {{ number_format($totalReceber2, 2, ',', '.') }}</span>
     </div>
-
 
     <table class="sub-table">
         <thead>
@@ -464,10 +480,11 @@
 
     <hr/>
     @endforeach
-<!-- Quebra de página para o resumo -->
+
+<!-- Quebra de página para o resumo geral -->
 <div style="page-break-before: always;"></div>
 
-<!-- Cabeçalho da página de resumo -->
+<!-- Cabeçalho da página de resumo geral -->
 <table class="comBordaSimples2" style="width:100%; margin-bottom: 20px;">
     <tr>
         <td rowspan="2"> <img src="imagens/logokx.jpg" alt="Kixi Crédito" style="width:111px; height:31px" /> </td>
@@ -494,13 +511,14 @@
 </table>
 
 <!-- Tabela Resumo de Recuperadores -->
-<div class="section-title" style="font-size: 16px">
-   <img src="imagens/imgsrecuperadores/GM.jpg" alt="RESUM" style="width:51px; height:51px;" />:::::::::::::::: RESUMO DE DEPAGAMENTO DOS RECUPERADORES
+<div class="section-title" style="font-size: 13px">
+   <!--img src="imagens/imgsrecuperadores/GM.jpg" alt="RESUM" style="width:30px; height:30px;" /-->::: RESUMO POR RECUPERADORES
 </div>
 
 <table class="data-table">
     <thead>
         <tr>
+            <th class="col-num">#</th>
             <th>Recuperador</th>
             <th class="text-right">Valor Recuperado</th>
             <th class="text-right">Comissão Bruta</th>
@@ -514,6 +532,7 @@
             $grandTotalComissao = 0;
             $grandTotalIrt = 0;
             $grandTotalReceber = 0;
+            $count = 1; // Inicializa o contador para a numeração sequencial
         @endphp
 
         @foreach ($recuperadores as $dd_r)
@@ -525,6 +544,7 @@
 
                 foreach ($Dados_Recuperador as $dd_recu) {
                     if ($dd_recu->id_recuperador == $dd_r->id) {
+                        // Usar floor para garantir que não haja arredondamento
                         $totalRecuperado += $dd_recu->ReBuMontante;
                         $totalComissao += $dd_recu->comissao_bruta;
                         $totalIrt += $dd_recu->desconto_IRT;
@@ -539,16 +559,272 @@
             @endphp
 
             <tr>
+                <td class="col-num">{{ $count++ }}</td>
                 <td>{{ $dd_r->nome_recuperador }}</td>
-                <td class="text-right">{{ number_format($totalRecuperado, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($totalComissao, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($totalIrt, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($totalReceber, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format(floor($totalRecuperado * 100) / 100, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format(floor($totalComissao * 100) / 100, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format(floor($totalIrt * 100) / 100, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format(floor($totalReceber * 100) / 100, 2, ',', '.') }}</td>
             </tr>
         @endforeach
 
         <!-- Linha de totais -->
         <tr class="total-row">
+            <td class="col-num"></td>
+            <td><strong>TOTAL GERAL</strong></td>
+            <td class="text-right"><strong>{{ number_format(floor($grandTotalRecuperado * 100) / 100, 2, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format(floor($grandTotalComissao * 100) / 100, 2, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format(floor($grandTotalIrt * 100) / 100, 2, ',', '.') }}</strong></td>
+            <td class="text-right"><strong>{{ number_format(floor($grandTotalReceber * 100) / 100, 2, ',', '.') }}</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Assinaturas alinhadas -->
+<div style="margin-top: 100px;">
+    <div style="float: left; width: 40%;">
+        <div class="signature-label">Aprovado por:</div>
+        <div class="signature-line" style="width: 250px;"></div>
+        <!--div style="text-align: center; font-size: 10px; margin-top: 5px;">Nome e Assinatura</div-->
+    </div>
+
+    <div style="float: right; width: 40%; text-align: left;">
+        <div class="signature-label">Verificado por:</div>
+        <div class="signature-line" style="width: 250px; margin-left: auto;"></div>
+        <!--div style="text-align: center; font-size: 10px; margin-top: 5px;">Nome e Assinatura</div-->
+    </div>
+
+    <div style="clear: both;"></div>
+</div>
+
+<!-- Quebra de página para o resumo por BaseOperacao -->
+<div style="page-break-before: always;"></div>
+
+<!-- Cabeçalho da página de resumo por BaseOperacao -->
+<table class="comBordaSimples2" style="width:100%; margin-bottom: 20px;">
+    <tr>
+        <td rowspan="2"> <img src="imagens/logokx.jpg" alt="Kixi Crédito" style="width:111px; height:31px" /> </td>
+        <td rowspan="2" style="width: 550px;">
+            <div class='rounded2'>
+                <table style="width:100%;" class="comBordaSimples3">
+                    <tr>
+                        <td style="color:#005B3B;text-align:center;font-size:12px;">
+                            <b>RESUMO GERAL - PAGAMENTO DE RECUPERADORES</b>
+                        </td>
+                    </tr>
+                    <tr style="border-top: 0.25px Solid #666666;">
+                        <td style="color:#006666;text-align:center;font-size:11px;">
+                            Periodo: {{ $data_inicio }} à {{ $data_fim }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td rowspan="2" style="text-align:right">
+            <img src="imagens/lgkxu.jpg" alt="Kixi Utilitário" style="width:51px; height:51px;" />
+        </td>
+    </tr>
+</table>
+
+<!-- Tabela Resumo por BaseOperacao -->
+<div class="section-title" style="font-size: 13px">
+   <!--img src="imagens/imgsrecuperadores/GM.jpg" alt="RESUM" style="width:40px; height:40px;" /-->::: RESUMO POR AGÊNCIAS
+</div>
+
+@php
+    // Mapeamento de siglas para nomes completos das agências
+    $agenciasMap = [
+        'HO' => 'Escritorio Central',
+        'HU' => 'Huambo',
+        'MB' => 'Mabor',
+        'HH' => 'Hoji-ya-henda',
+        'SP' => 'Morro Bento',
+        'VI' => 'Viana',
+        'KK' => 'Kilamba Kiaxi',
+        'BE' => 'Benguela',
+        'CA' => 'Cabinda',
+        'LB' => 'Lubango',
+        'NB' => 'Namibe',
+        'KT' => 'Cuito',
+        'UE' => 'Uige',
+        'SO' => 'Mandume-Ondjiva',
+        'DD' => 'Lobito',
+        'MG' => 'Malange',
+        'SM' => 'Cazengo-N’dalatando',
+        'SB' => 'Sumbe',
+        'KX' => 'Zango',
+        'RN' => 'Cadeia Produtiva',
+        'RS' => 'Benfica',
+        'BA' => 'Panguila',
+        'ME' => 'Menongue',
+        'MO' => 'Moxico',
+        'MC' => 'Mbanza Congo',
+        'PE' => 'Boa Vida',
+        'AC' => 'DPP - Agências'
+    ];
+
+    // Agrupar dados por BaseOperacao
+    $basesOperacao = [];
+
+    foreach ($Dados_Recuperador as $dd_recu) {
+        $baseOperacao = $dd_recu->BaseOperacao ?? 'Não Especificada';
+        $idRecuperador = $dd_recu->id_recuperador;
+
+        // Obter o nome completo da agência a partir da sigla
+        $nomeAgencia = isset($agenciasMap[$baseOperacao]) ? $agenciasMap[$baseOperacao] : $baseOperacao;
+
+        if (!isset($basesOperacao[$nomeAgencia])) {
+            $basesOperacao[$nomeAgencia] = [];
+        }
+
+        if (!isset($basesOperacao[$nomeAgencia][$idRecuperador])) {
+            // Encontrar o nome do recuperador
+            $nomeRecuperador = '';
+            foreach ($recuperadores as $recup) {
+                if ($recup->id == $idRecuperador) {
+                    $nomeRecuperador = $recup->nome_recuperador;
+                    break;
+                }
+            }
+
+            $basesOperacao[$nomeAgencia][$idRecuperador] = [
+                'nome' => $nomeRecuperador,
+                'totalRecuperado' => 0,
+                'totalComissao' => 0,
+                'totalIrt' => 0,
+                'totalReceber' => 0
+            ];
+        }
+
+        $basesOperacao[$nomeAgencia][$idRecuperador]['totalRecuperado'] += $dd_recu->ReBuMontante;
+        $basesOperacao[$nomeAgencia][$idRecuperador]['totalComissao'] += $dd_recu->comissao_bruta;
+        $basesOperacao[$nomeAgencia][$idRecuperador]['totalIrt'] += $dd_recu->desconto_IRT;
+        $basesOperacao[$nomeAgencia][$idRecuperador]['totalReceber'] += $dd_recu->valor_a_receber;
+    }
+
+    // Calcular totais por base de operação
+    $totaisPorBase = [];
+    foreach ($basesOperacao as $base => $recuperadoresBase) {
+        $totaisPorBase[$base] = [
+            'totalRecuperado' => 0,
+            'totalComissao' => 0,
+            'totalIrt' => 0,
+            'totalReceber' => 0
+        ];
+
+        foreach ($recuperadoresBase as $recuperador) {
+            $totaisPorBase[$base]['totalRecuperado'] += $recuperador['totalRecuperado'];
+            $totaisPorBase[$base]['totalComissao'] += $recuperador['totalComissao'];
+            $totaisPorBase[$base]['totalIrt'] += $recuperador['totalIrt'];
+            $totaisPorBase[$base]['totalReceber'] += $recuperador['totalReceber'];
+        }
+    }
+@endphp
+
+@foreach ($basesOperacao as $base => $recuperadoresBase)
+    <div class="base-operacao-header">
+        {{ $base }}
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="col-num">#</th>
+                <th>Recuperador</th>
+                <th class="text-right">Valor Recuperado</th>
+                <th class="text-right">Comissão Bruta</th>
+                <th class="text-right">Desc. IRT (6.5%)</th>
+                <th class="text-right">Valor a Pagar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $count = 1;
+                $baseTotalRecuperado = 0;
+                $baseTotalComissao = 0;
+                $baseTotalIrt = 0;
+                $baseTotalReceber = 0;
+            @endphp
+
+            @foreach ($recuperadoresBase as $idRecuperador => $dados)
+            <tr>
+                <td class="col-num">{{ $count++ }}</td>
+                <td>{{ $dados['nome'] }}</td>
+                <td class="text-right">{{ number_format($dados['totalRecuperado'], 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($dados['totalComissao'], 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($dados['totalIrt'], 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($dados['totalReceber'], 2, ',', '.') }}</td>
+            </tr>
+
+            @php
+                $baseTotalRecuperado += $dados['totalRecuperado'];
+                $baseTotalComissao += $dados['totalComissao'];
+                $baseTotalIrt += $dados['totalIrt'];
+                $baseTotalReceber += $dados['totalReceber'];
+            @endphp
+            @endforeach
+
+            <!-- Total por base de operação -->
+            <tr class="base-total-row">
+                <td class="col-num"></td>
+                <td><strong>TOTAL {{ $base }}</strong></td>
+                <td class="text-right"><strong>{{ number_format($baseTotalRecuperado, 2, ',', '.') }}</strong></td>
+                <td class="text-right"><strong>{{ number_format($baseTotalComissao, 2, ',', '.') }}</strong></td>
+                <td class="text-right"><strong>{{ number_format($baseTotalIrt, 2, ',', '.') }}</strong></td>
+                <td class="text-right"><strong>{{ number_format($baseTotalReceber, 2, ',', '.') }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+@endforeach
+
+<!-- Quebra de página   -->
+<div style="page-break-before: always;"></div>
+<!-- Total Geral de todas as bases -->
+<div class="base-operacao-header" style="background-color: #d4edda; border-left-color: #28a745;">
+    TOTAL GERAL POR  AGÊNCIAS
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th class="col-num">#</th>
+            <th>Base de Operação</th>
+            <th class="text-right">Valor Recuperado</th>
+            <th class="text-right">Comissão Bruta</th>
+            <th class="text-right">Desc. IRT (6.5%)</th>
+            <th class="text-right">Valor a Pagar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            $count = 1;
+            $grandTotalRecuperado = 0;
+            $grandTotalComissao = 0;
+            $grandTotalIrt = 0;
+            $grandTotalReceber = 0;
+        @endphp
+
+        @foreach ($totaisPorBase as $base => $totais)
+        <tr>
+            <td class="col-num">{{ $count++ }}</td>
+            <td>{{ $base }}</td>
+            <td class="text-right">{{ number_format($totais['totalRecuperado'], 2, ',', '.') }}</td>
+            <td class="text-right">{{ number_format($totais['totalComissao'], 2, ',', '.') }}</td>
+            <td class="text-right">{{ number_format($totais['totalIrt'], 2, ',', '.') }}</td>
+            <td class="text-right">{{ number_format($totais['totalReceber'], 2, ',', '.') }}</td>
+        </tr>
+
+        @php
+            $grandTotalRecuperado += $totais['totalRecuperado'];
+            $grandTotalComissao += $totais['totalComissao'];
+            $grandTotalIrt += $totais['totalIrt'];
+            $grandTotalReceber += $totais['totalReceber'];
+        @endphp
+        @endforeach
+
+        <!-- Total Geral -->
+        <tr class="total-row">
+            <td class="col-num"></td>
             <td><strong>TOTAL GERAL</strong></td>
             <td class="text-right"><strong>{{ number_format($grandTotalRecuperado, 2, ',', '.') }}</strong></td>
             <td class="text-right"><strong>{{ number_format($grandTotalComissao, 2, ',', '.') }}</strong></td>

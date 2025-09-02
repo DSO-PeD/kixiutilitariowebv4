@@ -24,6 +24,7 @@ class CpvtReconciliacaoController extends Controller
     public function viewComprovativosReconlicacao(Request $request)
     {
 
+
         // Cache de dados estáticos que raramente mudam
         $cacheKey = 'reconciliacao_static_data_' . Auth::id();
         $staticData = Cache::remember($cacheKey, 3600, function () {
@@ -86,7 +87,7 @@ class CpvtReconciliacaoController extends Controller
             'dataInicioPeriodo' => $totals['data_inicio_formatada'],
             'dataFimPeriodo' => $totals['data_fim_formatada'],
             'totalMontantePoupanca' => $totals['montante_poupanca'],
-
+            'totalMontantePGREF' => $totals['montante_total_pgref'],
 
             'totalMontanteRegistado' =>  $totals['totalMontanteRegistado'],
             'totalMontantePoupancaRegistado' =>  $totals['totalMontantePoupancaRegistado'],
@@ -205,6 +206,7 @@ class CpvtReconciliacaoController extends Controller
                 'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
                 'voucher' => $item->voucher,
+                'vouchertransacao'=> $item->vouchertransacao,
                 'FormaPagoN' => $item->FormaPagoN,
                 'descricao' => $item->descricao,
                 'operadordcf' => $item->operadordcf,
@@ -225,6 +227,7 @@ class CpvtReconciliacaoController extends Controller
         return [
             'montante_total' => $collection->where('TtCodigo', 'L04')->sum('BuMontante'),
             'montante_poupanca' => $collection->where('TtCodigo', 'S01')->sum('BuMontante'),
+            'montante_total_pgref' => $collection->where('TtCodigo', 'DJA')->sum('BuMontante'),
             'totalMontanteRegistado' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 1)->sum('BuMontante'),
             'totalMontantePoupancaRegistado' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 1)->sum('BuMontante'),
             'totalMontanteReflete' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante'),
@@ -306,6 +309,32 @@ class CpvtReconciliacaoController extends Controller
                 return EstadosModel::getEstadosDCF('DCF');
             })
         );
+    }
+    public function editarVoucherRec(Request $request)
+    {
+
+
+
+        $request->validate([
+            'id' => 'required|exists:comprovativos,id'
+
+        ]);
+
+        $comprovativo = ComprovativoModel::findOrFail($request->id);
+
+
+        // Atualizar voucher
+        $comprovativo->update([
+            'BuReferencia' => $request->novo_voucher
+        ]);
+
+        $reconciliacao = CpvtReconciliacaoModel::where('idcomprovativo', '=', $request->id);
+
+        $reconciliacao->update([
+            'voucher' => $request->novo_voucher
+        ]);
+
+        return back()->with('success', 'Data actualizada com sucesso');
     }
 
     public function listarDetalhesComprovativosDCF(Request $request)

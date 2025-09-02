@@ -219,13 +219,13 @@
                         </div>
 
                         <!-- Forma de Pagamento -->
-                        <div class="flex flex-col">
+                      <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
                             <div class="relative">
                                 <select v-model="modelValue.selectFormaPagamento" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.selectFormaPagamento }" required>
                                     <option value="" disabled selected>Selecione a forma</option>
-                                    <option v-for="formapgt in formaspagamentos" :value="formapgt.FormaPago"
+                                    <option v-for="formapgt in formaspagamentosFiltrados" :value="formapgt.FormaPago"
                                         :key="formapgt.FormaPago">
                                         {{ formapgt.FormaPagoN }}
                                     </option>
@@ -235,8 +235,7 @@
                                 </div>
                             </div>
                             <p v-if="fieldErrors.selectFormaPagamento" class="mt-1 text-sm text-red-600">
-                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectFormaPagamento
-                                }}
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectFormaPagamento }}
                             </p>
                         </div>
                     </div>
@@ -429,6 +428,14 @@ const displayValue = ref(formatCurrency(props.modelValue.txtMontante || '0'));
 const amountError = ref('');
 const dateError = ref('');
 const dateValue = ref('');
+
+const formaspagamentosFiltrados = computed(() => {
+    return props.formaspagamentos.filter(formapgt => {
+        // Supondo que o código para "Pagamento por Referência" seja 10
+        // Ajuste o número conforme o código real no seu sistema
+        return formapgt.FormaPago !== 8; // Ou o código que corresponda
+    });
+});
 
 const isSaveDisabled = computed(() => {
       if (!displayValue.value) return true;
