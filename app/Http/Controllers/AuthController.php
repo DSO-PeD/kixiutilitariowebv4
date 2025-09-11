@@ -157,19 +157,23 @@ class AuthController extends Controller
 
     protected function getComprovativosData(array $basesOperacao, ?array $dateFilter, string $hoje)
     {
+
+
         $query = ComprovativoModel::whereIn('BaseOperacao', $basesOperacao)
             ->where('Eliminado', 0);
 
         if ($dateFilter) {
             $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
-            $cpvtDFC = (clone $query)->where('idestado', 1);
+            $cpvtDFC = (clone $query)->where('idestado', 19);
             $cpvtDFC2 = (clone $query)->where('idestado', 8);
-            $cpvtDFC3 = (clone $query)->whereNotIn('idestado', [1, 8]);
+            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9,11,13,20]);
         } else {
             $query->whereDate('CiFecha', $hoje);
-            $cpvtDFC = (clone $query)->where('idestado', 1);
+            $cpvtDFC = (clone $query)->where('idestado', 19);
             $cpvtDFC2 = (clone $query)->where('idestado', 8);
-            $cpvtDFC3 = (clone $query)->whereNotIn('idestado', [1, 8]);
+            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9,11,13,20]);
+
+
         }
 
         return [

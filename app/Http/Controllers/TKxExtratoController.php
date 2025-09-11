@@ -105,6 +105,7 @@ class TKxExtratoController extends Controller
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
         $lista_actividade_economica = TKxCodigoCaeModel::getActividadeEconomica();
+        $lista_grupo_actividade_economica = TKxCodigoCaeModel::getGrupoActividadeEconomica();
 
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
@@ -193,7 +194,8 @@ class TKxExtratoController extends Controller
             'lista_banco' => $lista_banco,
             'lista_bancos_contas' => $lista_bancos_contas,
             'lista_actividade_economica' => $lista_actividade_economica,
-            'sistema_aberto' => $sistema_aberto,
+            'lista_grupo_actividade_economica' => $lista_grupo_actividade_economica,
+             'sistema_aberto' => $sistema_aberto,
             'lista_nes_grupo' => $lista_nes_grupo,
             'lista_nes_tipo' => $lista_nes_tipo,
             'bases' => $BasesOperacaoAgencias,

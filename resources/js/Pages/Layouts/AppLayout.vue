@@ -1,31 +1,24 @@
+<!-- Layout.vue -->
 <template>
-
-
     <div class="flex h-screen bg-gray-50">
-
         <!-- Sidebar fixa -->
-        <Sidebar />
+        <Sidebar @expand="handleSidebarExpand" />
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 flex flex-col overflow-hidden "> <!-- ml-16 para a mini sidebar -->
-            <Header />
+        <div class="flex-1 flex flex-col overflow-hidden transition-all duration-300 ml-16"
+            :class="{ 'lg:ml-64': isExpanded }">
 
-            <main class="flex-1 overflow-y-auto transition-all duration-300" :class="{ 'ml-40': isExpanded }">
-                <!-- ml-40 quando expandido -->
-                <div class="p-20">
+            <Header :sidebar-collapsed="!isExpanded" />
+
+            <main class="flex-1 overflow-y-auto">
+                <div class="p-4 sm:p-6">
                     <slot />
                 </div>
             </main>
 
-
-
             <Footer />
         </div>
-
-
     </div>
-
-
 </template>
 
 <script setup>
@@ -40,8 +33,4 @@ const isExpanded = ref(false)
 const handleSidebarExpand = (expanded) => {
     isExpanded.value = expanded
 }
-
-defineExpose({
-    handleSidebarExpand
-})
 </script>

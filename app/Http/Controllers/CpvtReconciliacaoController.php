@@ -228,12 +228,12 @@ class CpvtReconciliacaoController extends Controller
             'montante_total' => $collection->where('TtCodigo', 'L04')->sum('BuMontante'),
             'montante_poupanca' => $collection->where('TtCodigo', 'S01')->sum('BuMontante'),
             'montante_total_pgref' => $collection->where('TtCodigo', 'DJA')->sum('BuMontante'),
-            'totalMontanteRegistado' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 1)->sum('BuMontante'),
-            'totalMontantePoupancaRegistado' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 1)->sum('BuMontante'),
+            'totalMontanteRegistado' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 19)->sum('BuMontante'),
+            'totalMontantePoupancaRegistado' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante'),
             'totalMontanteReflete' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante'),
             'totalMontantePoupancaReflete' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante'),
-            'totalMontanteInregulares' => $collection->where('TtCodigo', '=', 'L04')->whereNotIn('idestado', [1, 8])->sum('BuMontante'),
-            'totalMontantePoupancaInregulares' => $collection->where('TtCodigo', '=', 'S01')->whereNotIn('idestado', [1, 8])->sum('BuMontante'),
+            'totalMontanteInregulares' => $collection->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9,11,13,20])->sum('BuMontante'),
+            'totalMontantePoupancaInregulares' => $collection->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9,11,13,20])->sum('BuMontante'),
             'data_inicio_formatada' => Carbon::parse($collection->max('CiFecha'))->format('d/m/Y'),
             'data_fim_formatada' => Carbon::parse($collection->min('CiFecha'))->format('d/m/Y')
         ];

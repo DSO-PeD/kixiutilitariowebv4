@@ -194,7 +194,7 @@
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-500 transition"
                                         :max="filtro.dataFimInput" @change="validarDatas" />
                                     <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
 
@@ -581,7 +581,7 @@
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-yellow-50">{{ rec.voucher }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-yellow-50">{{ rec.ReBuData
-                            }} </td>
+                                }} </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-yellow-50">{{
                                 rec.prazo_maturidade }}</td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 bg-yellow-50">{{
@@ -747,7 +747,7 @@
                                 <input v-model="pdfFilters.dataInicio" type="date" class="form-input"
                                     placeholder="Data Início" required>
                                 <span v-if="errors.dataInicio" class="text-red-500 text-xs">{{ errors.dataInicio
-                                }}</span>
+                                    }}</span>
                             </div>
 
                         </div>
@@ -824,12 +824,12 @@
                         <div>
                             <p class="text-sm font-medium text-gray-500">Montante</p>
                             <p class="text-sm text-gray-900">{{ formatCurrency(selectedRecuperacaoDetails.ReBuMontante)
-                                }}</p>
+                            }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500">Data do Borderoux</p>
                             <p class="text-sm text-gray-900"> {{ formatApenasDate(selectedRecuperacaoDetails.ReBuData)
-                                }}</p>
+                            }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500">Data do LPF</p>
@@ -844,7 +844,7 @@
                         <div>
                             <p class="text-sm font-medium text-gray-500">Desconto IRT(6.5%)</p>
                             <p class="text-sm text-gray-900">{{ formatCurrency(selectedRecuperacaoDetails.desconto_IRT)
-                                }}</p>
+                            }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500">Valor a Receber</p>
@@ -936,7 +936,8 @@
                     <div>
                         <br />
                         <p class="text-sm font-medium text-gray-900">Montate a Receber por esta Recuperação</p>
-                        <p class="text-sm font-extrabold text-green-500">{{ formatCurrency(selectedRecuperacaoDetails?.valor_a_receber)
+                        <p class="text-sm font-extrabold text-green-500">{{
+                            formatCurrency(selectedRecuperacaoDetails?.valor_a_receber)
                             || 'N/A' }}</p>
                     </div>
                 </div>
@@ -1592,7 +1593,8 @@ const gerarPdf = () => {
 
 const hoje = computed(() => new Date().toISOString().split('T')[0])
 const podeEliminar = (rec) => {
-    const isRegistadoHoje = rec.id_estado === 1 && rec.CiFecha === hoje.value
+    const dataItem = new Date(rec.CiFecha).toISOString().split('T')[0]// só pega a data
+    const isRegistadoHoje = rec.id_estado === 1 && dataItem === hoje.value
     const temPermissao = props.user.elimina_confirmado_exportado == 1
 
     return isRegistadoHoje || temPermissao

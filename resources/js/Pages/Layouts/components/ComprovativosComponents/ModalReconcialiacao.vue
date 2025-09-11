@@ -102,12 +102,12 @@
                                                 formatCurrency(form.montante) }}</span>
                                         </div>
                                         <div class="flex justify-between border-b pb-1">
-                                            <span class="text-sm text-gray-500">Estado Actual do Comprovativo
-                                                :</span>
-                                            <span :class="form.color"
-                                                class="px-2 py-1 text-xs font-medium rounded-full">
-                                                {{ form.estado }}
-                                            </span>
+                                            <span class="text-sm text-gray-500">Estado Actual do Comprovativo :</span>
+                                           <span
+                                            :class="[estadoSelecionado ? estadoSelecionado?.color :form.color, 'px-2 py-1 text-xs font-medium rounded-full']"
+                                            >
+                                        {{ estadoSelecionado ? estadoSelecionado.descricao_estado :form.estado}}
+                                        </span>
                                         </div>
                                     </div>
                                 </div>
@@ -227,10 +227,10 @@
 
                         <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                         <div class="relative w-full">
-                            <select v-model="form.estado" class="form-select w-full pl-3 pr-10" required>
+                           <select v-model="form.estado" class="form-select w-full pl-3 pr-10" required>
                                 <option value="" disabled selected>Selecione o Estado</option>
-                                <option v-for="estado in $page.props.estados" :value="estado.id" :key="estado.id">
-                                    {{ estado.descricao_estado }}
+                                <option v-for="estado in estadosFiltrados" :value="estado.id" :key="estado.id">
+                                        {{ estado.descricao_estado }}
                                 </option>
                             </select>
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -342,7 +342,10 @@ const page = usePage()
 
 const props = defineProps({
     show: Boolean,
-    comprovativoreconci: Object
+    comprovativoreconci: Object,
+    estados: Array
+
+
 });
 
 const emit = defineEmits(['close', 'success']);
@@ -383,6 +386,14 @@ const contasFiltradas = computed(() => {
 const estadoRefleteSelecionado = computed(() => {
     const estadoReflete = page.props.estados.find(e => e.descricao_estado.toLowerCase().includes('reflete'));
     return estadoReflete ? form.value.estado === estadoReflete.id : false;
+});
+const estadosFiltrados = computed(() => {
+  return page.props.estados.filter(e => [8,9,11,13,20].includes(e.id))
+});
+// pega o estado atual pelo id
+const estadoSelecionado = computed(() => {
+
+  return page.props.estados.find(e => e.id === form.value.estado)
 });
 
 watchEffect(() => {

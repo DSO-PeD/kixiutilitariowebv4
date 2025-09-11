@@ -160,13 +160,26 @@
                             </select>
                         </div>
 
+                        <!-- Campos de largura dupla-->
+                        <div class="md:col-span-2 space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Grupo da Actividade Econômica<span
+                                    class="text-red-500">*</span></label>
+                            <select v-model="internalForm.cbGCAE" @change="filtrarAtividadesEconomicas"
+                                class="form-select" required>
+                                <option disabled value="">Escolha...</option>
+                                <option v-for="gae in grupoatividades" :key="gae.sectorGrupo" :value="gae.sectorGrupo">
+                                    {{ gae.sectorGrupo }}
+                                </option>
+                            </select>
+                        </div>
+
                         <!-- Campos de largura dupla -->
                         <div class="md:col-span-2 space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Atividade Econômica (CAE) <span
                                     class="text-red-500">*</span></label>
                             <select v-model="internalForm.cbAE" class="form-select" required>
                                 <option disabled value="">Escolha...</option>
-                                <option v-for="ae in atividades" :key="ae.Codigo" :value="ae.Codigo">
+                                <option v-for="ae in atividadesFiltradas" :key="ae.Codigo" :value="ae.Codigo">
                                     {{ ae.caeDesignacao }} ({{ ae.Codigo }})
                                 </option>
                             </select>
@@ -327,7 +340,7 @@
                             <i class="fas fa-percentage text-blue-600 text-lg"></i>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-800">
-                            Taxa de Processamento - Pós-Antecipado
+                            Taxa de Processamento - Postecipada
                         </h3>
                     </div>
 
@@ -480,7 +493,7 @@
                             <label class="inline-flex items-center">
                                 <input type="radio" value="PosAntecipado" v-model="internalForm.TIPO_TI" name="TIPO_TI"
                                     class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-gray-700">Pós-Antecipado</span>
+                                <span class="ml-2 text-gray-700">Postecipada</span>
                             </label>
                             <label class="inline-flex items-center">
                                 <input type="radio" value="Antecipado" v-model="internalForm.TIPO_TI"
@@ -660,6 +673,31 @@
 import { watch, ref, onMounted, computed } from 'vue';
 import Modal from '@/Components/Modal.vue'
 
+
+// Adicione esta variável reativa
+const atividadesFiltradas = ref([]);
+
+// Função para filtrar atividades econômicas com base no grupo selecionado
+const filtrarAtividadesEconomicas = () => {
+    if (!internalForm.value.cbGCAE) {
+        atividadesFiltradas.value = [];
+        internalForm.value.cbAE = '';
+        internalForm.value.txtDecricaoAE = '';
+        return;
+    }
+
+    // Filtrar atividades pelo grupo selecionado
+    atividadesFiltradas.value = props.atividades.filter(
+        atividade => atividade.sectorGrupo === internalForm.value.cbGCAE
+    );
+
+    // Resetar seleção de atividade
+    internalForm.value.cbAE = '';
+    internalForm.value.txtDecricaoAE = '';
+};
+
+
+
 // Adicione esta função para verificação
 const validateFormData = (data) => {
     const requiredFields = [
@@ -746,6 +784,10 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    grupoatividades: {
+        type: Array,
+        default: () => []
+    },
     nesGrupos: {
         type: Array,
         default: () => []
@@ -780,6 +822,7 @@ const internalForm = ref({
     cbSector: '',
     cbMagnitude: '',
     cbAE: '',
+    cbGCAE: '',
     txtDecricaoAE: '',
     CNE: 'Sim',
     nes: '',
@@ -850,7 +893,29 @@ watch(() => internalForm.value.TIPO_TI, () => {
     calcularTaxaDeImprevisto();
 });
 
+// Watch para atualizar a descrição quando a atividade econômica for selecionada
+watch(() => internalForm.value.cbAE, (newVal) => {
+    if (newVal) {
+        const atividadeSelecionada = props.atividades.find(a => a.Codigo === newVal);
+        if (atividadeSelecionada) {
+            internalForm.value.txtDecricaoAE = atividadeSelecionada.caeDesignacao;
+        }
+    } else {
+        internalForm.value.txtDecricaoAE = '';
+    }
+});
 
+// Watch para limpar atividades quando o grupo mudar
+watch(() => internalForm.value.cbGCAE, (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+        filtrarAtividadesEconomicas();
+    }
+});
+
+// Inicializar a lista de atividades filtradas
+onMounted(() => {
+    atividadesFiltradas.value = [];
+});
 
 
 // Opções para os selects

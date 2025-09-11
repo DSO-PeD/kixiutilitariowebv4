@@ -153,12 +153,12 @@ class ComprovativosController extends Controller
         $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
         $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
 
-        $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 1)->sum('BuMontante');
-        $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 1)->sum('BuMontante');
+        $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 19)->sum('BuMontante');
+        $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante');
         $totalMontanteReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante');
         $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
-        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereNotIn('idestado', [1, 8])->sum('BuMontante');
-        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereNotIn('idestado', [1, 8])->sum('BuMontante');
+        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9,11,13,20])->sum('BuMontante');
+        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9,11,13,20])->sum('BuMontante');
         $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');
 
         collect($lista_comprovativo)->max('CiFecha');
@@ -338,9 +338,9 @@ class ComprovativosController extends Controller
             }
 
             // Processar reconciliação se necessário
-            if ($request->selectFormaPagamento == 14) {
+          /*  if ($request->selectFormaPagamento == 14) {
                 $this->processarReconciliacao($request, $comprovativo->id);
-            }
+            }*/
 
             return redirect()->route('comprovativos')
                             ->with('success', 'Dados guardados com sucesso!');
@@ -359,19 +359,20 @@ class ComprovativosController extends Controller
     private function processarLoan(Request $request, array $dadosBase)
     {
         $formaPagamento = $request->selectFormaPagamento;
-        $estado = $formaPagamento == 14 ? 8 : 1;
+       // $estado = $formaPagamento == 14 ? 8 : 1;
+        $estado =  19;
 
         $loanNumber = $request->selectBase . '/' . $request->txtNumeroLoanSaving;
 
         $contaBancaria = $request->conta;
         $voucher = $request->txtVoucher;
 
-        if ($formaPagamento == 14) {
+      /*  if ($formaPagamento == 14) {
             $conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
             if ($conta) {
                 $contaBancaria = $conta->ContaBacaria;
             }
-        }
+        }*/
 
         return array_merge($dadosBase, [
             'BaCodigo' => $request->banco,
@@ -379,7 +380,7 @@ class ComprovativosController extends Controller
             'FormaPago' => $formaPagamento,
             'PoCodigo' => $request->selectProdutoLoan,
             'BuDadoOrigem' => $loanNumber,
-            'BuReferencia' => $voucher,
+            'BuReferencia' =>  $request->txtVoucher,
             'BuContaBancaria' => $contaBancaria,
             'idestado' => $estado,
             'BaseOperacao' => $request->selectBase
@@ -392,7 +393,8 @@ class ComprovativosController extends Controller
     private function processarSaving(Request $request, array $dadosBase)
     {
         $formaPagamento = $request->selectFormaPagamento;
-        $estado = $formaPagamento == 14 ? 8 : 1;
+       // $estado = $formaPagamento == 14 ? 8 : 1;
+        $estado =  19;
 
         $loanNumber = $request->selectBase . '/' .
                      $request->selectGrupoIndividual . '/' .
@@ -401,13 +403,13 @@ class ComprovativosController extends Controller
         $contaBancaria = $request->conta;
         $voucher = null;
 
-        if ($formaPagamento == 14) {
+        /*if ($formaPagamento == 14) {
             $conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
             if ($conta) {
                 $contaBancaria = $conta->ContaBacaria;
                 $voucher = $request->txtVoucher;
             }
-        }
+        }*/
 
         return array_merge($dadosBase, [
             'BaCodigo' => $request->banco,

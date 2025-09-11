@@ -68,7 +68,7 @@
                                 <p class="text-xs text-white text-opacity-80 mt-2 text-right max-w-xs">
                                     Seja Bem vindo,Sistema interno para o controlo de reembolsos,<br />
                                     cálculos de desembolsos e recuperação de crédito.<br />
-                                    <span class="font-bold text-teal-300">Mais cliente, menos risco.</span>
+
                                 </p>
                             </div>
                         </div>
@@ -118,6 +118,13 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <StatCard title="Reembolsos" :value="QtdRegistosComprovativos"
+                            :secondaryValue="formatCurrency(QtdValorRegistosComprovativos) + ' Kz'" iconColor="yellow"
+                            icon="currency-dollar" />
+
+                        <StatCard title="Desembolsos" :value="QtdRegistosDesembosos"
+                            :secondaryValue="formatCurrency(QtdValorRegistosDesembosos) + ' Kz'" iconColor="purple"
+                            icon="arrow-down" />
                         <StatCard title="Reembolsos Pendentes" :value="TotaldeRegistosdeReembolsosPendentes"
                             :secondaryValue="formatCurrency(TotalValordeReembolsosPendentes) + ' Kz'" iconColor="red"
                             icon="clock" />
@@ -126,13 +133,7 @@
                             :secondaryValue="formatCurrency(QtdValorRegistosRecuperacoes) + ' Kz'" iconColor="green"
                             icon="check-circle" />
 
-                        <StatCard title="Reembolsos" :value="QtdRegistosComprovativos"
-                            :secondaryValue="formatCurrency(QtdValorRegistosComprovativos) + ' Kz'" iconColor="yellow"
-                            icon="currency-dollar" />
 
-                        <StatCard title="Desembolsos" :value="QtdRegistosDesembosos"
-                            :secondaryValue="formatCurrency(QtdValorRegistosDesembosos) + ' Kz'" iconColor="purple"
-                            icon="arrow-down" />
                     </div>
                 </div>
 
@@ -150,11 +151,11 @@
                     </div>
 
                     <div class="grid grid-cols-1 gap-4">
-                        <StatCard title="Comprovativos sem Parecer" :value="TotaldeRegistossemParacer"
+                        <StatCard title="Comprovativos sem Validação" :value="TotaldeRegistossemParacer"
                             :secondaryValue="formatCurrency(TotalValordeRegistossemParacer) + ' Kz'" iconColor="red"
                             icon="exclamation" />
 
-                        <StatCard title="Comprovativos Respondidos" :value="TotaldeRegistosRespondidos"
+                        <StatCard title="Comprovativos Validados" :value="TotaldeRegistosRespondidos"
                             :secondaryValue="formatCurrency(TotalValordeRegistosRespondidos) + ' Kz'" iconColor="blue"
                             icon="c-respo" />
 

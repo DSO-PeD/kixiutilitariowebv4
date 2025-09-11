@@ -1,73 +1,123 @@
 <template>
-    <header class="sticky top-0 z-10 bg-green-950 shadow-sm px-10 py-6 flex items-center justify-between ml-1">
-        <!-- Left side - Logo -->
+    <header class="sticky top-0 z-10 bg-gradient-to-r from-green-900 to-green-800 shadow-lg px-4 md:px-6 py-3 flex items-center justify-between transition-all duration-300">
+        <!-- Left side - Logo and Breadcrumb -->
+        <div class="flex items-center space-x-4">
+            <img :src="LogoKxCredito" alt="Logo KixiCrédito" class="h-8 w-auto object-contain hidden md:block" />
 
-        <div class="flex items-center space-x-2">
+            <!-- Breadcrumb separator -->
+            <div class="hidden md:block h-6 w-px bg-green-400/30"></div>
 
-            <img :src="LogoKxCredito" alt="Logo KixiCrédito" class="h-8 w-auto object-contain" />
-
-
+            <!-- Breadcrumb -->
+            <nav class="hidden md:flex items-center space-x-2 text-sm">
+                <span class="text-green-200">Sistema</span>
+                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span class="text-white font-medium">{{ getCurrentPageName() }}</span>
+            </nav>
         </div>
 
         <!-- Right side - User area -->
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-4">
             <!-- Notifications -->
-            <!--button class="relative p-1 rounded-full hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                    class="w-6 h-6 text-orange-500">
-                    <path
-                        d="M19.006 3.705a.75.75 0 1 0-.512-1.41L6 6.838V3a.75.75 0 0 0-.75-.75h-1.5A.75.75 0 0 0 3 3v4.93l-1.006.365a.75.75 0 0 0 .512 1.41l16.5-6Z" />
-                    <path fill-rule="evenodd"
-                        d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z"
-                        clip-rule="evenodd" />
-                </svg>
-                <span v-if="hasNotifications"
-                    class="absolute top-0 right-0 inline-block w-2 h-2 bg-green-300 rounded-full"></span>
-            </button>
-            <span class="text-xs text-orange-200 hidden sm:inline">AGÊNCIA: &ThinSpace;{{ $page.props.session.agencia_principal }}</span-->
+            <div class="relative">
+                <button @click="toggleNotifications" class="relative p-2 text-green-200 hover:text-white hover:bg-green-800/50 rounded-lg transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    <span v-if="hasNotifications" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-green-900"></span>
+                </button>
 
+                <div v-if="notificationsOpen" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200">
+                    <div class="px-4 py-3 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-800">Notificações</h3>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <div class="px-4 py-3 hover:bg-gray-50">
+                            <p class="text-sm text-gray-600">Nenhuma notificação no momento</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- User dropdown -->
             <div class="relative" ref="dropdownRef">
-                <button @click="toggleDropdown" class="flex items-center space-x-2 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                        class="w-8 h-8 rounded-full text-white">
-                        <path fill-rule="evenodd"
-                            d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-                            clip-rule="evenodd" />
-                    </svg>
+                <button @click="toggleDropdown" class="flex items-center space-x-3 focus:outline-none group">
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center text-white font-semibold text-sm group-hover:bg-green-600 transition-colors duration-200">
+                            {{ getUserInitials() }}
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-green-900"></div>
+                    </div>
 
-                    <span class="hidden md:inline text-green-400 font-medium">Olá, {{ $page.props.user.UtNome }}</span>
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    <div class="hidden lg:block text-left">
+                        <p class="text-sm font-medium text-white">{{ $page.props.user.UtNome }}</p>
+                        <p class="text-xs text-green-300">{{ $page.props.user.UtEmail }}</p>
+                    </div>
+
+                    <svg class="w-4 h-4 text-green-300 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         :class="{ 'rotate-180': dropdownOpen }">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
 
-                <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                    <a href="#" @click="sms" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i
-                            class="fa fa-user"></i>&MediumSpace;&MediumSpace;&MediumSpace;Meu Perfil</a>
-                    <a href="#" @click="sms" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i
-                            class="fas fa-toolbox"></i>&MediumSpace;&MediumSpace;&MediumSpace;Configurações</a>
-                    <div class="border-t border-gray-100"></div>
-                    <button @click="logout"
-                        class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100">
-                        <i class="fas fa-walking"></i>&MediumSpace;&MediumSpace;&MediumSpace;Sair
-                    </button>
-                </div>
+                <transition
+                    enter-active-class="transition ease-out duration-200"
+                    enter-from-class="opacity-0 translate-y-1"
+                    enter-to-class="opacity-100 translate-y-0"
+                    leave-active-class="transition ease-in duration-150"
+                    leave-from-class="opacity-100 translate-y-0"
+                    leave-to-class="opacity-0 translate-y-1">
+                    <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-sm font-medium text-gray-800">{{ $page.props.user.UtNome }}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ $page.props.user.UtEmail }}</p>
+                        </div>
+
+                        <div class="py-2">
+                            <a href="#" @click="showSMS" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Meu Perfil
+                            </a>
+                            <a href="#" @click="showSMS" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Configurações
+                            </a>
+                        </div>
+
+                        <div class="border-t border-gray-100"></div>
+
+                        <button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150">
+                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Sair
+                        </button>
+                    </div>
+                </transition>
             </div>
         </div>
 
         <!-- Modal de Logout -->
         <Modal :show="showModal" @close="showModal = false">
             <div class="p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Deseja realmente sair?</h2>
-                <div class="flex justify-end space-x-3">
-                    <button @click="showModal = false"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-lg font-semibold text-gray-800 text-center mb-2">Deseja realmente sair?</h2>
+                <p class="text-sm text-gray-600 text-center mb-6">Você será desconectado do sistema</p>
+                <div class="flex justify-center space-x-3">
+                    <button @click="showModal = false" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                         Cancelar
                     </button>
-                    <button @click="confirmLogout" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    <button @click="confirmLogout" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
                         Sair
                     </button>
                 </div>
@@ -77,61 +127,75 @@
         <!-- Modal de Em Desenvolvimento -->
         <Modal :show="showModalSMS" @close="showModalSMS = false">
             <div class="p-6">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
-                </svg>
-
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Funcionalidade em Desenvolvimento, estará
-                    disponível o
-                    mais breve.</h2>
-                <div class="flex justify-end space-x-3">
-                    <button @click="showModalSMS = false"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                        Cancelar
+                <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-lg font-semibold text-gray-800 text-center mb-4">Funcionalidade em Desenvolvimento</h2>
+                <p class="text-sm text-gray-600 text-center mb-6">Estará disponível em breve. Agradecemos sua compreensão.</p>
+                <div class="flex justify-center">
+                    <button @click="showModalSMS = false" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        Entendi
                     </button>
-
                 </div>
             </div>
         </Modal>
     </header>
 </template>
-
 <script setup>
-import { ref  } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import { onClickOutside } from '@vueuse/core';
 import Modal from './ModalExit.vue';
 import LogoKxCredito from '../../../../../public/imagens/LogoKxCreditoTEla.png';
 
-const dropdownOpen = ref(false);
-const showModal = ref(false);
-const showModalSMS = ref(false)
-const dropdownRef = ref(null);
-const hasNotifications = ref(false); // Você pode alterar isso conforme a lógica do seu app
-
-
+// Defina as props corretamente
 const props = defineProps({
-    sidebarCollapsed: Boolean,
-
-
+    sidebarCollapsed: {
+        type: Boolean,
+        default: false
+    }
 });
 
+
+// Para Inertia.js, acesse as props através de usePage()
+const page = usePage();
+const user = computed(() => page.props.user);
+const sidebarCollapsed = computed(() => page.props.sidebarCollapsed || false);
+
+const dropdownOpen = ref(false);
+const notificationsOpen = ref(false);
+const showModal = ref(false);
+const showModalSMS = ref(false);
+const dropdownRef = ref(null);
+const notificationsRef = ref(null);
+const hasNotifications = ref(false);
+
+
+
+// Fechar dropdown ao clicar fora
 onClickOutside(dropdownRef, () => {
     dropdownOpen.value = false;
 });
 
+onClickOutside(notificationsRef, () => {
+    notificationsOpen.value = false;
+});
+
 const toggleDropdown = () => {
     dropdownOpen.value = !dropdownOpen.value;
+    notificationsOpen.value = false;
 };
 
-const closeDropdown = () => {
+const toggleNotifications = () => {
+    notificationsOpen.value = !notificationsOpen.value;
     dropdownOpen.value = false;
 };
-const sms = () => {
-    showModalSMS.value = true;
 
+const showSMS = () => {
+    showModalSMS.value = true;
+    dropdownOpen.value = false;
 };
 
 const logout = () => {
@@ -142,33 +206,122 @@ const logout = () => {
 const confirmLogout = () => {
     router.post('/logout');
 };
+
+// Helper functions - AGORA usando a computed property user
+const getUserInitials = () => {
+    const name = user.value?.UtNome || '';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+};
+
+const getCurrentPageName = () => {
+    const path = window.location.pathname;
+    if (path === '/dashboard') return 'Dashboard';
+    if (path.startsWith('/comprovativos')) return 'Comprovativos';
+    if (path.startsWith('/reconciliacao')) return 'Reconciliação';
+    if (path.startsWith('/extratos')) return 'Desembolsos';
+    if (path.startsWith('/recuperacoes')) return 'Recuperações';
+    return 'Sistema';
+};
+
+
+
+
 </script>
 
 <style scoped>
 header {
-    height: 48px;
-    /* Altura fixa compacta */
+    height: 64px;
+    backdrop-filter: blur(8px);
 }
 
-/* Transição suave para o dropdown */
-.dropdown-enter-active,
-.dropdown-leave-active {
-    transition: all 0.2s ease;
+/* Smooth transitions for all interactive elements */
+button, a {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dropdown-enter-from,
-.dropdown-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
+/* Hover effects */
+button:hover {
+    transform: translateY(-1px);
 }
 
-/* Estilo para o ícone de notificação */
+/* Focus states for accessibility */
+button:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+/* Custom scrollbar for notifications */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animation for notification badge */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
 .notification-badge {
-    top: -2px;
-    right: -2px;
+    animation: pulse 2s infinite;
 }
 
-.bg-greenkixi-300 {
-    background-color: #005b3b;
+/* Gradient border for user avatar */
+.avatar-gradient {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Smooth shadow transitions */
+.shadow-transition {
+    transition: box-shadow 0.3s ease;
+}
+
+.shadow-transition:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header {
+        height: 56px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .user-info {
+        display: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .dropdown-content {
+        background-color: #1f2937;
+        border-color: #374151;
+    }
+
+    .dropdown-item {
+        color: #e5e7eb;
+    }
+
+    .dropdown-item:hover {
+        background-color: #374151;
+    }
 }
 </style>
