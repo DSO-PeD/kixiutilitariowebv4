@@ -270,7 +270,7 @@
     <div class='rounded'>
         <table class="comBordaSimples" style="width:100%;margin-top:2px;font-family: 'Calibri';">
             <tr>
-                <td style="color:#000000;">&nbsp;Impresso por: <b>{{ $IMPRENSSO }}</b></td>
+                <td style="color:#000000;">&nbsp;Impresso pôr: <b>{{ $IMPRENSSO }}</b></td>
                 <td style="color:#000000;">Data de Impressão: <b>{{ $date }}</b></td>
                 <td style="color:#000000;">Agência: <b>{{ $AGENCIA }}</b></td>
                 <td style="text-align:center;color:#000000;">Página 1 de 1</td>
@@ -370,7 +370,7 @@
         <img src="imagens/icons8-discount-80.png" class="icon">TAXA DE IMPREVISTO (Tipo de Pagamento:
         <span class="value-bold">
             @if ($Dados_extrato[0]->TaxaImprevisto <> 'Antecipado')
-                Pós-Antecipado
+                PosAntecipado
             @else
                 {{ $Dados_extrato[0]->TaxaImprevisto }}
             @endif
@@ -443,7 +443,7 @@
         <img src="imagens/icons8-discount-80.png" class="icon">TAXA DE PROCESSAMENTO (Tipo de Pagamento:
         <span class="value-bold">
             @if ($Dados_extrato[0]->TaxaProcessamento <> 'Antecipado')
-                Pós-Antecipado
+                PosAntecipado
             @else
                 {{ $Dados_extrato[0]->TaxaProcessamento }}
             @endif

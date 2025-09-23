@@ -403,8 +403,7 @@
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                         <div>
-                            <p class="text-sm font-medium text-red-800">Atenção! Existem reembolsos que excedem
-                                7.000.000,00 AKZ</p>
+                            <p class="text-sm font-medium text-red-800">Atenção! Foram identificados reembolsos com montantes superiores a 7.000.000,00 AKZ.</p>
                             <button @click="aplicarFiltrosmexc7M"
                                 class="text-red-700 hover:text-red-900 text-xs font-medium mt-1 inline-flex items-center">
                                 Listar todos
@@ -428,8 +427,7 @@
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                         <div>
-                            <p class="text-sm font-medium text-yellow-800">Atenção! Existem reembolsos entre 500.000,00
-                                e 7.000.000,00 AKZ</p>
+                            <p class="text-sm font-medium text-yellow-800">Atenção! Foram identificados reembolsos com montantes entre 500.000,00 e 7.000.000,00 AKZ.</p>
                             <button @click="aplicarFiltrosmai5M"
                                 class="text-yellow-700 hover:text-yellow-900 text-xs font-medium mt-1 inline-flex items-center">
                                 Listar todos
@@ -592,19 +590,32 @@
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ calcularNumeroLinha(index)
                             }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
+
+                                <a v-if="comprovativo.usuario != 'SUPLITEL'" :href="`/storage/comprovativos/${comprovativo.file}`"
                                     target="_blank"
-                                    class="text-blue-600 hover:text-blue-800 transition-colors flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
+                                     class="btn btn-outline-primary btn-sm flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2 15.5v-11a2 2 0 012-2h16a2 2 0 012 2v11a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
+                                        </path>
                                     </svg>
-                                    Visualizar
+                                    cpvtv.
+                                </a>
+
+
+
+                                <a v-else-if="comprovativo.usuario == 'SUPLITEL'" :href="`/reports/comprovativo/${comprovativo.id}`"
+                                    class="btn btn-outline-primary btn-sm flex items-center gap-1" target="_blank">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
+                                        </path>
+                                    </svg>
+                                    cpvtv
                                 </a>
                                 <span v-else class="text-gray-400 text-sm">N/A</span>
+
+
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ comprovativo.data }}</td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ comprovativo.agencia || '-'
@@ -1344,6 +1355,10 @@ const getEstadoBadgeClass = (comprovativo) => {
 .btn-primary {
     @apply bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
 }
+.btn-outline-primary {
+    @apply border border-blue-500 text-blue-500 hover:bg-blue-50;
+}
+
 
 .btn-primary-filter {
     @apply bg-green-900 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-900 focus:ring-offset-2;

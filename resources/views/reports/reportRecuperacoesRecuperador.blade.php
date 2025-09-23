@@ -360,7 +360,7 @@
     <div class='rounded'>
         <table class="comBordaSimples" style="width:100%;margin-top:2px;font-family: 'Calibri';">
             <tr>
-                <td style="color:#000000;">&nbsp;Impresso por: <b>{{ $IMPRENSSO }}</b></td>
+                <td style="color:#000000;">&nbsp;Impresso pôr: <b>{{ $IMPRENSSO }}</b></td>
                 <td style="color:#000000;">Data de Impressão: <b>{{ $date }}</b></td>
                 <td style="color:#000000;">Agência: <b>{{ $AGENCIA }}</b></td>
                 <td style="text-align:center;color:#000000;">Página <span class="current-page">1</span> de <span class="total-pages">1</span></td>

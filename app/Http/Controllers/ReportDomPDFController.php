@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ComprovativoModel;
 use App\Models\EstadosModel;
 use App\Models\RecuperacaoModel;
 use App\Models\RecuperadorModel;
@@ -156,5 +157,34 @@ class ReportDomPDFController extends Controller
         return $pdf->stream();
 
 
+    }
+
+
+    public function emitirRelatorioReembolsoPgtReferencia($id)
+    {
+        $Dados_comprovativo= ComprovativoModel:: where('id',$id)->get();
+        $Dados_extrato = TKxExtratoModel::where('Lnr','=', $Dados_comprovativo[0]->BuDadoOrigem)->where('Eliminado','=',0)->get();
+
+        $authenticatedUser = Auth::user();
+        $IMPRENSSO = $authenticatedUser->UtNome;
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+        $hoje = date('d-m-Y');
+        $bancos = TKxBancoModel::all();
+
+        $data = [
+            //'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('d/m/Y'),
+            'Dados_comprovativo' => $Dados_comprovativo,
+            'Dados_extrato'=>$Dados_extrato ,
+            'IMPRENSSO' => $IMPRENSSO,
+            'AGENCIA' => $resultagencia_user->OfNombre,
+            'bancos' => $bancos
+        ];
+
+        $pdf = PDF::loadView('reports.reportReembolsos', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif']);
+
+
+
+        return $pdf->stream();//->download('CalculoDesembolso.pdf');
     }
 }

@@ -538,7 +538,8 @@
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                             </path>
                         </svg>
-                        <span>Atenção! exitem Reembolsos com montante acima de 7.000.000,00 AKZ</span>
+                        <span>Atenção! Foram identificados reembolsos com montantes superiores a 7.000.000,00
+                            AKZ.</span>
                     </div>
                     <button @click="aplicarFiltrosmexc7M" class="btn btn-sm btn-outline mt-2">
                         Listar todos
@@ -552,7 +553,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span>Atenção! exitem Reembolsos com montante entre 500.000,00 e 7.000.000,00 AKZ</span>
+                        <span>Atenção! Foram identificados reembolsos com montantes entre 500.000,00 e 7.000.000,00
+                            AKZ.</span>
                     </div>
                     <button @click="aplicarFiltrosmai5M" class="btn btn-sm btn-outline mt-2">
                         Listar todos
@@ -747,18 +749,30 @@
                                 {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <a v-if="comprovativo.file" :href="`/storage/comprovativos/${comprovativo.file}`"
-                                    target="_blank"
-                                    class="text-blue-600 hover:text-blue-800 transition-colors flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <a v-if="comprovativo.usuario != 'SUPLITEL'"
+                                    :href="`/storage/comprovativos/${comprovativo.file}`" target="_blank"
+                                    class="btn btn-outline-primary btn-sm flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2 15.5v-11a2 2 0 012-2h16a2 2 0 012 2v11a2 2 0 01-2 2H4a2 2 0 01-2-2z">
+                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
                                         </path>
                                     </svg>
-                                    Visualizar
+                                    cpvtv.
                                 </a>
+
+
+
+                                <a v-else-if="comprovativo.usuario == 'SUPLITEL'"
+                                    :href="`/reports/comprovativo/${comprovativo.id}`"
+                                    class="btn btn-outline-primary btn-sm flex items-center gap-1" target="_blank">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
+                                        </path>
+                                    </svg>
+                                    cpvtv
+                                </a>
+
                                 <span v-else class="text-gray-400 text-sm">N/A</span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -972,6 +986,9 @@
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         #</th>
+                                    <th>
+                                        Arquivo
+                                    </th>
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Data</th>
@@ -996,6 +1013,19 @@
                                 <tr v-for="(pagamento, index) in pagamentosReferencia" :key="pagamento.id"
                                     class="hover:bg-gray-50">
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ index + 1 }}</td>
+                                    <td>
+                                        <a
+                                            :href="`/reports/comprovativo/${pagamento.id}`"
+                                            class="btn btn-outline-primary btn-sm flex items-center gap-1"
+                                            target="_blank">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
+                                                </path>
+                                            </svg>
+                                            cpvtv
+                                        </a>
+                                    </td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ pagamento.data }}
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{
@@ -1310,7 +1340,7 @@ const closeDetails = () => activeDetails.value = null
 const podeEditar = (comprovativo) => {
 
     const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
-    const isRegistadoHoje = dataItem=== hoje.value
+    const isRegistadoHoje = dataItem === hoje.value
     const temPermissao = props.user.comprovativo_btnedita_montante == 1
     return isRegistadoHoje || temPermissao
 }
@@ -1523,7 +1553,9 @@ const exportarParaExcel = () => {
             'Observação da DCF': comprovativo.observacao || '-',
             'Montante': comprovativo.montante || '0,00',
             'Estado': comprovativo.estado || '-',
-        }))
+            'Operador DCF': comprovativo.operadordcf || '-',
+            'Data de Operação DCF': comprovativo.datareconciliacao || '-',
+            }))
 
         const ws = XLSX.utils.json_to_sheet(dadosFormatados)
         const wb = XLSX.utils.book_new()
@@ -1714,6 +1746,10 @@ watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], () => {
     @apply bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
 }
 
+.btn-outline-primary {
+    @apply border border-blue-500 text-blue-500 hover:bg-blue-50;
+}
+
 .btn-primary-filter {
     @apply bg-green-900 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-900 focus:ring-offset-2;
 }
@@ -1728,6 +1764,10 @@ watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], () => {
 
 .btn-outline-excel {
     @apply border border-green-600 text-green-600 hover:bg-green-50;
+}
+
+.btn-outline-success {
+    @apply border border-green-500 text-green-500 hover:bg-green-50;
 }
 
 .btn-sm {

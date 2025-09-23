@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Redis;
 Route::middleware(['guest','web'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -45,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/criar-referencia', [TKxExtratoController::class, 'criarReferencia']);
     Route::post('/validar-comprovativo', [CpvtReconciliacaoController::class, 'validarComprovativo']);
     Route::get('/reports/extrato/{id}', [ReportDomPDFController::class, 'emitirRelatorioCalculoDesembolso'])->name('report_extrato_new');
+     Route::get('/reports/comprovativo/{id}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferencia'])->name('report_comprovativo_new');
 
     Route::get('/recuperacoes', [RecuperacaoController::class, 'viewRecuperacoes'])->name('recuperacoes');
     Route::post('/guardar-recuperacao', [RecuperacaoController::class, 'guardar']);
@@ -69,7 +71,11 @@ Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP
 Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
+// ROUTAS MOBILE ***********************
+ Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+ Route::get('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile']);//->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 
+/************************ */
 
 
 Route::get('/test-redis', function() {

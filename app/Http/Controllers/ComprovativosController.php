@@ -157,8 +157,8 @@ class ComprovativosController extends Controller
         $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante');
         $totalMontanteReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante');
         $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
-        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9,11,13,20])->sum('BuMontante');
-        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9,11,13,20])->sum('BuMontante');
+        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
+        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
         $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');
 
         collect($lista_comprovativo)->max('CiFecha');
@@ -267,7 +267,7 @@ class ComprovativosController extends Controller
     }
 
 
-     public function guardar(Request $request)
+    public function guardar(Request $request)
     {
         try {
             $authenticatedUser = Auth::user();
@@ -275,16 +275,16 @@ class ComprovativosController extends Controller
             $montante = $request->txtMontante;
 
             // Validações iniciais
-           /* $validator = Validator::make($request->all(), [
-                'anexo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-                'txtMontante' => 'required|numeric|min:0',
-                'calDataBorderoux' => 'required|date_format:d/m/Y',
-                'txtVoucher' => $cadastrarTipo === 'Loan' ? 'required' : 'nullable'
-            ]);
+            /* $validator = Validator::make($request->all(), [
+                 'anexo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+                 'txtMontante' => 'required|numeric|min:0',
+                 'calDataBorderoux' => 'required|date_format:d/m/Y',
+                 'txtVoucher' => $cadastrarTipo === 'Loan' ? 'required' : 'nullable'
+             ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }*/
+             if ($validator->fails()) {
+                 return redirect()->back()->withErrors($validator)->withInput();
+             }*/
 
             // Verificar se borderoux já existe
             /*$borderouxExistente = ComprovativoModel::verificarSeBorderouxExiste($request->txtVoucher, 0);
@@ -338,18 +338,18 @@ class ComprovativosController extends Controller
             }
 
             // Processar reconciliação se necessário
-          /*  if ($request->selectFormaPagamento == 14) {
-                $this->processarReconciliacao($request, $comprovativo->id);
-            }*/
+            /*  if ($request->selectFormaPagamento == 14) {
+                  $this->processarReconciliacao($request, $comprovativo->id);
+              }*/
 
             return redirect()->route('comprovativos')
-                            ->with('success', 'Dados guardados com sucesso!');
+                ->with('success', 'Dados guardados com sucesso!');
 
         } catch (Exception $e) {
             Log::error('Erro ao guardar comprovativo: ' . $e->getMessage());
             return redirect()->back()
-                            ->with('error', 'Erro ao processar comprovativo: ' . $e->getMessage())
-                            ->withInput();
+                ->with('error', 'Erro ao processar comprovativo: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -359,20 +359,20 @@ class ComprovativosController extends Controller
     private function processarLoan(Request $request, array $dadosBase)
     {
         $formaPagamento = $request->selectFormaPagamento;
-       // $estado = $formaPagamento == 14 ? 8 : 1;
-        $estado =  19;
+        // $estado = $formaPagamento == 14 ? 8 : 1;
+        $estado = 19;
 
         $loanNumber = $request->selectBase . '/' . $request->txtNumeroLoanSaving;
 
         $contaBancaria = $request->conta;
         $voucher = $request->txtVoucher;
 
-      /*  if ($formaPagamento == 14) {
-            $conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
-            if ($conta) {
-                $contaBancaria = $conta->ContaBacaria;
-            }
-        }*/
+        /*  if ($formaPagamento == 14) {
+              $conta = TKxBancoContaModel::where('codigoConta', $request->conta)->first();
+              if ($conta) {
+                  $contaBancaria = $conta->ContaBacaria;
+              }
+          }*/
 
         return array_merge($dadosBase, [
             'BaCodigo' => $request->banco,
@@ -380,7 +380,7 @@ class ComprovativosController extends Controller
             'FormaPago' => $formaPagamento,
             'PoCodigo' => $request->selectProdutoLoan,
             'BuDadoOrigem' => $loanNumber,
-            'BuReferencia' =>  $request->txtVoucher,
+            'BuReferencia' => $request->txtVoucher,
             'BuContaBancaria' => $contaBancaria,
             'idestado' => $estado,
             'BaseOperacao' => $request->selectBase
@@ -393,12 +393,12 @@ class ComprovativosController extends Controller
     private function processarSaving(Request $request, array $dadosBase)
     {
         $formaPagamento = $request->selectFormaPagamento;
-       // $estado = $formaPagamento == 14 ? 8 : 1;
-        $estado =  19;
+        // $estado = $formaPagamento == 14 ? 8 : 1;
+        $estado = 19;
 
         $loanNumber = $request->selectBase . '/' .
-                     $request->selectGrupoIndividual . '/' .
-                     $request->txtNumeroLoanSaving;
+            $request->selectGrupoIndividual . '/' .
+            $request->txtNumeroLoanSaving;
 
         $contaBancaria = $request->conta;
         $voucher = null;
@@ -578,6 +578,188 @@ class ComprovativosController extends Controller
         return response()->json($compravativos);
 
     }
+
+    // REQUISÕES MOBILE *********************************************************************************************
+
+    public function viewComprovativosMobile(Request $request)
+    {
+
+
+
+        $authenticatedUser = Auth::user();
+
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+
+
+
+
+        $tipoDeBusca = $request->tipo;
+        $tipoProdutoPP = $request->filtrar_poupancas;
+        $tipoProdutoPT = $request->filtrar_prestacoes;
+
+
+
+        $lista_produtos = TKxClProdutoModel::getProdutos();
+        $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
+
+
+
+        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
+        $dataFecho = $resultagencia_user->DataFecho;
+
+        $dataFecho = date("Y-m-d", strtotime($dataFecho));
+        $hoje = date('Y-m-d');
+
+        $dataActual = date("Y-m-d", strtotime($hoje));
+
+
+        $estados = EstadosModel::getEstadosDCF('DCF');
+        $ids_estados = $estados->pluck('id')->implode(',');
+
+        $produto_poupancas_busca = collect($lista_produtos)->where('TipoProduto', '=', 'S');
+        $produto_poupancas_busca = "'" . $produto_poupancas_busca->pluck('Metodologia')->implode(',') . "'";
+
+
+        $produto_prestacoes_busca = collect($lista_produtos)->where('TipoProduto', '=', 'L');
+        $produto_prestacoes_busca = "'" . $produto_prestacoes_busca->pluck('Metodologia')->implode(',') . "'";
+
+        $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
+        $formaspagamento_geral = "'" . $lista_das_formaspagamento->pluck('FormaPago')->implode(',') . "'";
+
+
+        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+
+
+        $ESTADO = "'" . $ids_estados . "'";
+        $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
+        $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
+
+
+        $TIPO = 0;
+        $LOAN = "'DS/280890'";
+
+        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
+
+
+
+        if ($tipoDeBusca == 1) {
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
+            $TIPO = $tipoDeBusca;
+
+            //dd( $DataFim );
+        }
+
+        if ($tipoDeBusca == 3) {
+            $LOAN = "'" . $request->loan . "'";
+            $TIPO = $tipoDeBusca;
+        }
+        if ($tipoDeBusca == 4) {
+
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+
+            if ($request->estado_input !== '28') {
+                $ESTADO = $request->estado_input;
+                // dd($request->estado_input);
+            }
+            if ($request->agencia_imput !== 'T') {
+                $Bases = "'" . $request->agencia_imput . "'";
+            }
+
+            if ($tipoProdutoPT && !$tipoProdutoPP) {
+                if ($request->produto_prestacao !== 'TL') {
+                    $produto_prestacoes_busca = "'" . $request->produto_prestacao . "'";
+
+                }
+                $produtos_geral_busca = $produto_prestacoes_busca;
+            }
+
+            if ($tipoProdutoPP && !$tipoProdutoPT) {
+                if ($request->produto_poupanca !== 'TS') {
+                    $produto_poupancas_busca = "'" . $request->produto_poupanca . "'";
+                }
+                $produtos_geral_busca = $produto_poupancas_busca;
+            }
+            if ($request->forma_pagamento !== 'TP') {
+                $formaspagamento_geral = "'" . $request->forma_pagamento . "'";
+            }
+
+            $TIPO = $tipoDeBusca;
+        }
+
+        if ($tipoDeBusca == 500000) {
+            $TIPO = $tipoDeBusca;
+        }
+        if ($tipoDeBusca == 7000000) {
+            $TIPO = $tipoDeBusca;
+        }
+
+
+
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, $formaspagamento_geral);
+
+
+        $lista_banco = TKxBancoModel::getBancos();
+        $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
+
+        $estados = EstadosModel::getEstadosDCF('DCF');
+        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+        $total = sizeof($lista_comprovativo);
+
+        $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
+        $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
+
+        $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 19)->sum('BuMontante');
+        $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante');
+        $totalMontanteReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante');
+        $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
+        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
+        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
+        $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');
+
+        collect($lista_comprovativo)->max('CiFecha');
+        collect($lista_comprovativo)->min('CiFecha');
+
+        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
+        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
+
+
+
+        $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
+        //dd($lista_pendentes->count());
+        $TipoComprovativo = [
+            'G' => 'G/',
+            'I' => 'I/'
+        ];
+        // dd($lista_comprovativo );
+
+
+        if ($lista_comprovativo) {
+
+
+
+            // Definindo a estrutura da resposta JSON
+            $response = [
+                //'status' => 'SUCCESS',
+                //'title' => 'Lista de Veiculos Disponíveis para Aluguel',
+                'listacomprovativos' => $lista_comprovativo
+            ];
+
+            // Retornando a resposta JSON
+            return response()->json($response, 200);
+        } else {
+
+
+
+            return response()->json(["title" => "Não existe comprovativo"]);
+        }
+
+
+
+    }
+
+
 
 
 

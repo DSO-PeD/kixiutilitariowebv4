@@ -31,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'geoblock' => \App\Http\Middleware\GeoBlockMiddleware::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'mobile'   => \App\Http\Middleware\IsMobileApp::class,
+
         ]);
 
 

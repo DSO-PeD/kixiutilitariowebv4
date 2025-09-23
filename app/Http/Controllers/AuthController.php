@@ -36,7 +36,7 @@ class AuthController extends Controller
         ]);
 
         // Procurar utilizador ativo
-        $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])
+        $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])->where('UtSenha', $credentials['UtSenha'])
             ->where('activo', 1)
             ->first();
 
@@ -58,7 +58,38 @@ class AuthController extends Controller
 
         return redirect()->intended(route('dashboard'));
     }
+    public function loginMobile(Request $request)
+    {
 
+
+
+
+        $utilizador = $request->input('utilizador');
+        $password = $request->input('password');
+
+
+        $user = TKxUsUtilizadorModel::where('UtCodigo', $utilizador)->where('UtSenha', $password)
+            ->where('activo', 1)
+            ->first();
+
+
+
+        if ($user) {
+
+            // Definindo a estrutura da resposta JSON
+            $response = [
+                'status' => 'SUCCESS',
+                'message' => 'Login efectuado com sucesso.',
+                'data' => $user
+            ];
+
+            // Retornando a resposta JSON
+            return response()->json($response, 200);
+        } else {
+
+            return response()->json(["message" => "Credenciais inválidas!"]);
+        }
+    }
     protected function loadUserSessionData($user)
     {
         $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)->first();
@@ -166,12 +197,12 @@ class AuthController extends Controller
             $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
             $cpvtDFC = (clone $query)->where('idestado', 19);
             $cpvtDFC2 = (clone $query)->where('idestado', 8);
-            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9,11,13,20]);
+            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9, 11, 13, 20]);
         } else {
             $query->whereDate('CiFecha', $hoje);
             $cpvtDFC = (clone $query)->where('idestado', 19);
             $cpvtDFC2 = (clone $query)->where('idestado', 8);
-            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9,11,13,20]);
+            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9, 11, 13, 20]);
 
 
         }
