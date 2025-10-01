@@ -91,9 +91,30 @@
                         </div>
 
                         <div class="space-y-1">
-                            <label class="block text-sm font-medium text-gray-700">Referência de Pagamento</label>
+
+                             <label class="block text-sm font-medium text-gray-700">Referência de Pagamento <span
+                                    class="text-red-500">*</span></label>
                             <input v-model="internalForm.txtRefPagamento" class="form-input bg-gray-50"
                                 placeholder="000000000" readonly />
+                        </div>
+                        <div class="space-y-1">
+
+                              <label class="block text-sm font-medium text-gray-700">Telefone do Cliente<span
+                                    class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <!-- Ícone da bandeira de Angola com tamanho adequado -->
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
+                                    <img src="../../../../../../public/imagens/angola.svg"
+                                        class="h-6 w-8 object-contain" alt="AO">
+                                </div>
+
+                                <!-- Input vinculado ao internalForm -->
+                                <input v-model="internalForm.txtTelefone" @input="formatPhone"
+                                    class="block w-full pl-12 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    type="tel" placeholder="921502056" maxlength="9" required/>
+                            </div>
+                            <p v-if="showError" class="text-red-500 text-xs mt-1">O telefone deve ter exatamente 9
+                                dígitos</p>
                         </div>
                     </div>
                 </div>
@@ -696,6 +717,42 @@ const filtrarAtividadesEconomicas = () => {
     internalForm.value.txtDecricaoAE = '';
 };
 
+const showError = ref(false)
+const phoneNumber = ref('')
+
+
+// Função para formatar o telefone
+const formatPhone = (event) => {
+    let value = event.target.value.replace(/\D/g, '')
+    value = value.substring(0, 9)
+    internalForm.value.txtTelefone = value
+}
+
+
+// Watch para validar o comprimento
+watch(phoneNumber, (newValue) => {
+    if (newValue.length > 0 && newValue.length !== 9) {
+        showError.value = true
+    } else {
+        showError.value = false
+    }
+})
+
+// Computed para expor o valor formatado se necessário
+const formattedPhone = computed(() => {
+    return phoneNumber.value
+})
+
+// Se precisar expor para o componente pai
+defineExpose({
+    phoneNumber,
+    formattedPhone
+})
+
+// Se receber props
+// const props = defineProps({
+//   modelValue: String
+// })
 
 
 // Adicione esta função para verificação
@@ -816,6 +873,7 @@ const internalForm = ref({
     txtValorColateralDepositado: '',
     txtFinalValorCreditoNoContrato: '',
     txtFinalValorAReceber: '',
+    txtTelefone: '',
     // Informações adicionais
     cbPPE: '',
     cbRendaMensal: '',

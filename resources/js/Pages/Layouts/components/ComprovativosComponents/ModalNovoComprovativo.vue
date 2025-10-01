@@ -1,12 +1,11 @@
 <template>
-
     <div
         class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex justify-center items-center p-4 transition-opacity duration-300">
         <div
             class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 hover:scale-100">
             <!-- Cabeçalho -->
             <div
-                class="bg-gradient-to-r from-green-900 to-greenkixi-300   to-green-950 text-white p-5 rounded-t-xl sticky top-0 z-10">
+                class="bg-gradient-to-r from-green-900 to-greenkixi-300 to-green-950 text-white p-5 rounded-t-xl sticky top-0 z-10">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xl font-bold flex items-center">
                         <i class="fa-solid fa-file-circle-check mr-3 text-blue-100"></i>
@@ -17,7 +16,6 @@
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
-
                     </button>
                 </div>
             </div>
@@ -83,7 +81,6 @@
 
                     <!-- Grid de campos -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Base</label>
                             <div class="relative">
@@ -127,22 +124,43 @@
                         <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Número {{ modelValue.ls === 'Loan' ? 'Loan' : 'Saving' }}
+                                <span v-if="modelValue.txtNumeroLoanSaving.length === 5 && modelValue.selectBase"
+                                    class="text-xs text-green-600 ml-1">
+                                    ({{ buildCompleteLoanNumber() }})
+                                </span>
                             </label>
                             <div class="relative">
                                 <input type="text" v-model="modelValue.txtNumeroLoanSaving"
                                     @input="modelValue.txtNumeroLoanSaving = $event.target.value.replace(/[^0-9]/g, '')"
-                                    maxlength="5" placeholder="00000" minlength="5" class="form-input w-full pl-3 pr-10"
-                                    :class="{ 'border-red-500': fieldErrors.txtNumeroLoanSaving }" required />
+                                    @blur="fetchClientData" maxlength="5" placeholder="00000" minlength="5"
+                                    class="form-input w-full pl-3 pr-10" :class="{
+                                        'border-red-500': fieldErrors.txtNumeroLoanSaving,
+                                        'border-green-500': modelValue.txtNumeroLoanSaving.length === 5 && !fieldErrors.txtNumeroLoanSaving
+                                    }" required />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fa-solid fa-hashtag text-gray-400"></i>
+                                </div>
+                                <!-- Indicador de carregamento -->
+                                <div v-if="isLoadingClientData"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-8">
+                                    <i class="fa-solid fa-spinner fa-spin text-blue-500"></i>
                                 </div>
                             </div>
                             <p v-if="fieldErrors.txtNumeroLoanSaving" class="mt-1 text-sm text-red-600">
                                 <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.txtNumeroLoanSaving
                                 }}
                             </p>
-                        </div>
+                            <p v-if="modelValue.txtNumeroLoanSaving.length === 5 && !fieldErrors.txtNumeroLoanSaving"
+                                class="mt-1 text-sm text-green-600">
+                                <i class="fa-solid fa-check mr-1"></i> Número completo
+                            </p>
 
+                            <!-- Mostrar o número completo que será buscado -->
+                            <div v-if="modelValue.txtNumeroLoanSaving.length === 5 && modelValue.selectBase"
+                                class="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                                <strong>Número completo para busca:</strong> {{ buildCompleteLoanNumber() }}
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Info cliente -->
@@ -214,12 +232,12 @@
                                 class="mt-1 text-sm text-red-600">
                                 <i class="fa-solid fa-circle-exclamation mr-1"></i>
                                 {{ modelValue.ls === 'Loan' ? fieldErrors.selectProdutoLoan :
-                                    fieldErrors.selectProdutoSaving }}
+                                fieldErrors.selectProdutoSaving }}
                             </p>
                         </div>
 
                         <!-- Forma de Pagamento -->
-                      <div class="flex flex-col">
+                        <div class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
                             <div class="relative">
                                 <select v-model="modelValue.selectFormaPagamento" class="form-select w-full pl-3 pr-10"
@@ -235,7 +253,8 @@
                                 </div>
                             </div>
                             <p v-if="fieldErrors.selectFormaPagamento" class="mt-1 text-sm text-red-600">
-                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectFormaPagamento }}
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.selectFormaPagamento
+                                }}
                             </p>
                         </div>
                     </div>
@@ -256,15 +275,14 @@
                                 <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ amountError }}
                             </p>
                         </div>
-                        <!-- Banco de Pagamento (visível apenas para Depósito Bancário) -->
+
                         <!-- Banco de Pagamento -->
-                        <div v-if="modelValue.selectBase === 'AC' "
-                            class="flex flex-col">
+                        <div v-if="modelValue.selectBase === 'AC'" class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Banco de Pagamento</label>
                             <div class="relative">
                                 <select v-model.number="modelValue.banco" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.banco }"
-                                    :required="modelValue.selectBase === 'AC' ">
+                                    :required="modelValue.selectBase === 'AC'">
                                     <option value="" disabled selected>Selecione o banco</option>
                                     <option v-for="banco in $page.props.bancos" :value="Number(banco.BaCodigo)"
                                         :key="banco.BaCodigo">
@@ -281,13 +299,12 @@
                         </div>
 
                         <!-- Conta Bancária -->
-                        <div v-if="modelValue.selectBase === 'AC' "
-                            class="flex flex-col">
+                        <div v-if="modelValue.selectBase === 'AC'" class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
                             <div class="relative">
                                 <select v-model="modelValue.conta" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.conta }"
-                                    :required="modelValue.selectBase === 'AC' ">
+                                    :required="modelValue.selectBase === 'AC'">
                                     <option value="" disabled selected>Selecione a conta</option>
                                     <option v-for="conta in contasFiltradas" :value="conta.codigoConta"
                                         :key="conta.codigoConta">
@@ -302,7 +319,6 @@
                                 <i class="fa-solid fa-circle-exclamation mr-1"></i> {{ fieldErrors.conta }}
                             </p>
                         </div>
-
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Data do Reembolso -->
@@ -323,8 +339,7 @@
                             </div>
 
                             <!-- Voucher -->
-                            <div class="flex flex-col"
-                                v-if="modelValue.selectBase === 'AC'">
+                            <div class="flex flex-col" v-if="modelValue.selectBase === 'AC'">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
                                 <div class="relative">
                                     <input type="text" v-model="modelValue.txtVoucher" placeholder="Voucher"
@@ -340,10 +355,6 @@
                                 </p>
                             </div>
                         </div>
-
-
-
-
                     </div>
 
                     <div v-if="fieldErrors.general" class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
@@ -378,22 +389,16 @@
                                     d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0l-3-3m3 3l3-3" />
                             </svg>
                             &ThickSpace;
-
                             <span v-if="!isSubmitting">Guardar</span>
                             <span v-else>
                                 <i class="fa-solid fa-spinner fa-spin mr-1"></i> Processando...
                             </span>
                         </button>
-
-
                     </div>
-
-
                 </form>
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -402,10 +407,8 @@ import { ref, watch, nextTick, computed } from 'vue';
 const fileInput = ref(null);
 const selectedFile = ref(null);
 const fileError = ref('');
-//const props = defineProps(['modelValue']);
-//const emit = defineEmits(['update:modelValue']);
 
-// FORMANTANDO VALORES
+// Props
 const props = defineProps({
     bases: Array,
     tipocomprovativos: Object,
@@ -419,31 +422,168 @@ const props = defineProps({
     },
     fieldName: {
         type: String,
-        default: 'txtMontante' // Default name if not provided
+        default: 'txtMontante'
     }
 });
 
+// Emits
+const emit = defineEmits(['update:modelValue', 'close', 'save']);
+
+// Refs
 const isSubmitting = ref(false);
 const displayValue = ref(formatCurrency(props.modelValue.txtMontante || '0'));
 const amountError = ref('');
 const dateError = ref('');
 const dateValue = ref('');
+const isLoadingClientData = ref(false);
 
+// Field Errors
+const fieldErrors = ref({
+    selectBase: '',
+    selectGrupoIndividual: '',
+    txtNumeroLoanSaving: '',
+    txtInfoAdicional: '',
+    telefone: '',
+    selectProdutoLoan: '',
+    selectProdutoSaving: '',
+    selectFormaPagamento: '',
+    calDataBorderoux: '',
+    banco: null,
+    conta: null,
+    txtVoucher: '',
+    general: ''
+});
+
+// Computed Properties
 const formaspagamentosFiltrados = computed(() => {
     return props.formaspagamentos.filter(formapgt => {
-        // Supondo que o código para "Pagamento por Referência" seja 10
-        // Ajuste o número conforme o código real no seu sistema
-        return formapgt.FormaPago !== 8; // Ou o código que corresponda
+        return formapgt.FormaPago !== 8;
     });
 });
 
 const isSaveDisabled = computed(() => {
-      if (!displayValue.value) return true;
-
+    if (!displayValue.value) return true;
     const numericValue = unformatCurrency(displayValue.value);
     return numericValue > 7000000 || amountError.value !== '' || isSubmitting.value;
 });
-// Método para validar o montante
+
+const contasFiltradas = computed(() => {
+    if (props.modelValue.banco === null || props.modelValue.banco === undefined) return [];
+    return props.contas.filter(conta =>
+        Number(conta.BaCodigo) === Number(props.modelValue.banco)
+    );
+});
+
+const showBankFields = computed(() => {
+    const depositoBancario = props.formaspagamentos.find(
+        fp => fp.FormaPago == 14 || fp.FormaPago == 14
+    );
+    return depositoBancario && props.modelValue.selectFormaPagamento === depositoBancario.FormaPago;
+});
+
+// Função para construir o número completo
+const buildCompleteLoanNumber = () => {
+    if (props.modelValue.ls === 'Loan') {
+        return `${props.modelValue.selectBase}/${props.modelValue.txtNumeroLoanSaving}`;
+    } else if (props.modelValue.ls === 'Saving') {
+        return `${props.modelValue.selectBase}/${props.modelValue.selectGrupoIndividual}/${props.modelValue.txtNumeroLoanSaving}`;
+    }
+    return '';
+};
+
+// Função para buscar dados do cliente
+const fetchClientData = async () => {
+    // Resetar campos anteriores
+    props.modelValue.txtInfoAdicional = '';
+    props.modelValue.telefone = '';
+    fieldErrors.value.general = '';
+
+    // Verificar se todos os campos necessários estão preenchidos
+    if (props.modelValue.txtNumeroLoanSaving.length !== 5 || !props.modelValue.selectBase) {
+        return;
+    }
+
+    // Para Saving, verificar se o grupo/individual está selecionado
+    if (props.modelValue.ls === 'Saving' && !props.modelValue.selectGrupoIndividual) {
+        fieldErrors.value.general = 'Para Saving, selecione o Grupo/Individual.';
+        return;
+    }
+
+    isLoadingClientData.value = true;
+
+    try {
+        // Construir o número completo
+        const completeLoanNumber = buildCompleteLoanNumber();
+
+        if (!completeLoanNumber) {
+            fieldErrors.value.general = 'Erro ao construir o número completo.';
+            return;
+        }
+
+        // Fazer a requisição para a API - CORREÇÃO AQUI
+        //const response = await axios.get(`/loadautofill/${encodeURIComponent(completeLoanNumber)}`);
+        const response = await axios.get('/loadautofill', {
+            params: {
+                completeNumber: completeLoanNumber
+            }
+        });
+        // Verificar se a resposta foi bem-sucedida
+        if (response.data.success) {
+            // Preencher os campos automaticamente - CORREÇÃO AQUI
+            props.modelValue.txtInfoAdicional = response.data.nome || '';
+            props.modelValue.telefone = response.data.telefone || '';
+
+            console.log('Dados do cliente carregados com sucesso para:', completeLoanNumber);
+        } else {
+            fieldErrors.value.general = response.data.error || 'Cliente não encontrado. Não há problemas, podes prosseguir com o preenchimento dos campos.';
+        }
+    } catch (error) {
+        console.error('Erro ao buscar dados do cliente:', error);
+
+        // Melhor tratamento de erro
+        if (error.response) {
+            // O servidor respondeu com um status de erro
+            if (error.response.status === 404) {
+                fieldErrors.value.general = 'Cliente não encontrado. Não há  problemas, podes prosseguir com o preenchimento dos campos.';
+            } else if (error.response.status === 500) {
+                fieldErrors.value.general = 'Erro interno do servidor. Tente novamente.';
+            } else {
+                fieldErrors.value.general = error.response.data.error || 'Erro ao carregar dados do cliente.';
+            }
+        } else if (error.request) {
+            // A requisição foi feita mas não houve resposta
+            fieldErrors.value.general = 'Sem resposta do servidor. Não há problemas, podes prosseguir com o preenchimento dos campos.';
+        } else {
+            // Outro tipo de erro
+            fieldErrors.value.general = 'Erro ao carregar dados do cliente. Não há problemas, podes prosseguir com o preenchimento dos campos.';
+        }
+    } finally {
+        isLoadingClientData.value = false;
+    }
+};
+
+// Watchers para buscar dados automaticamente
+watch([
+    () => props.modelValue.txtNumeroLoanSaving,
+    () => props.modelValue.selectBase,
+    () => props.modelValue.selectGrupoIndividual,
+    () => props.modelValue.ls
+], ([newNumero, newBase, newGrupo, newLs], [oldNumero, oldBase, oldGrupo, oldLs]) => {
+    // Executar apenas quando houver mudanças relevantes e campos estiverem prontos
+    if (newNumero && newNumero.length === 5 && newBase) {
+        // Para Saving, esperar também pelo grupo/individual
+        if (newLs === 'Saving' && !newGrupo) {
+            return;
+        }
+
+        // Pequeno delay para evitar múltiplas chamadas rápidas
+        setTimeout(() => {
+            fetchClientData();
+        }, 300);
+    }
+});
+
+// Funções de validação de montante
 function validateAmount() {
     const numericValue = unformatCurrency(displayValue.value);
 
@@ -461,74 +601,68 @@ function validateAmount() {
     return true;
 }
 
+function validateAmountField() {
+    const amountInput = document.querySelector('input[name="txtMontante"]');
+    if (!validateAmount()) {
+        amountInput.classList.add('border-red-500');
+        const errorMsg = amountError.value || 'O montante deve ser maior que 0 e abaixo ou igual a 7.000.000';
+        showError(amountInput, errorMsg);
+        return false;
+    }
+    return true;
+}
+
+// Função de submissão do formulário
 function handleSubmit(event) {
     if (isSubmitting.value) return;
     isSubmitting.value = true;
+
     try {
-        // 1. Garantir que o event existe
         if (!event) {
             console.error('Evento não definido');
             return;
         }
 
-        // 2. Resetar todos os erros visuais
+        // Resetar todos os erros visuais
         resetAllErrors();
 
-        // 3. Validar campos passo a passo
+        // Validar campos passo a passo
         let isValid = true;
 
-        // Validação do montante
         if (!validateAmountField()) {
             isValid = false;
         }
 
-        // Validação dos campos required
         if (!validateRequiredFields()) {
             isValid = false;
         }
 
-        // Validação específica do telefone
         if (!validatePhoneField()) {
             isValid = false;
         }
 
-        // 4. Se inválido, mostrar primeiro erro
         if (!isValid) {
             focusFirstError();
             return;
         }
 
-        // 5. Se tudo válido, emitir evento
         emit('save');
 
     } catch (error) {
         console.error('Erro durante a submissão:', error);
-        // Mostrar mensagem de erro genérico para o usuário
         showGeneralError('Ocorreu um erro ao processar o formulário');
     } finally {
-        isSubmitting.value = false; // Reativa o botão
+        isSubmitting.value = false;
     }
 }
 
-// Funções auxiliares:
-
+// Funções auxiliares de validação
 function resetAllErrors() {
     const errorElements = document.querySelectorAll('.text-red-600');
     errorElements.forEach(el => el.remove());
 
     const errorInputs = document.querySelectorAll('.border-red-500');
     errorInputs.forEach(input => input.classList.remove('border-red-500'));
-}
-
-function validateAmountField() {
-    const amountInput = document.querySelector('input[name="txtMontante"]');
-    if (!validateAmount()) {
-        amountInput.classList.add('border-red-500');
-        const errorMsg = amountError.value || 'O montante deve ser maior que 0 e abaixoou igual a 7.000.0000';
-        showError(amountInput, errorMsg);
-        return false;
-    }
-    return true;
 }
 
 function validateRequiredFields() {
@@ -578,44 +712,11 @@ function focusFirstError() {
 }
 
 function showGeneralError(message) {
-    // Implemente conforme necessário (pode ser um toast, alerta, etc.)
     console.error(message);
-    // Exemplo com um alerta:
     alert(message);
 }
 
-const emit = defineEmits(['update:modelValue', 'close', 'save']);
-
-
-
-const fieldErrors = ref({
-    selectBase: '',
-    selectGrupoIndividual: '',
-    txtNumeroLoanSaving: '',
-    txtInfoAdicional: '',
-    telefone: '',
-    selectProdutoLoan: '',
-    selectProdutoSaving: '',
-    selectFormaPagamento: '',
-    calDataBorderoux: '',
-    banco: null,
-    conta: null,
-    txtVoucher: '',
-    general: '' // Erro geral
-});
-
-
-
-
-watch(displayValue, (newValue) => {
-    const numericValue = unformatCurrency(newValue);
-    if (numericValue > 7000000) {
-        // Mostrar alerta
-        alert('O montante não pode exceder 7.000.000');
-    }
-});
-
-// Converter entre formato ISO (YYYY-MM-DD) e DD/MM/YYYY
+// Funções de formatação de data
 function toDDMMYYYY(isoDate) {
     if (!isoDate) return '';
     const [year, month, day] = isoDate.split('-');
@@ -628,7 +729,6 @@ function toISODate(ddmmyyyy) {
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 }
 
-// Validação da data
 function validateDate() {
     dateError.value = '';
     if (!dateValue.value) {
@@ -636,14 +736,13 @@ function validateDate() {
         return;
     }
 
-    // Atualiza o modelValue no formato DD/MM/YYYY
     emit('update:modelValue', {
         ...props.modelValue,
         calDataBorderoux: toDDMMYYYY(dateValue.value)
     });
 }
 
-// Watcher para sincronizar quando o modelValue mudar externamente
+// Watcher para data
 watch(() => props.modelValue.calDataBorderoux, (newVal) => {
     if (newVal) {
         dateValue.value = toISODate(newVal);
@@ -652,117 +751,95 @@ watch(() => props.modelValue.calDataBorderoux, (newVal) => {
     }
 }, { immediate: true });
 
-
-
-// Função de formatação
+// Funções de formatação monetária
 function formatCurrency(value) {
     if (value === null || value === undefined || value === '') return '';
 
-    // Se for string, limpa e converte para número
     if (typeof value === 'string') {
         value = value.replace(/[^\d,]/g, '');
-        // Converte para número (considerando vírgula como decimal)
         value = value.replace(/\./g, '').replace(',', '.');
         value = parseFloat(value) || 0;
     }
 
-    // Formata para o padrão PT (1.234,56)
     return new Intl.NumberFormat('pt-PT', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(value);
 }
 
-// Função para limpar a formatação
 function unformatCurrency(value) {
     return parseFloat(
         value.replace(/\./g, '').replace(',', '.')
     ) || 0;
 }
 
-// Watch para sincronização externa
+// Watch para sincronização do montante
 watch(() => props.modelValue.txtMontante, (newVal) => {
     if (newVal !== unformatCurrency(displayValue.value)) {
         displayValue.value = formatCurrency(newVal);
     }
 });
 
-// Atualização durante a digitação
+// Manipulação de input do montante
 function onInput(event) {
     let value = event.target.value;
     amountError.value = '';
 
-    // Mantém apenas números e vírgula
     value = value.replace(/[^\d,]/g, '');
 
-    // Garante apenas uma vírgula
     const hasComma = value.includes(',');
     value = value.replace(/,/g, '');
     if (hasComma) {
         value = value.replace(/(\d{2})$/, ',$1');
     }
 
-    // Adiciona pontos como separadores de milhar
     if (value.length > 3) {
         const parts = value.split(',');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         value = parts.join(',');
     }
 
-    // Verifica se o valor excede o limite
     const numericValue = unformatCurrency(value);
     if (numericValue > 7000000) {
         amountError.value = 'O montante não pode exceder 7.000.000';
         return;
     }
 
-    // Atualiza o valor exibido
     displayValue.value = value;
 
-    // Emite o valor numérico
     emit('update:modelValue', {
         ...props.modelValue,
         txtMontante: numericValue
     });
 
-    // Mantém a posição do cursor
     nextTick(() => {
         const cursorPos = event.target.selectionStart;
         event.target.setSelectionRange(cursorPos, cursorPos);
     });
 }
 
-
 function onBlur() {
-
-    // Converte o valor formatado para numérico
     const numericValue = unformatCurrency(displayValue.value);
 
-    // Valida o montante
     if (!validateAmount()) {
         return;
     }
 
-
-
-
-    // Atualiza o v-model
     emit('update:modelValue', {
         ...props.modelValue,
         txtMontante: numericValue
     });
 
-    // Formata o valor para exibição
     displayValue.value = formatCurrency(numericValue);
 }
 
+// Funções de manipulação de arquivos
 const handleFileUpload = (event) => {
     const file = event.target.files[0];
     fileError.value = '';
 
     if (!file) return;
 
-    // Verificar tipo de arquivo
     const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
     if (!validTypes.includes(file.type)) {
         fileError.value = 'Formato de arquivo inválido. Use JPG, PNG ou PDF.';
@@ -770,7 +847,6 @@ const handleFileUpload = (event) => {
         return;
     }
 
-    // Verificar tamanho (2MB)
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
         fileError.value = 'Arquivo muito grande. Tamanho máximo: 2MB.';
@@ -788,60 +864,42 @@ const resetFileInput = () => {
     }
 };
 
+// Expose
 defineExpose({
     selectedFile,
     resetFileInput
 });
 
-// Adicione esta computed property para determinar se os campos de banco devem ser mostrados
-const showBankFields = computed(() => {
-    // Encontre o item "Depósito Bancário" no array formaspagamentos
-    const depositoBancario = props.formaspagamentos.find(
-        fp => fp.FormaPago == 14 ||
-            fp.FormaPago == 14
-    );
-
-    // Verifique se a forma de pagamento selecionada é "Depósito Bancário"
-    return depositoBancario && props.modelValue.selectFormaPagamento === depositoBancario.FormaPago;
-});
-
-// Atualize a computed property contasFiltradas para usar props.contas
-const contasFiltradas = computed(() => {
-    // Verifica se o banco está definido (incluindo 0)
-    if (props.modelValue.banco === null || props.modelValue.banco === undefined) return [];
-
-    // Converte para número e compara
-    return props.contas.filter(conta =>
-        Number(conta.BaCodigo) === Number(props.modelValue.banco)
-    );
-});
-
+// Watch para debug
 watch(fieldErrors, (newErrors) => {
     console.log('Erros atuais:', newErrors);
 }, { deep: true });
+
+// Watch para limite do montante
+watch(displayValue, (newValue) => {
+    const numericValue = unformatCurrency(newValue);
+    if (numericValue > 7000000) {
+        alert('O montante não pode exceder 7.000.000');
+    }
+});
 </script>
 
 <style scoped>
-/* Adicione isto ao seu <style scoped> */
 .border-red-500 {
     border-color: #ef4444 !important;
     border-width: 1px !important;
 }
 
-/* Garanta que as classes do input não estão sobrescrevendo */
 .form-input {
     border-width: 1px !important;
 }
 
-/* Garante que o input date tenha a mesma aparência que outros inputs */
 input[type="date"] {
     appearance: none;
     -webkit-appearance: none;
     min-height: 42px;
-    /* Ajuste conforme necessário */
 }
 
-/* Esconde o ícone de calendário nativo em alguns navegadores */
 input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
     position: absolute;
@@ -881,7 +939,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     --tw-gradient-to: #08583d;
 }
 
-/* Animações */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -898,7 +955,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     animation: fadeIn 0.3s ease-out forwards;
 }
 
-/* Drag and drop styles */
 .drag-active {
     @apply border-blue-500 bg-blue-50/50;
 }

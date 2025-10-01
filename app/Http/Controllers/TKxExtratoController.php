@@ -170,7 +170,8 @@ class TKxExtratoController extends Controller
 
                 'BaseOperacao' => $item->BaseOperacao,
                 'referenciapagamento' => $item->referenciapagamento,
-                'RefPgtActivo' => $item->RefPgtActivo
+                'RefPgtActivo' => $item->RefPgtActivo,
+                'Telefone' =>$item->Telefone
 
 
             ];
@@ -382,7 +383,8 @@ class TKxExtratoController extends Controller
                 'Eliminado' => 0,
                 'BaseOperacao' => $siglabase,
                 'referenciapagamento' => $request->txtRefPagamento,
-                'RefPgtActivo' => 0
+                'RefPgtActivo' => 0,
+                'Telefone' =>$request->txtTelefone
             ];
 
             // Garantir que nenhum campo obrigatório fique nulo

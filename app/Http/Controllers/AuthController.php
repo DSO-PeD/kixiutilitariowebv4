@@ -68,19 +68,24 @@ class AuthController extends Controller
         $password = $request->input('password');
 
 
-        $user = TKxUsUtilizadorModel::where('UtCodigo', $utilizador)->where('UtSenha', $password)
+        /* $user = TKxUsUtilizadorModel::where('UtCodigo', $utilizador)->where('UtSenha', $password)
+             ->where('activo', 1)
+             ->first(); */
+        $user = TKxUsUtilizadorModel::select('UtCodigo', 'UtNome', 'UtEmail', 'UtFuncao')
+            ->where('UtCodigo', $utilizador)
+            ->where('UtSenha', $password)
             ->where('activo', 1)
             ->first();
 
 
-
         if ($user) {
-
+            $agencia = TKxAgenciaModel::select('OfIdentificador', 'OfNombre', 'BasesOperacao')->where('OfCodigo', $user->UtAgencia)->first();
             // Definindo a estrutura da resposta JSON
             $response = [
                 'status' => 'SUCCESS',
                 'message' => 'Login efectuado com sucesso.',
-                'data' => $user
+                'data' => $user,
+                'dataagencia' => $agencia
             ];
 
             // Retornando a resposta JSON

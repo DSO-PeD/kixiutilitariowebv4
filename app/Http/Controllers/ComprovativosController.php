@@ -12,6 +12,7 @@ use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
 use App\Models\TKxClTipopagamentoModel;
+use App\Models\TKxUsUtilizadorModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,8 @@ use Illuminate\Support\Facades\Log;
 
 
 use Exception;
+use Illuminate\Support\Facades\DB;
+
 class ComprovativosController extends Controller
 {
     public function viewComprovativos(Request $request)
@@ -264,6 +267,78 @@ class ComprovativosController extends Controller
             'dataFimPeriodo' => $DataInicioFormatada
 
         ]);
+    }
+    public function getClientData(Request $request)
+    {
+        try {
+            // Decodificar o número completo
+            // $completeNumber = urldecode($completeNumber);
+            $completeNumber = $request->query('completeNumber');
+            Log::info("Buscando dados do cliente", [
+                'numero_completo' => $completeNumber,
+                'ip' => request()->ip()
+            ]);
+
+            // Buscar primeiro na tabela tkxextrato
+            $clientData = DB::table('comprovativos')
+                ->where('BuDadoOrigem', $completeNumber)
+                ->select('infoadicional as nome', 'telefonecliente as telefone')
+                ->first();
+
+            if ($clientData) {
+                Log::info("Dados encontrados na tabela comprovativos", [
+                    'numero_completo' => $completeNumber,
+                    'cliente' => $clientData->nome
+                ]);
+
+                return response()->json([
+                    'nome' => $clientData->nome,
+                    'telefone' => $clientData->telefone,
+                    'success' => true
+                ]);
+            }
+
+            // Se não encontrou, buscar na tabela comprovativos
+            $clientData = DB::table('tkxextrato')
+                ->where('Lnr', $completeNumber)
+                ->select('Cliente as nome', 'Telefone as telefone')
+                ->first();
+
+            if ($clientData) {
+                Log::info("Dados encontrados na tabela tkxextrato", [
+                    'numero_completo' => $completeNumber,
+                    'cliente' => $clientData->nome
+                ]);
+
+                return response()->json([
+                    'nome' => $clientData->nome,
+                    'telefone' => $clientData->telefone,
+                    'success' => true
+                ]);
+            }
+
+            Log::warning("Cliente não encontrado em nenhuma tabela", [
+                'numero_completo' => $completeNumber
+            ]);
+
+            return response()->json([
+                'error' => 'Cliente não encontrado',
+                'message' => $completeNumber,
+                'success' => false
+            ], 404);
+
+        } catch (\Exception $e) {
+            Log::error("Erro ao buscar dados do cliente", [
+                'error' => $e->getMessage(),
+                'numero_completo' => $completeNumber ?? 'N/A',
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'error' => 'Erro interno do servidor',
+                'success' => false
+            ], 500);
+        }
     }
 
 
@@ -586,9 +661,9 @@ class ComprovativosController extends Controller
 
 
 
-        $authenticatedUser = Auth::user();
+        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo', '=', 'albe.ebo')->first(); //Auth::user();
 
-        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', 2)->first();
 
 
 

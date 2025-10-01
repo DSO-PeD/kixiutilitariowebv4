@@ -61,7 +61,8 @@ class TKxExtratoModel extends Model
         'EliminadoPor',
         'BaseOperacao',
         'referenciapagamento',
-        'RefPgtActivo'
+        'RefPgtActivo',
+        'Telefone'
     ];
 
     public static function getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN)

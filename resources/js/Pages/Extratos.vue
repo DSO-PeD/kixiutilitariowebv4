@@ -316,7 +316,8 @@
                                     Montante
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
 
                                 <div class="flex items-center text-center gap-1">
 
@@ -330,7 +331,25 @@
                                     Ref. Pagamento
                                 </div>
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+
+                                <div class="flex items-center text-center gap-1">
+
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                            d="M20.25 3.75v4.5m0-4.5h-4.5m4.5 0-6 6m3 12c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
+                                    </svg>
+
+
+
+                                    Contacto
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Ações</th>
                         </tr>
                     </thead>
@@ -375,6 +394,9 @@
                                     </svg>
                                     {{ item.referenciapagamento }}
                                 </button>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-black-600">
+                                <span v-if="item.Telefone != 'Nenhum'">{{ formatTelefone(item.Telefone) }}</span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex space-x-2 justify-center">
@@ -463,10 +485,9 @@
     <ModalNovoCalculo :show="showModal" :form="form" @update:form="(newValue) => form = newValue"
         @close="showModal = false" @submit="submitForm" :bases="$page.props.bases"
         :produtosext="$page.props.produtosextratos" :bancos="$page.props.lista_banco"
-        :contas="$page.props.lista_bancos_contas"
-        :atividades="$page.props.lista_actividade_economica"
-        :grupoatividades="$page.props.lista_grupo_actividade_economica"
-        :nesGrupos="$page.props.lista_nes_grupo" :nesTipos="$page.props.lista_nes_tipo" v-model="form" />
+        :contas="$page.props.lista_bancos_contas" :atividades="$page.props.lista_actividade_economica"
+        :grupoatividades="$page.props.lista_grupo_actividade_economica" :nesGrupos="$page.props.lista_nes_grupo"
+        :nesTipos="$page.props.lista_nes_tipo" v-model="form" />
 
     <ModalDetalhesExtrato :show="showModalDetalhes" @close="showModalDetalhes = false" :extrato="extratoSelecionado" />
 
@@ -698,7 +719,13 @@ function formatCurrency(value) {
         maximumFractionDigits: 2
     });
 }
-
+function formatTelefone(telefone) {
+    if (!telefone) return "";
+    // Garante que seja string
+    telefone = String(telefone);
+    // Quebra em blocos de 3
+    return telefone.replace(/(\d{3})(?=\d)/g, "$1 ");
+}
 
 const calcularNumeroLinha = (index) => {
     return (paginaAtual.value - 1) * props.perPage + index + 1
@@ -859,6 +886,7 @@ const exportarParaExcel = () => {
             alert('Nenhum dado disponível para exportar');
             return;
         }
+
 
 
 

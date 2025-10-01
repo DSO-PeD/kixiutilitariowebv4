@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])  ->name('extrato.eliminar');
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
 
+
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
     Route::post('/alterardata', [ComprovativosController::class, 'editarDataRegistro'])->name('editar-dataregistro-comprovativo');
     Route::post('/alterarvoucher', [ComprovativosController::class, 'editarVoucher'])->name('editar-voucher-comprovativo');
@@ -46,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/criar-referencia', [TKxExtratoController::class, 'criarReferencia']);
     Route::post('/validar-comprovativo', [CpvtReconciliacaoController::class, 'validarComprovativo']);
     Route::get('/reports/extrato/{id}', [ReportDomPDFController::class, 'emitirRelatorioCalculoDesembolso'])->name('report_extrato_new');
-     Route::get('/reports/comprovativo/{id}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferencia'])->name('report_comprovativo_new');
+    Route::get('/reports/comprovativo/{id}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferencia'])->name('report_comprovativo_new');
 
     Route::get('/recuperacoes', [RecuperacaoController::class, 'viewRecuperacoes'])->name('recuperacoes');
     Route::post('/guardar-recuperacao', [RecuperacaoController::class, 'guardar']);
@@ -62,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::get('/sendsmsteste', [PgtRefNotificacaoController::class, 'sendSms'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 
 Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
@@ -100,6 +103,6 @@ Route::get('/test-redis', function() {
             'help' => 'O Redis pode não estar configurado no servidor'
         ], 500);
     }
-});
+})->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 
