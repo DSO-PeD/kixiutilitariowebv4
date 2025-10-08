@@ -60,41 +60,102 @@ class AuthController extends Controller
     }
     public function loginMobile(Request $request)
     {
-
-
-
-
         $utilizador = $request->input('utilizador');
         $password = $request->input('password');
 
-
-        /* $user = TKxUsUtilizadorModel::where('UtCodigo', $utilizador)->where('UtSenha', $password)
-             ->where('activo', 1)
-             ->first(); */
-        $user = TKxUsUtilizadorModel::select('UtCodigo', 'UtNome', 'UtEmail', 'UtFuncao')
-            ->where('UtCodigo', $utilizador)
+        $user = TKxUsUtilizadorModel::where('UtCodigo', $utilizador)
             ->where('UtSenha', $password)
             ->where('activo', 1)
             ->first();
 
-
         if ($user) {
-            $agencia = TKxAgenciaModel::select('OfIdentificador', 'OfNombre', 'BasesOperacao')->where('OfCodigo', $user->UtAgencia)->first();
-            // Definindo a estrutura da resposta JSON
+            $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)->first();
+
+            $basesOperacao = explode(',', $agencia->BasesOperacao);
+
+
+            $basesOperacionais = TKxAgenciaModel::whereIn(
+                'OfIdentificador',
+                $basesOperacao
+            )->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
+
+            $ProdutosPrestacao = TKxClProdutoModel::where(
+                'TipoProduto'               ,
+                '=',
+                'L'
+            )->where('Estado', 1)->get(['Metodologia', 'PoAgrupado']);
+
+             $ProdutosPoupancas= TKxClProdutoModel::where(
+                'TipoProduto'               ,
+                '=',
+                'S'
+            )->where('Estado', 1)->get(['Metodologia', 'PoAgrupado']);
+
+
+            $dateFilter = $this->getDateFilter($request);
+
+            $FormasDePagamento = TKxClTipopagamentoModel::getFormasDePamentos();
+
+
+
+
+
+
+
+
+            $hoje = Carbon::today()->format('Y-m-d 00:00:00');
+
+
+
+            $query = ComprovativoModel::whereIn('BaseOperacao', $basesOperacao)->where('Eliminado', 0);
+            $query->whereDate('CiFecha', $hoje);
+            $cpvtDFC = (clone $query)->where('idestado', 19);
+            $cpvtDFC2 = (clone $query)->where('idestado', 8);
+            $cpvtDFC3 = (clone $query)->whereIn('idestado', [9, 11, 13, 20]);
+
             $response = [
                 'status' => 'SUCCESS',
                 'message' => 'Login efectuado com sucesso.',
-                'data' => $user,
-                'dataagencia' => $agencia
+                'data' => [
+                    'utilizador' => [
+                        'UtCodigo' => $user->UtCodigo,
+                        'UtNome' => $user->UtNome,
+                        'UtFuncao' => $user->UtFuncao,
+                        'UtAgencia' => $user->UtAgencia,
+                    ],
+                    'agencia' => $agencia ? [
+                        'OfCodigo' => $agencia->OfCodigo,
+                        'OfNombre' => $agencia->OfNombre,
+                        'OfIdentificador' => $agencia->OfIdentificador,
+                        'BasesOperacao' => $agencia->BasesOperacao,
+                    ] : null,
+                    'dadosestatisticos' => [
+                        'QtdRegistosComprovativos' => $query->count(),
+                        'QtdValorRegistosComprovativos' => $query->sum('BuMontante'),
+                        'TotaldeRegistossemParacer' => $cpvtDFC->count(),
+                        'TotalValordeRegistossemParacer' => $cpvtDFC->sum('BuMontante'),
+                        'TotaldeRegistosRespondidos' => $cpvtDFC2->count(),
+                        'TotalValordeRegistosRespondidos' => $cpvtDFC2->sum('BuMontante'),
+                        'TotaldeReconciliaNaoFinalizado' => $cpvtDFC3->count(),
+                        'TotalValorReconciliaNaoFinalizado' => $cpvtDFC3->sum('BuMontante'),
+                    ],
+                    'basesOperacionais' => $basesOperacionais,
+                    'ProdutosPrestacao' => $ProdutosPrestacao,
+                    'ProdutosPoupancas' => $ProdutosPoupancas,
+                    'FormasDePagamento'=>  $FormasDePagamento
+
+                ]
             ];
 
-            // Retornando a resposta JSON
             return response()->json($response, 200);
         } else {
-
-            return response()->json(["message" => "Credenciais inválidas!"]);
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Credenciais inválidas!'
+            ], 401);
         }
     }
+
     protected function loadUserSessionData($user)
     {
         $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)->first();

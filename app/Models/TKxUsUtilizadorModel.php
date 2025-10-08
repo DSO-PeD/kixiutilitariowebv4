@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class TKxUsUtilizadorModel extends Authenticatable
 {
     use Notifiable;
-    protected $table = 'tkxusutilizador';
+protected $table = 'tkxusutilizador';
 protected $primaryKey = 'UtCodigo';
 public $incrementing = false;
 protected $keyType = 'string';
