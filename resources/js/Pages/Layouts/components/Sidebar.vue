@@ -52,67 +52,74 @@ const closeSidebar = () => {
 
 <template>
     <!-- Overlay para mobile -->
-    <div v-if="isExpanded && windowWidth < 1024" class="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden" @click="closeSidebar"></div>
+    <div v-if="isExpanded && windowWidth < 1024" class="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
+        @click="closeSidebar"></div>
 
     <!-- Mini Sidebar -->
     <div class="w-16 fixed h-full bg-white border-r border-gray-200 shadow-sm z-30 transition-all duration-200"
-         @mouseenter="expandMenu"
-         @mouseleave="startCollapseTimer">
+        @mouseenter="expandMenu" @mouseleave="startCollapseTimer">
 
         <div class="p-4 border-b border-gray-100 flex justify-center">
-            <img :src="SmallLogo" alt="Logo" class="h-8 w-8 object-contain transition-transform duration-200 hover:scale-110" />
+            <img :src="SmallLogo" alt="Logo"
+                class="h-8 w-8 object-contain transition-transform duration-200 hover:scale-110" />
         </div>
 
         <nav class="mt-6 flex flex-col items-center space-y-4 px-2">
             <!-- Itens do menu (mantenha igual) -->
-            <a href="/dashboard" class="nav-link-icon group" :class="{ 'active': $page.url === '/dashboard' }" data-preload
-                title="Dashboard">
+            <a href="/dashboard" class="nav-link-icon group" :class="{ 'active': $page.url === '/dashboard' }"
+                data-preload title="Dashboard">
                 <i class="fas fa-home text-lg"></i>
                 <span class="nav-tooltip">Dashboard</span>
             </a>
             <!-- ... outros itens ... -->
-                   <!-- Reembolsos -->
-                <a v-if="$page.props.user.rec_comprovativo" href="/comprovativos" class="nav-link-icon group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/comprovativos') }" title="Reembolsos">
-                    <i class="fas fa-file-invoice-dollar text-lg"></i>
-                    <span class="nav-tooltip">Reembolsos</span>
-                </a>
+            <!-- Reembolsos -->
+            <a v-if="$page.props.user.rec_comprovativo" href="/comprovativos" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/comprovativos') }" title="Reembolsos">
+                <i class="fas fa-file-invoice-dollar text-lg"></i>
+                <span class="nav-tooltip">Reembolsos</span>
+            </a>
 
-                    <!-- Reconciliação -->
-                <a v-if="$page.props.user.reconci_habilita" href="/reconciliacao" class="nav-link-icon group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/reconciliacao') }" title="Reconciliação">
-                    <i class="fas fa-exchange-alt text-lg"></i>
-                    <span class="nav-tooltip">Reconciliação</span>
-                </a>
+            <!-- Reconciliação -->
+            <a v-if="$page.props.user.reconci_habilita" href="/reconciliacao" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/reconciliacao') }" title="Reconciliação">
+                <i class="fas fa-exchange-alt text-lg"></i>
+                <span class="nav-tooltip">Reconciliação</span>
+            </a>
 
-                  <!-- Desembolsos -->
-                <a v-if="$page.props.user.rec_extrato" href="/extratos" class="nav-link-icon group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/extratos') }" title="Desembolsos">
-                    <i class="fas fa-money-bill-wave text-lg"></i>
-                    <span class="nav-tooltip">Desembolsos</span>
-                </a>
+            <!-- Desembolsos -->
+            <a v-if="$page.props.user.rec_extrato" href="/extratos" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/extratos') }" title="Desembolsos">
+                <i class="fas fa-money-bill-wave text-lg"></i>
+                <span class="nav-tooltip">Desembolsos</span>
+            </a>
 
-                       <!-- Recuperações -->
-                <a v-if="$page.props.user.rec_registra" href="/recuperacoes" class="nav-link-icon group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/recuperacoes') }" title="Recuperações">
-                    <i class="fas fa-hand-holding-usd text-lg"></i>
-                    <span class="nav-tooltip">Recuperações</span>
-                </a>
+            <!-- Recuperações -->
+            <a v-if="$page.props.user.rec_registra" href="/recuperacoes" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/recuperacoes') }" title="Recuperações">
+                <i class="fas fa-hand-holding-usd text-lg"></i>
+                <span class="nav-tooltip">Recuperações</span>
+            </a>
+
+            <!-- Referencia de Pagamentos -->
+            <a v-if="$page.props.user.mn_referenciapagamento" href="/referenciapgt" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/referenciapgt') }" title="Referências de PGT">
+                <i class="fas fa-credit-card text-lg"></i>
+                <span class="nav-tooltip">Referências de PGT</span>
+            </a>
         </nav>
 
         <!-- Indicador visual de expansão -->
         <div class="absolute top-1/2 -right-1.5 w-3 h-8 bg-orange-500 rounded-l-lg opacity-0 transition-opacity duration-200"
-             :class="{ 'opacity-100': isExpanded }"></div>
+            :class="{ 'opacity-100': isExpanded }"></div>
     </div>
 
     <!-- Expanded Sidebar -->
-    <aside class="w-64 fixed h-full bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-out z-20 ml-16"
-           :class="{
-             'translate-x-0 opacity-100': isExpanded,
-             '-translate-x-full opacity-0': !isExpanded
-           }"
-           @mouseenter="keepExpanded"
-           @mouseleave="startCollapseTimer">
+    <aside
+        class="w-64 fixed h-full bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-out z-20 ml-16"
+        :class="{
+            'translate-x-0 opacity-100': isExpanded,
+            '-translate-x-full opacity-0': !isExpanded
+        }" @mouseenter="keepExpanded" @mouseleave="startCollapseTimer">
 
         <div class="p-5 border-b border-gray-100">
             <h2 class="text-xl font-semibold text-gray-800 text-center">Operações do Sistema</h2>
@@ -129,51 +136,62 @@ const closeSidebar = () => {
                 <div class="nav-link-indicator"></div>
             </a>
             <!-- ... outros itens ... -->
-                      <!-- Reembolsos -->
-                <a v-if="$page.props.user.rec_comprovativo" href="/comprovativos" class="nav-link group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/comprovativos') }">
-                    <div class="nav-link-content">
-                        <i class="fas fa-file-invoice-dollar nav-link-icon"></i>
-                        <span class="nav-link-text">Comprovativos</span>
-                    </div>
-                    <div class="nav-link-indicator"></div>
-                </a>
+            <!-- Reembolsos -->
+            <a v-if="$page.props.user.rec_comprovativo" href="/comprovativos" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/comprovativos') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-file-invoice-dollar nav-link-icon"></i>
+                    <span class="nav-link-text">Comprovativos</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
 
-                  <!-- Reconciliação-->
-                <a v-if="$page.props.user.reconci_habilita" href="/reconciliacao" class="nav-link group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/reconciliacao') }">
-                    <div class="nav-link-content">
-                        <i class="fas fa-exchange-alt nav-link-icon"></i>
-                        <span class="nav-link-text">Reconciliação</span>
-                    </div>
-                    <div class="nav-link-indicator"></div>
-                </a>
+            <!-- Reconciliação-->
+            <a v-if="$page.props.user.reconci_habilita" href="/reconciliacao" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/reconciliacao') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-exchange-alt nav-link-icon"></i>
+                    <span class="nav-link-text">Reconciliação</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
 
-                 <!-- Desembolsos -->
-                <a v-if="$page.props.user.rec_extrato" href="/extratos" class="nav-link group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/extratos') }">
-                    <div class="nav-link-content">
-                        <i class="fas fa-money-bill-wave nav-link-icon"></i>
-                        <span class="nav-link-text">Desembolsos</span>
-                    </div>
-                    <div class="nav-link-indicator"></div>
-                </a>
+            <!-- Desembolsos -->
+            <a v-if="$page.props.user.rec_extrato" href="/extratos" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/extratos') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-money-bill-wave nav-link-icon"></i>
+                    <span class="nav-link-text">Desembolsos</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
 
-                         <!-- Recuperações -->
-                <a v-if="$page.props.user.rec_registra" href="/recuperacoes" class="nav-link group" data-preload
-                    :class="{ 'active': $page.url.startsWith('/recuperacoes') }">
-                    <div class="nav-link-content">
-                        <i class="fas fa-hand-holding-usd nav-link-icon"></i>
-                        <span class="nav-link-text">Recuperações</span>
-                    </div>
-                    <div class="nav-link-indicator"></div>
-                </a>
+            <!-- Recuperações -->
+            <a v-if="$page.props.user.rec_registra" href="/recuperacoes" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/recuperacoes') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-hand-holding-usd nav-link-icon"></i>
+                    <span class="nav-link-text">Recuperações</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
+
+
+            <!-- Referência de Pagamento -->
+            <a v-if="$page.props.user.mn_referenciapagamento" href="/referenciapgt" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/referenciapgt') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-credit-card nav-link-icon"></i>
+                    <span class="nav-link-text">Referências de PGT.</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
         </nav>
 
         <!-- Footer da sidebar -->
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-gray-50">
             <div class="text-center">
-                <p class="text-xs text-gray-500">v9.0.0</p>
+                <p class="text-xs text-gray-500">v9.0.1</p>
             </div>
         </div>
     </aside>
@@ -295,6 +313,7 @@ const closeSidebar = () => {
         opacity: 0;
         transform: translateX(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);

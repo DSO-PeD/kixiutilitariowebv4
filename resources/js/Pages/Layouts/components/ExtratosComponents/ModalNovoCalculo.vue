@@ -92,14 +92,13 @@
 
                         <div class="space-y-1">
 
-                             <label class="block text-sm font-medium text-gray-700">Referência de Pagamento <span
+                            <label class="block text-sm font-medium text-gray-700">Referência de Pagamento <span
                                     class="text-red-500">*</span></label>
                             <input v-model="internalForm.txtRefPagamento" class="form-input bg-gray-50"
                                 placeholder="000000000" readonly />
                         </div>
                         <div class="space-y-1">
-
-                              <label class="block text-sm font-medium text-gray-700">Telefone do Cliente<span
+                            <label class="block text-sm font-medium text-gray-700">Telefone do Cliente<span
                                     class="text-red-500">*</span></label>
                             <div class="relative">
                                 <!-- Ícone da bandeira de Angola com tamanho adequado -->
@@ -111,9 +110,10 @@
                                 <!-- Input vinculado ao internalForm -->
                                 <input v-model="internalForm.txtTelefone" @input="formatPhone"
                                     class="block w-full pl-12 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    type="tel" placeholder="921502056" maxlength="9" required/>
+                                    type="tel" placeholder="921502056" maxlength="9" minlength="9" required
+                                    :class="{ 'border-red-500': showPhoneError }" />
                             </div>
-                            <p v-if="showError" class="text-red-500 text-xs mt-1">O telefone deve ter exatamente 9
+                            <p v-if="showPhoneError" class="text-red-500 text-xs mt-1">O telefone deve ter exatamente 9
                                 dígitos</p>
                         </div>
                     </div>
@@ -182,7 +182,43 @@
                         </div>
 
                         <!-- Campos de largura dupla-->
+
                         <div class="md:col-span-2 space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Grupo da Actividade Econômica<span
+                                    class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input v-model="grupoSearchText" @input="onGrupoSearchInput"
+                                    @focus="showGrupoDropdown = true" @blur="onGrupoBlur"
+                                    class="form-input w-full pr-10" placeholder="Digite para buscar o grupo..."
+                                    required />
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+
+                                <!-- Dropdown de resultados -->
+                                <div v-if="showGrupoDropdown && filteredGrupos.length > 0"
+                                    class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                                    <div v-for="grupo in filteredGrupos" :key="grupo.sectorGrupo"
+                                        @mousedown="selectGrupo(grupo)"
+                                        class="px-4 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0">
+                                        {{ grupo.sectorGrupo }}
+                                    </div>
+                                </div>
+
+                                <!-- Mensagem quando não há resultados -->
+                                <div v-if="showGrupoDropdown && grupoSearchText && filteredGrupos.length === 0"
+                                    class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+                                    <div class="px-4 py-2 text-gray-500">
+                                        Nenhum grupo encontrado para "{{ grupoSearchText }}"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="md:col-span-2 space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Grupo da Actividade Econômica<span
                                     class="text-red-500">*</span></label>
                             <select v-model="internalForm.cbGCAE" @change="filtrarAtividadesEconomicas"
@@ -192,7 +228,7 @@
                                     {{ gae.sectorGrupo }}
                                 </option>
                             </select>
-                        </div>
+                        </div>-->
 
                         <!-- Campos de largura dupla -->
                         <div class="md:col-span-2 space-y-1">
@@ -697,6 +733,7 @@ import Modal from '@/Components/Modal.vue'
 
 // Adicione esta variável reativa
 const atividadesFiltradas = ref([]);
+const showPhoneError = ref(false);
 
 // Função para filtrar atividades econômicas com base no grupo selecionado
 const filtrarAtividadesEconomicas = () => {
@@ -721,13 +758,15 @@ const showError = ref(false)
 const phoneNumber = ref('')
 
 
-// Função para formatar o telefone
+// Função para formatar e validar o telefone
 const formatPhone = (event) => {
-    let value = event.target.value.replace(/\D/g, '')
-    value = value.substring(0, 9)
-    internalForm.value.txtTelefone = value
-}
+    let value = event.target.value.replace(/\D/g, '');
+    value = value.substring(0, 9);
+    internalForm.value.txtTelefone = value;
 
+    // Validação em tempo real
+    showPhoneError.value = value.length > 0 && value.length !== 9;
+};
 
 // Watch para validar o comprimento
 watch(phoneNumber, (newValue) => {
@@ -781,6 +820,14 @@ const isSubmitting = ref(false);
 
 // No método submitForm do modal:
 const submitForm = async () => {
+
+    // Validação do telefone
+    if (!internalForm.value.txtTelefone || internalForm.value.txtTelefone.length !== 9) {
+        showPhoneError.value = true;
+        return; // Impede o envio do formulário
+    }
+
+
     isSubmitting.value = true;
     try {
         // Criar cópia dos dados do formulário
@@ -925,6 +972,64 @@ const contasFiltradasTI = computed(() => {
     );
 });
 
+
+
+
+// Variáveis reativas para o componente de busca
+const grupoSearchText = ref('');
+const showGrupoDropdown = ref(false);
+const filteredGrupos = ref([]);
+
+// Método para filtrar grupos baseado no texto de busca
+const filterGrupos = () => {
+    if (!grupoSearchText.value) {
+        filteredGrupos.value = props.grupoatividades;
+    } else {
+        const searchTerm = grupoSearchText.value.toLowerCase();
+        filteredGrupos.value = props.grupoatividades.filter(grupo =>
+            grupo.sectorGrupo.toLowerCase().includes(searchTerm)
+        );
+    }
+};
+
+// Handler para input de busca
+const onGrupoSearchInput = () => {
+    filterGrupos();
+    showGrupoDropdown.value = true;
+};
+
+// Handler para quando o input perde foco
+const onGrupoBlur = () => {
+    // Pequeno delay para permitir a seleção do item
+    setTimeout(() => {
+        showGrupoDropdown.value = false;
+    }, 200);
+};
+
+// Método para selecionar um grupo
+const selectGrupo = (grupo) => {
+    internalForm.value.cbGCAE = grupo.sectorGrupo;
+    grupoSearchText.value = grupo.sectorGrupo;
+    showGrupoDropdown.value = false;
+
+    // Manter a funcionalidade existente de filtrar atividades
+    filtrarAtividadesEconomicas();
+};
+
+// Watch para sincronizar quando o valor é alterado externamente
+watch(() => internalForm.value.cbGCAE, (newVal) => {
+    if (newVal) {
+        grupoSearchText.value = newVal;
+    }
+});
+
+// Inicializar a lista filtrada
+onMounted(() => {
+    filteredGrupos.value = props.grupoatividades;
+});
+
+
+
 //  watchers para limpar a conta quando o banco mudar
 watch(() => internalForm.value.selectBancoBorderoux_TP, (newVal, oldVal) => {
     if (newVal !== oldVal) {
@@ -966,6 +1071,7 @@ watch(() => internalForm.value.cbAE, (newVal) => {
 // Watch para limpar atividades quando o grupo mudar
 watch(() => internalForm.value.cbGCAE, (newVal, oldVal) => {
     if (newVal !== oldVal) {
+        grupoSearchText.value = newVal || '';
         filtrarAtividadesEconomicas();
     }
 });
@@ -1274,5 +1380,19 @@ function manterCasaDecimais(value, casas) {
 
 .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Estilos para o dropdown de busca */
+.dropdown-enter-active, .dropdown-leave-active {
+    transition: opacity 0.2s, transform 0.2s;
+}
+.dropdown-enter-from, .dropdown-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Garantir que o dropdown fique acima de outros elementos */
+.relative {
+    position: relative;
 }
 </style>

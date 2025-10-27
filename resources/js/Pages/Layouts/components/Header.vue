@@ -220,6 +220,7 @@ const getCurrentPageName = () => {
     if (path.startsWith('/reconciliacao')) return 'Reconciliação';
     if (path.startsWith('/extratos')) return 'Desembolsos';
     if (path.startsWith('/recuperacoes')) return 'Recuperações';
+    if (path.startsWith('/referenciapgt')) return 'Referências de Pagamentos';
     return 'Sistema';
 };
 

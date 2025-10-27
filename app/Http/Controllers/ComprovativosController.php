@@ -18,7 +18,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
-
+use App\Services\IziPayService;
+use Illuminate\Support\Facades\Http;
 
 
 
@@ -268,6 +269,7 @@ class ComprovativosController extends Controller
 
         ]);
     }
+
     public function getClientData(Request $request)
     {
         try {
@@ -279,7 +281,7 @@ class ComprovativosController extends Controller
                 'ip' => request()->ip()
             ]);
 
-            // Buscar primeiro na tabela tkxextrato
+            // Buscar primeiro na tabela comprovativos
             $clientData = DB::table('comprovativos')
                 ->where('BuDadoOrigem', $completeNumber)
                 ->select('infoadicional as nome', 'telefonecliente as telefone')
@@ -298,7 +300,7 @@ class ComprovativosController extends Controller
                 ]);
             }
 
-            // Se não encontrou, buscar na tabela comprovativos
+            // Se não encontrou, buscar na tabela tkxextrato
             $clientData = DB::table('tkxextrato')
                 ->where('Lnr', $completeNumber)
                 ->select('Cliente as nome', 'Telefone as telefone')
@@ -316,6 +318,29 @@ class ComprovativosController extends Controller
                     'success' => true
                 ]);
             }
+
+
+
+            // Se não encontrou, buscar na tabela referenciasmanuais
+            $clientData = DB::table('referenciasmanuais')
+                ->where('BuDadoOrigem', $completeNumber)
+                ->select('nomecliente as nome', 'telefone as telefone')
+                ->first();
+
+            if ($clientData) {
+                Log::info("Dados encontrados na tabela tkxextrato", [
+                    'numero_completo' => $completeNumber,
+                    'cliente' => $clientData->nome
+                ]);
+
+                return response()->json([
+                    'nome' => $clientData->nome,
+                    'telefone' => $clientData->telefone,
+                    'success' => true
+                ]);
+            }
+
+
 
             Log::warning("Cliente não encontrado em nenhuma tabela", [
                 'numero_completo' => $completeNumber
@@ -338,6 +363,8 @@ class ComprovativosController extends Controller
                 'error' => 'Erro interno do servidor',
                 'success' => false
             ], 500);
+
+
         }
     }
 
@@ -349,25 +376,6 @@ class ComprovativosController extends Controller
             $cadastrarTipo = $request->ls;
             $montante = $request->txtMontante;
 
-            // Validações iniciais
-            /* $validator = Validator::make($request->all(), [
-                 'anexo' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-                 'txtMontante' => 'required|numeric|min:0',
-                 'calDataBorderoux' => 'required|date_format:d/m/Y',
-                 'txtVoucher' => $cadastrarTipo === 'Loan' ? 'required' : 'nullable'
-             ]);
-
-             if ($validator->fails()) {
-                 return redirect()->back()->withErrors($validator)->withInput();
-             }*/
-
-            // Verificar se borderoux já existe
-            /*$borderouxExistente = ComprovativoModel::verificarSeBorderouxExiste($request->txtVoucher, 0);
-
-            if ($borderouxExistente) {
-                $mensagem = "Ups! Já existe um comprovativo com o voucher indicado: [Loan Number: {$borderouxExistente->BuDadoOrigem} | Voucher: {$borderouxExistente->BuReferencia} | Montante: {$borderouxExistente->BuMontante} | Data: {$borderouxExistente->BuData}] => Contacte a DCF para esclarecer.";
-                return redirect()->back()->with('error', $mensagem);
-            }*/
 
             // Validar montante máximo
             if ($montante > 7000000) {
@@ -428,11 +436,86 @@ class ComprovativosController extends Controller
         }
     }
 
+    public function guardarmobile(Request $request)
+    {
+
+        try {
+
+            $cadastrarTipo = $request->tipo_conta;
+            $montante = $request->montante;
+
+            // Validar montante máximo
+            if ($montante > 7000000) {
+                $montanteFormatado = number_format($montante, 2, ',', '.');
+                $mensagem = "Ups! O montante excede 7.000.000,00: [MONTANTE: {$montanteFormatado}] => Comprovativo não cadastrado.";
+                return response()->json([
+                    'status' => 'ERROR',
+                    'message' => "Ups! O montante excede 7.000.000,00: [MONTANTE: {$montanteFormatado}] => Comprovativo não cadastrado."
+                ], 401);
+            }
+
+            // Processar arquivo
+            $nomeArquivo = null;
+            if ($request->hasFile('anexo_comprovativo')) {
+                $pathArquivo = $request->file('anexo_comprovativo')->store('comprovativos', 'public');
+                $nomeArquivo = basename($pathArquivo);
+            }
+
+            // Format data
+            $dataBorderoux = Carbon::createFromFormat('d/m/Y', $request->data_reembolso)->format('Y-m-d');
+
+            // Preparar dados comuns
+            $dadosComuns = [
+                'CiFecha' => now(),
+                'UtCodigo' => $request->UtCodigo,
+                'BuMontante' => $montante,
+                'BuData' => $dataBorderoux,
+                'Eliminado' => 0,
+                'filecomprovativo' => $nomeArquivo,
+                'telefonecliente' => $request->telefone,
+                'infoadicional' => $request->nome_cliente,
+                'pluscode_localderegistro' => $request->pluscode
+            ];
+
+            // Processar por tipo (Loan ou Saving)
+            if ($cadastrarTipo === "Loan") {
+
+                $dados = $this->processarLoan($request, $dadosComuns);
+
+            } else {
+
+                $dados = $this->processarSaving($request, $dadosComuns);
+
+            }
+
+            // Inserir no banco de dados
+            $comprovativo = ComprovativoModel::create($dados);
+
+            if (!$comprovativo) {
+                throw new Exception('Falha ao inserir comprovativo');
+            }
+
+
+
+            return response()->json([
+                'status' => 'SUCCESS',
+                'message' => 'Dados guardados com sucesso!'
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Dados não foram guardados!'
+            ], 401);
+        }
+    }
+
     /**
      * Processar dados para Loan
      */
     private function processarLoan(Request $request, array $dadosBase)
     {
+
         $formaPagamento = $request->selectFormaPagamento;
         // $estado = $formaPagamento == 14 ? 8 : 1;
         $estado = 19;
@@ -775,11 +858,11 @@ class ComprovativosController extends Controller
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, $formaspagamento_geral);
 
 
-        $lista_banco = TKxBancoModel::getBancos();
-        $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
+      //  $lista_banco = TKxBancoModel::getBancos();
+      //  $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
 
         $estados = EstadosModel::getEstadosDCF('DCF');
-        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+       /* $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
 
         $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
@@ -791,7 +874,7 @@ class ComprovativosController extends Controller
         $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
         $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
         $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
-        $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');
+        $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');*/
 
         collect($lista_comprovativo)->max('CiFecha');
         collect($lista_comprovativo)->min('CiFecha');
@@ -834,6 +917,330 @@ class ComprovativosController extends Controller
 
     }
 
+
+
+
+    // PAGAMENTOS POR REFERENCIA MANUAIS:******************************************************************
+
+
+    public function viewReferenciaPGT(Request $request)
+    {
+        $authenticatedUser = Auth::user();
+
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+
+
+
+
+        $tipoDeBusca = $request->tipo;
+        $tipoProdutoPP = $request->filtrar_poupancas;
+        $tipoProdutoPT = $request->filtrar_prestacoes;
+
+
+
+        $lista_produtos = TKxClProdutoModel::getProdutos();
+
+
+
+
+        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
+        $dataFecho = $resultagencia_user->DataFecho;
+
+        $dataFecho = date("Y-m-d", strtotime($dataFecho));
+        $hoje = date('Y-m-d');
+
+        $dataActual = date("Y-m-d", strtotime($hoje));
+
+
+        $estados = EstadosModel::getEstadosDCF('RPGT');
+        $ids_estados = $estados->pluck('id')->implode(',');
+
+        $produto_poupancas_busca = collect($lista_produtos)->where('TipoProduto', '=', 'S');
+        $produto_poupancas_busca = "'" . $produto_poupancas_busca->pluck('Metodologia')->implode(',') . "'";
+
+
+        $produto_prestacoes_busca = collect($lista_produtos)->where('TipoProduto', '=', 'L');
+        $produto_prestacoes_busca = "'" . $produto_prestacoes_busca->pluck('Metodologia')->implode(',') . "'";
+
+        $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
+
+
+
+        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+
+
+        $ESTADO = "'" . $ids_estados . "'";
+        $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
+        $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
+
+
+        $TIPO = 7371;
+        $LOAN = "'DS/280890'";
+
+        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
+
+
+
+        if ($tipoDeBusca == 1) {
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
+            $TIPO = $tipoDeBusca;
+
+            //dd( $DataFim );
+        }
+
+        if ($tipoDeBusca == 3) {
+            $LOAN = "'" . $request->loan . "'";
+            $TIPO = 73713;
+        }
+        if ($tipoDeBusca == 4) {
+
+            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+
+
+            if ($request->agencia_imput !== 'T') {
+                $Bases = "'" . $request->agencia_imput . "'";
+            }
+
+            /* if ($tipoProdutoPT && !$tipoProdutoPP) {
+               if ($request->produto_prestacao !== 'TL') {
+                   $produto_prestacoes_busca = "'" . $request->produto_prestacao . "'";
+
+               }
+               $produtos_geral_busca = $produto_prestacoes_busca;
+           }
+
+           if ($tipoProdutoPP && !$tipoProdutoPT) {
+               if ($request->produto_poupanca !== 'TS') {
+                   $produto_poupancas_busca = "'" . $request->produto_poupanca . "'";
+               }
+               $produtos_geral_busca = $produto_poupancas_busca;
+           }*/
+
+
+            $TIPO = 73714;
+        }
+
+
+
+
+        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, "'DJA'");
+
+
+
+
+
+        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+        $total = sizeof($lista_comprovativo);
+
+
+        collect($lista_comprovativo)->max('created_at');
+        collect($lista_comprovativo)->min('created_at');
+
+        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
+        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
+
+
+
+
+        $TipoComprovativo = [
+            'G' => 'G/',
+            'I' => 'I/'
+        ];
+        // dd($lista_comprovativo );
+        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
+
+
+
+
+            return [
+                'id' => $item->id,
+                'data' => $item->dataRegistoFomatada,
+                'agencia' => $item->OfNombre,
+                'basedelacamento' => $item->basedelacamento,
+                'usuario' => $item->UtNome,
+                'lnr' => $item->BuDadoOrigem,
+                'inicio' => $item->inicio,
+                'fim' => $item->fim,
+                'estado' => $item->estado,
+                'color' => $item->color,
+                'idestado' => $item->idestado,
+                'cliente' => $item->nomecliente,
+                'telefone' => $item->telefone,
+                'metodologia' => $item->PoAgrupado,
+                'referencia' => $item->referencia,
+                'montante' => $item->montante,
+                'montantepago' => $item->montantepago,
+                'TipoProduto' => $item->TipoProduto,
+                // Mantenha todos os campos necessários para filtros client-side
+                'CiFecha' => $item->created_at, // Para filtro por data
+                'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
+
+
+            ];
+        });
+
+
+
+        $NumeroPaginator = 30;
+        //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
+        return Inertia::render('ReferenciasPGT', [
+            'lista_comprovativo' => $comprovativos_list,
+            // 'comprovativos' => $paginado,
+            'filters' => [
+                'search' => $request->input('search_input', ''),
+                'lnr' => $request->input('lnr_imput', ''),
+                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
+                'agencia' => $request->input('agencia_imput', default: 'T'), // Valor padrão 'T' (Todas)
+                'formaPagamento' => $request->input('forma_pagamento', 'TP'), // Valor padrão 'T' (Todas)
+                'produtoPrestacao' => $request->input('produto_prestacao', 'TL'),
+                'produtoPoupanca' => $request->input('produto_poupanca', 'TS'),
+                'data_inicio' => $request->input('data_inicio_imput', ''),
+                'data_fim' => $request->input('data_fim_imput', ''),
+                'filtrar_prestacoes' => (bool) $request->input('filtrar_prestacoes', true),
+                'filtrar_poupancas' => (bool) $request->input('filtrar_poupancas', true),
+            ],
+            'page' => (int) $request->input('page', 1),
+            'bases' => $BasesOperacaoAgencias,
+            'produtos' => $lista_produtos,
+
+            'tipocomprovativos' => $TipoComprovativo,
+            'estados' => $estados,
+            //  'lista_comprovativo' => $lista_comprovativo,
+            'total' => $total,
+
+            'dataInicioPeriodo' => $DataFimFormatada,
+            'dataFimPeriodo' => $DataInicioFormatada
+
+        ]);
+    }
+
+    public function guardarRegerenciaPagamento(Request $request)
+    {
+        $authenticatedUser = Auth::user();
+
+        try {
+
+            // Verificar se a referência já existe
+            $referenciaExistente = DB::table('referenciasmanuais')
+                ->where('referencia', $request->txtRefPagamento)
+                ->first();
+
+            if ($referenciaExistente) {
+
+
+                return redirect()->back()
+                    ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
+                    ->withInput();
+
+
+            }
+            $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
+            $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
+
+
+            $dados_activar_referencia = [
+                "numero" => $request->txtRefPagamento,
+                "validade" => Carbon::now()->addDays(3)->format('d/m/Y H:i'),
+                "montante" => number_format($request->txtMontante, 2, ',', ' '),
+                "cliente" => [
+                    "nome" => $request->txtInfoAdicional,
+                    "email" => "diversos@kxicredito.ao",
+                    "telefone" => $request->telefone,
+                ],
+                "metadados" => [
+                    "item1" => "Activação de referência de pagamento no ambiente prod.",
+                    "item2" => "Manual",
+                ],
+            ];
+
+            $client = new IziPayService();
+            $response = $client->mainKxU($dados_activar_referencia);
+
+            if ($response == 201) {               // Sucesso
+
+                // Preparar os dados para inserção
+                $dadosReferencia = [
+                    'BuDadoOrigem' => $loanNumber,
+                    'nomecliente' => $request->txtInfoAdicional,
+                    'telefone' => $request->telefone,
+                    'PoCodigo' => $request->selectProdutoSaving,
+                    'tipo' => $request->selectGrupoIndividual,
+                    'referencia' => $request->txtRefPagamento,
+                    'inicio' => Carbon::now(),
+                    'fim' => Carbon::now()->addDays(3),
+                    'montante' => $request->txtMontante,
+                    'idestado' => 21,
+                    'BaseOperacao' => $siglaagencia->OfIdentificador,
+                    'activo' => 1, // Mudado para 1 para indicar que está ativo
+                    'UtCodigo' => $authenticatedUser->UtCodigo,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+
+                // Inserir na base de dados
+                $id = DB::table('referenciasmanuais')->insertGetId($dadosReferencia);
+
+                // Buscar dados completos para retorno
+                $referenciaCompleta = DB::table('referenciasmanuais')
+                    ->where('id', $id)
+                    ->first();
+
+
+
+                    if ($dadosReferencia) {
+                            $validKey = config('djanotifpgtref.callback_access_key');
+
+
+
+                            $telefone = null;
+                             $mensagem ="Pagamento a ser  afectuado no valor de\n".
+                                        " Kz ".number_format($request->txtMontante, 2, ',', '.')."\n".
+                                        "Número do cliente {$loanNumber}\n\n".
+                                        "KIXICREDITO\n".
+                                        "PARCEIRA NOS NEGÓCIOS";
+
+                              $telefone = $request->telefone;
+
+
+                            if ($telefone) {
+                                $response = Http::withHeaders([
+                                    'Access-Key' => $validKey,
+                                    'Content-Type' => 'application/json',
+                                ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+                                            'contacto' => $telefone,
+                                            'mensagem' => $mensagem,
+                                        ]);
+
+
+                            }
+                            Log::info('Tentativa de envio SMS', ['telefone' => $telefone, 'mensagem ' => $mensagem, 'montante' => $request->txtMontante]);
+                        }
+
+
+                return redirect()->route('referenciapgt')
+                    ->with('success', 'Referência de pagamento guardada com sucesso!');
+
+
+            } else if ($response == 422) {
+
+                return back()->with('error', 'Referência ' . $request->numero . 'já existe.');
+
+            } else if ($response == 201) {
+                return back()->with('error', 'Lamentamos, O Serviços de Activação de referencia  Indisponível');
+            }
+
+
+
+        } catch (\Exception $e) {
+
+
+            return redirect()->back()
+                ->with('error', 'Erro ao processar referência de pagamento: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
 
 
 

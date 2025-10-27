@@ -11,7 +11,7 @@ class TKxClProdutoModel extends Model
     protected $table = 'tkxclprodutos';
     protected $fillable = [
         'Metodologia',
-        'PoAgrupado ',
+        'PoAgrupado',
         'Estado',
         'TipoPagamentoTaxaProcessamento',
         'PercTaxaProcessamento',

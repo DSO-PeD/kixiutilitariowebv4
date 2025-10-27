@@ -35,6 +35,7 @@ class ComprovativoModel extends Model
         'telefonecliente',
         'observacao',
         'idestado',
+        'pluscode_localderegistro',
         'TtCodigo',
         'estado',
         'color'
@@ -42,6 +43,10 @@ class ComprovativoModel extends Model
 
     public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $PRODUTOS, $TIPOPAGAMENTOS)
     {
+        if($TIPO==7371){
+
+            DB::select("CALL PKxUActualizaEstadoReferencia");
+        }
         $comprovativos2 = DB::select("CALL PKxComprovativosLoanSaving(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . "," . $ESTADO . "," . $PRODUTOS . "," . $TIPOPAGAMENTOS . ")");
 
 

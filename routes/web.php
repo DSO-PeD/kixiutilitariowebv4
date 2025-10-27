@@ -27,6 +27,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
+    Route::get('/referenciapgt', [ComprovativosController::class, 'viewReferenciaPGT'])->name('referenciapgt');
+    Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/listarEstadosDCF', [CpvtReconciliacaoController::class, 'listarEstadosReconciliacao']);
     Route::get('/listarCpvtDetalheDCF', [CpvtReconciliacaoController::class, 'listarDetalhesComprovativosDCF']);
@@ -35,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-comprovativo', [ComprovativosController::class, 'finalizaraeliminacao'])  ->name('comprovativos.eliminar');
     Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])  ->name('extrato.eliminar');
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
+    Route::post('/atualizar-telefone', [TKxExtratoController::class, 'atualizarTelefone'])->name('atualizar.telefone');
 
 
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
@@ -48,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/validar-comprovativo', [CpvtReconciliacaoController::class, 'validarComprovativo']);
     Route::get('/reports/extrato/{id}', [ReportDomPDFController::class, 'emitirRelatorioCalculoDesembolso'])->name('report_extrato_new');
     Route::get('/reports/comprovativo/{id}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferencia'])->name('report_comprovativo_new');
+    Route::get('/reports/cardpgtr/{id}', [ReportDomPDFController::class, 'emitirRelatorioCARDPGTREF'])->name('report_pgtreferencia_new');
 
     Route::get('/recuperacoes', [RecuperacaoController::class, 'viewRecuperacoes'])->name('recuperacoes');
     Route::post('/guardar-recuperacao', [RecuperacaoController::class, 'guardar']);
@@ -74,9 +78,10 @@ Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP
 Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
-// ROUTAS MOBILE ***********************
+// ROUTAS MOBILE *******************************************************************************************************************************************************************************************************
  Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
- Route::get('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile']);//->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+ Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+ Route::get('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 
 /************************ */
 

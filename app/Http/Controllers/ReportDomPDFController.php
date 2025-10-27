@@ -6,8 +6,10 @@ use App\Models\ComprovativoModel;
 use App\Models\EstadosModel;
 use App\Models\RecuperacaoModel;
 use App\Models\RecuperadorModel;
+use App\Models\ReferenciaPGTModel;
 use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoModel;
+use App\Models\TKxClProdutoModel;
 use App\Models\TKxExtratoModel;
 use App\Models\TKxUsUtilizadorModel;
 use Illuminate\Support\Facades\Auth;
@@ -117,7 +119,7 @@ class ReportDomPDFController extends Controller
 
             $listar_recuperador = RecuperadorModel::getRecuperadores($resultagencia_user->BasesOperacao);
 
-            $recuperador =  collect($listar_recuperador)->pluck('id')->implode(',');
+            $recuperador = collect($listar_recuperador)->pluck('id')->implode(',');
         }
         if ($estado == '28') {
 
@@ -162,8 +164,13 @@ class ReportDomPDFController extends Controller
 
     public function emitirRelatorioReembolsoPgtReferencia($id)
     {
-        $Dados_comprovativo= ComprovativoModel:: where('id',$id)->get();
-        $Dados_extrato = TKxExtratoModel::where('Lnr','=', $Dados_comprovativo[0]->BuDadoOrigem)->where('Eliminado','=',0)->get();
+        $Dados_comprovativo = ComprovativoModel::where('id', $id)->get();
+        $Dados_extrato = TKxExtratoModel::where('Lnr', '=', $Dados_comprovativo[0]->BuDadoOrigem)->where('Eliminado', '=', 0)->get();
+
+        if ($Dados_extrato->isEmpty()) {
+            $Dados_extrato = ReferenciaPGTModel::where('BuDadoOrigem', $Dados_comprovativo[0]->BuDadoOrigem)
+                ->get();
+        }
 
         $authenticatedUser = Auth::user();
         $IMPRENSSO = $authenticatedUser->UtNome;
@@ -175,7 +182,7 @@ class ReportDomPDFController extends Controller
             //'title' => 'Welcome to ItSolutionStuff.com',
             'date' => date('d/m/Y'),
             'Dados_comprovativo' => $Dados_comprovativo,
-            'Dados_extrato'=>$Dados_extrato ,
+            'Dados_extrato' => $Dados_extrato,
             'IMPRENSSO' => $IMPRENSSO,
             'AGENCIA' => $resultagencia_user->OfNombre,
             'bancos' => $bancos
@@ -186,5 +193,44 @@ class ReportDomPDFController extends Controller
 
 
         return $pdf->stream();//->download('CalculoDesembolso.pdf');
+    }
+
+
+    public function emitirRelatorioCARDPGTREF($id)
+    {
+        $Dados_comprovativo = ReferenciaPGTModel::where('id', $id)->get();
+
+        $produto_pgr = TKxClProdutoModel::where('Metodologia', $Dados_comprovativo[0]->PoCodigo)->first();
+        ;
+        $agencia_pgr = TKxAgenciaModel::where('OfIdentificador', '=', $Dados_comprovativo[0]->BaseOperacao)->first();
+        $authenticatedUser = Auth::user();
+        $IMPRENSSO = $authenticatedUser->UtNome;
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+
+        $hoje = date('d-m-Y');
+        $bancos = TKxBancoModel::all();
+
+        $data = [
+            //'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('d/m/Y'),
+            'Dados_comprovativo' => $Dados_comprovativo,
+            'produto' => $produto_pgr->PoAgrupado,
+            'agencia' => $agencia_pgr->OfIdentificador . '' . ' : ' . $agencia_pgr->OfNombre,
+            'IMPRENSSO' => $IMPRENSSO,
+            'AGENCIA' => $resultagencia_user->OfNombre,
+            'bancos' => $bancos
+        ];
+
+        $pdf = PDF::loadView('reports.reportCardPGTR', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif'])->setPaper('a4', 'portrait');
+        ;
+
+
+
+        return $pdf->stream();
+
+
+        //$pdf = Pdf::loadView('reports.reportCardPGTR', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif'])->setPaper('a4', 'portrait');
+
+        //  return $pdf->stream('comprovativo.pdf');
     }
 }

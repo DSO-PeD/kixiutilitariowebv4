@@ -1,6 +1,6 @@
 <template>
 
-    <Head title="Gestão de Comprovativos" />
+    <Head title="Gestão de Referências de Pagamentos" />
 
     <div class="container mx-auto py-4 md:py-6 max-w-full">
         <!-- Alertas de Sistema -->
@@ -29,102 +29,29 @@
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
             <div class="flex items-center">
                 <div class="bg-green-100 p-3 rounded-full mr-4">
-                    <i class="fas fa-file-invoice-dollar text-2xl text-green-800"></i>
+                    <i class="fas fa-credit-card  text-2xl text-green-800"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Gestão de Comprovativos</h1>
+                    <h1 class="text-2xl font-bold text-gray-800">Gestão de Referências de Pagamentos</h1>
                     <p class="text-sm text-gray-600 mt-1">Prestações de Créditos e Poupanças</p>
                 </div>
             </div>
 
 
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <button class="btn btn-primary flex items-center gap-2" @click="abrirModalNovoComprovativo"
-                    v-if="$page.props.user.rec_comprovativo">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.5v15m7.5-7.5h-15"></path>
-                    </svg>
-                    Novo Comprovativo
-                </button>
 
+                <button class="btn btn-outline-primary-pgr flex items-center gap-2" @click="abrirModalGerarRefManual">
+
+                    <i class="fas fa-credit-card text-purple-600 text-xl"></i>
+                    Gerar Referência de PGT.
+                </button>
             </div>
         </div>
 
         <div class="border-t border-gray-200 my-4"></div>
 
-        <!-- Seção de Alertas Pendentes -->
-        <div v-if="$page.props.user.view_pendentes" class="mb-6">
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                <div class="flex flex-col md:flex-row md:items-start gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-start mb-2">
-                            <svg class="flex-shrink-0 h-5 w-5 text-red-500 mt-0.5 mr-2" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <div>
-                                <h3 class="text-sm font-semibold text-red-800">Atenção - Comprovativos Pendentes</h3>
-                                <p class="text-sm text-red-700 mt-1">
-                                    Identificamos reembolsos aplicados no Kixi Utilitário que não foram aplicados no LPF
-                                    ou possuem diferenças nas informações.
-                                </p>
-                            </div>
-                        </div>
 
-                        <div class="flex flex-wrap items-center gap-2 mt-3">
-                            <span v-for="_pendente in pendentesVisiveis" :key="_pendente.Lnr" class="relative">
-                                <span @click="toggleDetails(_pendente.id)" class="badge badge-warning cursor-pointer">
-                                    {{ _pendente.Lnr }}
-                                </span>
 
-                                <div v-if="activeDetails === _pendente.id" class="tooltip">
-                                    <div class="grid grid-cols-2 gap-2 text-xs">
-                                        <span class="text-gray-500">Voucher:</span>
-                                        <span class="font-medium">{{ _pendente.voucher }}</span>
-                                        <span class="text-gray-500">Montante:</span>
-                                        <span class="font-medium">{{ _pendente.montante }}</span>
-                                        <span class="text-gray-500">Data:</span>
-                                        <span class="font-medium">{{ _pendente.budata }}</span>
-                                    </div>
-                                    <button @click.stop="closeDetails"
-                                        class="text-xs text-red-600 hover:text-red-800 mt-2">
-                                        Fechar
-                                    </button>
-                                </div>
-                            </span>
-
-                            <button @click="mostrarTodos = !mostrarTodos"
-                                class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path v-if="!mostrarTodos" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z">
-                                    </path>
-                                    <path v-if="!mostrarTodos" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88">
-                                    </path>
-                                </svg>
-                                {{ mostrarTodos ? 'Ver menos' : 'Ver mais...' }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <button @click="exportToExcel" class="btn btn-outline-secondary flex items-center gap-2 shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                        Exportar Pendentes
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <!-- Filtros Avançados -->
         <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -155,7 +82,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
-                                &ThinSpace;Loan Number
+                                &ThinSpace;Código do Cliente
                             </button>
                         </div>
                     </div>
@@ -183,27 +110,7 @@
 
                     <!-- As três selects agora estão em uma única div com grid de 3 colunas -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2 lg:col-span-2">
-                        <!-- Forma de Pagamento -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
-                            <div class="relative">
-                                <select v-model="filtro.formaPagamento"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white">
-                                    <option v-for="formapgt in formaspagamentos" :value="formapgt.FormaPago"
-                                        :key="formapgt.FormaPago">
-                                        {{ formapgt.FormaPagoN }}
-                                    </option>
-                                    <option :value="'TP'">Todas formas</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                    <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- Agência -->
                         <div>
@@ -228,102 +135,12 @@
                             </div>
                         </div>
 
-                        <!-- Estado -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Estado que Pretende
-                                Consultar</label>
-                            <div class="relative">
-                                <select v-model="filtro.estado"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white">
-                                    <option disabled :value="'s/e'">Escolha</option>
-                                    <option v-for="estado in $page.props.estados" :value="Number(estado.id)"
-                                        :key="estado.id">
-                                        {{ estado.descricao_estado }}
-                                    </option>
-                                    <option :value="28">Todos</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                    <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+
+
                     </div>
                 </div>
 
-                <!-- Filtros inferiores
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="flex items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
-                            <label class="flex items-center cursor-pointer">
-                                <div class="relative">
-                                    <input type="checkbox" v-model="filtro.filtrarPrestacoes" class="sr-only">
-                                    <div class="block bg-gray-300 w-10 h-6 rounded-full transition-colors"
-                                        :class="{ 'bg-green-500': filtro.filtrarPrestacoes }"></div>
-                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"
-                                        :class="{ 'transform translate-x-4': filtro.filtrarPrestacoes }"></div>
-                                </div>
-                                <div class="ml-3 text-sm font-medium text-gray-700">Prestações (Capital+Juro)</div>
-                            </label>
-                        </div>
-
-                        <div class="flex items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
-                            <label class="flex items-center cursor-pointer">
-                                <div class="relative">
-                                    <input type="checkbox" v-model="filtro.filtrarPoupancas" class="sr-only">
-                                    <div class="block bg-gray-300 w-10 h-6 rounded-full transition-colors"
-                                        :class="{ 'bg-green-500': filtro.filtrarPoupancas }"></div>
-                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"
-                                        :class="{ 'transform translate-x-4': filtro.filtrarPoupancas }"></div>
-                                </div>
-                                <div class="ml-3 text-sm font-medium text-gray-700">Poupanças</div>
-                            </label>
-                        </div>
-                    </div>
-
-
-                    <div v-if="filtro.filtrarPrestacoes || filtro.filtrarPoupancas" class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">
-                            {{ filtro.filtrarPrestacoes && !filtro.filtrarPoupancas ? 'Produto de Prestações' :
-                                !filtro.filtrarPrestacoes && filtro.filtrarPoupancas ? 'Produto de Poupanças' : 'Produto' }}
-                        </label>
-                        <div class="relative">
-                            <select v-if="filtro.filtrarPrestacoes && !filtro.filtrarPoupancas"
-                                v-model="filtro.produtoPrestacao"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white">
-                                <option disabled :value="'s/pl'">Selecione o produto</option>
-                                <option
-                                    v-for="produto in produtos.filter(p => p.TipoProduto === 'L' || p.TipoProduto === 'G')"
-                                    :key="produto.Metodologia" :value="produto.Metodologia">
-                                    {{ produto.PoAgrupado }}
-                                </option>
-                                <option value="TL">Todos os produtos de Prestações</option>
-                            </select>
-                            <select v-else-if="filtro.filtrarPoupancas && !filtro.filtrarPrestacoes"
-                                v-model="filtro.produtoPoupanca"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white">
-                                <option disabled :value="'s/ts'">Selecione o produto</option>
-                                <option
-                                    v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
-                                    :key="produto.Metodologia" :value="produto.Metodologia">
-                                    {{ produto.PoAgrupado }}
-                                </option>
-                                <option value="TS">Todos os produtos de Poupanças</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
 
                 <!-- Botões de ação -->
                 <div
@@ -348,7 +165,7 @@
             </div>
         </div>
 
-        <div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
+        <!--div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
             <div
                 class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-white">
                 <div class="flex items-center">
@@ -370,10 +187,10 @@
                 </div>
             </div>
 
-            <!-- Cards de métricas -->
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-                <!-- Card 1 - Total Montante Reembolsos -->
+
                 <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm card-hover">
                     <div class="flex items-center mb-4">
                         <div class="bg-green-100 p-3 rounded-full mr-3">
@@ -409,7 +226,6 @@
                     </div>
                 </div>
 
-                <!-- Card 2 - Total de Poupanças -->
                 <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm card-hover">
                     <div class="flex items-center mb-4">
                         <div class="bg-blue-100 p-3 rounded-full mr-3">
@@ -449,7 +265,7 @@
                     </div>
                 </div>
 
-                <!-- Card 3 - Pagamentos por Referência -->
+
                 <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm card-hover cursor-pointer"
                     @click="abrirModalPagamentosReferencia">
                     <div class="flex items-center mb-4">
@@ -478,7 +294,7 @@
 
 
             </div>
-        </div>
+        </div-->
 
 
 
@@ -582,7 +398,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                     </svg>
-                                    Arquivo
+                                    Card
                                 </div>
                             </th>
                             <th
@@ -620,7 +436,7 @@
                                             d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
 
-                                    Loan Number
+                                    Código do Cliente
                                 </div>
                             </th>
                             <th
@@ -638,6 +454,18 @@
                             <th
                                 class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                            d="M14.25 9.75v-4.5m0 4.5h4.5m-4.5 0 6-6m-3 18c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
+                                    </svg>
+
+                                    Telefone do Cliente
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
 
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -646,7 +474,7 @@
                                     </svg>
 
 
-                                    Produto
+                                    Produto de Pagamento
                                 </div>
                             </th>
                             <th
@@ -670,48 +498,11 @@
                                             d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
                                     </svg>
 
-                                    Voucher Dia
+                                    Referência
                                 </div>
                             </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
-                                    </svg>
-
-                                    Voucher Transação
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
 
 
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v7.5m2.25-6.466a9.016 9.016 0 0 0-3.461-.203c-.536.072-.974.478-1.021 1.017a4.559 4.559 0 0 0-.018.402c0 .464.336.844.775.994l2.95 1.012c.44.15.775.53.775.994 0 .136-.006.27-.018.402-.047.539-.485.945-1.021 1.017a9.077 9.077 0 0 1-3.461-.203M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                    </svg>
-
-
-                                    Pagamento
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                    </svg>
-
-                                    OBS DCF
-                                </div>
-                            </th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
@@ -730,66 +521,58 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                                    </svg>
+
+                                    Montante Pago
+                                </div>
+                            </th>
+                            <!--th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
                                     </svg>
 
 
                                 </div>
-                            </th>
+                            </th-->
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
                             class="hover:bg-gray-50 transition-colors duration-150" :class="{
-                                'bg-purple-50': comprovativo.montante > 7000000,
-                                'bg-yellow-50': comprovativo.montante >= 500000 && comprovativo.montante <= 7000000,
-                                'bg-red-50': [13, 19, 9].includes(comprovativo.idestado),
-                                'bg-green-50': comprovativo.estado_id === 8,
-                                'bg-blue-50': comprovativo.estado_id === 19
+                                'bg-yellow-50': comprovativo.idestado === 23,
+                                'bg-red-50': [23].includes(comprovativo.idestado),
+                                'bg-purple-50': comprovativo.idestado === 21,
+                                'bg-green-50': comprovativo.idestado === 22
                             }">
                             <!-- Conteúdo das células (mantido do original) -->
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <a v-if="comprovativo.usuario != 'SUPLITEL'"
-                                    :href="`/storage/comprovativos/${comprovativo.file}`" target="_blank"
-                                    class="btn btn-outline-primary btn-sm flex items-center gap-1">
+
+
+
+
+                                <a :href="`/reports/cardpgtr/${comprovativo.id}`"
+                                    class="btn btn-outline-primary-pgr btn-sm flex items-center gap-1" target="_blank">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
                                         </path>
                                     </svg>
-                                    cpvtv.
+                                    Ver-Card
                                 </a>
 
 
-
-                                <a v-else-if="comprovativo.usuario == 'SUPLITEL'"
-                                    :href="`/reports/comprovativo/${comprovativo.id}`"
-                                    class="btn btn-outline-primary btn-sm flex items-center gap-1" target="_blank">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
-                                        </path>
-                                    </svg>
-                                    cpvtv
-                                </a>
-
-                                <span v-else class="text-gray-400 text-sm">N/A</span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.data }}
-                                <button v-if="$page.props.user && $page.props.user.rec_habilita_comprovativo"
-                                    @click="abrirModalEdicaoData(comprovativo)"
-                                    class="ml-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                    title="Editar data de registro">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                    </svg>
-                                </button>
+
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.usuario }}
@@ -801,64 +584,36 @@
                                 {{ comprovativo.cliente }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ comprovativo.telefone }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.metodologia }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
                                 {{ formatCurrency(comprovativo.montante) }}
 
-                                <button v-if="podeEditar(comprovativo)" @click="abrirModalEdicao(comprovativo)"
-                                    class="ml-2 text-gray-400 hover:text-green-600 transition-colors"
-                                    title="Editar montante">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                    </svg>
-                                </button>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
 
-                                <span>{{ comprovativo.voucher || '-' }}</span>
-
-                                <!-- Botão normal de edição para outros casos (opcional) -->
-                                <button v-if="$page.props.user.comprovativo_editar_voucher"
-                                    @click="abrirModalEdicaoVoucher(comprovativo)"
-                                    class="ml-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                    title="Editar voucher">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                    </svg>
-                                </button>
-
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-
-                                <span>{{ comprovativo.referenciatransacao || '-' }}</span>
+                                <span>{{ comprovativo.referencia || '-' }}</span>
 
 
 
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.FormaPagoN || '-' }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button @click="abrirModalObservacaoDCF(comprovativo)"
-                                    class="btn btn-action btn-validate ml-2 flex items-center gap-1 mx-auto"
-                                    v-if="comprovativo.observacao && comprovativo.observacao.trim() !== ''"
-                                    title="Ver observação" aria-label="Ver observação do comprovativo">
-                                    <i class="far fa-comment-dots"></i>
-                                </button>
-                                <span v-else class="text-gray-400 italic"> Nenhuma!</span>
-                            </td>
+
+
+
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span :class="comprovativo.color" class="px-2 py-1 text-xs font-medium rounded-full">
                                     {{ comprovativo.estado }}
                                 </span>
                             </td>
 
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-purple-600">
+                                {{ formatCurrency(comprovativo.montantepago) }}
+
+                            </td>
+                            <!--td class="px-4 py-4 whitespace-nowrap">
                                 <button @click="initiateDeletion(comprovativo)" :disabled="!podeEliminar(comprovativo)"
                                     :class="{
                                         'opacity-50 cursor-not-allowed': !podeEliminar(comprovativo),
@@ -872,7 +627,7 @@
                                     </svg>
                                     <span>Eliminar</span>
                                 </button>
-                            </td>
+                            </td-->
                         </tr>
                         <tr v-if="comprovativosPaginados.length === 0">
                             <td colspan="12" class="px-4 py-8 text-center text-gray-500">
@@ -929,147 +684,18 @@
         v-model:motivo="formEliminacao.txtMotivo" :dados="formEliminacao.txtDadosEliminado"
         :loan="formEliminacao.txtLoan" :id="formEliminacao.txtId" />
 
-    <ModalNovoComprovativo ref="modalNovoComprovativoRef" v-if="showModalNovo" @close="fecharModalNovoComprovativo"
+
+
+    <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
         @save="guardarComprovativo" :bases="$page.props.bases" :tipocomprovativos="$page.props.tipocomprovativos"
         :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
         :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
 
-     <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
-        @save="guardarComprovativo" :bases="$page.props.bases" :tipocomprovativos="$page.props.tipocomprovativos"
-        :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
-        :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
 
-    <ModalObservacaoDFC :show="showModalObservacao" @close="showModalObservacao = false"
-        :comprovativoreconci="comprovativoSelecionado" />
 
-    <!-- Modal para edição do montante -->
-    <ModalEdicaoMontante :show="showEditModal" @close="fecharModalEdicao" @save="salvarEdicaoMontante"
-        :comprovativo="comprovativoSelecionado" :novoMontante="novoMontante" />
 
-    <!-- Adicione este modal após os outros modais no template -->
-    <ModalEdicaoData :show="showModalDataEdicao && comprovativoSelecionadoData !== null" @close="fecharModalEdicaoData"
-        @save="salvarEdicaoData" :comprovativo="comprovativoSelecionadoData || {}" :novaData="novaDataRegistro" />
-    <!-- Adicione este modal após os outros modais no template -->
-    <ModalEdicaoVoucher :show="showModalVoucherEdicao" @close="fecharModalEdicaoVoucher" @save="salvarEdicaoVoucher"
-        :comprovativo="comprovativoSelecionadoVoucher" :novoVoucher="novoVoucher" />
 
-    <!-- Modal para Pagamentos por Referência -->
-    <transition name="fade-scale" appear>
-        <div v-if="showModalPagamentosReferencia"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[80vh] overflow-hidden">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        Pagamentos por Referência - Período: {{ dataFimPeriodo }} à {{ dataInicioPeriodo }}
-                    </h3>
-                    <button @click="showModalPagamentosReferencia = false" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
 
-                <div class="p-6 overflow-y-auto max-h-[60vh]">
-                    <div class="mb-4 flex justify-between items-center">
-                        <p class="text-sm text-gray-600">
-                            Total: <b>{{ pagamentosReferencia.length }}</b> pagamentos -
-                            <b class="text-green-700"> {{ formatCurrency(totalMontantePGREF) }} AKZ</b>
-                        </p>
-                        <button @click="exportarPagamentosReferenciaExcel"
-                            class="btn btn-outline-excel flex items-center gap-2 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                            </svg>
-                            Exportar
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        #</th>
-                                    <th>
-                                        Arquivo
-                                    </th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Data</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Loan Number</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Cliente</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Voucher</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Montante</th>
-                                    <th
-                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="(pagamento, index) in pagamentosReferencia" :key="pagamento.id"
-                                    class="hover:bg-gray-50">
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ index + 1 }}</td>
-                                    <td>
-                                        <a :href="`/reports/comprovativo/${pagamento.id}`"
-                                            class="btn btn-outline-primary btn-sm flex items-center gap-1"
-                                            target="_blank">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
-                                                </path>
-                                            </svg>
-                                            cpvtv
-                                        </a>
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ pagamento.data }}
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{
-                                        pagamento.lnr }}</td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ pagamento.cliente
-                                        }}</td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ pagamento.voucher
-                                        || '-' }}</td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                                        {{ formatCurrency(pagamento.montante) }}
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap">
-                                        <span :class="pagamento.color"
-                                            class="px-2 py-1 text-xs font-medium rounded-full">
-                                            {{ pagamento.estado }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr v-if="pagamentosReferencia.length === 0">
-                                    <td colspan="7" class="px-4 py-4 text-center text-sm text-gray-500">
-                                        Nenhum pagamento por referência encontrado no período
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="flex justify-end p-6 border-t border-gray-200">
-                    <button @click="showModalPagamentosReferencia = false" class="btn btn-outline">
-                        Fechar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </transition>
 
 </template>
 
@@ -1083,12 +709,8 @@ import { Head } from '@inertiajs/vue3'
 import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
 import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vue'
 import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
-import ModalObservacaoDFC from './Layouts/components/ComprovativosComponents/ModalObservacaoDFC.vue'
-import ModalNovoComprovativo from './Layouts/components/ComprovativosComponents/ModalNovoComprovativo.vue'
 import ModalGerarRefPGT from './Layouts/components/ComprovativosComponents/ModalGerarRefPGT.vue'
-import ModalEdicaoMontante from './Layouts/components/ComprovativosComponents/ModalEdicaoMontante.vue'
-import ModalEdicaoData from './Layouts/components/ComprovativosComponents/ModalEdicaoData.vue'
-import ModalEdicaoVoucher from './Layouts/components/ComprovativosComponents/ModalEdicaoVoucher.vue'
+
 
 
 // Props
@@ -1129,9 +751,7 @@ const props = defineProps({
     lista_pendentes: Object,
     dataInicioPeriodo: String,
     dataFimPeriodo: String,
-    produtosPrestacoes: Array,
-    produtosPoupancas: Array,
-    formaspagamentos: Array
+
 })
 
 // Refs
@@ -1139,7 +759,6 @@ const showModalLoan = ref(false)
 const showModalData = ref(false)
 const showModalNovo = ref(false)
 const showModalGerarREF = ref(false)
-const showModalEliminar = ref(false)
 const showModalObservacao = ref(false)
 const showDeleteModal = ref(false)
 const showEditModal = ref(false)
@@ -1174,83 +793,13 @@ const filtrarPagamentosPorReferencia = () => {
     });
 }
 
-// Método para abrir o modal
-const abrirModalPagamentosReferencia = () => {
-    filtrarPagamentosPorReferencia();
-    showModalPagamentosReferencia.value = true;
-}
-
-// Método para verificar se é Pagamento por Referência sem voucher
-const isPagamentoReferenciaSemVoucher = (comprovativo) => {
-    const formaPagamento = comprovativo.FormaPagoN || comprovativo.forma_pagamento || '';
-    const voucher = comprovativo.voucher || '';
-
-    return formaPagamento.includes('Referência') && (!voucher || voucher.trim() === '' || voucher === 'null');
-}
-
-// Adicione estes métodos:
-const abrirModalEdicaoVoucher = (comprovativo) => {
-    comprovativoSelecionadoVoucher.value = { ...comprovativo }
-    novoVoucher.value = comprovativo.voucher || ''
-    showModalVoucherEdicao.value = true
-}
-
-const fecharModalEdicaoVoucher = () => {
-    showModalVoucherEdicao.value = false
-    comprovativoSelecionadoVoucher.value = null
-    novoVoucher.value = ''
-}
-
-const salvarEdicaoVoucher = async (dados) => {
-    try {
-        await router.post('/alterarvoucher', {
-            id: dados.id,
-            novo_voucher: dados.novoVoucher
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                fecharModalEdicaoVoucher()
-                router.reload({ only: ['lista_comprovativo'] })
-            },
-            onError: (errors) => {
-                console.error('Erro ao editar voucher:', errors)
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao editar voucher:', error)
-    }
-}
-// Adicione estes métodos:
-const abrirModalEdicaoData = (comprovativo) => {
-    comprovativoSelecionadoData.value = { ...comprovativo } // Criar uma cópia do objeto
-    novaDataRegistro.value = comprovativo.data
-    showModalDataEdicao.value = true
-}
 
 
 
-const fecharModalEdicaoData = () => {
-    showModalDataEdicao.value = false
-    comprovativoSelecionadoData.value = null
-    novaDataRegistro.value = ''
-}
 
-const salvarEdicaoData = async (dados) => {
-    try {
-        await router.post('/alterardata', {
-            id: dados.id,
-            nova_data: dados.novaData
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                fecharModalEdicaoData()
-                router.reload({ only: ['lista_comprovativo'] })
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao editar data:', error)
-    }
-}
+
+
+
 
 
 
@@ -1274,13 +823,9 @@ const filtro = ref({
     lnr: props.filters.lnr || '',
     estado: props.filters.estado || 28,
     agencia: props.filters.agencia || 'T',
-    formaPagamento: props.filters.formaPagamento || 'TP',
     dataInicioInput: props.filters.data_inicio || '',
     dataFimInput: props.filters.data_fim || '',
-    filtrarPrestacoes: props.filters.filtrar_prestacoes !== undefined ? Boolean(Number(props.filters.filtrar_prestacoes)) : true,
-    filtrarPoupancas: props.filters.filtrar_poupancas !== undefined ? Boolean(Number(props.filters.filtrar_poupancas)) : true,
-    produtoPrestacao: props.filters.produtoPrestacao || 'TL',
-    produtoPoupanca: props.filters.produtoPoupanca || 'TS'
+
 })
 
 const erros = ref({
@@ -1323,7 +868,7 @@ const novoComprovativo = ref({
     telefone: ''
 })
 
-const novoReferenciaManual=ref({
+const novoReferenciaManual = ref({
     ls: 'Loan',
     selectBase: '',
     selectGrupoIndividual: '',
@@ -1363,16 +908,7 @@ const calcularNumeroLinha = (index) => (paginaAtual.value - 1) * perPage.value +
 
 
 
-const toggleDetails = (id) => activeDetails.value = id
-const closeDetails = () => activeDetails.value = null
 
-const podeEditar = (comprovativo) => {
-
-    const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
-    const isRegistadoHoje = dataItem === hoje.value
-    const temPermissao = props.user.comprovativo_btnedita_montante == 1
-    return isRegistadoHoje || temPermissao
-}
 
 const podeEliminar = (comprovativo) => {
     const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
@@ -1381,30 +917,8 @@ const podeEliminar = (comprovativo) => {
     return isRegistadoHoje || temPermissao
 }
 
-const abrirModalEdicao = (comprovativo) => {
-    comprovativoSelecionado.value = comprovativo
-    novoMontante.value = comprovativo.montante.toString()
-    showEditModal.value = true
-}
 
-const fecharModalEdicao = () => showEditModal.value = false
 
-const salvarEdicaoMontante = async (dados) => {
-    try {
-        await router.post('/alterarmontante', {
-            id: dados.id,
-            novo_montante: dados.novoMontante
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                fecharModalEdicao()
-                router.reload({ only: ['lista_comprovativo'] })
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao editar montante:', error)
-    }
-}
 
 const initiateDeletion = (comprovativo) => {
     if (!podeEliminar(comprovativo)) return
@@ -1470,10 +984,7 @@ const cancelDeletion = () => {
     showDeleteModal.value = false
 }
 
-const abrirModalObservacaoDCF = (comprovativo) => {
-    comprovativoSelecionado.value = comprovativo
-    showModalObservacao.value = true
-}
+
 
 const validarDatas = () => {
     erros.value = { dataInicio: '', dataFim: '' }
@@ -1506,7 +1017,7 @@ const validarDatas = () => {
 const aplicarFiltros = () => {
     if (!validarDatas()) return
 
-    router.get('/comprovativos', {
+    router.get('/referenciapgt', {
         search_input: filtro.value.search,
         lnr_imput: filtro.value.lnr,
         estado_input: filtro.value.estado,
@@ -1526,21 +1037,7 @@ const aplicarFiltros = () => {
     })
 }
 
-const aplicarFiltrosmai5M = () => {
-    router.get('/comprovativos', { tipo: 500000 }, {
-        preserveState: true,
-        replace: true,
-        onSuccess: () => paginaAtual.value = 1
-    })
-}
 
-const aplicarFiltrosmexc7M = () => {
-    router.get('/comprovativos', { tipo: 7000000 }, {
-        preserveState: true,
-        replace: true,
-        onSuccess: () => paginaAtual.value = 1
-    })
-}
 
 const resetarFiltros = () => {
     filtro.value = {
@@ -1557,7 +1054,7 @@ const resetarFiltros = () => {
         filtrarPoupancas: true
     }
 
-    router.get('/comprovativos', { page: 1 }, {
+    router.get('/referenciapgt', { page: 1 }, {
         preserveState: true,
         replace: true
     })
@@ -1567,100 +1064,29 @@ const exportarParaExcel = () => {
     try {
         const dadosFormatados = props.lista_comprovativo.map((comprovativo, index) => ({
             '#': index + 1,
-            'Data': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleString('pt-PT') : '-',
+            'Data': comprovativo.data ? new Date(comprovativo.data).toLocaleString('pt-PT') : '-',
             'Agência': comprovativo.agencia || '-',
             'Registado Por': comprovativo.usuario || '-',
-            'Loan Number': comprovativo.lnr || '-',
+            'Código do Cliente': comprovativo.lnr || '-',
             'Cliente': comprovativo.cliente || '-',
             'Produto': comprovativo.metodologia || '-',
-            'Voucher Dia': comprovativo.voucher || '-',
-            'Voucher Transacao': comprovativo.referenciatransacao || '-',
-            'Forma de Pagamento': comprovativo.FormaPagoN || '-',
-            'Descrição da DCF': comprovativo.descricao || '-',
-            'Banco': comprovativo.banco || '-',
-            'Conta Bancaria': comprovativo.conta || '-',
-            'Observação da DCF': comprovativo.observacao || '-',
             'Montante': comprovativo.montante || '0,00',
+            'Referência de Pagamento': comprovativo.referencia || '-',
             'Estado': comprovativo.estado || '-',
-            'Operador DCF': comprovativo.operadordcf || '-',
-            'Data de Operação DCF': comprovativo.datareconciliacao || '-',
+
         }))
 
         const ws = XLSX.utils.json_to_sheet(dadosFormatados)
         const wb = XLSX.utils.book_new()
         XLSX.utils.book_append_sheet(wb, ws, "Comprovativos")
-        XLSX.writeFile(wb, `comprovativos_DOP_completa_${new Date().toISOString().split('T')[0]}.xlsx`)
+        XLSX.writeFile(wb, `lista_refpagamentos_completa_${new Date().toISOString().split('T')[0]}.xlsx`)
     } catch (error) {
         console.error('Erro ao exportar:', error)
         alert(`Erro ao exportar: ${error.message}`)
     }
 }
 
-const exportToExcel = () => {
-    try {
-        const dadosFormatados = listaCompletaPendentes.value.map((comprovativo, index) => ({
-            '#': index + 1,
-            'Data de Registo': comprovativo.CiFecha ? new Date(comprovativo.CiFecha).toLocaleString('pt-PT') : '-',
-            'Loan Number': comprovativo.Lnr || '-',
-            'Voucher dia': comprovativo.voucher === 'null' || comprovativo.voucher == null ? 'não registado' : comprovativo.voucher,
-            'Montante': comprovativo.montante || '0,00',
-            'Data do Comprovativo': comprovativo.budata ? new Date(comprovativo.budata).toLocaleString('pt-PT') : '-'
-        }))
 
-        const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Comprovativos")
-        XLSX.writeFile(wb, `comprovativos_Pendentes_completa_${new Date().toISOString().split('T')[0]}.xlsx`)
-    } catch (error) {
-        console.error('Erro ao exportar:', error)
-        alert(`Erro ao exportar: ${error.message}`)
-    }
-}
-
-const exportarPagamentosReferenciaExcel = () => {
-    try {
-        const dadosFormatados = pagamentosReferencia.value.map((pagamento, index) => ({
-            '#': index + 1,
-            'Data': pagamento.data || '-',
-            'Loan Number': pagamento.lnr || '-',
-            'Cliente': pagamento.cliente || '-',
-            'Voucher': pagamento.voucher || '-',
-            'Montante': pagamento.montante || '0,00',
-            'Estado': pagamento.estado || '-',
-            'Forma de Pagamento': pagamento.FormaPagoN || '-',
-            'Produto': pagamento.metodologia || '-'
-        }))
-
-        const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Pagamentos por Referência")
-        XLSX.writeFile(wb, `pagamentos_referencia_${new Date().toISOString().split('T')[0]}.xlsx`)
-    } catch (error) {
-        console.error('Erro ao exportar:', error)
-        alert(`Erro ao exportar: ${error.message}`)
-    }
-}
-
-const abrirModalNovoComprovativo = () => {
-    showModalNovo.value = true
-    novoComprovativo.value = {
-        ls: 'Loan',
-        selectBase: '',
-        selectGrupoIndividual: '',
-        txtNumeroLoanSaving: '',
-        selectProdutoLoan: '',
-        selectProdutoSaving: '',
-        txtLoanR: 'Loan Repayment',
-        txtSavingD: 'Savings Deposit',
-        selectBanco: '',
-        selectBancoConta: '',
-        txtMontante: '',
-        calDataBorderoux: '',
-        txtInfoAdicional: '',
-        selectFormaPagamento: '',
-        telefone: ''
-    }
-}
 const abrirModalGerarRefManual = () => {
     showModalGerarREF.value = true
     novoReferenciaManual.value = {
@@ -1672,17 +1098,32 @@ const abrirModalGerarRefManual = () => {
         selectProdutoSaving: '',
         txtLoanR: 'Loan Repayment',
         txtSavingD: 'Savings Deposit',
-        selectBanco: '',
-        selectBancoConta: '',
+
+
         txtMontante: '',
-        calDataBorderoux: '',
+
         txtInfoAdicional: '',
-        selectFormaPagamento: '',
+
         telefone: ''
     }
 }
-const fecharModalNovoComprovativo = () => showModalNovo.value = false
-const fecharModalCriarRefManual= () => showModalGerarREF.value = false
+// Função para resetar o formulário
+const resetarFormularioReferencia = () => {
+    novoReferenciaManual.value = {
+        ls: 'Saving',
+        selectBase: '',
+        selectGrupoIndividual: '',
+        txtNumeroLoanSaving: '',
+        selectProdutoSaving: '',
+        txtSavingD: 'Savings Deposit',
+        txtMontante: '',
+        txtInfoAdicional: '',
+        telefone: '',
+        txtRefPagamento: ''
+    };
+};
+const fecharModalCriarRefManual = () => showModalGerarREF.value = false
+
 
 const guardarComprovativo = async () => {
     try {
@@ -1691,29 +1132,30 @@ const guardarComprovativo = async () => {
             if (value) formData.append(key, value)
         })
 
-        if (modalNovoComprovativoRef.value?.selectedFile) {
-            formData.append('anexo', modalNovoComprovativoRef.value.selectedFile)
-        }
 
-        await router.post('/guardar-comprovativo', formData, {
+
+        await router.post('/guardar-referencia-pagamento', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             onSuccess: () => {
-                fecharModalNovoComprovativo()
-                modalNovoComprovativoRef.value?.resetFileInput()
+                fecharModalCriarRefManual();
+
+                // Resetar formulário
+                resetarFormularioReferencia();
+
             }
         })
     } catch (error) {
-        console.error('Erro ao enviar comprovativo:', error)
+        console.error('Erro ao gerar referência:', error)
     }
 }
 
 const buscarPorLoan = () => {
-    router.get('/comprovativos', { tipo: 3, loan: filtroLoan.value }, { preserveState: true })
+    router.get('/referenciapgt', { tipo: 3, loan: filtroLoan.value }, { preserveState: true })
     showModalLoan.value = false
 }
 
 const buscarPorDatas = () => {
-    router.get('/comprovativos', {
+    router.get('/referenciapgt', {
         tipo: 1,
         data_inicio: dataInicio.value,
         data_fim: dataFim.value

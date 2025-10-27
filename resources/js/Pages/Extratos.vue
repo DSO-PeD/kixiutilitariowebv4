@@ -396,7 +396,17 @@
                                 </button>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-black-600">
-                                <span v-if="item.Telefone != 'Nenhum'">{{ formatTelefone(item.Telefone) }}</span>
+
+                                <button @click="abrirModalEditarTelefone(item)" title="Alterar Contacto do Cliente"
+                                    class="btn-sm flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10">
+                                        </path>
+                                    </svg>
+                                    <span v-if="item.Telefone != 'Nenhum'">{{ formatTelefone(item.Telefone) }}</span>
+                                </button>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex space-x-2 justify-center">
@@ -495,6 +505,9 @@
         :extratoref="extratoSelecionado" />
 
     <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan" v-model="filtroLoan" />
+
+    <ModalEditarTelefone :show="showModalEditarTelefone" :extratoSelecionado="extratoSelecionado"
+        @close="showModalEditarTelefone = false" @telefoneAtualizado="onTelefoneAtualizado" />
 </template>
 
 
@@ -508,7 +521,7 @@ import ModalDetalhesExtrato from './Layouts/components/ExtratosComponents/ModalD
 import ModalActivarReferencia from './Layouts/components/ExtratosComponents/ModalActivarReferencia.vue'
 import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
 import ConfirmationModalExtrato from './Layouts/components/ExtratosComponents/ConfirmationModalExtrato.vue'
-
+import ModalEditarTelefone from './Layouts/components/ExtratosComponents/ModalEditarTelefone.vue'
 
 const props = defineProps({
     lista_extrato: Object,
@@ -589,6 +602,23 @@ const selectedExtrato = ref({
 
 
 })
+
+// Estados
+const showModalEditarTelefone = ref(false);
+
+// Função para abrir o modal de editar telefone
+const abrirModalEditarTelefone = (extrato) => {
+    extratoSelecionado.value = extrato;
+    showModalEditarTelefone.value = true;
+};
+
+// Função para quando o telefone for atualizado
+const onTelefoneAtualizado = (novoTelefone) => {
+    // Atualizar o telefone no extrato selecionado
+    if (extratoSelecionado.value) {
+        extratoSelecionado.value.Telefone = novoTelefone;
+    }
+};
 
 
 // Watch para atualizar dadosLocais quando lista_comprovativo mudar

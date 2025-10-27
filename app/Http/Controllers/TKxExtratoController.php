@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class TKxExtratoController extends Controller
@@ -171,7 +172,7 @@ class TKxExtratoController extends Controller
                 'BaseOperacao' => $item->BaseOperacao,
                 'referenciapagamento' => $item->referenciapagamento,
                 'RefPgtActivo' => $item->RefPgtActivo,
-                'Telefone' =>$item->Telefone
+                'Telefone' => $item->Telefone
 
 
             ];
@@ -196,13 +197,13 @@ class TKxExtratoController extends Controller
             'lista_bancos_contas' => $lista_bancos_contas,
             'lista_actividade_economica' => $lista_actividade_economica,
             'lista_grupo_actividade_economica' => $lista_grupo_actividade_economica,
-             'sistema_aberto' => $sistema_aberto,
+            'sistema_aberto' => $sistema_aberto,
             'lista_nes_grupo' => $lista_nes_grupo,
             'lista_nes_tipo' => $lista_nes_tipo,
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
             'montantetotal' => $totalMontante,
-            'dataInicioPeriodo' =>  $DataFimFormatada,
+            'dataInicioPeriodo' => $DataFimFormatada,
             'dataFimPeriodo' => $DataInicioFormatada,
         ]);
 
@@ -384,7 +385,7 @@ class TKxExtratoController extends Controller
                 'BaseOperacao' => $siglabase,
                 'referenciapagamento' => $request->txtRefPagamento,
                 'RefPgtActivo' => 0,
-                'Telefone' =>$request->txtTelefone
+                'Telefone' => $request->txtTelefone
             ];
 
             // Garantir que nenhum campo obrigatório fique nulo
@@ -455,50 +456,105 @@ class TKxExtratoController extends Controller
      * Trata as informações de borderoux para taxas
      */
 
-
-
-
     public function criarReferencia(Request $request)
     {
+        $validated = $request->validate([
+            'numero' => 'required|string'
+        ]);
 
-
-        $data = $request->all(); // dados do formulário
-        $client = new IziPayService();
-
-        $response = $client->mainKxU($data);
-
-
-        $dadosAtualizar = [
-            'RefPgtActivo' => 1, // Substitua pelo nome correto do campo e valor
-            // outros campos que deseja atualizar...
-        ];
+        $numeroReferencia = $validated['numero'];
 
 
 
-        if ($response == 201) {
+        $iziPayService = new IziPayService();
 
-            // Sucesso
+        try {
+            $statusCode = $iziPayService->mainKxU($request->all());
 
+            switch ($statusCode) {
+                case 201:
+                    $atualizado = TKxExtratoModel::where('referenciapagamento', $numeroReferencia)->update(['RefPgtActivo' => 1]);
+                    return $this->handleSuccess($numeroReferencia);
+                case 422:
+                    $atualizado = TKxExtratoModel::where('referenciapagamento', $numeroReferencia)->update(['RefPgtActivo' => 1]);
+                    return back()->with('error', "Referência {$numeroReferencia} já existe.");
+                default:
+                    return back()->with('error', 'Serviço de ativação de referência indisponível.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Erro ao criar referência', [
+                'numero' => $numeroReferencia,
+                'error' => $e->getMessage()
+            ]);
 
+            return back()->with('error', 'Erro interno do servidor.');
+        }
+    }
 
-            $resultado = TKxExtratoModel::where('referenciapagamento', $request->numero)->update($dadosAtualizar);
-            // return back()->with('success', 'Activada  com sucesso!');
-            return redirect()->back()->with('success', 'Referência activada com sucesso!');
+    private function handleSuccess(string $numeroReferencia)
+    {
+        $extrato = TKxExtratoModel::where('referenciapagamento', $numeroReferencia)->first();
 
-
-        } else if ($response == 422) {
-
-            return back()->with('error', 'Referência ' . $request->numero . 'já existe.');
-
-        } else if ($response == 201) {
-            return back()->with('error', ' Serviços de Activação de referencia de Indisponível');
+        if (!$extrato) {
+            Log::warning('Registro não encontrado para atualização', ['referencia' => $numeroReferencia]);
+            return back()->with('error', 'Registro não encontrado.');
         }
 
 
 
+        if ($extrato->Telefone) {
+            $mensagem = $this->construirMensagemSMS($numeroReferencia, $extrato->Lnr);
+            $this->enviarNotificacaoSMS($extrato->Telefone, $mensagem);
+        }
 
-
+        return redirect()->back()->with('success', 'Referência ativada com sucesso!');
     }
+
+    private function enviarNotificacaoSMS(string $telefone, string $mensagem): void
+    {
+        $accessKey = config('djanotifpgtref.callback_access_key');
+
+        if (!$accessKey) {
+            Log::error('Chave de acesso SMS não configurada');
+            return;
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Access-Key' => $accessKey,
+                'Content-Type' => 'application/json',
+            ])->timeout(10)
+                ->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+                    'contacto' => $telefone,
+                    'mensagem' => $mensagem // Asegúrate que el endpoint espera este campo
+                ]);
+
+            if ($response->successful()) {
+                Log::info('SMS enviado com sucesso', ['telefone' => $telefone]);
+            } else {
+                Log::warning('Erro ao enviar SMS', [
+                    'telefone' => $telefone,
+                    'status' => $response->status()
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Falha no envio do SMS', [
+                'telefone' => $telefone,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function construirMensagemSMS(string $referencia, string $lnr): string
+    {
+        return "Parabéns já podes efectuar os seus pagamentos das suas prestações pela referência:\n"
+            . " {$referencia}\n\n"
+            . "Empréstimo número {$lnr}\n\n"
+            . "KIXICREDITO\n"
+            . "PARCEIRA NOS NEGÓCIOS";
+    }
+
+
 
     public function carregaExtratosKP(Request $request)
     {
@@ -541,18 +597,18 @@ class TKxExtratoController extends Controller
 
 
 
-                $updated = TKxExtratoModel::where('id', $request->id)
-                    ->update([
-                        'Eliminado' => 1,
-                        'EliminadoPor' => $authenticatedUser->UtCodigo,
+            $updated = TKxExtratoModel::where('id', $request->id)
+                ->update([
+                    'Eliminado' => 1,
+                    'EliminadoPor' => $authenticatedUser->UtCodigo,
 
-                    ]);
+                ]);
 
-                if ($updated) {
-                    return back()->with('success', 'Comprovativo eliminado com  sucesso!');
-                } else {
-                    return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este comprovativo, por favor cotactar a DSO');
-                }
+            if ($updated) {
+                return back()->with('success', 'Aplicação eliminado com  sucesso!');
+            } else {
+                return back()->with('error', 'Ups! algo aconteceu errado  ao eliminar este Aplicação, por favor cotactar a DSO');
+            }
 
 
 
@@ -560,7 +616,50 @@ class TKxExtratoController extends Controller
 
     }
 
+    public function atualizarTelefone(Request $request)
+    {
 
+        $request->validate([
+            'id' => 'required',
+            'telefone' => 'required|string|size:9|regex:/^[0-9]+$/'
+        ]);
+
+        try {
+            // Verifique se o registro existe
+            $exists = DB::table('tkxextrato')->where('Num', $request->id)->exists();
+
+            if (!$exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Extrato não encontrado.'
+                ], 404);
+            }
+
+            // Atualize o telefone
+            $updated = DB::table('tkxextrato')
+                ->where('Num', $request->id)
+                ->update(['Telefone' => $request->telefone]);
+
+            if ($updated) {
+
+
+                 return back()->with('Telefone atualizado com sucesso.');
+            } else {
+                return back()->with('error', 'Ups! algo aconteceu errado  ao aleterar o Telefone, por favor cotactar a DSO');
+            }
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao atualizar telefone: ' . $e->getMessage()
+            ], 500);
+
+
+        }
+
+
+    }
 
 
 

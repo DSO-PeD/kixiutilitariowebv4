@@ -367,7 +367,7 @@
                         </tr>
                         <tr style="border-top: 0.25px Solid #666666;">
                             <td style="color:#006666;text-align:center;font-size:11px;text-transform: uppercase;">
-                                <b>{{ $Dados_comprovativo[0]->BuDadoOrigem }} :: {{ $Dados_extrato[0]->Cliente }}</b>
+                                <b>{{ $Dados_comprovativo[0]->BuDadoOrigem }} :: {{ optional($Dados_extrato[0])->Cliente ?? optional($Dados_extrato[0])->nomecliente ?? '' }}</b>
                             </td>
                         </tr>
                     </table>
@@ -424,7 +424,7 @@
 
         <!-- Referência de Pagamento -->
         <div class="info-box payment-reference" style="margin-top: 50px">
-            <div class="reference-number">{{$Dados_extrato[0]->referenciapagamento}}</div>
+            <div class="reference-number">{{ optional($Dados_extrato[0])->referenciapagamento ?? optional($Dados_extrato[0])->referencia ?? '' }}</div>
             <div class="payment-icons">
                 <img src="imagens/mltc_expres.jpg" alt="Multicaixa Express">
                 <img src="imagens/atm.jpg" alt="ATM">

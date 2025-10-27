@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 class TKxExtratoModel extends Model
 {
     protected $table = 'tkxextrato';
+    protected $primaryKey = 'Num';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'Num',

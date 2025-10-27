@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\ComprovativoModel;
 use App\Models\CpvtReconciliacaoModel;
 use App\Models\PgtRefNotificacaoModel;
+use App\Models\ReferenciaPGTModel;
+use App\Models\TKxClProdutoModel;
 use App\Models\TKxExtratoModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +30,6 @@ class PgtRefNotificacaoController extends Controller
         return preg_match('/^\d{9}$/', $telefone) ? $telefone : null;
     }
 
-    //
     public function carregarPagamentoPorReferencia(Request $request)
     {
         // 1. Validar a access-key
@@ -36,169 +38,257 @@ class PgtRefNotificacaoController extends Controller
         if (!$this->validateAccessKey($accessKey)) {
             Log::warning('Tentativa de acesso com chave inválida', ['ip' => $request->ip()]);
             return response()->json(['error' => 'Unauthorized', 'message' => $request->ip()], 401);
-        } else {
-            // Captura todos os dados do JSON
-            $item = $request->all();
+        }
 
+        // Captura todos os dados do JSON
+        $item = $request->all();
 
+        DB::beginTransaction();
+
+        try {
             $apenasNumeros = preg_replace('/\D/', '', $item['refPagamento']);
             $referenciaKIXI = str_pad($apenasNumeros, 9, '0', STR_PAD_LEFT);
             $dataFormatadaREF = Carbon::parse($item['dataTransaccaoCliente'])->format('dmY');
 
-            try {
-                $ExisteReferencia = TKxExtratoModel::where('referenciapagamento', '=', $referenciaKIXI)->first();
-                $codigo_voucher = 'PREF' . $dataFormatadaREF . '/' . $ExisteReferencia->Lnr;
-                $codigo_voucher_dia = 'BMA' . $dataFormatadaREF;
+            // Verificar se transação já existe
+            $ExisteTransacao = PgtRefNotificacaoModel::where('id', '=', $item['Id'])->first();
+            if ($ExisteTransacao) {
+                return response()->json([
+                    'success' => true,
+                    'Obs' => 'Já foi processado um pagamento com este ID',
+                    'Id' => $item['Id']
+                ], 200);
+            }
 
-
-                if ($ExisteReferencia) {
-
-                    $ExisteTransacao = PgtRefNotificacaoModel::where('id', '=', $item['Id'])->first();
-                    if ($ExisteTransacao) {
-                        return response()->json([
-                            'success' => true,
-                            'Obs' => 'Já foi processado um pagamento com este ID',
-                            'Id' => $item['Id']
-                        ], 200);
-                    } else {
-
-                        $registro = PgtRefNotificacaoModel::create([
-                            'idTransacao' => $item['idTransacao'],
-                            'numLogSistema' => $item['numLogSistema'],
-                            'idLogSistema' => $item['idLogSistema'],
-                            'dataTransaccaoCliente' => $item['dataTransaccaoCliente'],
-                            'montantePago' => $item['montantePago'],
-                            'tipoTerminal' => $item['tipoTerminal'],
-                            'iIdentTerminal' => $item['iIdentTerminal'],
-                            'localidadeTerminal' => $item['localidadeTerminal'],
-                            'refPagamento' => $referenciaKIXI,
-                            'id' => $item['Id']
-                        ]);
-
-
-                        $dataFormatadaBuData = Carbon::parse($item['dataTransaccaoCliente'])->format('Y-m-d');
-
-                        $insert = ComprovativoModel::create([
-                            'CiFecha' => now(),
-                            'UtCodigo' => 'Izipay',
-                            'BaCodigo' => 3,
-                            'TtCodigo' => 'DJA',
-                            'FormaPago' => 8,
-                            'PoCodigo' => 'DJA',
-                            'BuDadoOrigem' => $ExisteReferencia->Lnr,
-                            'BuReferencia' => $codigo_voucher_dia,
-                            'BuReferenciaTransacao' => $codigo_voucher,
-                            'BuMontante' => $item['montantePago'],
-                            'BuData' => $dataFormatadaBuData,
-                            'BuContaBancaria' => '2972939510001',
-                            'Eliminado' => 0,
-                            'idestado' => 8,
-                            'BaseOperacao' => $ExisteReferencia->BaseOperacao,
-                            'infoadicional' => $ExisteReferencia->Cliente,
-                            'filecomprovativo' => 'Sem extrato',
-                            'telefonecliente' => 'Desconhecido'
-                        ]);
-
-                        if ($insert) {
-                            // Esta inserção serve para reconciliação automática dos comprovativos depósitados, um processo acertado com a DCF
-                            $insertReco = CpvtReconciliacaoModel::create([
-                                'datareconciliacao' => now(),
-                                'CodigoConta' => 79,
-                                'voucher' => $codigo_voucher_dia,
-                                'vouchertransacao' => $codigo_voucher,
-                                'descricao' => 'Inserção Automática',
-                                'observacao' => 'Comprovativo com  Montante pago por Referencia',
-                                'idcomprovativo' => $insert->id,
-                                'UtCodigo' => 'dcf',
-                                'idestado' => 8
-                            ]);
-
-                        }
-
-                        if ($registro) {
-                            $validKey = config('djanotifpgtref.callback_access_key');
-
-                            $comprovativo = ComprovativoModel::where('BuDadoOrigem', '=', $ExisteReferencia->Lnr)->first();
-
-                            $telefone = null;
-                             $mensagem = "Pagamento recebido\n".
-                                        "Kz ".number_format($item['montantePago'], 2, ',', '.')."\n".
-                                        "Empréstimo número {$ExisteReferencia->Lnr}\n\n".
-                                        "KIXICREDITO\n".
-                                        "PARCEIRA NOS NEGÓCIOS";
-                            if ($ExisteReferencia->Telefone) {
-                                $telefone = $ExisteReferencia->Telefone;
-                            } else if ($comprovativo->teletelefonecliente) {
-                                $telefone = $comprovativo->teletelefonecliente;
-                            }
-
-                            if ($telefone) {
-                                $response = Http::withHeaders([
-                                    'Access-Key' => $validKey,
-                                    'Content-Type' => 'application/json',
-                                ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
-                                            'contacto' => $telefone,
-                                            'mensagem' => $mensagem,
-                                        ]);
-
-
-                            }
-                            Log::info('Tentativa de envio SMS', ['telefone' => $telefone, 'mensagem ' => $mensagem, 'montante' => $item['montantePago']]);
-                        }
-
-                        return response()->json([
-                            'success' => true,
-                            'Obs' => 'Registro criado com sucesso',
-                            'Id' => $item['Id']
-                        ], 200);
-
-                    }
-
-
-
-
-
-
-
-
-
-                } else {
-
-
-                    return response()->json([
-                        'success' => false,
-                        'Obs' => 'A referência de pagamento não existe',
-                        'Id' => $item['Id']
-                    ]);
-
-
-                }
-            } catch (\Exception $e) {
-
-
-
+            // Buscar referência
+            $ExisteReferencia = $this->buscarReferencia($referenciaKIXI);
+            if (!$ExisteReferencia['encontrada']) {
                 return response()->json([
                     'success' => false,
-                    'Obs' => 'Erro ao processar o item',
-                    'Id' => $item['Id'],
-                    'error' => 'Contactar da DSO'
-                ]);
+                    'Obs' => 'A referência de pagamento não existe',
+                    'Id' => $item['Id']
+                ], 404);
+            }
 
+            // Processar pagamento
+            $this->processarPagamento($item, $ExisteReferencia, $referenciaKIXI, $dataFormatadaREF);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'Obs' => 'Registro criado com sucesso',
+                'Id' => $item['Id']
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao processar pagamento por referência', [
+                'id' => $item['Id'] ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'Obs' => 'Erro ao processar o item',
+                'Id' => $item['Id'] ?? 'unknown',
+                'error' => 'Contactar a DSO'
+            ], 500);
+        }
+    }
+
+    // Métodos auxiliares
+    private function buscarReferencia(string $referenciaKIXI): array
+    {
+        // Buscar na tabela principal primeiro
+        $referencia = TKxExtratoModel::where('referenciapagamento', $referenciaKIXI)->first();
+
+        if ($referencia) {
+            $produto = TKxClProdutoModel::where('PoAgrupado', $referencia->Produto)
+                ->where('Estado', 1)
+                ->first();
+
+            return [
+                'encontrada' => true,
+                'dados' => $referencia,
+                'lnr' => $referencia->Lnr,
+                'metodologia' => $produto->Metodologia ?? 'DJA',
+                'telefone' => $produto->Telefone ?? 'Desconhecido',
+                'tipo' => 'extrato'
+            ];
+        }
+
+        // Buscar na tabela de referências manuais
+        $referenciaManual = ReferenciaPGTModel::where('referencia', $referenciaKIXI)->first();
+
+        if ($referenciaManual) {
+            return [
+                'encontrada' => true,
+                'dados' => $referenciaManual,
+                'lnr' => $referenciaManual->BuDadoOrigem,
+                'metodologia' => $referenciaManual->PoCodigo ?? 'DJA',
+                'telefone' => $produto->telefone ?? 'Desconhecido',
+                'tipo' => 'manual'
+            ];
+        }
+
+        return ['encontrada' => false];
+    }
+
+    private function processarPagamento(array $item, array $dadosReferencia, string $referenciaKIXI, string $dataFormatadaREF): void
+    {
+        // Criar registro de notificação
+        $registro = PgtRefNotificacaoModel::create([
+            'idTransacao' => $item['idTransacao'],
+            'numLogSistema' => $item['numLogSistema'],
+            'idLogSistema' => $item['idLogSistema'],
+            'dataTransaccaoCliente' => $item['dataTransaccaoCliente'],
+            'montantePago' => $item['montantePago'],
+            'tipoTerminal' => $item['tipoTerminal'],
+            'iIdentTerminal' => $item['iIdentTerminal'],
+            'localidadeTerminal' => $item['localidadeTerminal'],
+            'refPagamento' => $referenciaKIXI,
+            'id' => $item['Id']
+        ]);
+
+        if ($registro) {
+            // Se for referência manual, atualizar os campos
+            if ($dadosReferencia['tipo'] === 'manual') {
+                // Calcular o montante total já pago para esta referência
+                $valorPago = PgtRefNotificacaoModel::where('refPagamento', $referenciaKIXI)->sum('montantePago');
+                $this->atualizarReferenciaManual($dadosReferencia['dados']->id, $valorPago);
 
             }
 
+            $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF);
+        }
+    }
 
+    private function criarComprovativoEReconciliacao(array $item, array $dadosReferencia, string $dataFormatadaREF): void
+    {
+        $dataFormatadaBuData = Carbon::parse($item['dataTransaccaoCliente'])->format('Y-m-d');
+        $codigo_voucher_dia = 'BMA' . $dataFormatadaREF;
+        $codigo_voucher = 'PREF' . $dataFormatadaREF . '/' . $dadosReferencia['lnr'];
 
+        // Criar comprovativo - ajuste para nomes de colunas diferentes entre tabelas
+        $comprovativo = ComprovativoModel::create([
+            'CiFecha' => now(),
+            'UtCodigo' => 'Izipay',
+            'BaCodigo' => 3,
+            'TtCodigo' => 'DJA',
+            'FormaPago' => 8,
+            'PoCodigo' => $dadosReferencia['metodologia'],
+            'BuDadoOrigem' => $dadosReferencia['lnr'],
+            'BuReferencia' => $codigo_voucher_dia,
+            'BuReferenciaTransacao' => $codigo_voucher,
+            'BuMontante' => $item['montantePago'],
+            'BuData' => $dataFormatadaBuData,
+            'BuContaBancaria' => '2972939510001',
+            'Eliminado' => 0,
+            'idestado' => 8,
+            'BaseOperacao' => $dadosReferencia['dados']->BaseOperacao,
+            'infoadicional' => $dadosReferencia['dados']->Cliente ?? $dadosReferencia['dados']->nomecliente ?? 'Desconhecido',
+            'filecomprovativo' => 'Sem extrato',
+            'telefonecliente' => $dadosReferencia['telefone'],
+        ]);
 
+        if ($comprovativo) {
+            $this->criarReconciliacao($comprovativo, $codigo_voucher_dia, $codigo_voucher);
+            $this->enviarNotificacaoSMS($item, $dadosReferencia);
+        }
+    }
 
+    private function criarReconciliacao($comprovativo, string $codigo_voucher_dia, string $codigo_voucher): void
+    {
+        // Inserção para reconciliação automática
+        CpvtReconciliacaoModel::create([
+            'datareconciliacao' => now(),
+            'CodigoConta' => 79,
+            'voucher' => $codigo_voucher_dia,
+            'vouchertransacao' => $codigo_voucher,
+            'descricao' => 'Inserção Automática',
+            'observacao' => 'Comprovativo com Montante pago por Referencia',
+            'idcomprovativo' => $comprovativo->id,
+            'UtCodigo' => 'dcf',
+            'idestado' => 8
+        ]);
+    }
 
+    private function atualizarReferenciaManual(int $idReferencia, float $montantePago): void
+    {
+        ReferenciaPGTModel::where('id', $idReferencia)->update([
+            'montantepago' => $montantePago,
+            'idestado' => 22,
+            'updated_at' => now()
+        ]);
 
+        Log::info('Referência manual atualizada', [
+            'id' => $idReferencia,
+            'montantepago' => $montantePago,
+            'idestado' => 22
+        ]);
+    }
 
+    private function enviarNotificacaoSMS(array $item, array $dadosReferencia): void
+    {
+        $telefone = $this->obterTelefoneCliente($dadosReferencia);
+
+        if (!$telefone) {
+            Log::info('Não foi possível enviar SMS: telefone não encontrado');
+            return;
         }
 
+        $mensagem = $this->construirMensagemSMS($item, $dadosReferencia);
+        $validKey = config('djanotifpgtref.callback_access_key');
 
+        try {
+            $response = Http::withHeaders([
+                'Access-Key' => $validKey,
+                'Content-Type' => 'application/json',
+            ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+                        'contacto' => $telefone,
+                        'mensagem' => $mensagem,
+                    ]);
 
+            Log::info('SMS enviado com sucesso', [
+                'telefone' => $telefone,
+                'montante' => $item['montantePago']
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erro ao enviar SMS', [
+                'telefone' => $telefone,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
+
+    private function obterTelefoneCliente(array $dadosReferencia): ?string
+    {
+        // Buscar telefone considerando possíveis nomes de colunas diferentes
+        $telefone = $dadosReferencia['dados']->Telefone ?? $dadosReferencia['dados']->telefone ?? null;
+
+        if (!$telefone) {
+            $comprovativo = ComprovativoModel::where('BuDadoOrigem', $dadosReferencia['lnr'])->first();
+            $telefone = $comprovativo->telefonecliente ?? null;
+        }
+
+        return $telefone;
+    }
+
+    private function construirMensagemSMS(array $item, array $dadosReferencia): string
+    {
+        $montanteFormatado = number_format($item['montantePago'], 2, ',', '.');
+
+        return "Pagamento recebido\n" .
+            "Kz " . $montanteFormatado . "\n" .
+            "Empréstimo número " . $dadosReferencia['lnr'] . "\n\n" .
+            "KIXICREDITO\n" .
+            "PARCEIRA NOS NEGÓCIOS";
+    }
+
+
     public function sendSms()
     {
 
