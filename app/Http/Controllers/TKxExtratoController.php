@@ -501,11 +501,11 @@ class TKxExtratoController extends Controller
         }
 
 
-
-        if ($extrato->Telefone) {
+        //Desabilitado por enquanto, não precisa notificar a activação da referência.
+        /*if ($extrato->Telefone) {
             $mensagem = $this->construirMensagemSMS($numeroReferencia, $extrato->Lnr);
             $this->enviarNotificacaoSMS($extrato->Telefone, $mensagem);
-        }
+        }*/
 
         return redirect()->back()->with('success', 'Referência ativada com sucesso!');
     }
