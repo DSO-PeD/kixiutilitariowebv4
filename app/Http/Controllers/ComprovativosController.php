@@ -1187,17 +1187,15 @@ class ComprovativosController extends Controller
                     ->where('id', $id)
                     ->first();
 
-
-
                     if ($dadosReferencia) {
                             $validKey = config('djanotifpgtref.callback_access_key');
 
-
-
                             $telefone = null;
-                             $mensagem ="Pagamento a ser  afectuado no valor de\n".
-                                        " Kz ".number_format($request->txtMontante, 2, ',', '.')."\n".
-                                        "Número do cliente {$loanNumber}\n\n".
+                             $mensagem ="Pagamento KIXICREDITO\n\n".
+                                        "Referência {$request->txtRefPagamento}\n".
+                                        "Valor Kz ".number_format($request->txtMontante, 2, ',', '.')."\n".
+                                        "Cliente {$loanNumber}\n\n".
+                                        "Validade 72 horas\n\n".
                                         "KIXICREDITO\n".
                                         "PARCEIRA NOS NEGÓCIOS";
 
