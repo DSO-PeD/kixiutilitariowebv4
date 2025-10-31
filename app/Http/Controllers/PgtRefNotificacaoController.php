@@ -173,7 +173,7 @@ class PgtRefNotificacaoController extends Controller
 
         // Criar comprovativo - ajuste para nomes de colunas diferentes entre tabelas
         $comprovativo = ComprovativoModel::create([
-            'CiFecha' => now(),
+            'CiFecha' => $dataFormatadaBuData,
             'UtCodigo' => 'Izipay',
             'BaCodigo' => 3,
             'TtCodigo' => 'DJA',
