@@ -167,7 +167,7 @@ class PgtRefNotificacaoController extends Controller
 
     private function criarComprovativoEReconciliacao(array $item, array $dadosReferencia, string $dataFormatadaREF): void
     {
-        $dataFormatadaBuData = Carbon::parse($item['dataTransaccaoCliente'])->format('Y-m-d');
+        $dataFormatadaBuData = Carbon::parse($item['dataTransaccaoCliente'])->format('Y-m-d H:i:s');
         $codigo_voucher_dia = 'BMA' . $dataFormatadaREF;
         $codigo_voucher = 'PREF' . $dataFormatadaREF . '/' . $dadosReferencia['lnr'];
 
