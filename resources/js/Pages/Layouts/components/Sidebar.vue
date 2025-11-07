@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import SmallLogo from '../../../../../public/imagens/smalllogo.png';
+import Modal from './ModalExit.vue';
 
 const isExpanded = ref(false);
 const windowWidth = ref(0);
@@ -47,6 +49,18 @@ const closeSidebar = () => {
         isExpanded.value = false;
         emit('expand', false);
     }
+};
+
+const showModal = ref(false);
+const dropdownOpen = ref(false);
+
+const logout = () => {
+    showModal.value = true;
+    dropdownOpen.value = false;
+};
+
+const confirmLogout = () => {
+    router.post('/logout');
 };
 </script>
 
@@ -107,11 +121,39 @@ const closeSidebar = () => {
                 <span class="nav-tooltip">Referências de PGT</span>
             </a>
         </nav>
+        <div class="absolute bottom-0 left-0 right-0 py-4 border-t border-gray-100 bg-gray-50">
+            <div class="text-center px-2">
+                <button @click="logout" class="flex items-center w-full px-4 py-2 text-lg text-red-600 hover:bg-red-200 rounded-lg transition-colors duration-150">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
 
         <!-- Indicador visual de expansão -->
         <div class="absolute top-1/2 -right-1.5 w-3 h-8 bg-orange-500 rounded-l-lg opacity-0 transition-opacity duration-200"
             :class="{ 'opacity-100': isExpanded }"></div>
     </div>
+
+    <!-- Modal de Logout -->
+    <Modal :show="showModal" @close="showModal = false">
+        <div class="p-6">
+            <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800 text-center mb-2">Deseja realmente sair?</h2>
+            <p class="text-sm text-gray-600 text-center mb-6">Você será desconectado do sistema</p>
+            <div class="flex justify-center space-x-3">
+                <button @click="showModal = false" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    Cancelar
+                </button>
+                <button @click="confirmLogout" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                    Sair
+                </button>
+            </div>
+        </div>
+    </Modal>
 
     <!-- Expanded Sidebar -->
     <aside
@@ -191,7 +233,11 @@ const closeSidebar = () => {
         <!-- Footer da sidebar -->
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-gray-50">
             <div class="text-center">
-                <p class="text-xs text-gray-500">v9.0.1</p>
+                <div class="text-center">
+                    <button @click="logout" class="flex items-center w-full px-4 py-2 rounded-md text-md text-red-600 hover:bg-red-50 transition-colors duration-150">
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i> Sair
+                    </button>
+                </div>
             </div>
         </div>
     </aside>
