@@ -195,7 +195,38 @@ class ReportDomPDFController extends Controller
         return $pdf->stream();//->download('CalculoDesembolso.pdf');
     }
 
+    public function emitirRelatorioReembolsoPgtReferenciaMobile($id,$user)
+    {
+        $Dados_comprovativo = ComprovativoModel::where('id', $id)->get();
+        $Dados_extrato = TKxExtratoModel::where('Lnr', '=', $Dados_comprovativo[0]->BuDadoOrigem)->where('Eliminado', '=', 0)->get();
 
+        if ($Dados_extrato->isEmpty()) {
+            $Dados_extrato = ReferenciaPGTModel::where('BuDadoOrigem', $Dados_comprovativo[0]->BuDadoOrigem)
+                ->get();
+        }
+
+        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo',$user);
+        $IMPRENSSO = $authenticatedUser->UtNome;
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+        $hoje = date('d-m-Y');
+        $bancos = TKxBancoModel::all();
+
+        $data = [
+            //'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('d/m/Y'),
+            'Dados_comprovativo' => $Dados_comprovativo,
+            'Dados_extrato' => $Dados_extrato,
+            'IMPRENSSO' => $IMPRENSSO,
+            'AGENCIA' => $resultagencia_user->OfNombre,
+            'bancos' => $bancos
+        ];
+
+        $pdf = PDF::loadView('reports.reportReembolsos', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif']);
+
+
+
+        return $pdf->stream();//->download('CalculoDesembolso.pdf');
+    }
     public function emitirRelatorioCARDPGTREF($id)
     {
         $Dados_comprovativo = ReferenciaPGTModel::where('id', $id)->get();
