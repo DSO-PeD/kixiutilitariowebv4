@@ -81,7 +81,7 @@ Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carrega
 // ROUTAS MOBILE *******************************************************************************************************************************************************************************************************
  Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
  Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
- Route::get('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+ Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 
 /************************ */
 
