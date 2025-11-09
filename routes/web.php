@@ -82,7 +82,7 @@ Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carrega
  Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
  Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
  Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
- Route::get('/reports/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+ Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 /******************************************************************************************************************************************************************************************************************************************************** */
 
 

@@ -205,7 +205,7 @@ class ReportDomPDFController extends Controller
                 ->get();
         }
 
-        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo',$user);
+        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo',$user)->first();
         $IMPRENSSO = $authenticatedUser->UtNome;
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
         $hoje = date('d-m-Y');
