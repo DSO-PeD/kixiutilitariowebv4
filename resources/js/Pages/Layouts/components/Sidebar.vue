@@ -115,15 +115,25 @@ const confirmLogout = () => {
             </a>
 
             <!-- Referencia de Pagamentos -->
-            <a v-if="$page.props.user.mn_referenciapagamento" href="/referenciapgt" class="nav-link-icon group" data-preload
-                :class="{ 'active': $page.url.startsWith('/referenciapgt') }" title="Referências de PGT">
+            <a v-if="$page.props.user.mn_referenciapagamento" href="/referenciapgt" class="nav-link-icon group"
+                data-preload :class="{ 'active': $page.url.startsWith('/referenciapgt') }" title="Referências de PGT">
                 <i class="fas fa-credit-card text-lg"></i>
                 <span class="nav-tooltip">Referências de PGT</span>
             </a>
+
+               <!-- Clientes Kixi Corp -->
+            <a v-if="$page.props.user.rec_subsidio" href="/clientcorp" class="nav-link-icon group"
+                data-preload :class="{ 'active': $page.url.startsWith('/clientcorp') }" title="Cliente">
+                <i class="fas fa-user-tie  text-lg"></i>
+
+                <span class="nav-tooltip">Cliente</span>
+            </a>
+
         </nav>
         <div class="absolute bottom-0 left-0 right-0 py-4 border-t border-gray-100 bg-gray-50">
             <div class="text-center px-2">
-                <button @click="logout" class="flex items-center w-full px-4 py-2 text-lg text-red-600 hover:bg-red-200 rounded-lg transition-colors duration-150">
+                <button @click="logout"
+                    class="flex items-center w-full px-4 py-2 text-lg text-red-600 hover:bg-red-200 rounded-lg transition-colors duration-150">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -145,10 +155,12 @@ const confirmLogout = () => {
             <h2 class="text-lg font-semibold text-gray-800 text-center mb-2">Deseja realmente sair?</h2>
             <p class="text-sm text-gray-600 text-center mb-6">Você será desconectado do sistema</p>
             <div class="flex justify-center space-x-3">
-                <button @click="showModal = false" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <button @click="showModal = false"
+                    class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Cancelar
                 </button>
-                <button @click="confirmLogout" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                <button @click="confirmLogout"
+                    class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
                     Sair
                 </button>
             </div>
@@ -228,13 +240,25 @@ const confirmLogout = () => {
                 </div>
                 <div class="nav-link-indicator"></div>
             </a>
+
+            <!-- Cliente Kixi_Corp -->
+            <a v-if="$page.props.user.rec_subsidio" href="/clientcorp" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/clientcorp') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-user-tie nav-link-icon"></i>
+                    <span class="nav-link-text">Cliente Corp</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
+
         </nav>
 
         <!-- Footer da sidebar -->
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-gray-50">
             <div class="text-center">
                 <div class="text-center">
-                    <button @click="logout" class="flex items-center w-full px-4 py-2 rounded-md text-md text-red-600 hover:bg-red-50 transition-colors duration-150">
+                    <button @click="logout"
+                        class="flex items-center w-full px-4 py-2 rounded-md text-md text-red-600 hover:bg-red-50 transition-colors duration-150">
                         <i class="fa-solid fa-right-from-bracket mr-2"></i> Sair
                     </button>
                 </div>

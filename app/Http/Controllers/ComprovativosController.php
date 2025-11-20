@@ -744,10 +744,11 @@ class ComprovativosController extends Controller
 
 
 
-        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo', '=', 'albe.ebo')->first(); //Auth::user();
+        //  $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo', '=', 'albe.ebo')->first(); //Auth::user();
+        // $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', 2)->first();
 
-        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', 2)->first();
 
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $request->UtAgencia)->first();
 
 
 
@@ -858,26 +859,27 @@ class ComprovativosController extends Controller
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, $formaspagamento_geral);
 
 
-      //  $lista_banco = TKxBancoModel::getBancos();
-      //  $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
+        //  $lista_banco = TKxBancoModel::getBancos();
+        //  $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
 
         $estados = EstadosModel::getEstadosDCF('DCF');
-       /* $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
-        $total = sizeof($lista_comprovativo);
+        /* $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+         $total = sizeof($lista_comprovativo);
 
-        $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
-        $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
+         $totalMontante = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->sum('BuMontante');
+         $totalMontantePoupanca = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->sum('BuMontante');
 
-        $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 19)->sum('BuMontante');
-        $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante');
-        $totalMontanteReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante');
-        $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
-        $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
-        $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
-        $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');*/
+         $totalMontanteRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 19)->sum('BuMontante');
+         $totalMontantePoupancaRegistado = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante');
+         $totalMontanteReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante');
+         $totalMontantePoupancaReflete = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante');
+         $totalMontanteInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
+         $totalMontantePoupancaInregulares = collect($lista_comprovativo)->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante');
+         $totalMontantePGREF = collect($lista_comprovativo)->where('TtCodigo', '=', 'DJA')->sum('BuMontante');*/
 
-        collect($lista_comprovativo)->max('CiFecha');
         collect($lista_comprovativo)->min('CiFecha');
+        collect($lista_comprovativo)->max('CiFecha');
+
 
         $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
         $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
@@ -1187,34 +1189,34 @@ class ComprovativosController extends Controller
                     ->where('id', $id)
                     ->first();
 
-                    if ($dadosReferencia) {
-                            $validKey = config('djanotifpgtref.callback_access_key');
+                if ($dadosReferencia) {
+                    $validKey = config('djanotifpgtref.callback_access_key');
 
-                            $telefone = null;
-                             $mensagem ="Pagamento KIXICREDITO\n\n".
-                                        "Referência {$request->txtRefPagamento}\n".
-                                        "Valor Kz ".number_format($request->txtMontante, 2, ',', '.')."\n".
-                                        "Cliente {$loanNumber}\n\n".
-                                        "Validade 72 horas\n\n".
-                                        "KIXICREDITO\n".
-                                        "PARCEIRA NOS NEGÓCIOS";
+                    $telefone = null;
+                    $mensagem = "Pagamento KIXICREDITO\n\n" .
+                        "Referência {$request->txtRefPagamento}\n" .
+                        "Valor Kz " . number_format($request->txtMontante, 2, ',', '.') . "\n" .
+                        "Cliente {$loanNumber}\n\n" .
+                        "Validade 72 horas\n\n" .
+                        "KIXICREDITO\n" .
+                        "PARCEIRA NOS NEGÓCIOS";
 
-                              $telefone = $request->telefone;
-
-
-                            if ($telefone) {
-                                $response = Http::withHeaders([
-                                    'Access-Key' => $validKey,
-                                    'Content-Type' => 'application/json',
-                                ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
-                                            'contacto' => $telefone,
-                                            'mensagem' => $mensagem,
-                                        ]);
+                    $telefone = $request->telefone;
 
 
-                            }
-                            Log::info('Tentativa de envio SMS', ['telefone' => $telefone, 'mensagem ' => $mensagem, 'montante' => $request->txtMontante]);
-                        }
+                    if ($telefone) {
+                        $response = Http::withHeaders([
+                            'Access-Key' => $validKey,
+                            'Content-Type' => 'application/json',
+                        ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+                                    'contacto' => $telefone,
+                                    'mensagem' => $mensagem,
+                                ]);
+
+
+                    }
+                    Log::info('Tentativa de envio SMS', ['telefone' => $telefone, 'mensagem ' => $mensagem, 'montante' => $request->txtMontante]);
+                }
 
 
                 return redirect()->route('referenciapgt')

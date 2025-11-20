@@ -194,16 +194,16 @@ class PgtRefNotificacaoController extends Controller
         ]);
 
         if ($comprovativo) {
-            $this->criarReconciliacao($comprovativo, $codigo_voucher_dia, $codigo_voucher);
+            $this->criarReconciliacao($comprovativo, $codigo_voucher_dia, $codigo_voucher,$dataFormatadaBuData);
             $this->enviarNotificacaoSMS($item, $dadosReferencia);
         }
     }
 
-    private function criarReconciliacao($comprovativo, string $codigo_voucher_dia, string $codigo_voucher): void
+    private function criarReconciliacao($comprovativo, string $codigo_voucher_dia, string $codigo_voucher,$data): void
     {
         // Inserção para reconciliação automática
         CpvtReconciliacaoModel::create([
-            'datareconciliacao' => now(),
+            'datareconciliacao' => $data,
             'CodigoConta' => 79,
             'voucher' => $codigo_voucher_dia,
             'vouchertransacao' => $codigo_voucher,
