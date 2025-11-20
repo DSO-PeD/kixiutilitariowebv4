@@ -927,6 +927,8 @@ class ComprovativosController extends Controller
 
     public function viewReferenciaPGT(Request $request)
     {
+
+
         $authenticatedUser = Auth::user();
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
@@ -1005,20 +1007,6 @@ class ComprovativosController extends Controller
                 $Bases = "'" . $request->agencia_imput . "'";
             }
 
-            /* if ($tipoProdutoPT && !$tipoProdutoPP) {
-               if ($request->produto_prestacao !== 'TL') {
-                   $produto_prestacoes_busca = "'" . $request->produto_prestacao . "'";
-
-               }
-               $produtos_geral_busca = $produto_prestacoes_busca;
-           }
-
-           if ($tipoProdutoPP && !$tipoProdutoPT) {
-               if ($request->produto_poupanca !== 'TS') {
-                   $produto_poupancas_busca = "'" . $request->produto_poupanca . "'";
-               }
-               $produtos_geral_busca = $produto_poupancas_busca;
-           }*/
 
 
             $TIPO = 73714;

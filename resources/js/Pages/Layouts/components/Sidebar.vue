@@ -122,8 +122,8 @@ const confirmLogout = () => {
             </a>
 
                <!-- Clientes Kixi Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientcorp" class="nav-link-icon group"
-                data-preload :class="{ 'active': $page.url.startsWith('/clientcorp') }" title="Cliente">
+            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group"
+                data-preload :class="{ 'active': $page.url.startsWith('/clientecorp') }" title="Cliente">
                 <i class="fas fa-user-tie  text-lg"></i>
 
                 <span class="nav-tooltip">Cliente</span>
@@ -242,8 +242,8 @@ const confirmLogout = () => {
             </a>
 
             <!-- Cliente Kixi_Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientcorp" class="nav-link group" data-preload
-                :class="{ 'active': $page.url.startsWith('/clientcorp') }">
+            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/clientecorp') }">
                 <div class="nav-link-content">
                     <i class="fas fa-user-tie nav-link-icon"></i>
                     <span class="nav-link-text">Cliente Corp</span>

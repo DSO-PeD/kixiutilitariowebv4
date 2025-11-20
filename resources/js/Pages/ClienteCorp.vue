@@ -29,11 +29,11 @@
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
             <div class="flex items-center">
                 <div class="bg-green-100 p-3 rounded-full mr-4">
-                    <i class="fas fa-credit-card  text-2xl text-green-800"></i>
+                    <i class="fas fa-user-tie  text-2xl text-green-800"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Gestão de Referências de Pagamentos</h1>
-                    <p class="text-sm text-gray-600 mt-1">Prestações de Créditos e Poupanças</p>
+                    <h1 class="text-2xl font-bold text-gray-800">Gestão de Clientes</h1>
+                    <p class="text-sm text-gray-600 mt-1">Registro e Listagem de Clientes</p>
                 </div>
             </div>
 

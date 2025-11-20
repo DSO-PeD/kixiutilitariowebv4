@@ -9,6 +9,7 @@ use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClienteCEController;
 use Illuminate\Support\Facades\Redis;
 
 //'geoblock'
@@ -28,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
     Route::get('/referenciapgt', [ComprovativosController::class, 'viewReferenciaPGT'])->name('referenciapgt');
+    Route::get('/clientecorp', [ClienteCEController::class, 'viewClientesCE'])->name('clientecorp');
     Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/listarEstadosDCF', [CpvtReconciliacaoController::class, 'listarEstadosReconciliacao']);
