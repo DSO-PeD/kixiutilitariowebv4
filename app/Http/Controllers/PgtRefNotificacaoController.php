@@ -56,7 +56,7 @@ class PgtRefNotificacaoController extends Controller
                 return response()->json([
                     'success' => true,
                     'Obs' => 'Já foi processado um pagamento com este ID',
-                    'Id' => $item['Id']
+                    'Id' => $ExisteTransacao->IDKixiRegister,
                 ], 200);
             }
 
@@ -66,7 +66,7 @@ class PgtRefNotificacaoController extends Controller
                 return response()->json([
                     'success' => false,
                     'Obs' => 'A referência de pagamento não existe',
-                    'Id' => $item['Id']
+                    'Id' => $ExisteTransacao->IDKixiRegister,
                 ], 404);
             }
 
