@@ -217,7 +217,9 @@ class ComprovativosController extends Controller
                 'CiFecha' => $item->CiFecha, // Para filtro por data
                 'estado_id' => $item->idestado, // Para filtro por estado
                 'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
-                'BuMontante' => $item->BuMontante // Para cálculos
+                'BuMontante' => $item->BuMontante, // Para cálculos
+                'refPagamento' => $item->refPagamento,
+                'periodo_trans_pgr' => $item->periodo_trans_pgr
 
             ];
         });
@@ -265,7 +267,8 @@ class ComprovativosController extends Controller
             'lista_pendentes' => $lista_pendentes,
             'totalPendente' => $lista_pendentes->count(),
             'dataInicioPeriodo' => $DataFimFormatada,
-            'dataFimPeriodo' => $DataInicioFormatada
+            'dataFimPeriodo' => $DataInicioFormatada,
+
 
         ]);
     }

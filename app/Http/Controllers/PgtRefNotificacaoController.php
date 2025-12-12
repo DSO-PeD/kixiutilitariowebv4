@@ -149,7 +149,9 @@ class PgtRefNotificacaoController extends Controller
             'iIdentTerminal' => $item['iIdentTerminal'],
             'localidadeTerminal' => $item['localidadeTerminal'],
             'refPagamento' => $referenciaKIXI,
-            'id' => $item['Id']
+            'Id' => $item['Id'],
+            'nib' => $item['nib'],
+            'banco' => $item['banco']
         ]);
 
         if ($registro) {
@@ -161,11 +163,11 @@ class PgtRefNotificacaoController extends Controller
 
             }
 
-            $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF);
+            $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF, $referenciaKIXI);
         }
     }
 
-    private function criarComprovativoEReconciliacao(array $item, array $dadosReferencia, string $dataFormatadaREF): void
+    private function criarComprovativoEReconciliacao(array $item, array $dadosReferencia, string $dataFormatadaREF, string $referenciaKIXI): void
     {
         $dataFormatadaBuData = Carbon::parse($item['dataTransaccaoCliente'])->format('Y-m-d H:i:s');
         $codigo_voucher_dia = 'BMA' . $dataFormatadaREF;
@@ -191,15 +193,17 @@ class PgtRefNotificacaoController extends Controller
             'infoadicional' => $dadosReferencia['dados']->Cliente ?? $dadosReferencia['dados']->nomecliente ?? 'Desconhecido',
             'filecomprovativo' => 'Sem extrato',
             'telefonecliente' => $dadosReferencia['telefone'],
+            'periodo_trans_pgr' => $item['idLogSistema'],
+            'refPagamento' => $referenciaKIXI
         ]);
 
         if ($comprovativo) {
-            $this->criarReconciliacao($comprovativo, $codigo_voucher_dia, $codigo_voucher,$dataFormatadaBuData);
+            $this->criarReconciliacao($comprovativo, $codigo_voucher_dia, $codigo_voucher, $dataFormatadaBuData);
             $this->enviarNotificacaoSMS($item, $dadosReferencia);
         }
     }
 
-    private function criarReconciliacao($comprovativo, string $codigo_voucher_dia, string $codigo_voucher,$data): void
+    private function criarReconciliacao($comprovativo, string $codigo_voucher_dia, string $codigo_voucher, $data): void
     {
         // Inserção para reconciliação automática
         CpvtReconciliacaoModel::create([

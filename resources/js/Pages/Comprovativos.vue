@@ -431,19 +431,19 @@
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-gray-600">Novos:</span>
                             <span class="font-semibold text-blue-600">{{ formatCurrency(totalMontantePoupancaRegistado)
-                            }}
+                                }}
                                 AKZ</span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-gray-600">Validados:</span>
                             <span class="font-semibold text-green-600">{{ formatCurrency(totalMontantePoupancaReflete)
-                            }}
+                                }}
                                 AKZ</span>
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-gray-600">Irregulares:</span>
                             <span class="font-semibold text-red-600">{{ formatCurrency(totalMontantePoupancaInregulares)
-                            }}
+                                }}
                                 AKZ</span>
                         </div>
                     </div>
@@ -934,7 +934,7 @@
         :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
         :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
 
-     <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
+    <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
         @save="guardarComprovativo" :bases="$page.props.bases" :tipocomprovativos="$page.props.tipocomprovativos"
         :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
         :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
@@ -1039,7 +1039,7 @@
                                     <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{
                                         pagamento.lnr }}</td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ pagamento.cliente
-                                        }}</td>
+                                    }}</td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ pagamento.voucher
                                         || '-' }}</td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
@@ -1131,7 +1131,9 @@ const props = defineProps({
     dataFimPeriodo: String,
     produtosPrestacoes: Array,
     produtosPoupancas: Array,
-    formaspagamentos: Array
+    formaspagamentos: Array,
+    refPagamento: String,
+    periodo_trans_pgr: String
 })
 
 // Refs
@@ -1323,7 +1325,7 @@ const novoComprovativo = ref({
     telefone: ''
 })
 
-const novoReferenciaManual=ref({
+const novoReferenciaManual = ref({
     ls: 'Loan',
     selectBase: '',
     selectGrupoIndividual: '',
@@ -1576,6 +1578,8 @@ const exportarParaExcel = () => {
             'Voucher Dia': comprovativo.voucher || '-',
             'Voucher Transacao': comprovativo.referenciatransacao || '-',
             'Forma de Pagamento': comprovativo.FormaPagoN || '-',
+            'Referência de Pagamento': comprovativo.refPagamento || '-',
+            'Periodo': comprovativo.periodo_trans_pgr || '-',
             'Descrição da DCF': comprovativo.descricao || '-',
             'Banco': comprovativo.banco || '-',
             'Conta Bancaria': comprovativo.conta || '-',
@@ -1583,7 +1587,8 @@ const exportarParaExcel = () => {
             'Montante': comprovativo.montante || '0,00',
             'Estado': comprovativo.estado || '-',
             'Operador DCF': comprovativo.operadordcf || '-',
-            'Data de Operação DCF': comprovativo.datareconciliacao || '-',
+            'Data de Operação DCF': comprovativo.datareconciliacao || '-'
+
         }))
 
         const ws = XLSX.utils.json_to_sheet(dadosFormatados)
@@ -1682,7 +1687,7 @@ const abrirModalGerarRefManual = () => {
     }
 }
 const fecharModalNovoComprovativo = () => showModalNovo.value = false
-const fecharModalCriarRefManual= () => showModalGerarREF.value = false
+const fecharModalCriarRefManual = () => showModalGerarREF.value = false
 
 const guardarComprovativo = async () => {
     try {

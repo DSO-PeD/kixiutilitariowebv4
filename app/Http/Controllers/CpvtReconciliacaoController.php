@@ -215,7 +215,10 @@ class CpvtReconciliacaoController extends Controller
                 'CiFecha' => $item->CiFecha,
                 'estado_id' => $item->idestado,
                 'OfIdentificador' => $item->OfIdentificador,
-                'BuMontante' => $item->BuMontante
+                'BuMontante' => $item->BuMontante,
+                'refPagamento' => $item->refPagamento,
+                'periodo_trans_pgr' => $item->periodo_trans_pgr
+
             ];
         });
     }

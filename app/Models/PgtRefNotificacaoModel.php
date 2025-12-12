@@ -17,7 +17,9 @@ class PgtRefNotificacaoModel extends Model
         'iIdentTerminal',
         'localidadeTerminal',
         'refPagamento',
-        'id'
+        'Id',
+        'nib',
+        'banco'
 
     ];
 }

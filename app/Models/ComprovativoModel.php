@@ -36,6 +36,8 @@ class ComprovativoModel extends Model
         'observacao',
         'idestado',
         'pluscode_localderegistro',
+        'refPagamento',
+        'periodo_trans_pgr',
         'TtCodigo',
         'estado',
         'color'
