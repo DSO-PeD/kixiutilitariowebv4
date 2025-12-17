@@ -7,6 +7,7 @@ use App\Http\Controllers\RecuperacaoController;
 use App\Http\Controllers\ReportDomPDFController;
 use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
+use App\Http\Controllers\DebugPgtRefController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteCEController;
@@ -113,3 +114,4 @@ Route::get('/test-redis', function() {
 })->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 
+Route::get('syncPagamentos/{periodoI}/{periodoF}',[DebugPgtRefController::class,'carregarPagamentoPorReferencia']);
