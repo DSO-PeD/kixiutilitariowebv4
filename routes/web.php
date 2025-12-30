@@ -115,3 +115,5 @@ Route::get('/test-redis', function() {
 
 
 Route::get('syncPagamentos/{periodoI}/{periodoF}',[DebugPgtRefController::class,'carregarPagamentoPorReferencia']);
+Route::get('actualizarComprovativos',[DebugPgtRefController::class,'actualizarComprovativoRef']);
+Route::get('actualizarComprovativosRefManual',[DebugPgtRefController::class,'actualizarComprovativoRefManual']);

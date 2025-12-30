@@ -16,6 +16,53 @@ use Illuminate\Support\Facades\Log;
 
 class DebugPgtRefController extends Controller
 {
+
+    public $referencias = 
+    [
+        
+        '002601358',
+        '000605646',
+        '001203781',
+        '001103971',
+        '000503816',
+        '000405896',
+        '002601158',
+        '001801006',
+        '000903862',
+        '001801087',
+        '000405712',
+        '001005233',
+        '002601058',
+        '000405541',
+        '000205125',
+        '001104243',
+        '002600928',
+        '000205339',
+        '000605464',
+        '001104267',
+        '001104267',
+        '000503861',
+        '000704965',
+        '000704878',
+        '002001078',
+        '001005404',
+        '002601360',
+        '000204296',
+        '000605478',
+        '000204958',
+        '001500465',
+        '000704982',
+        '000903551',
+        '002600837',
+        '002600837',
+        '002600837',
+        '001500385',
+        '002601140',
+        '001500385',
+        '000205125',
+        '000405541'
+    ];
+
     public function carregarPagamentoPorReferencia($periodoInicio,$periodoFim)
     {
         $cont = 0;
@@ -186,5 +233,144 @@ class DebugPgtRefController extends Controller
             'UtCodigo' => 'dcf',
             'idestado' => 8
         ]);
+    }
+
+    public function actualizarComprovativoRef(){
+        //Pega os comprovativos com problemas no comprovativos
+        $pagamentos = DB::table('pgtrefnotificacao')
+                         ->select(
+                            'idLogSistema',
+                            'montantePago',
+                            'refPagamento',
+                            'created_at',
+                            DB::raw('RIGHT(refPagamento, 5) as last_five')
+                        )
+                        //->whereIn('refPagamento', ['000605483'] )
+                        ->whereIn('refPagamento', $this->referencias )
+                        ->get();
+
+            $cont = 0;
+            
+            //Para cada pagamento, pega 
+            foreach($pagamentos as $pag){
+                $dataPagamento = date('Y-m-d H:i',strtotime($pag->created_at));
+               
+                $comprovativo = DB::table('comprovativos')
+                                ->whereRaw("RIGHT(BuDadoOrigem, 5) = ?", [$pag->last_five])
+                                ->where('BuMontante','=' ,$pag->montantePago)
+                                ->where('UtCodigo','Izipay')
+                                //->whereNull('refPagamento')
+                                //->where('created_at',$pag->created_at)
+                                ->whereRaw(
+                                    "DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') = ?",
+                                    [$pag->created_at]
+                                )
+                                ->first();                              
+                                
+                            /*if(is_object($comprovativo)){
+                                    echo 'DATA PAG: '.$pag->created_at.'<br>';
+                                    echo 'VALOR PAG: '.$pag->montantePago.'<br>';
+                                    echo 'REF PAG: '.$pag->refPagamento.'<br>';
+                                    echo 'PERIODO PAG: '.$pag->idLogSistema.'<br>';
+                                    echo 'ID_COMP: '.$comprovativo->id.'<br>';
+                                    echo 'DATA COMP: '.$comprovativo->CiFecha.'<br>';
+                                    echo 'VALOR COMPR: '.$comprovativo->BuMontante.'<br>';
+                                    echo '--------------------------'.'<br>';
+
+                                    if(DB::table('comprovativos')
+                                        ->where('id',$comprovativo->id)
+                                        ->update([
+                                            'refPagamento' => $pag->refPagamento,
+                                            'periodo_trans_pgr' => $pag->idLogSistema
+                                        ])){
+                                            $cont++;
+                                        }
+
+                            } else {
+                                    echo 'NOTOBJ';                                    
+                            }*/
+                
+                
+                if(DB::table('comprovativos')
+                                ->whereRaw("RIGHT(BuDadoOrigem, 5) = ?", [$pag->last_five])
+                                ->where('BuMontante','=' ,$pag->montantePago)
+                                ->where('UtCodigo','Izipay')
+                                //->whereNull('refPagamento')
+                                //->where('created_at',$pag->created_at)
+                                ->whereRaw(
+                                    "DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') = ?",
+                                    [$pag->created_at]
+                                )
+                                ->update([
+                                    'refPagamento' => $pag->refPagamento,
+                                    'periodo_trans_pgr' => $pag->idLogSistema
+                                ]))
+                {
+                    $cont++;
+                }                        
+            }
+
+            echo 'Carregados: '.$cont.' Referências';
+    }
+
+    public function actualizarComprovativoRefManual(){
+        $referencias = DB::table('referenciasmanuais as r')
+                ->join('pgtrefnotificacao as p', 'r.referencia', '=', 'p.refPagamento')
+                ->select(
+                    'r.BuDadoOrigem',
+                    'r.nomecliente',
+                    'r.referencia',
+                    'r.montante',
+                    'p.refPagamento',
+                    'p.montantePago',
+                    'p.idLogSistema'
+                )
+                //->where('r.BudadoOrigem','MG/I/01149')
+                ->get();
+
+        $ids = $referencias->pluck('BuDadoOrigem')->toArray();
+
+        $caseRefPagamento = "CASE BuDadoOrigem ";
+        $casePeriodoTrans = "CASE BuDadoOrigem ";
+
+        foreach ($referencias as $ref) {
+            $caseRefPagamento .= "WHEN '{$ref->BuDadoOrigem}' THEN '{$ref->referencia}' ";
+            $casePeriodoTrans .= "WHEN '{$ref->BuDadoOrigem}' THEN '{$ref->idLogSistema}' ";
+        }
+
+        $caseRefPagamento .= "END";
+        $casePeriodoTrans .= "END";
+
+        $cont = 0;
+
+        if(DB::table('comprovativos')
+            ->whereIn('BuDadoOrigem', $ids)
+            ->update([
+                'refPagamento' => DB::raw($caseRefPagamento),
+                'periodo_trans_pgr' => DB::raw($casePeriodoTrans)
+            ])){
+                $cont++;
+            };
+
+
+        dd($cont);
+
+        
+
+        /*foreach($referencias as $ref){
+
+            $cont = 0;
+
+            if(DB::table('comprovativos as c')
+                ->where('c.BuDadoOrigem',$ref->BuDadoOrigem)
+                ->update([
+                    'refPagamento' => $ref->referencia,
+                    'periodo_trans_pgr' => $ref->idLogSistema
+                ])){
+                    $cont++;
+                };
+
+            dd($cont);
+        }*/
     }
 }
