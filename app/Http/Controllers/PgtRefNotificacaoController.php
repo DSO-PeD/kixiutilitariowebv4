@@ -250,7 +250,7 @@ class PgtRefNotificacaoController extends Controller
             $response = Http::withHeaders([
                 'Access-Key' => $validKey,
                 'Content-Type' => 'application/json',
-            ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+            ])->post('http://kixisms.kixicredito.com/api/enviarSMS', [
                         'contacto' => $telefone,
                         'mensagem' => $mensagem,
                     ]);
@@ -314,7 +314,7 @@ class PgtRefNotificacaoController extends Controller
             $response = Http::withHeaders([
                 'Access-Key' => $validKey,
                 'Content-Type' => 'application/json',
-            ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+            ])->post('http://kixisms.kixicredito.com/api/enviarSMS', [
                         'contacto' => $telefone,
                         'mensagem' => $mensagem,
                     ]);

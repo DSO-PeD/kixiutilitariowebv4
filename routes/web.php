@@ -41,7 +41,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])  ->name('extrato.eliminar');
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
     Route::post('/atualizar-telefone', [TKxExtratoController::class, 'atualizarTelefone'])->name('atualizar.telefone');
-
+    
+    Route::get('/fechoPagamento', [CpvtReconciliacaoController::class, 'viewFechoReconciliacao']);
 
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
     Route::post('/alterardata', [ComprovativosController::class, 'editarDataRegistro'])->name('editar-dataregistro-comprovativo');
@@ -64,10 +65,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirmarRecuperacao', [RecuperacaoController::class, 'confirmarRecuperacao']);
     Route::post('/confirmar-recuperacoes', [RecuperacaoController::class, 'confirmarMultiplas']);
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
-
-
-
-
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

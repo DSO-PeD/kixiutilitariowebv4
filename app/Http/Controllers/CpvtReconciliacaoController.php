@@ -18,7 +18,6 @@ use Inertia\Inertia;
 use Clockwork;
 
 
-
 class CpvtReconciliacaoController extends Controller
 {
     public function viewComprovativosReconlicacao(Request $request)
@@ -369,5 +368,44 @@ class CpvtReconciliacaoController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /** Secção do fecho de pagamento */
+    public function viewFechoReconciliacao(Request $request)
+    {   
+        // Cache de dados estáticos que raramente mudam
+        $cacheKey = 'reconciliacao_static_data_' . Auth::id();
+        $staticData = Cache::remember($cacheKey, 3600, function () {
+            return [
+                'lista_produtos' => TKxClProdutoModel::getProdutos(),
+                'lista_das_formaspagamento' => TKxClTipopagamentoModel::getFormasDePamentos(),
+                'estados' => EstadosModel::getEstadosDCF('DCF'),
+                'lista_banco' => TKxBancoModel::getBancos(),
+                'lista_bancos_contas' => TKxBancoContaModel::getBancosContas(),
+            ];
+        });
+
+        $authenticatedUser = Auth::user();
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)->first();
+
+
+        $dataInicio = Carbon::parse($request->data_inicio)->startOfDay();
+        $dataFim    = Carbon::parse($request->data_fim)->endOfDay();
+
+        $fechos = DB::table('pgtrefnotificacao as p')
+                    ->whereBetween('p.dataTransaccaoCliente', [$dataInicio, $dataFim])
+                    ->select(
+                        'p.idLogSistema as periodo',
+                        DB::raw('MIN(p.dataTransaccaoCliente) as ciFecha'),
+                        DB::raw('SUM(p.montantePago) as total_montante')
+                    )
+                    ->groupBy('p.idLogSistema')
+                    ->orderBy('p.idLogSistema')
+                    ->paginate(20)
+                    ->withQueryString();
+
+        return Inertia::render('FechoPagamento', [
+            'lista_fechos' => $fechos,         
+        ]);
     }
 }

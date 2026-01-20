@@ -121,7 +121,14 @@ const confirmLogout = () => {
                 <span class="nav-tooltip">Referências de PGT</span>
             </a>
 
-               <!-- Clientes Kixi Corp -->
+             <!-- Fecho -->
+            <a v-if="$page.props.user.reconci_habilita" href="/fechoPagamento" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/fechoPagamento') }" title="Fecho">
+                <i class="fas fa-box text-lg"></i>
+                <span class="nav-tooltip">Fecho</span>
+            </a>
+
+            <!-- Clientes Kixi Corp -->
             <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group"
                 data-preload :class="{ 'active': $page.url.startsWith('/clientecorp') }" title="Cliente">
                 <i class="fas fa-user-tie  text-lg"></i>
@@ -237,6 +244,16 @@ const confirmLogout = () => {
                 <div class="nav-link-content">
                     <i class="fas fa-credit-card nav-link-icon"></i>
                     <span class="nav-link-text">Referências de PGT.</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
+
+            <!-- Fecho-->
+            <a v-if="$page.props.user.reconci_habilita" href="/fechoPagamento" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/fechoPagamento') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-box nav-link-icon"></i>
+                    <span class="nav-link-text">Fecho</span>
                 </div>
                 <div class="nav-link-indicator"></div>
             </a>
