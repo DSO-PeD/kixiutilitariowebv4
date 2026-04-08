@@ -136,6 +136,14 @@ const confirmLogout = () => {
                 <span class="nav-tooltip">Cliente</span>
             </a>
 
+            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link-icon group"
+                data-preload :class="{ 'active': $page.url.startsWith('/rdcorp') }" title="RDCORP">
+
+                <i class="fas solid fa-chart-pie text-lg"></i>
+                <span class="nav-tooltip">Report DAY</span>
+            </a>
+
+
         </nav>
         <div class="absolute bottom-0 left-0 right-0 py-4 border-t border-gray-100 bg-gray-50">
             <div class="text-center px-2">
@@ -264,6 +272,17 @@ const confirmLogout = () => {
                 <div class="nav-link-content">
                     <i class="fas fa-user-tie nav-link-icon"></i>
                     <span class="nav-link-text">Cliente Corp</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
+
+             <!-- RD Kixi_Corp -->
+            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/rdcorp') }">
+                <div class="nav-link-content">
+
+                    <i class="fas fa-chart-pie nav-link-icon"></i>
+                    <span class="nav-link-text">RD Corp</span>
                 </div>
                 <div class="nav-link-indicator"></div>
             </a>

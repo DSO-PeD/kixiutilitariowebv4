@@ -3,6 +3,7 @@
 use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
+use App\Http\Controllers\RDKixiCorpController;
 use App\Http\Controllers\RecuperacaoController;
 use App\Http\Controllers\ReportDomPDFController;
 use App\Http\Controllers\TKuPendentesController;
@@ -14,7 +15,7 @@ use App\Http\Controllers\ClienteCEController;
 use Illuminate\Support\Facades\Redis;
 
 //'geoblock'
-Route::middleware(['guest','web'])->group(function () {
+Route::middleware(['guest', 'web'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 
@@ -31,17 +32,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
     Route::get('/referenciapgt', [ComprovativosController::class, 'viewReferenciaPGT'])->name('referenciapgt');
     Route::get('/clientecorp', [ClienteCEController::class, 'viewClientesCE'])->name('clientecorp');
+    Route::get('/rdcorp', [RDKixiCorpController::class, 'viewReportRD'])->name('rdcorp');
     Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/listarEstadosDCF', [CpvtReconciliacaoController::class, 'listarEstadosReconciliacao']);
     Route::get('/listarCpvtDetalheDCF', [CpvtReconciliacaoController::class, 'listarDetalhesComprovativosDCF']);
     Route::get('/extratos', [TKxExtratoController::class, 'viewExtrato'])->name('extratos');
     Route::post('/guardar-comprovativo', [ComprovativosController::class, 'guardar']);
-    Route::post('/eliminar-comprovativo', [ComprovativosController::class, 'finalizaraeliminacao'])  ->name('comprovativos.eliminar');
-    Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])  ->name('extrato.eliminar');
-    Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])  ->name('recuperacao.eliminar');
+    Route::post('/eliminar-comprovativo', [ComprovativosController::class, 'finalizaraeliminacao'])->name('comprovativos.eliminar');
+    Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])->name('extrato.eliminar');
+    Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])->name('recuperacao.eliminar');
     Route::post('/atualizar-telefone', [TKxExtratoController::class, 'atualizarTelefone'])->name('atualizar.telefone');
-    
+
     Route::get('/fechoPagamento', [CpvtReconciliacaoController::class, 'viewFechoReconciliacao']);
 
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
@@ -56,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/extrato/{id}', [ReportDomPDFController::class, 'emitirRelatorioCalculoDesembolso'])->name('report_extrato_new');
     Route::get('/reports/comprovativo/{id}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferencia'])->name('report_comprovativo_new');
     Route::get('/reports/cardpgtr/{id}', [ReportDomPDFController::class, 'emitirRelatorioCARDPGTREF'])->name('report_pgtreferencia_new');
+    Route::get('/reports/rdreport', [ReportDomPDFController::class, 'emitirRelatorioDiarioMensal'])->name('report_rddm_new');
 
     Route::get('/recuperacoes', [RecuperacaoController::class, 'viewRecuperacoes'])->name('recuperacoes');
     Route::post('/guardar-recuperacao', [RecuperacaoController::class, 'guardar']);
@@ -78,14 +81,14 @@ Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPenden
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 // ROUTAS MOBILE *******************************************************************************************************************************************************************************************************
- Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
- Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
- Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
- Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 /******************************************************************************************************************************************************************************************************************************************************** */
 
 
-Route::get('/test-redis', function() {
+Route::get('/test-redis', function () {
     try {
         // Teste de conexão
         Redis::set('laravel_test', now()->toDateTimeString());
@@ -110,10 +113,6 @@ Route::get('/test-redis', function() {
 })->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 
-Route::get('syncPagamentos/{periodoI}/{periodoF}',[DebugPgtRefController::class,'carregarPagamentoPorReferencia']);
-Route::get('actualizarComprovativos',[DebugPgtRefController::class,'actualizarComprovativoRef']);
-Route::get('actualizarComprovativosRefManual',[DebugPgtRefController::class,'actualizarComprovativoRefManual']);
-
-/** WSA TEST */
-Route::get('/criptografarVoucher/{voucher}', [PgtRefNotificacaoController::class, 'criptografarVoucher'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::get('/descriptografarVoucher/{voucher}', [PgtRefNotificacaoController::class, 'descriptografarVoucher'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::get('syncPagamentos/{periodoI}/{periodoF}', [DebugPgtRefController::class, 'carregarPagamentoPorReferencia']);
+Route::get('actualizarComprovativos', [DebugPgtRefController::class, 'actualizarComprovativoRef']);
+Route::get('actualizarComprovativosRefManual', [DebugPgtRefController::class, 'actualizarComprovativoRefManual']);

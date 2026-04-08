@@ -195,7 +195,7 @@ class ReportDomPDFController extends Controller
         return $pdf->stream();//->download('CalculoDesembolso.pdf');
     }
 
-    public function emitirRelatorioReembolsoPgtReferenciaMobile($id,$user)
+    public function emitirRelatorioReembolsoPgtReferenciaMobile($id, $user)
     {
         $Dados_comprovativo = ComprovativoModel::where('id', $id)->get();
         $Dados_extrato = TKxExtratoModel::where('Lnr', '=', $Dados_comprovativo[0]->BuDadoOrigem)->where('Eliminado', '=', 0)->get();
@@ -205,7 +205,7 @@ class ReportDomPDFController extends Controller
                 ->get();
         }
 
-        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo',$user)->first();
+        $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo', $user)->first();
         $IMPRENSSO = $authenticatedUser->UtNome;
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
         $hoje = date('d-m-Y');
@@ -263,5 +263,43 @@ class ReportDomPDFController extends Controller
         //$pdf = Pdf::loadView('reports.reportCardPGTR', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif'])->setPaper('a4', 'portrait');
 
         //  return $pdf->stream('comprovativo.pdf');
+    }
+
+
+
+    public function emitirRelatorioDiarioMensal()
+    {/*
+       $Dados_comprovativo = ReferenciaPGTModel::where('id', $id)->get();
+
+       $produto_pgr = TKxClProdutoModel::where('Metodologia', $Dados_comprovativo[0]->PoCodigo)->first();
+       ;
+       $agencia_pgr = TKxAgenciaModel::where('OfIdentificador', '=', $Dados_comprovativo[0]->BaseOperacao)->first();
+       $authenticatedUser = Auth::user();
+       $IMPRENSSO = $authenticatedUser->UtNome;
+       $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+
+       $hoje = date('d-m-Y');
+       $bancos = TKxBancoModel::all();
+
+       $data = [
+           //'title' => 'Welcome to ItSolutionStuff.com',
+           'date' => date('d/m/Y'),
+           'Dados_comprovativo' => $Dados_comprovativo,
+           'produto' => $produto_pgr->PoAgrupado,
+           'agencia' => $agencia_pgr->OfIdentificador . '' . ' : ' . $agencia_pgr->OfNombre,
+           'IMPRENSSO' => $IMPRENSSO,
+           'AGENCIA' => $resultagencia_user->OfNombre,
+           'bancos' => $bancos
+       ];*/
+
+        $pdf = PDF::loadView('reports.reportCalculoRD')->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif'])->setPaper('a4', 'portrait');
+        ;
+
+
+
+        return $pdf->stream();
+
+
+
     }
 }
