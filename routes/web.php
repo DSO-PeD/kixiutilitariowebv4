@@ -74,7 +74,6 @@ Route::get('/sendsmsteste', [PgtRefNotificacaoController::class, 'sendSms'])->wi
 Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
 Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP'])->name('extrato_kxu');
 
-
 Route::post('/carregarpendentes', [TKuPendentesController::class, 'carregaPendentesKP'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::post('/kixipgtreflistener', [PgtRefNotificacaoController::class, 'carregarPagamentoPorReferencia'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
@@ -114,3 +113,7 @@ Route::get('/test-redis', function() {
 Route::get('syncPagamentos/{periodoI}/{periodoF}',[DebugPgtRefController::class,'carregarPagamentoPorReferencia']);
 Route::get('actualizarComprovativos',[DebugPgtRefController::class,'actualizarComprovativoRef']);
 Route::get('actualizarComprovativosRefManual',[DebugPgtRefController::class,'actualizarComprovativoRefManual']);
+
+/** WSA TEST */
+Route::get('/criptografarVoucher/{voucher}', [PgtRefNotificacaoController::class, 'criptografarVoucher'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::get('/descriptografarVoucher/{voucher}', [PgtRefNotificacaoController::class, 'descriptografarVoucher'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

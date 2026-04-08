@@ -558,23 +558,11 @@ class TKxExtratoController extends Controller
 
     public function carregaExtratosKP(Request $request)
     {
+        $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
 
-        /*$DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
-
-        $extratos = TKxExtratoModel::whereDate('CiFecha', '>=', $DataInicio)->where('Eliminado', 0)->get();*/
-
-        $DataInicio = date("Y-m-d 00:00:00", strtotime('2022-01-01'));
-        $DataFim = date("Y-m-d 00:00:00", strtotime('2026-01-16'));
-
-        $extratos = TKxExtratoModel::whereBetween(
-            DB::raw('DATE(CiFecha)'),
-            [$DataInicio, $DataFim]
-        )
-        ->where('Eliminado', 0)
-        ->get();
+        $extratos = TKxExtratoModel::whereDate('CiFecha', '>=', $DataInicio)->where('Eliminado', 0)->get();
 
         return response()->json($extratos);
-
     }
 
 

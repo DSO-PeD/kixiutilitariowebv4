@@ -8,6 +8,7 @@ use App\Models\PgtRefNotificacaoModel;
 use App\Models\ReferenciaPGTModel;
 use App\Models\TKxClProdutoModel;
 use App\Models\TKxExtratoModel;
+use App\Models\VoucherHelper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,17 +32,17 @@ class PgtRefNotificacaoController extends Controller
     }
 
     public function carregarPagamentoPorReferencia(Request $request)
-    {
+    { 
         // 1. Validar a access-key
-        $accessKey = $request->header('Access-Key') ?? $request->input('access_key');
+        /*$accessKey = $request->header('Access-Key') ?? $request->input('access_key');
 
         if (!$this->validateAccessKey($accessKey)) {
             Log::warning('Tentativa de acesso com chave inválida', ['ip' => $request->ip()]);
             return response()->json(['error' => 'Unauthorized', 'message' => $request->ip()], 401);
-        }
+        }*/
 
         // Captura todos os dados do JSON
-        $item = $request->all();
+        $item = $request->all(); 
 
         DB::beginTransaction();
 
@@ -49,6 +50,7 @@ class PgtRefNotificacaoController extends Controller
             $apenasNumeros = preg_replace('/\D/', '', $item['refPagamento']);
             $referenciaKIXI = str_pad($apenasNumeros, 9, '0', STR_PAD_LEFT);
             $dataFormatadaREF = Carbon::parse($item['dataTransaccaoCliente'])->format('dmY');
+            $dataHoraFormatadaREF = Carbon::parse($item['dataTransaccaoCliente'])->format('dmY His');
 
             // Verificar se transação já existe
             $ExisteTransacao = PgtRefNotificacaoModel::where('id', '=', $item['Id'])->first();
@@ -61,7 +63,7 @@ class PgtRefNotificacaoController extends Controller
             }
 
             // Buscar referência
-            $ExisteReferencia = $this->buscarReferencia($referenciaKIXI);
+            $ExisteReferencia = $this->buscarReferencia($referenciaKIXI); 
             if (!$ExisteReferencia['encontrada']) {
                 return response()->json([
                     'success' => false,
@@ -69,9 +71,9 @@ class PgtRefNotificacaoController extends Controller
                     'Id' => $ExisteTransacao->IDKixiRegister,
                 ], 404);
             }
-
+                                        
             // Processar pagamento
-            $this->processarPagamento($item, $ExisteReferencia, $referenciaKIXI, $dataFormatadaREF);
+            $this->processarPagamento($item, $ExisteReferencia, $referenciaKIXI, $dataFormatadaREF,$dataHoraFormatadaREF);
 
             DB::commit();
 
@@ -136,8 +138,8 @@ class PgtRefNotificacaoController extends Controller
         return ['encontrada' => false];
     }
 
-    private function processarPagamento(array $item, array $dadosReferencia, string $referenciaKIXI, string $dataFormatadaREF): void
-    {
+    private function processarPagamento(array $item, array $dadosReferencia, string $referenciaKIXI, string $dataFormatadaREF, string $dataHoraFormatadaREF)
+    { 
         // Criar registro de notificação
         $registro = PgtRefNotificacaoModel::create([
             'idTransacao' => $item['idTransacao'],
@@ -163,14 +165,23 @@ class PgtRefNotificacaoController extends Controller
 
             }
 
-            $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF, $referenciaKIXI);
+            $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF, $dataHoraFormatadaREF, $referenciaKIXI);
         }
     }
 
-    private function criarComprovativoEReconciliacao(array $item, array $dadosReferencia, string $dataFormatadaREF, string $referenciaKIXI): void
-    {
+    private function criarComprovativoEReconciliacao(array $item, array $dadosReferencia, string $dataFormatadaREF, string $dataHoraFormatadaREF, string $referenciaKIXI)
+    { 
         $dataFormatadaBuData = Carbon::parse($item['dataTransaccaoCliente'])->format('Y-m-d H:i:s');
-        $codigo_voucher_dia = 'BMA' . $dataFormatadaREF;
+
+        /** Formar VOucher do dia */
+        /** FORMATO: BMADDMMYYYYBASESIGLANRHORA = BMA30032026AC12345005959 */
+        $data = substr($dataHoraFormatadaREF, 0, 8);
+        $hora = substr($dataHoraFormatadaREF, 9, 6);
+        $lnr = str_replace('/', '', $dadosReferencia['lnr']); 
+        
+        $codigo_voucher_dia = 'BMA' . $data . $lnr . $hora;
+        $codigo_voucher_dia = VoucherHelper::criptografar(VoucherHelper::parseVoucher($codigo_voucher_dia));
+        
         $codigo_voucher = 'PREF' . $dataFormatadaREF . '/' . $dadosReferencia['lnr'];
 
         // Criar comprovativo - ajuste para nomes de colunas diferentes entre tabelas
@@ -326,7 +337,6 @@ class PgtRefNotificacaoController extends Controller
 
     protected function validateAccessKey($accessKey)
     {
-
         /*
             php artisan tinker
             >>> echo bin2hex(random_bytes(32));
@@ -336,5 +346,30 @@ class PgtRefNotificacaoController extends Controller
         return !empty($validKey) && hash_equals($validKey, $accessKey);
     }
 
+    public function criptografarVoucher($voucher){
+        //$voucher = "BMA30032026MG01266235959";
+        
+        // Encryptar
+        $codigoEncriptado = VoucherHelper::criptografar(VoucherHelper::parseVoucher($voucher));
+        echo "Criptografado: $codigoEncriptado\n <br>";
+        
+        // Decryptar
+        $dados = VoucherHelper::descriptografar($codigoEncriptado);  //dd($dados);
+        $voucherOriginal = VoucherHelper::montarVoucher($dados);
 
+        echo "Voucher original: $voucherOriginal\n <br>";
+    }
+
+    public function descriptografarVoucher($voucher){
+        //$voucher = "dDXDwnxt7";
+        
+        // Encryptar
+        echo "== Voucher Criptografado ==: $voucher <br>";
+        
+        // Decryptar
+        $dados = VoucherHelper::descriptografar($voucher);
+        $voucherOriginal = VoucherHelper::montarVoucher($dados);
+
+        echo "== Voucher Original ==: $voucherOriginal\n";
+    }
 }
