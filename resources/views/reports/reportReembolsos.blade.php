@@ -462,6 +462,14 @@
          <tr>
             <td class="label">Referência (Voucher do dia)</td>
             <td class="text-center">{{$Dados_comprovativo[0]->BuReferencia}}</td>
+        </tr>        
+        <tr>
+            <td class="label">Banco do Pagador</td>
+            <td class="text-center">{{$pagamento->banco}}</td>
+        </tr>
+        <tr>
+            <td class="label">IBAN do Pagador</td>
+            <td class="text-center">{{$pagamento->nib}}</td>
         </tr>
         <tr>
             <td class="label">Estado da Transação</td>
@@ -495,7 +503,7 @@
         <div class="bank-coordinates">
             <img src="imagens/imgsbancos/BPA.jpg" alt="BPA" class="bank-logo" />
             <div>
-                <div class="account-info">Banco Milénio Atlântico</div>
+                <div class="account-info">Banco Millennium Atlântico</div>
                 <div class="account-info">Conta Bancária: {{$Dados_comprovativo[0]->BuContaBancaria}}</div>
             </div>
         </div>

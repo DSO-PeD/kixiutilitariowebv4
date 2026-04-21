@@ -264,7 +264,9 @@
                                         required>
                                         <option value="" disabled selected>Selecione o produto</option>
                                         <option
-                                            v-for="produto in produtos.filter(p => p.TipoProduto === 'S' || p.TipoProduto === 'G')"
+                                            v-for="produto in produtos.filter(p =>
+                                                ['S00','S02','S03','S06','S08'].includes(p.Metodologia)
+                                            )"
                                             :key="produto.Metodologia" :value="produto.Metodologia">
                                             {{ produto.PoAgrupado }}
                                         </option>

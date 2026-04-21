@@ -303,7 +303,6 @@ class PgtRefNotificacaoController extends Controller
             "PARCEIRA NOS NEGÓCIOS";
     }
 
-
     public function sendSms()
     {
 

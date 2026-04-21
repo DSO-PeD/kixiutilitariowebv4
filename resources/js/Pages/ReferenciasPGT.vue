@@ -296,15 +296,7 @@
             </div>
         </div-->
 
-
-
-
-
-
         <!-- Resumo do Período -->
-
-
-
 
         <!-- Tabela de Comprovativos -->
         <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
@@ -684,18 +676,10 @@
         v-model:motivo="formEliminacao.txtMotivo" :dados="formEliminacao.txtDadosEliminado"
         :loan="formEliminacao.txtLoan" :id="formEliminacao.txtId" />
 
-
-
     <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
         @save="guardarComprovativo" :bases="$page.props.bases" :tipocomprovativos="$page.props.tipocomprovativos"
         :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
         :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
-
-
-
-
-
-
 
 </template>
 
@@ -710,8 +694,6 @@ import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vu
 import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vue'
 import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
 import ModalGerarRefPGT from './Layouts/components/ComprovativosComponents/ModalGerarRefPGT.vue'
-
-
 
 // Props
 const props = defineProps({

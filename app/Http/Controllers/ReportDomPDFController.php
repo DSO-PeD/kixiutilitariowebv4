@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportDomPDFController extends Controller
 {
@@ -39,10 +40,9 @@ class ReportDomPDFController extends Controller
 
         $pdf = PDF::loadView('reports.reportCalculoDesembolso', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif']);
 
-
-
         return $pdf->stream();//->download('CalculoDesembolso.pdf');
     }
+
     public static function emitirRelatorioFechoDiario()
     {
         $authenticatedUser = Auth::user();
@@ -86,10 +86,7 @@ class ReportDomPDFController extends Controller
         $resumo_extrato = TKxUsUtilizadorModel::getResumoExtratos($ConsultaBases, $hoje);
         $resumo_comprovativos = TKxUsUtilizadorModel::getResumoComprovativos($ConsultaBases, $hoje);
 
-
-
         //  $pdf = PDF::loadView('kixiutilitario-web.reportFechoDiario', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif']);
-
 
         //  return $pdf->stream(); //->download('CalculoDesembolso.pdf');
     }
@@ -124,14 +121,7 @@ class ReportDomPDFController extends Controller
         if ($estado == '28') {
 
             $estado = $ids_estados;
-
-
         }
-
-
-
-
-
 
         $Dados_Recuperador = RecuperacaoModel::getRecuperacoes(0, 4, $estado, $agencia, $data_inicio, $data_fim, 'DS/02808', $recuperador);
         $RECUPERADORES = collect($Dados_Recuperador)->pluck('id_recuperador')->implode(',');
@@ -161,7 +151,6 @@ class ReportDomPDFController extends Controller
 
     }
 
-
     public function emitirRelatorioReembolsoPgtReferencia($id)
     {
         $Dados_comprovativo = ComprovativoModel::where('id', $id)->get();
@@ -170,6 +159,15 @@ class ReportDomPDFController extends Controller
         if ($Dados_extrato->isEmpty()) {
             $Dados_extrato = ReferenciaPGTModel::where('BuDadoOrigem', $Dados_comprovativo[0]->BuDadoOrigem)
                 ->get();
+        }
+
+        if($Dados_comprovativo){
+            $pagamento = DB::table('pgtrefnotificacao')
+                            ->where([
+                                    'refPagamento' => $Dados_comprovativo[0]->refPagamento,
+                                    'idLogSistema' => $Dados_comprovativo[0]->periodo_trans_pgr                                    
+                                    ])
+                            ->first();
         }
 
         $authenticatedUser = Auth::user();
@@ -185,12 +183,11 @@ class ReportDomPDFController extends Controller
             'Dados_extrato' => $Dados_extrato,
             'IMPRENSSO' => $IMPRENSSO,
             'AGENCIA' => $resultagencia_user->OfNombre,
-            'bancos' => $bancos
+            'bancos' => $bancos,
+            'pagamento' => $pagamento
         ];
 
         $pdf = PDF::loadView('reports.reportReembolsos', $data)->setOption(['dpi' => 100, 'defaultFont' => 'sans-serif']);
-
-
 
         return $pdf->stream();//->download('CalculoDesembolso.pdf');
     }
@@ -227,6 +224,7 @@ class ReportDomPDFController extends Controller
 
         return $pdf->stream();//->download('CalculoDesembolso.pdf');
     }
+
     public function emitirRelatorioCARDPGTREF($id)
     {
         $Dados_comprovativo = ReferenciaPGTModel::where('id', $id)->get();
@@ -264,8 +262,6 @@ class ReportDomPDFController extends Controller
 
         //  return $pdf->stream('comprovativo.pdf');
     }
-
-
 
     public function emitirRelatorioDiarioMensal()
     {/*
