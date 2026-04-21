@@ -121,11 +121,18 @@ const confirmLogout = () => {
                 <span class="nav-tooltip">Referências de PGT</span>
             </a>
 
-             <!-- Fecho -->
+            <!-- Fecho -->
             <a v-if="$page.props.user.reconci_habilita" href="/fechoPagamento" class="nav-link-icon group" data-preload
                 :class="{ 'active': $page.url.startsWith('/fechoPagamento') }" title="Fecho">
                 <i class="fas fa-box text-lg"></i>
                 <span class="nav-tooltip">Fecho</span>
+            </a>
+            
+            <!-- Declarações negativas -->
+            <a v-if="$page.props.user.reconci_habilita" href="/declacaongtv" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/declacaongtv') }" title="Declarações Negativas">
+                <i class="fas fa-file text-lg"></i>
+                <span class="nav-tooltip">Declarações</span>
             </a>
 
             <!-- Clientes Kixi Corp -->
@@ -262,6 +269,16 @@ const confirmLogout = () => {
                 <div class="nav-link-content">
                     <i class="fas fa-box nav-link-icon"></i>
                     <span class="nav-link-text">Fecho</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
+            
+            <!-- Declarações Negativas -->
+            <a v-if="$page.props.user.reconci_habilita" href="/declacaongtv" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/declacaongtv') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-file nav-link-icon"></i>
+                    <span class="nav-link-text">Declarações</span>
                 </div>
                 <div class="nav-link-indicator"></div>
             </a>

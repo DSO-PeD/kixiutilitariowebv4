@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
@@ -9,9 +10,9 @@ use App\Http\Controllers\ReportDomPDFController;
 use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
 use App\Http\Controllers\DebugPgtRefController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteCEController;
+use App\Http\Controllers\DeclaracaoController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 
 //'geoblock'
@@ -68,6 +69,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirmarRecuperacao', [RecuperacaoController::class, 'confirmarRecuperacao']);
     Route::post('/confirmar-recuperacoes', [RecuperacaoController::class, 'confirmarMultiplas']);
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
+
+    Route::get('/declacaongtv', [DeclaracaoController::class, 'viewDeclaracoes'])->name('declacaongtv');
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
@@ -86,7 +89,6 @@ Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile
 Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 /******************************************************************************************************************************************************************************************************************************************************** */
-
 
 Route::get('/test-redis', function () {
     try {

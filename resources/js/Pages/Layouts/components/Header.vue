@@ -251,11 +251,10 @@ const getCurrentPageName = () => {
     if (path.startsWith('/extratos')) return 'Desembolsos';
     if (path.startsWith('/recuperacoes')) return 'Recuperações';
     if (path.startsWith('/referenciapgt')) return 'Referências de Pagamentos';
+    if (path.startsWith('/fechoPagamento')) return 'Fecho de Pagamento';
+    if (path.startsWith('/declacaongtv')) return 'Declarações Negativas';
     return 'Sistema';
 };
-
-
-
 
 </script>
 
