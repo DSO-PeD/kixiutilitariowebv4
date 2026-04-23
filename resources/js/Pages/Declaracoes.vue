@@ -26,6 +26,14 @@
             </div>
         </div>
 
+        <div v-if="$page.props.errors && Object.keys($page.props.errors).length" class="alert alert-danger mb-4">
+            <div v-for="(messages, field) in $page.props.errors" :key="field">
+                <div v-for="message in messages" :key="message">
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+
         <!-- Cabeçalho -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div class="flex items-center">
@@ -127,70 +135,170 @@
                         Exportar para Excel
                     </button>
                 </div>
+            </div> -->
+
+        <!-- Tabela -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full">
+                <thead class="bg-gray-50 ">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            #
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                </svg>
+
+                                Registado
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-barcode mr-2 text-gray-500 text-md"></i>
+                                Loan Number
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+
+                                Saving
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                                Nome Cliente
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                        d="M14.25 9.75v-4.5m0 4.5h4.5m-4.5 0 6-6m-3 18c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
+                                </svg>
+                                Telefone do Cliente
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-id-card mr-2 text-gray-500 text-xs"></i>
+                                Documento Nº
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-question-circle mr-2 text-gray-500 text-xs"></i>
+                                Estado
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-building mr-2 text-gray-500 text-xs"></i>
+                                Banco Destino
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr v-for="declaracao in declaracoes?.data || []" :key="declaracao.id">
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ declaracao.id }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ declaracao.created_at }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ declaracao.lnr }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ declaracao.saving }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
+                            {{ declaracao.nome }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
+                            {{ declaracao.telefone }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ declaracao.documento }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                                {{ declaracao.descricao_estado }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ declaracao.BaNome }}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+
+                        </td>
+                    </tr>
+                    <tr v-if="declaracoes.length === 0">
+                        <td colspan="12" class="px-4 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center justify-center py-8">
+                                <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                    </path>
+                                </svg>
+                                <p class="text-sm">Nenhuma declaração solicitada</p>
+                                <p class="text-xs text-gray-400 mt-1">Tente ajustar os filtros de pesquisa</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div v-if="declaracoes?.links?.length" class="flex items-center justify-between mt-6">
+
+                <!-- Previous -->
+                <button class="px-3 py-1 rounded border text-sm"
+                    :class="!declaracoes.prev_page_url ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                    :disabled="!declaracoes.prev_page_url" @click="goTo(declaracoes.prev_page_url)">
+                    ← Anterior
+                </button>
+
+                <!-- Pages -->
+                <div class="flex gap-1">
+                    <template v-for="(link, index) in declaracoes.links" :key="index">
+                        <button v-if="link.url" v-html="link.label" @click="goTo(link.url)"
+                            class="px-3 py-1 rounded text-sm border" :class="link.active
+                                ? 'bg-blue-600 text-white border-blue-600'
+                                : 'hover:bg-gray-100'" />
+                        <span v-else v-html="link.label" class="px-3 py-1 text-sm text-gray-400" />
+                    </template>
+                </div>
+
+                <!-- Next -->
+                <button class="px-3 py-1 rounded border text-sm"
+                    :class="!declaracoes.next_page_url ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                    :disabled="!declaracoes.next_page_url" @click="goTo(declaracoes.next_page_url)">
+                    Próximo →
+                </button>
+
             </div>
+        </div>
 
-            <!-- Tabela 
-            <div class="overflow-x-auto rounded-lg border border-gray-200">
-                <table class="w-full">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodo
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                    </svg>
-
-                                    Data Transação
-                                </div>
-                            </th>                         
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                                    </svg>
-
-                                    Montante
-                                </div>
-                            </th>                            
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="(fecho, index) in fechos" :key="fecho.periodo"
-                            class="hover:bg-gray-50 transition-colors duration-150">
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ index + 1 }}
-                            </td>                            
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ fecho.periodo }}</td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ fecho.ciFecha }}</td>
-                            <td class="px-4 py-4 whitespace-nowrap font-medium text-sm">
-                                <span class="bg-green-400 p-1 rounded-lg text-green-800 font-bold">{{ formatarMoeda(fecho.total_montante) }}</span>
-                            </td>                            
-                        </tr>
-                        <tr v-if="fechos.length === 0">
-                            <td colspan="14" class="px-4 py-8 text-center text-gray-500">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300 mb-2"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <p class="text-sm">Nenhum comprovativo encontrado</p>
-                                    <p class="text-xs text-gray-400 mt-1">Tente ajustar os filtros de pesquisa</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
+        <!--
             <div class="flex justify-end mt-6 gap-1">
                 <template v-for="link in links" :key="link.label">
                     <Link
@@ -206,79 +314,38 @@
                         class="px-3 py-1 border rounded text-gray-400 cursor-not-allowed"
                     />
                 </template>
-            </div>
-        </div> -->
-    </div> 
-    
-    <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
-        @save="guardarComprovativo" :bases="$page.props.bases" :tipocomprovativos="$page.props.tipocomprovativos"
-        :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
-        :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
+</div>
+</div> -->
+    </div>
+    <ModalSolicitarDeclaracao ref="modalGerarDeclaracao" v-if="showModalDeclaracao" @close="fecharModalDeclaracao"
+        @save="guardarDeclaracao" :bancos="$page.props.bancos" v-model="novaDeclaracao" />
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
-import * as XLSX from 'xlsx'
 import { Head } from '@inertiajs/vue3'
 
 // Componentes
-import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
-import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vue'
-import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
-import ModalGerarRefPGT from './Layouts/components/ComprovativosComponents/ModalGerarRefPGT.vue'
+import ModalSolicitarDeclaracao from './Layouts/components/ModalSolicitarDeclaracao.vue'
 
 // Props
 const props = defineProps({
-    comprovativos: Array,
-    filters: Object,
-    page: Number,
-    hasMorePages: Boolean,
-    perPage: {
-        type: Number,
-        default: 100
-    },
-    lista_comprovativo: Array,
-    total: Number,
-    dataInicioInput: String,
-    dataFimInput: String,
-    montantetotal: Number,
-    totalMontantePoupanca: Number,
-    totalMontantePoupancaRegistado: Number,
-    totalMontanteRegistado: Number,
-    totalMontanteReflete: Number,
-    totalMontantePoupancaReflete: Number,
-    totalMontanteInregulares: Number,
-    totalMontantePoupancaInregulares: Number,
-    totalMontantePGREF: Number,
-    totalPendente: Number,
-    bases: Array,
-    produtos: Array,
     bancos: Array,
-    contas: Array,
-    tipocomprovativos: Object,
-    estados: Array,
-    auth: Object,
-    errors: Object,
-    session: Object,
-    flash: Object,
-    user: Object,
-    lista_pendentes: Object,
-    dataInicioPeriodo: String,
-    dataFimPeriodo: String,
-
+    declaracoes: Array,
 })
 
 // Refs
-const showModalLoan = ref(false)
+const showModalDeclaracao = ref(false)
+const modalGerarDeclaracao = ref(null)
+
+/*const showModalLoan = ref(false)
 const showModalData = ref(false)
 const showModalNovo = ref(false)
-const showModalGerarREF = ref(false)
 const showModalObservacao = ref(false)
 const showDeleteModal = ref(false)
 const showEditModal = ref(false)
 const modalNovoComprovativoRef = ref(null)
-const modalCriarRefManual = ref(null)
 const activeDetails = ref(null)
 const mostrarTodos = ref(false)
 const isDeleting = ref(false)
@@ -292,86 +359,75 @@ const dateError = ref('')
 const showModalDataEdicao = ref(false)
 const novaDataRegistro = ref('')
 const comprovativoSelecionadoData = ref(null)
-
 const showModalVoucherEdicao = ref(false)
 const novoVoucher = ref('')
 const comprovativoSelecionadoVoucher = ref(null)
 // Adicione estas refs
 const showModalPagamentosReferencia = ref(false)
-const pagamentosReferencia = ref([])
+const pagamentosReferencia = ref([])*/
 
-// Método para filtrar pagamentos por referência
-const filtrarPagamentosPorReferencia = () => {
-    pagamentosReferencia.value = props.lista_comprovativo.filter(comprovativo => {
-        const formaPagamento = comprovativo.FormaPagoN || comprovativo.forma_pagamento || '';
-        return formaPagamento.includes('Referência');
+
+const abrirModalGerarRefManual = () => {
+    showModalDeclaracao.value = true
+    /*novoReferenciaManual.value = {
+        /*ls: 'Saving', // Já está como 'Saving', isso está correto
+        selectBase: '',
+        selectGrupoIndividual: '',
+        txtNumeroLoanSaving: '',
+        selectProdutoLoan: '',
+        selectProdutoSaving: '',
+        txtLoanR: 'Loan Repayment',
+        txtSavingD: 'Savings Deposit',
+        txtMontante: '',
+        txtInfoAdicional: '',
+        telefone: ''
+    }*/
+}
+
+const fecharModalDeclaracao = () => showModalDeclaracao.value = false
+
+const guardarDeclaracao = async (formValue) => {
+    try {
+
+        const formData = new FormData()
+        Object.entries(formValue).forEach(([key, value]) => {
+            if (value) formData.append(key, value)
+        })
+
+        await router.post('/guardar-declaracao', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            onSuccess: () => {
+                fecharModalDeclaracao();
+            }
+        })
+    } catch (error) {
+        console.error('Erro ao gerar referência:', error)
+    }
+}
+
+const goTo = (url) => {
+    router.visit(url, {
+        preserveState: true,
     });
 }
 
-// Dados selecionados
-const selectedComprovativo = ref({
-    lnr: '',
-    cliente: '',
-    montante: 0,
-    data: '',
-    estado: '',
-    file: null,
-    idestado: 0,
-    id: null
-})
-
-const comprovativoSelecionado = ref(null)
-
-// Filtros
-const filtro = ref({
-    search: props.filters.search || '',
-    lnr: props.filters.lnr || '',
-    estado: props.filters.estado || 28,
-    agencia: props.filters.agencia || 'T',
-    dataInicioInput: props.filters.data_inicio || '',
-    dataFimInput: props.filters.data_fim || '',
-
-})
-
-const erros = ref({
-    dataInicio: '',
-    dataFim: ''
-})
-
-const formEliminacao = ref({
-    txtMotivo: '',
-    txtDadosEliminado: '',
-    txtLoan: '',
-    txtId: null
-})
-
-// Adicione esta variável para controlar a visibilidade dos filtros
-const filtrosVisiveis = ref(true)
-
-// Função para alternar a visibilidade dos filtros
-const toggleFiltros = () => {
-    filtrosVisiveis.value = !filtrosVisiveis.value
-}
 
 
-// Novo comprovativo
-const novoComprovativo = ref({
-    ls: 'Loan',
-    selectBase: '',
-    selectGrupoIndividual: '',
-    txtNumeroLoanSaving: '',
-    selectProdutoLoan: '',
-    selectProdutoSaving: '',
-    txtLoanR: 'Loan Repayment',
-    txtSavingD: 'Savings Deposit',
-    selectBanco: '',
-    selectBancoConta: '',
-    txtMontante: '',
-    calDataBorderoux: '',
-    txtInfoAdicional: '',
-    selectFormaPagamento: '',
-    telefone: ''
-})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const novoReferenciaManual = ref({
     ls: 'Loan',
@@ -397,7 +453,6 @@ const pendentesVisiveis = computed(() => mostrarTodos.value ? listaCompletaPende
 const comprovativosPaginados = computed(() => props.lista_comprovativo.slice((paginaAtual.value - 1) * perPage.value, paginaAtual.value * perPage.value))
 const totalItens = computed(() => props.lista_comprovativo.length)
 const hasMorePages = computed(() => paginaAtual.value * perPage.value < props.lista_comprovativo.length)
-
 // Métodos
 
 const formatCurrency = (value) => {
@@ -411,19 +466,12 @@ const formatCurrency = (value) => {
 }
 const calcularNumeroLinha = (index) => (paginaAtual.value - 1) * perPage.value + index + 1
 
-
-
-
-
 const podeEliminar = (comprovativo) => {
     const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
     const isRegistadoHoje = comprovativo.estado_id === 1 && dataItem === hoje.value
     const temPermissao = props.user.elimina_confirmado_exportado == 1
     return isRegistadoHoje || temPermissao
 }
-
-
-
 
 const initiateDeletion = (comprovativo) => {
     if (!podeEliminar(comprovativo)) return
@@ -489,8 +537,6 @@ const cancelDeletion = () => {
     showDeleteModal.value = false
 }
 
-
-
 const validarDatas = () => {
     erros.value = { dataInicio: '', dataFim: '' }
     let isValid = true
@@ -542,8 +588,6 @@ const aplicarFiltros = () => {
     })
 }
 
-
-
 const resetarFiltros = () => {
     filtro.value = {
         search: '',
@@ -565,53 +609,6 @@ const resetarFiltros = () => {
     })
 }
 
-const exportarParaExcel = () => {
-    try {
-        const dadosFormatados = props.lista_comprovativo.map((comprovativo, index) => ({
-            '#': index + 1,
-            'Data': comprovativo.data ? new Date(comprovativo.data).toLocaleString('pt-PT') : '-',
-            'Agência': comprovativo.agencia || '-',
-            'Registado Por': comprovativo.usuario || '-',
-            'Código do Cliente': comprovativo.lnr || '-',
-            'Cliente': comprovativo.cliente || '-',
-            'Produto': comprovativo.metodologia || '-',
-            'Montante': comprovativo.montante || '0,00',
-            'Referência de Pagamento': comprovativo.referencia || '-',
-            'Estado': comprovativo.estado || '-',
-
-        }))
-
-        const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Comprovativos")
-        XLSX.writeFile(wb, `lista_refpagamentos_completa_${new Date().toISOString().split('T')[0]}.xlsx`)
-    } catch (error) {
-        console.error('Erro ao exportar:', error)
-        alert(`Erro ao exportar: ${error.message}`)
-    }
-}
-
-
-const abrirModalGerarRefManual = () => {
-    showModalGerarREF.value = true
-    novoReferenciaManual.value = {
-        ls: 'Saving', // Já está como 'Saving', isso está correto
-        selectBase: '',
-        selectGrupoIndividual: '',
-        txtNumeroLoanSaving: '',
-        selectProdutoLoan: '',
-        selectProdutoSaving: '',
-        txtLoanR: 'Loan Repayment',
-        txtSavingD: 'Savings Deposit',
-
-
-        txtMontante: '',
-
-        txtInfoAdicional: '',
-
-        telefone: ''
-    }
-}
 // Função para resetar o formulário
 const resetarFormularioReferencia = () => {
     novoReferenciaManual.value = {
@@ -627,56 +624,10 @@ const resetarFormularioReferencia = () => {
         txtRefPagamento: ''
     };
 };
-const fecharModalCriarRefManual = () => showModalGerarREF.value = false
-
-
-const guardarComprovativo = async () => {
-    try {
-        const formData = new FormData()
-        Object.entries(novoComprovativo.value).forEach(([key, value]) => {
-            if (value) formData.append(key, value)
-        })
-
-
-
-        await router.post('/guardar-referencia-pagamento', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            onSuccess: () => {
-                fecharModalCriarRefManual();
-
-                // Resetar formulário
-                resetarFormularioReferencia();
-
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao gerar referência:', error)
-    }
-}
-
-const buscarPorLoan = () => {
-    router.get('/referenciapgt', { tipo: 3, loan: filtroLoan.value }, { preserveState: true })
-    showModalLoan.value = false
-}
-
-const buscarPorDatas = () => {
-    router.get('/referenciapgt', {
-        tipo: 1,
-        data_inicio: dataInicio.value,
-        data_fim: dataFim.value
-    }, { preserveState: true })
-    showModalData.value = false
-}
-
-const mudarPagina = (novaPagina) => {
-    paginaAtual.value = novaPagina
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
 
 
 // Watchers
-watch(() => props.filters, (newFilters) => {
+/*watch(() => props.filters, (newFilters) => {
     filtro.value = {
         search: newFilters.search || '',
         lnr: newFilters.lnr || '',
@@ -698,7 +649,7 @@ watch(() => props.page, (newPage) => {
 
 watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], () => {
     validarDatas()
-})
+})*/
 </script>
 
 <style scoped>

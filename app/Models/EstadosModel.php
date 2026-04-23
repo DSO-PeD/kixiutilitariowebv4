@@ -27,6 +27,7 @@ class EstadosModel extends Model
             ->get();
         return $contas;
     }
+
     public static function getEstadosRecuperacao($estadoArray)
     {
         $estadoArray = explode(',', $estadoArray);
@@ -37,7 +38,6 @@ class EstadosModel extends Model
         return $contas;
     }
 
-
     public static function getEstados()
     {
         return DB::table('estado')
@@ -45,6 +45,5 @@ class EstadosModel extends Model
             ->where('id', '<', 7)
             ->get();
     }
-
 
 }

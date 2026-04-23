@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
 
     Route::get('/declacaongtv', [DeclaracaoController::class, 'viewDeclaracoes'])->name('declacaongtv');
+    Route::post('/guardar-declaracao', [DeclaracaoController::class, 'guardarDeclaracao']);
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

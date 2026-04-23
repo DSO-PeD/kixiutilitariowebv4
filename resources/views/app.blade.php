@@ -12,5 +12,6 @@
   <body>
     @inertia
     <script src="https://kit.fontawesome.com/792e0fbc8a.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>
 </html>

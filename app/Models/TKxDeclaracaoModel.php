@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class TKxDeclaracaoModel extends Model
 {
-    //
+    protected $table = 'tkxpedidodeclaracao';
 }
