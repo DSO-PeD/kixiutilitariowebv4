@@ -14,13 +14,18 @@ class DeclaracaoController extends Controller
     public function viewDeclaracoes(Request $request)
     {
         $lista_bancos = TKxBancoModel::getBancos();
+        $lista_estados = EstadosModel::getEstadosDeclaracao();
 
         $query = DB::table('tkxpedidodeclaracao as decl')
                         ->join('tkxclbanco as banc', 'decl.banco_id', '=', 'banc.BaCodigo')
                         ->join('estado as est', 'decl.estado_id', '=', 'est.id')
-                        ->select('decl.*', 'banc.BaNome', 'est.descricao_estado');
+                        ->select('decl.*', 'banc.BaNome', 'est.descricao_estado', 'est.color');
         
         //Filtros
+        if ($request->filled('lnr')) {
+            $query->where('decl.lnr', 'like', '%' . $request->lnr . '%');
+        }
+
         if ($request->filled('nome')) {
             $query->where('decl.nome', 'like', '%' . $request->nome . '%');
         }
@@ -29,12 +34,12 @@ class DeclaracaoController extends Controller
             $query->where('decl.documento', 'like', '%' . $request->documento . '%');
         }
 
-        if ($request->filled('lnr')) {
-            $query->where('decl.lnr', 'like', '%' . $request->lnr . '%');
-        }
-
         if ($request->filled('estado')) {
             $query->where('decl.estado_id', $request->estado);
+        }
+        
+        if ($request->filled('banco')) {
+            $query->where('decl.banco_id', $request->banco);
         }
 
         $declaracoes = $query->orderByDesc('decl.id')
@@ -43,8 +48,32 @@ class DeclaracaoController extends Controller
         
         return Inertia::render('Declaracoes', [
             'bancos' => $lista_bancos,
+            'estados' => $lista_estados,
             'declaracoes' => $declaracoes,
             'filters' => $request->only(['nome', 'documento', 'lnr', 'estado']),
+        ]);
+    }
+
+    public function viewDeclaracao($id)
+    {
+        $declaracao = DB::table('tkxpedidodeclaracao as decl')
+                        ->join('tkxclbanco as banc', 'decl.banco_id', '=', 'banc.BaCodigo')
+                        ->join('estado as est', 'decl.estado_id', '=', 'est.id')
+                        ->select('decl.*', 'banc.BaNome', 'est.descricao_estado','est.color')
+                        ->where('decl.id', $id)
+                        ->first();
+        if (!$declaracao) {
+            return redirect()->back()->with('error', 'Declaração não encontrada!');
+        }
+
+        $fileUrl = $declaracao->ficheiro 
+                    ? asset('storage/documentos/' . $declaracao->ficheiro)
+                    : null;
+
+        $declaracao->ficheiro = $fileUrl;
+
+        return Inertia::render('VerDeclaracao', [
+            'declaracao' => $declaracao
         ]);
     }
 
@@ -88,7 +117,7 @@ class DeclaracaoController extends Controller
             $declaracao = new TKxDeclaracaoModel;
             $declaracao->lnr = $request->input('lnr');
             $declaracao->saving = $request->input('saving');
-            $declaracao->nome = $request->input('nome');
+            $declaracao->nome = mb_convert_case($request->input('nome'), MB_CASE_TITLE, 'UTF-8');
             $declaracao->documento = $request->input('documento');
             $declaracao->telefone = $request->input('telefone');
             $declaracao->banco_id = $request->input('banco');

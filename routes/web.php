@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
 
     Route::get('/declacaongtv', [DeclaracaoController::class, 'viewDeclaracoes'])->name('declacaongtv');
+    Route::get('/verDeclaracao/{id}', [DeclaracaoController::class, 'viewDeclaracao'])->name('ver-declaracao');
     Route::post('/guardar-declaracao', [DeclaracaoController::class, 'guardarDeclaracao']);
 });
 

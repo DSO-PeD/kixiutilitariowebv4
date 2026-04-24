@@ -12,7 +12,6 @@ class EstadosModel extends Model
 
     public static function getBancosContas()
     {
-
         return TKxBancoContaModel::all();
     }
 
@@ -44,6 +43,12 @@ class EstadosModel extends Model
             ->select('id', 'descricao_estado')
             ->where('id', '<', 7)
             ->get();
+    }
+
+    public static function getEstadosDeclaracao()
+    {
+        return EstadosModel::whereIn('descricao_estado', ['Registado', 'Recusado', 'Aprovado'])
+                            ->get(['id', 'descricao_estado']);
     }
 
 }

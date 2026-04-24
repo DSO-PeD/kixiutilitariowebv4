@@ -50,7 +50,6 @@
 
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <button class="btn btn-outline-primary-pgr flex items-center gap-2" @click="abrirModalGerarRefManual">
-
                     <i class="fas fa-file text-purple-600 text-xl"></i>
                     Nova Requisição
                 </button>
@@ -59,8 +58,7 @@
 
         <div class="border-t border-gray-200 my-4"></div>
 
-        <!--
-        <!-- Filtro Avançado 
+        <!-- Filtros Avançados -->
         <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-semibold text-gray-700">Filtros de Pesquisa</h2>
@@ -76,27 +74,62 @@
             </div>
 
             <div v-if="filtrosVisiveis" class="transition-all duration-300 ease-in-out">
-                <!-- Filtros superiores 
-                <div class="grid grid-cols-12 p-4 gap-4 mb-4">
-                    <!-- Período 
-                    <div class="lg:col-span-3">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Inicio </label>
-                        <input v-model="filtro.dataInicioInput" type="date" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-sm"
-                             @change="validarDatas" />
-                        <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio }}</span>
+                <!-- Filtros superiores -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                    <!-- Loan Number -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Número do Empréstimo(Loan
+                            Nr)</label>
+                        <div class="relative group">
+                            <input v-model="formFiltro.lnr"
+                                class="form-input w-full pl-3 pr-2 h-10 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
+                                placeholder="Ex.: AC/12345" required />
+                        </div>
                     </div>
-
-                    <div class="lg:col-span-3">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fim </label>
-                        <input v-model="filtro.dataFimInput" type="date" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-sm"
-                             @change="validarDatas" />
-                        <span v-if="erros.dataFim" class="text-red-500 text-xs">{{ erros.dataFim }}</span>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                        <div class="relative group">
+                            <input v-model="formFiltro.nome"
+                                class="form-input w-full pl-3 pr-2 h-10 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
+                                placeholder="Ex.: Juliana António" required />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Documento Nº</label>
+                        <div class="relative group">
+                            <input v-model="formFiltro.documento"
+                                class="form-input w-full pl-3 pr-2 h-10 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
+                                placeholder="Ex.: 0000000LA0123" required />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Banco</label>
+                        <div class="relative group">
+                            <select v-model="formFiltro.banco" required
+                                class="form-select w-full pl-4 pr-10 h-10 bg-white text-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md">
+                                <option :value="null" disabled>Selecione o banco</option>
+                                <option v-for="banco in bancos.filter(b => !['KIX'].includes(b.BaSigla))"
+                                    :key="banco.BaCodigo" :value="banco.BaCodigo">
+                                    {{ banco.BaNome }}
+                                </option>
+                            </select>                            
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <div class="relative group">
+                            <select v-model="formFiltro.estado" required
+                                class="form-select w-full pl-4 pr-10 h-10 bg-white text-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md">
+                                <option :value="null" disabled>Selecione o estado</option>
+                                <option v-for="estado in estados" :key="estado.id" :value="estado.id">
+                                    {{ estado.descricao_estado }}
+                                </option>
+                            </select>                            
+                        </div>
                     </div>
                 </div>
 
-                <!-- Botões de ação 
+                <!-- Botões de ação -->
                 <div
                     class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
                     <button @click="resetarFiltros" class="btn btn-outline-secondary flex items-center justify-center">
@@ -118,205 +151,185 @@
                 </div>
             </div>
         </div>
-        
-
-        <!-- Tabela de Comprovativos 
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <!-- Cabeçalho da tabela com paginação e exportação 
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button class="btn btn-outline-excel flex items-center gap-2" @click="exportarParaExcel">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Exportar para Excel
-                    </button>
-                </div>
-            </div> -->
 
         <!-- Tabela -->
-        <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-full">
-                <thead class="bg-gray-50 ">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            #
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                </svg>
+        <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50 ">
+                        <tr>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                #
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                    </svg>
 
-                                Registado
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-barcode mr-2 text-gray-500 text-md"></i>
-                                Loan Number
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                </svg>
+                                    Registado
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-barcode mr-2 text-gray-500 text-md"></i>
+                                    Loan Number
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
 
-                                Saving
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                </svg>
-                                Nome Cliente
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                        d="M14.25 9.75v-4.5m0 4.5h4.5m-4.5 0 6-6m-3 18c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
-                                </svg>
-                                Telefone do Cliente
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-id-card mr-2 text-gray-500 text-xs"></i>
-                                Documento Nº
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-question-circle mr-2 text-gray-500 text-xs"></i>
-                                Estado
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-building mr-2 text-gray-500 text-xs"></i>
-                                Banco Destino
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Saving
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                    </svg>
+                                    Nome Cliente
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                            d="M14.25 9.75v-4.5m0 4.5h4.5m-4.5 0 6-6m-3 18c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
+                                    </svg>
+                                    Telefone do Cliente
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-id-card mr-2 text-gray-500 text-xs"></i>
+                                    Documento Nº
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-question-circle mr-2 text-gray-500 text-xs"></i>
+                                    Estado
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-building mr-2 text-gray-500 text-xs"></i>
+                                    Banco Destino
+                                </div>
+                            </th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
 
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="declaracao in declaracoes?.data || []" :key="declaracao.id">
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ declaracao.id }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ declaracao.created_at }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ declaracao.lnr }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ declaracao.saving }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                            {{ declaracao.nome }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                            {{ declaracao.telefone }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ declaracao.documento }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                                {{ declaracao.descricao_estado }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ declaracao.BaNome }}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-
-                        </td>
-                    </tr>
-                    <tr v-if="declaracoes.length === 0">
-                        <td colspan="12" class="px-4 py-8 text-center text-gray-500">
-                            <div class="flex flex-col items-center justify-center py-8">
-                                <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                    </path>
-                                </svg>
-                                <p class="text-sm">Nenhuma declaração solicitada</p>
-                                <p class="text-xs text-gray-400 mt-1">Tente ajustar os filtros de pesquisa</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div v-if="declaracoes?.links?.length" class="flex items-center justify-between mt-6">
-
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr v-for="(declaracao,index) in declaracoes?.data || []" :key="declaracao.id">
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                {{ index + 1 + ((declaracoes.current_page - 1) * declaracoes.per_page) }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                {{ declaracao.created_at }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                {{ declaracao.lnr }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                {{ declaracao.saving }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-700">
+                                {{ declaracao.nome }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-500">
+                                {{ declaracao.telefone }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                {{ declaracao.documento }}
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                <span :class="declaracao.color" class="px-2 py-1 rounded-full text-xs">
+                                    {{ declaracao.descricao_estado }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                {{ declaracao.BaNome }}
+                            </td>
+                            <td class="flex justify-end px-4 py-2 whitespace-nowrap text-sm font-semibold text-green-600">
+                                <a :href="`/verDeclaracao/${declaracao.id}`" target="_blank"
+                                    class="hover:underline hover:bg-green-200 bg-green-100 text-green-800 py-1 px-3 rounded-md text-sm">
+                                    <i class="fas fa-eye text-green-600"></i>
+                                    Abrir Requisição
+                                </a>
+                            </td>
+                        </tr>
+                        <tr v-if="declaracoes.data?.length === 0">
+                            <td colspan="12" class="px-4 py-8 text-center text-gray-500">
+                                <div class="flex flex-col items-center justify-center py-8">
+                                    <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                        </path>
+                                    </svg>
+                                    <p class="text-sm">Nenhuma declaração solicitada</p>
+                                    <p class="text-xs text-gray-400 mt-1">Tente ajustar os filtros de pesquisa</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Paginação -->
+            <div class="pt-2 flex items-center justify-end gap-4">
                 <!-- Previous -->
-                <button class="px-3 py-1 rounded border text-sm"
-                    :class="!declaracoes.prev_page_url ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-                    :disabled="!declaracoes.prev_page_url" @click="goTo(declaracoes.prev_page_url)">
-                    ← Anterior
+                <button @click="goTo(declaracoes.prev_page_url)" :disabled="!declaracoes.prev_page_url"
+                    class="px-3 py-1.5 border rounded" :class="!declaracoes.prev_page_url
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:bg-gray-100'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
                 </button>
 
-                <!-- Pages -->
-                <div class="flex gap-1">
-                    <template v-for="(link, index) in declaracoes.links" :key="index">
-                        <button v-if="link.url" v-html="link.label" @click="goTo(link.url)"
-                            class="px-3 py-1 rounded text-sm border" :class="link.active
-                                ? 'bg-blue-600 text-white border-blue-600'
-                                : 'hover:bg-gray-100'" />
-                        <span v-else v-html="link.label" class="px-3 py-1 text-sm text-gray-400" />
-                    </template>
-                </div>
+                <!-- Page Info -->
+                <span class="text-sm text-gray-700 py-1.5 px-3 bg-gray-50 border rounded">
+                    Página {{ declaracoes.current_page }} de {{ declaracoes.last_page }}
+                </span>
 
                 <!-- Next -->
-                <button class="px-3 py-1 rounded border text-sm"
-                    :class="!declaracoes.next_page_url ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-                    :disabled="!declaracoes.next_page_url" @click="goTo(declaracoes.next_page_url)">
-                    Próximo →
+                <button @click="goTo(declaracoes.next_page_url)" :disabled="!declaracoes.next_page_url"
+                    class="px-3 py-1.5 border rounded" :class="!declaracoes.next_page_url
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:bg-gray-100'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                        </path>
+                    </svg>
                 </button>
-
             </div>
         </div>
-
-        <!--
-            <div class="flex justify-end mt-6 gap-1">
-                <template v-for="link in links" :key="link.label">
-                    <Link
-                        v-if="link.url"
-                        :href="link.url"
-                        v-html="formatLabel(link.label)"
-                        class="px-3 py-1 border rounded"
-                        :class="{ 'bg-yellow-700 text-white': link.active }"
-                        />
-                        <span
-                        v-else
-                        v-html="formatLabel(link.label)"
-                        class="px-3 py-1 border rounded text-gray-400 cursor-not-allowed"
-                    />
-                </template>
-</div>
-</div> -->
     </div>
+
     <ModalSolicitarDeclaracao ref="modalGerarDeclaracao" v-if="showModalDeclaracao" @close="fecharModalDeclaracao"
         @save="guardarDeclaracao" :bancos="$page.props.bancos" v-model="novaDeclaracao" />
 </template>
@@ -332,6 +345,7 @@ import ModalSolicitarDeclaracao from './Layouts/components/ModalSolicitarDeclara
 // Props
 const props = defineProps({
     bancos: Array,
+    estados: Array,
     declaracoes: Array,
 })
 
@@ -339,49 +353,8 @@ const props = defineProps({
 const showModalDeclaracao = ref(false)
 const modalGerarDeclaracao = ref(null)
 
-/*const showModalLoan = ref(false)
-const showModalData = ref(false)
-const showModalNovo = ref(false)
-const showModalObservacao = ref(false)
-const showDeleteModal = ref(false)
-const showEditModal = ref(false)
-const modalNovoComprovativoRef = ref(null)
-const activeDetails = ref(null)
-const mostrarTodos = ref(false)
-const isDeleting = ref(false)
-const novoMontante = ref('')
-const paginaAtual = ref(1)
-const perPage = ref(100)
-const filtroLoan = ref('')
-const dataInicio = ref('')
-const dataFim = ref('')
-const dateError = ref('')
-const showModalDataEdicao = ref(false)
-const novaDataRegistro = ref('')
-const comprovativoSelecionadoData = ref(null)
-const showModalVoucherEdicao = ref(false)
-const novoVoucher = ref('')
-const comprovativoSelecionadoVoucher = ref(null)
-// Adicione estas refs
-const showModalPagamentosReferencia = ref(false)
-const pagamentosReferencia = ref([])*/
-
-
 const abrirModalGerarRefManual = () => {
     showModalDeclaracao.value = true
-    /*novoReferenciaManual.value = {
-        /*ls: 'Saving', // Já está como 'Saving', isso está correto
-        selectBase: '',
-        selectGrupoIndividual: '',
-        txtNumeroLoanSaving: '',
-        selectProdutoLoan: '',
-        selectProdutoSaving: '',
-        txtLoanR: 'Loan Repayment',
-        txtSavingD: 'Savings Deposit',
-        txtMontante: '',
-        txtInfoAdicional: '',
-        telefone: ''
-    }*/
 }
 
 const fecharModalDeclaracao = () => showModalDeclaracao.value = false
@@ -405,251 +378,48 @@ const guardarDeclaracao = async (formValue) => {
     }
 }
 
+// Função para alternar a visibilidade dos filtros
+const filtrosVisiveis = ref(true)
+const toggleFiltros = () => {
+    filtrosVisiveis.value = !filtrosVisiveis.value
+}
+
+const formFiltro = ref({
+    lnr: props.formFiltro?.lnr || '',
+    nome: props.formFiltro?.nome || '',
+    documento: props.formFiltro?.documento || '',
+    estado: props.formFiltro?.estado || null,
+    banco: props.formFiltro?.banco || null
+});
+
+// Chama next page na paginação sem recarregar a página 
 const goTo = (url) => {
     router.visit(url, {
         preserveState: true,
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const novoReferenciaManual = ref({
-    ls: 'Loan',
-    selectBase: '',
-    selectGrupoIndividual: '',
-    txtNumeroLoanSaving: '',
-    selectProdutoLoan: '',
-    selectProdutoSaving: '',
-    txtLoanR: 'Loan Repayment',
-    txtSavingD: 'Savings Deposit',
-    selectBanco: '',
-    selectBancoConta: '',
-    txtMontante: '',
-    calDataBorderoux: '',
-    txtInfoAdicional: '',
-    selectFormaPagamento: '',
-    telefone: ''
-})
-// Computed
-const hoje = computed(() => new Date().toISOString().split('T')[0])
-const listaCompletaPendentes = computed(() => props.lista_pendentes || [])
-const pendentesVisiveis = computed(() => mostrarTodos.value ? listaCompletaPendentes.value : listaCompletaPendentes.value.slice(0, 10))
-const comprovativosPaginados = computed(() => props.lista_comprovativo.slice((paginaAtual.value - 1) * perPage.value, paginaAtual.value * perPage.value))
-const totalItens = computed(() => props.lista_comprovativo.length)
-const hasMorePages = computed(() => paginaAtual.value * perPage.value < props.lista_comprovativo.length)
-// Métodos
-
-const formatCurrency = (value) => {
-    if (value == null) return ''
-    if (typeof value === 'string') {
-        value = value.replace(/\D/g, '')
-        if (!value) return '0,00'
-        value = parseFloat(value) / 100
-    }
-    return value.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
-const calcularNumeroLinha = (index) => (paginaAtual.value - 1) * perPage.value + index + 1
-
-const podeEliminar = (comprovativo) => {
-    const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
-    const isRegistadoHoje = comprovativo.estado_id === 1 && dataItem === hoje.value
-    const temPermissao = props.user.elimina_confirmado_exportado == 1
-    return isRegistadoHoje || temPermissao
-}
-
-const initiateDeletion = (comprovativo) => {
-    if (!podeEliminar(comprovativo)) return
-
-    // Preencha os dados para o modal
-    formEliminacao.value = {
-        txtMotivo: '',
-        txtDadosEliminado: `${comprovativo.cliente} - ${formatCurrency(comprovativo.montante)} AKZ`,
-        txtLoan: comprovativo.lnr || 'N/A',
-        txtId: comprovativo.id
-    }
-
-    selectedComprovativo.value = {
-        lnr: comprovativo.lnr || 'N/A',
-        cliente: comprovativo.cliente || 'N/A',
-        montante: comprovativo.montante || 0,
-        data: comprovativo.data || 'N/A',
-        estado: comprovativo.estado || 'N/A',
-        file: comprovativo.file || null,
-        id: comprovativo.id,
-        idestado: comprovativo.estado_id
-    }
-
-    showDeleteModal.value = true
-}
-
-const proceedWithDeletion = async (id, motivo) => {
-    isDeleting.value = true
-    try {
-        await router.post("/eliminar-comprovativo", {
-            id: id,
-            estado_id: selectedComprovativo.value.idestado,
-            motivo: motivo
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                showDeleteModal.value = false
-                // Limpar formulário
-                formEliminacao.value = {
-                    txtMotivo: '',
-                    txtDadosEliminado: '',
-                    txtLoan: '',
-                    txtId: null
-                }
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao eliminar:', error)
-    } finally {
-        isDeleting.value = false
-    }
-}
-
-const cancelDeletion = () => {
-    selectedComprovativo.value = {
-        lnr: '',
-        cliente: '',
-        montante: 0,
-        data: '',
-        estado: '',
-        id: null
-    }
-    showDeleteModal.value = false
-}
-
-const validarDatas = () => {
-    erros.value = { dataInicio: '', dataFim: '' }
-    let isValid = true
-
-    if (!filtro.value.dataInicioInput) {
-        erros.value.dataInicio = 'A data de início é obrigatória'
-        isValid = false
-    }
-
-    if (!filtro.value.dataFimInput) {
-        erros.value.dataFim = 'A data de fim é obrigatória'
-        isValid = false
-    }
-
-    if (filtro.value.dataInicioInput && filtro.value.dataFimInput) {
-        const dataInicio = new Date(filtro.value.dataInicioInput)
-        const dataFim = new Date(filtro.value.dataFimInput)
-
-        if (dataInicio > dataFim) {
-            erros.value.dataInicio = 'A data de início não pode ser maior que a data de fim'
-            erros.value.dataFim = 'A data de fim não pode ser menor que a data de início'
-            isValid = false
-        }
-    }
-
-    return isValid
-}
-
 const aplicarFiltros = () => {
-    if (!validarDatas()) return
-
-    router.get('/referenciapgt', {
-        search_input: filtro.value.search,
-        lnr_imput: filtro.value.lnr,
-        estado_input: filtro.value.estado,
-        agencia_imput: filtro.value.agencia,
-        data_inicio_imput: filtro.value.dataInicioInput,
-        data_fim_imput: filtro.value.dataFimInput,
-        filtrar_prestacoes: filtro.value.filtrarPrestacoes ? 1 : 0,
-        filtrar_poupancas: filtro.value.filtrarPoupancas ? 1 : 0,
-        produto_prestacao: filtro.value.produtoPrestacao,
-        produto_poupanca: filtro.value.produtoPoupanca,
-        forma_pagamento: filtro.value.formaPagamento,
-        tipo: 4
-    }, {
+    router.get('/declacaongtv', formFiltro.value, {
         preserveState: true,
         replace: true,
-        onSuccess: () => paginaAtual.value = 1
     })
 }
 
 const resetarFiltros = () => {
-    filtro.value = {
-        search: '',
+    formFiltro.value = {
         lnr: '',
-        estado: 28,
-        agencia: 'T',
-        formaPagamento: 'TP',
-        produtoPrestacao: 'TL',
-        produtoPoupanca: 'TS',
-        dataInicioInput: '',
-        dataFimInput: '',
-        filtrarPrestacoes: true,
-        filtrarPoupancas: true
+        nome: '',
+        documento: '',
+        estado: null,
+        banco: null
     }
 
-    router.get('/referenciapgt', { page: 1 }, {
+    router.get('/declacaongtv', formFiltro.value, {
         preserveState: true,
-        replace: true
+        replace: true,
     })
 }
-
-// Função para resetar o formulário
-const resetarFormularioReferencia = () => {
-    novoReferenciaManual.value = {
-        ls: 'Saving',
-        selectBase: '',
-        selectGrupoIndividual: '',
-        txtNumeroLoanSaving: '',
-        selectProdutoSaving: '',
-        txtSavingD: 'Savings Deposit',
-        txtMontante: '',
-        txtInfoAdicional: '',
-        telefone: '',
-        txtRefPagamento: ''
-    };
-};
-
-
-// Watchers
-/*watch(() => props.filters, (newFilters) => {
-    filtro.value = {
-        search: newFilters.search || '',
-        lnr: newFilters.lnr || '',
-        estado: newFilters.estado || 28,
-        agencia: newFilters.agencia || 'T',
-        formaPagamento: newFilters.formaPagamento || 'TP',
-        produtoPrestacao: newFilters.produtoPrestacao || 'TL',
-        produtoPoupanca: newFilters.produtoPoupanca || 'TS',
-        dataInicioInput: newFilters.data_inicio || '',
-        dataFimInput: newFilters.data_fim || '',
-        filtrarPrestacoes: newFilters.filtrar_prestacoes !== undefined ? Boolean(Number(newFilters.filtrar_prestacoes)) : true,
-        filtrarPoupancas: newFilters.filtrar_poupancas !== undefined ? Boolean(Number(newFilters.filtrar_poupancas)) : true
-    }
-}, { immediate: true, deep: true })
-
-watch(() => props.page, (newPage) => {
-    paginaAtual.value = newPage
-})
-
-watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], () => {
-    validarDatas()
-})*/
 </script>
 
 <style scoped>
