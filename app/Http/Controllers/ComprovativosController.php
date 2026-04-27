@@ -1122,13 +1122,11 @@ class ComprovativosController extends Controller
 
             if ($referenciaExistente) {
 
-
                 return redirect()->back()
                     ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
                     ->withInput();
-
-
             }
+            
             $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
             $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
 
@@ -1232,10 +1230,4 @@ class ComprovativosController extends Controller
                 ->withInput();
         }
     }
-
-
-
-
-
-
 }

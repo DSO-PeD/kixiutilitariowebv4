@@ -8,6 +8,7 @@ use App\Models\TKxBancoModel;
 use App\Models\EstadosModel;
 use App\Models\TKxDeclaracaoModel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DeclaracaoController extends Controller
 {
@@ -128,5 +129,177 @@ class DeclaracaoController extends Controller
             }
             
             return redirect()->back()->with('error', 'Erro ao guardar declaração!');
+    }
+
+    public function recusarDeclaracao(Request $request)
+    { 
+        $validatedData = $request->validate([
+            'comentario' => 'required|string|max:250',
+            'id' => 'required|exists:tkxpedidodeclaracao,id'
+        ]);
+
+        $declaracao = TKxDeclaracaoModel::find($request->id);
+        $estadoRecusado = EstadosModel::where('descricao_estado', 'Recusado')->first();
+
+        $declaracao->estado_id = $estadoRecusado->id;
+        $declaracao->comentario = $request->comentario;
+        
+        if($declaracao->save()) {
+            return redirect()->back()->with('success', 'Declaração recusada com sucesso!');
+        }
+        return redirect()->back()->with('error', 'Erro ao recusar declaração!');
+    }
+
+    public function guardarReferenciaPagamento(TKxDeclaracaoModel $declaracao)
+    {
+        $authenticatedUser = Auth::user();
+        
+        try {
+            
+            dd($authenticatedUser->UtCodigo);
+            
+            // Verificar se a referência já existe
+            $referenciaExistente = DB::table('referenciasmanuais')
+                ->where('referencia', $request->txtRefPagamento)
+                ->first();
+
+            if ($referenciaExistente) {
+
+                return redirect()->back()
+                    ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
+                    ->withInput();
+            }
+            
+            $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
+            $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
+
+
+            $dados_activar_referencia = [
+                "numero" => $request->txtRefPagamento,
+                "validade" => Carbon::now()->addDays(3)->format('d/m/Y H:i'),
+                "montante" => number_format($request->txtMontante, 2, ',', ' '),
+                "cliente" => [
+                    "nome" => $request->txtInfoAdicional,
+                    "email" => "diversos@kxicredito.ao",
+                    "telefone" => $request->telefone,
+                ],
+                "metadados" => [
+                    "item1" => "Activação de referência de pagamento no ambiente prod.",
+                    "item2" => "Manual",
+                ],
+            ];
+
+            $client = new IziPayService();
+            $response = $client->mainKxU($dados_activar_referencia);
+
+            if ($response == 201) {               // Sucesso
+
+                // Preparar os dados para inserção
+                $dadosReferencia = [
+                    'BuDadoOrigem' => $loanNumber,
+                    'nomecliente' => $request->txtInfoAdicional,
+                    'telefone' => $request->telefone,
+                    'PoCodigo' => $request->selectProdutoSaving,
+                    'tipo' => $request->selectGrupoIndividual,
+                    'referencia' => $request->txtRefPagamento,
+                    'inicio' => Carbon::now(),
+                    'fim' => Carbon::now()->addDays(3),
+                    'montante' => $request->txtMontante,
+                    'idestado' => 21,
+                    'BaseOperacao' => $siglaagencia->OfIdentificador,
+                    'activo' => 1, // Mudado para 1 para indicar que está ativo
+                    'UtCodigo' => $authenticatedUser->UtCodigo,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+
+                // Inserir na base de dados
+                $id = DB::table('referenciasmanuais')->insertGetId($dadosReferencia);
+
+                // Buscar dados completos para retorno
+                $referenciaCompleta = DB::table('referenciasmanuais')
+                    ->where('id', $id)
+                    ->first();
+
+                if ($dadosReferencia) {
+                    $validKey = config('djanotifpgtref.callback_access_key');
+
+                    $telefone = null;
+                    $mensagem = "Pagamento KIXICREDITO\n\n" .
+                        "Referência {$request->txtRefPagamento}\n" .
+                        "Valor Kz " . number_format($request->txtMontante, 2, ',', '.') . "\n" .
+                        "Cliente {$loanNumber}\n\n" .
+                        "Validade 72 horas\n\n" .
+                        "KIXICREDITO\n" .
+                        "PARCEIRA NOS NEGÓCIOS";
+
+                    $telefone = $request->telefone;
+
+
+                    if ($telefone) {
+                        $response = Http::withHeaders([
+                            'Access-Key' => $validKey,
+                            'Content-Type' => 'application/json',
+                        ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+                                    'contacto' => $telefone,
+                                    'mensagem' => $mensagem,
+                                ]);
+
+
+                    }
+                    Log::info('Tentativa de envio SMS', ['telefone' => $telefone, 'mensagem ' => $mensagem, 'montante' => $request->txtMontante]);
+                }
+
+
+                return redirect()->route('referenciapgt')
+                    ->with('success', 'Referência de pagamento guardada com sucesso!');
+
+
+            } else if ($response == 422) {
+
+                return back()->with('error', 'Referência ' . $request->numero . 'já existe.');
+
+            } else if ($response == 201) {
+                return back()->with('error', 'Lamentamos, O Serviços de Activação de referencia  Indisponível');
+            }
+
+
+
+        } catch (\Exception $e) {
+
+
+            return redirect()->back()
+                ->with('error', 'Erro ao processar referência de pagamento: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    public function aprovarDeclaracao($id)
+    { 
+        $declaracao = TKxDeclaracaoModel::find($id);
+        $estadoAprovado = EstadosModel::where('descricao_estado', 'Aprovado')->first();
+        
+        // Verificar se a declaração existe
+        if(!$declaracao) {
+            return redirect()->back()->with('error', 'Declaração não encontrada!');
+        }
+
+        // Verificar se o estado de aprovação existe
+        if(!$estadoAprovado) {
+            return redirect()->back()->with('error', 'Estado de aprovação não encontrado!');
+        }
+
+        $this->guardarReferenciaPagamento($declaracao);
+
+        
+        
+        dd($estadoAprovado);
+        
+        $declaracao->estado_id = $estadoAprovado->id;
+        
+        if($declaracao->save()) {
+            return redirect()->back()->with('success', 'Declaração aprovada com sucesso!');
+        }
+         return redirect()->back()->with('error', 'Erro ao aprovar declaração!');  
     }
 }

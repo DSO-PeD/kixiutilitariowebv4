@@ -9,10 +9,10 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-3">
                         <div class="bg-white/20 p-2 rounded-xl">
-                            <i class="fas fa-file text-white text-xl"></i>
+                            <i class="fas fa-times-circle text-white text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold drop-shadow-sm">Registar Solicitação da Declaração</h3>
+                            <h3 class="text-2xl font-bold drop-shadow-sm">Recusar a Requisição</h3>
                         </div>
                     </div>
                     <button @click="$emit('close')"
@@ -43,134 +43,20 @@
 
                     <div class="grid grid-cols-12 gap-5">
                         <!-- Loan Number -->
-                        <div class="lg:col-span-4 col-span-4">
+                        <div class="lg:col-span-12 col-span-12">
                             <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-barcode mr-2 text-gray-500 text-xs"></i>
-                                Número do Empréstimo (Loan Nr)
+                                <i class="fas fa-question-circle mr-2 text-gray-500 text-xs"></i>
+                                Comentário de Recusa
                             </label>
                             <div class="relative group">
-                                <input v-model="formData.lnr"
-                                    class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
-                                    maxlength="125" placeholder="Ex.: AC/12345" required />
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <!--i class="fas fa-signature text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
+                                <textarea v-model="formData.comentario" maxlength="250" rows="4" required
+                                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                    placeholder="Digite o seu comentário..."></textarea>
+
+                                <div class="text-right text-sm text-gray-500 mt-1">
+                                    {{ formData.comentario.length }}/250
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Savings Account -->
-                        <div class="lg:col-span-4 col-span-4">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-piggy-bank mr-2 text-gray-500 text-xs"></i>
-                                Número de Poupança
-                            </label>
-                            <div class="relative group">
-                                <input v-model="formData.saving"
-                                    class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
-                                    maxlength="125" placeholder="Ex.: AC/I/12345" required />
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <!--i class="fas fa-signature text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Banco -->
-                        <div class="lg:col-span-4 col-span-4">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-building mr-2 text-gray-500 text-xs"></i>
-                                Banco Destino
-                            </label>
-                            <div class="relative group">
-                                <select v-model="formData.banco" required
-                                    class="form-select w-full pl-10 pr-10 py-3 h-11 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md">
-                                    <option :value="null" disabled>Selecione o banco</option>
-                                    <option v-for="banco in bancos.filter(b => !['KIX'].includes(b.BaSigla))"
-                                        :key="banco.BaCodigo" :value="banco.BaCodigo">
-                                        {{ banco.BaNome }}
-                                    </option>
-                                </select>
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <!--i class="fas fa-cubes text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
-                                </div>
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <i class="fas fa-chevron-down text-gray-400"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Nome do Cliente -->
-                        <div class="lg:col-span-5 col-span-5">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-user mr-2 text-gray-500 text-xs"></i>
-                                Nome do Cliente
-                            </label>
-                            <div class="relative group">
-                                <input v-model="formData.nome" @input="formData.nome = formData.nome.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')"
-                                    class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
-                                    placeholder="Ex. Nome completo do cliente" required />
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <!--i class="fas fa-signature text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Documento -->
-                        <div class="lg:col-span-4 col-span-3">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-id-card mr-2 text-gray-500 text-xs"></i>
-                                Documento Nº
-                            </label>
-                            <div class="relative group">
-                                <input v-model="formData.documento"
-                                    class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
-                                    minlength="5" maxlength="20" placeholder="Ex.: Bi, Passaporte, Outros" required />
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <!--i class="fas fa-mobile-alt text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Telefone -->
-                        <div class="lg:col-span-3 col-span-3">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fa fa-phone mr-2 text-gray-500 text-xs"></i>
-                                Telefone
-                            </label>
-                            <div class="relative group">
-                                <input type="number" v-model="formData.telefone"
-                                    class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
-                                    maxlength="9" minlength="9" placeholder="Ex. 921500000" required />
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <!--i class="fas fa-mobile-alt text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Anexar Documento -->
-                        <div class="lg:col-span-12 col-span-12 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Anexar Documento</label>
-                            <div
-                                class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg px-6 pt-5 pb-6 transition-all hover:border-blue-500 hover:bg-blue-50/50">
-                                <div class="space-y-1 text-center">
-                                    <div class="flex justify-center text-blue-500 mb-3">
-                                        <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
-                                    </div>
-                                    <div class="flex text-sm text-gray-600">
-                                        <label
-                                            class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                                            <span>Clique aqui para carregar ficheiro</span>
-                                            <input type="file" ref="fileInput" @change="handleFileUpload"
-                                                accept="application/pdf" class="sr-only" required />
-                                        </label>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-2">
-                                        Formato aceite: PDF (Max. 2MB)
-                                    </p>
-                                </div>
-                            </div>
-
-                            <iframe v-if="selectedFile" :src="selectedFile" class="mt-4 w-full h-64 border rounded-lg">
-                            </iframe>
                         </div>
                     </div>
 
@@ -223,56 +109,13 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save']);
 
 const formData = ref({
-    lnr: '',
-    saving: '',
-    banco: null,
-    nome: '',
-    documento: '',
-    telefone: '',
-    ficheiro: '',
+    comentario: '',
 });
-
-const selectedFile = ref(null);
-const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-
-        URL.revokeObjectURL(selectedFile.value);
-
-        if (file.size > 2 * 1024 * 1024) { // 2MB
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: "Oops...",
-                text: "O ficheiro excede o tamanho máximo de 2MB!",
-                timer: 2500
-            });
-            event.target.value = ''; // Limpar o input
-            selectedFile.value = null; // Limpar a variável do arquivo selecionado
-            return;
-        }
-
-        formData.value.ficheiro = file;
-        selectedFile.value = URL.createObjectURL(file);
-    }
-}
 
 const isSubmitting = ref(false);
 
 // Confirmar submissão
 const confirmSubmission = () => {
-
-    if (!formData.value.banco) {
-        Swal.fire({
-            position: "top-end",
-            icon: "error",
-            title: "Oops...",
-            text: "Banco de destino é obrigatório!",
-            timer: 2500
-        });
-        return;
-    }
-
     isSubmitting.value = true;
 
     try {

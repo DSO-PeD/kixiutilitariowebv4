@@ -50,8 +50,7 @@
 
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <a href="/declacaongtv"
-                    class="border border-purple-600 text-purple-600 hover:bg-purple-700 hover:text-white p-2 rounded-lg flex items-center gap-2"
-                    @click="abrirModalGerarRefManual">
+                    class="border border-purple-600 text-purple-600 hover:bg-purple-700 hover:text-white p-2 rounded-lg flex items-center gap-2">
                     <i class="fas fa-list text-purple-600 text-xl"></i>
                     Listar Requisições
                 </a>
@@ -68,12 +67,12 @@
                             <h2 class="text-lg font-semibold text-gray-800 mb-4">Detalhes da Requisição</h2>
                         </div>
                         <div class="flex justify-end lg:col-span-4 col-span-4 gap-2">
-                            <button @click="abrirModalGerarRefManual"
+                            <button @click="abrirModal"
                                 class="bg-orange-400 hover:bg-orange-500 text-white h-10 px-4 rounded-lg gap-2">
                                 <i class="fas fa-times text-white"></i>
                                 Recusar
                             </button>
-                            <button @click="window.print()"
+                            <button @click="aprovarRequisicao"
                                 class="bg-green-600 hover:bg-green-700 text-white h-10 px-4 rounded-lg gap-2">
                                 <i class="fas fa-check text-white"></i>
                                 Aprovar
@@ -118,7 +117,11 @@
                                     <p class="text-sm text-gray-600">Banco:</p>
                                     <p class="text-base font-medium text-gray-800">{{ declaracao.BaNome }}</p>
                                 </div>
-
+                                <div v-if="declaracao.comentario" class="lg:col-span-12 col-span-12">
+                                    <p class="text-sm text-gray-600">Comentário:</p>
+                                    <p class="text-base font-medium text-gray-800 border border-gray-300 p-2 shadow-sm">
+                                        {{ declaracao.comentario }}</p>
+                                </div>
                             </div>
                         </div>
                         <div class="lg:col-span-5 col-span-5 bg-gray-100 p-2 rounded-lg">
@@ -132,8 +135,8 @@
         </div>
     </div>
 
-     <ModalSolicitarDeclaracao ref="modalGerarDeclaracao" v-if="showModalDeclaracao" @close="fecharModalDeclaracao"
-         />
+    <ModalRecusarDeclaracao ref="modalRecusarDeclaracao" v-if="showModalRecusarDeclaracao" @close="fecharModal"
+        @save="recusarRequisicao" />
 </template>
 
 <script setup>
@@ -141,6 +144,7 @@ import { ref, computed, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { Head } from '@inertiajs/vue3'
 import ModalSolicitarDeclaracao from './Layouts/components/ModalSolicitarDeclaracao.vue'
+import ModalRecusarDeclaracao from './Layouts/components/ModalRecusarDeclaracao.vue'
 
 // Props
 const props = defineProps({
@@ -148,27 +152,28 @@ const props = defineProps({
 })
 
 // Modal Recusar
-const showModalDeclaracao = ref(false)
-const modalGerarDeclaracao = ref(null)
+const showModalRecusarDeclaracao = ref(false)
+const modalRecusarDeclaracao = ref(null)
 
-const abrirModalGerarRefManual = () => {
-    showModalDeclaracao.value = true
+const abrirModal = () => {
+    showModalRecusarDeclaracao.value = true
 }
 
-const fecharModalDeclaracao = () => showModalDeclaracao.value = false
+const fecharModal = () => showModalRecusarDeclaracao.value = false
 
-const guardarDeclaracao = async (formValue) => {
+const recusarRequisicao = async (formValue) => {
     try {
 
         const formData = new FormData()
+        formData.append('id', props.declaracao.id) // Adiciona o ID da declaração para identificação no backend
         Object.entries(formValue).forEach(([key, value]) => {
             if (value) formData.append(key, value)
         })
 
-        await router.post('/guardar-declaracao', formData, {
+        await router.post('/recusar-declaracao', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             onSuccess: () => {
-                fecharModalDeclaracao();
+                fecharModal();
             }
         })
     } catch (error) {
@@ -176,4 +181,32 @@ const guardarDeclaracao = async (formValue) => {
     }
 }
 
+const aprovarRequisicao = async () => {
+    try {
+
+        Swal.fire({
+            title: "Tem a certeza?",
+            text: "A requisição será aprovada!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Aprovar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                
+                router.post('/aprovar-declaracao/' + props.declaracao.id, {
+                    onSuccess: () => {
+                        // Lógica após aprovação, se necessário
+                    }
+                });
+
+            };
+         });
+
+
+} catch (error) {
+    console.error('Erro ao aprovar declaração:', error)
+}
+}
 </script>
