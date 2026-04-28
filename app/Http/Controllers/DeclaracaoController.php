@@ -9,6 +9,7 @@ use App\Models\EstadosModel;
 use App\Models\TKxDeclaracaoModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class DeclaracaoController extends Controller
 {
@@ -150,38 +151,44 @@ class DeclaracaoController extends Controller
         return redirect()->back()->with('error', 'Erro ao recusar declaração!');
     }
 
+    //Gerar referência de pagamento randomico e base AC = DPP 
+    public function gerarReferenciaPagamento()
+    {
+        $numero = rand(10000, 99999);
+        $referencia = '9973' . $numero; // Concatenar o prefixo com o número aleatório
+        return $referencia;
+    }
+
     public function guardarReferenciaPagamento(TKxDeclaracaoModel $declaracao)
     {
         $authenticatedUser = Auth::user();
+        $montante = 11000; // Valor fixo para a referência de pagamento
         
         try {
-            
-            dd($authenticatedUser->UtCodigo);
-            
-            // Verificar se a referência já existe
-            $referenciaExistente = DB::table('referenciasmanuais')
-                ->where('referencia', $request->txtRefPagamento)
-                ->first();
 
-            if ($referenciaExistente) {
-
-                return redirect()->back()
-                    ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
-                    ->withInput();
-            }
+            do {
+                //Gerar referência de pagamento            
+                $referencia = $this->gerarReferenciaPagamento();
+                
+                // Verificar se a referência já existe
+                $referenciaExistente = DB::table('referenciasmanuais')
+                                        ->where('referencia', $referencia)
+                                        ->first();
+            } while ($referenciaExistente); // Repetir até gerar uma referência única
             
-            $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
-            $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
+            
+            //$siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
+            //$loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
 
 
             $dados_activar_referencia = [
-                "numero" => $request->txtRefPagamento,
-                "validade" => Carbon::now()->addDays(3)->format('d/m/Y H:i'),
-                "montante" => number_format($request->txtMontante, 2, ',', ' '),
+                "numero" => $referencia,
+                "validade" => Carbon::now()->addDays(1)->format('d/m/Y H:i'),
+                "montante" => number_format($montante, 2, ',', ' '),
                 "cliente" => [
-                    "nome" => $request->txtInfoAdicional,
+                    "nome" => $declaracao->nome,
                     "email" => "diversos@kxicredito.ao",
-                    "telefone" => $request->telefone,
+                    "telefone" => $declaracao->telefone,
                 ],
                 "metadados" => [
                     "item1" => "Activação de referência de pagamento no ambiente prod.",
@@ -189,37 +196,40 @@ class DeclaracaoController extends Controller
                 ],
             ];
 
-            $client = new IziPayService();
-            $response = $client->mainKxU($dados_activar_referencia);
+            
+            #$client = new IziPayService();
+            #$response = $client->mainKxU($dados_activar_referencia);
 
-            if ($response == 201) {               // Sucesso
+            #if ($response == 201) {              
 
                 // Preparar os dados para inserção
                 $dadosReferencia = [
-                    'BuDadoOrigem' => $loanNumber,
-                    'nomecliente' => $request->txtInfoAdicional,
-                    'telefone' => $request->telefone,
-                    'PoCodigo' => $request->selectProdutoSaving,
-                    'tipo' => $request->selectGrupoIndividual,
-                    'referencia' => $request->txtRefPagamento,
+                    'BuDadoOrigem' => $declaracao->saving,
+                    'nomecliente' => $declaracao->nome,
+                    'telefone' => $declaracao->telefone,
+                    'PoCodigo' => 'S12',
+                    'tipo' => 'I',
+                    'referencia' => $referencia,
                     'inicio' => Carbon::now(),
-                    'fim' => Carbon::now()->addDays(3),
-                    'montante' => $request->txtMontante,
+                    'fim' => Carbon::now()->addDays(1),
+                    'montante' => $montante,
                     'idestado' => 21,
-                    'BaseOperacao' => $siglaagencia->OfIdentificador,
+                    'BaseOperacao' => 'AC',
                     'activo' => 1, // Mudado para 1 para indicar que está ativo
                     'UtCodigo' => $authenticatedUser->UtCodigo,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ];
 
+                dd($dadosReferencia);
+
                 // Inserir na base de dados
                 $id = DB::table('referenciasmanuais')->insertGetId($dadosReferencia);
 
                 // Buscar dados completos para retorno
                 $referenciaCompleta = DB::table('referenciasmanuais')
-                    ->where('id', $id)
-                    ->first();
+                                        ->where('id', $id)
+                                        ->first();
 
                 if ($dadosReferencia) {
                     $validKey = config('djanotifpgtref.callback_access_key');
@@ -255,19 +265,15 @@ class DeclaracaoController extends Controller
                     ->with('success', 'Referência de pagamento guardada com sucesso!');
 
 
-            } else if ($response == 422) {
+            #} else if ($response == 422) {
 
                 return back()->with('error', 'Referência ' . $request->numero . 'já existe.');
 
-            } else if ($response == 201) {
+            #} else if ($response == 201) {
                 return back()->with('error', 'Lamentamos, O Serviços de Activação de referencia  Indisponível');
-            }
-
-
+            #}
 
         } catch (\Exception $e) {
-
-
             return redirect()->back()
                 ->with('error', 'Erro ao processar referência de pagamento: ' . $e->getMessage())
                 ->withInput();
