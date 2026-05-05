@@ -19,6 +19,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\View\Compilers\BladeCompiler;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -56,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerResponseMacros();
         $this->registerRateLimiting();
         $this->monitorSlowQueries();
+        Carbon::setLocale('pt');
     }
 
     protected function applyProductionOptimizations(): void

@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Http;
 
 class IziPayService
 {
-
-
-
     public function mainKxU($DATA)
     {
         try {
