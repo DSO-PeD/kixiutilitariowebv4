@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <div class="border-t border-gray-200 my-4"></div>
+        <div class="border-t border-gray-200 my-4"></div>             
 
         <!-- Seção de Alertas Pendentes -->
         <div v-if="$page.props.user.view_pendentes" class="mb-6">

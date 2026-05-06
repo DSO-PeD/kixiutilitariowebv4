@@ -68,4 +68,14 @@ protected $keyType = 'string';
             ->pluck('cidr')
             ->toArray();
     }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(
+            Permission::class,
+            'tkxusutilizador_permissions',
+            'UtCodigo',
+            'permission_id'
+        );
+    }
 }

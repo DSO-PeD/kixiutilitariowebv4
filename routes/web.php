@@ -81,7 +81,6 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::get('/sendsmsteste', [PgtRefNotificacaoController::class, 'sendSms'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
-
 Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
 Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP'])->name('extrato_kxu');
 

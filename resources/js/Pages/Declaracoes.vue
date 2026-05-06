@@ -49,7 +49,7 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <button class="btn btn-outline-primary-pgr flex items-center gap-2" @click="abrirModalGerarRefManual">
+                <button v-if="can('create_declaracao')" class="btn btn-outline-primary-pgr flex items-center gap-2" @click="abrirModalGerarRefManual">
                     <i class="fas fa-file text-purple-600 text-xl"></i>
                     Nova Requisição
                 </button>
@@ -57,6 +57,8 @@
         </div>
 
         <div class="border-t border-gray-200 my-4"></div>
+        {{ $page.props.user }}-
+        {{ $page.props.permissions }}
 
         <!-- Filtros Avançados -->
         <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -112,7 +114,7 @@
                                     :key="banco.BaCodigo" :value="banco.BaCodigo">
                                     {{ banco.BaNome }}
                                 </option>
-                            </select>                            
+                            </select>
                         </div>
                     </div>
                     <div>
@@ -124,7 +126,7 @@
                                 <option v-for="estado in estados" :key="estado.id" :value="estado.id">
                                     {{ estado.descricao_estado }}
                                 </option>
-                            </select>                            
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -243,7 +245,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="(declaracao,index) in declaracoes?.data || []" :key="declaracao.id">
+                        <tr v-for="(declaracao, index) in declaracoes?.data || []" :key="declaracao.id">
                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                 {{ index + 1 + ((declaracoes.current_page - 1) * declaracoes.per_page) }}
                             </td>
@@ -273,7 +275,8 @@
                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                 {{ declaracao.BaNome }}
                             </td>
-                            <td class="flex justify-end px-4 py-2 whitespace-nowrap text-sm font-semibold text-green-600">
+                            <td
+                                class="flex justify-end px-4 py-2 whitespace-nowrap text-sm font-semibold text-green-600">
                                 <a :href="`/verDeclaracao/${declaracao.id}`" target="_blank"
                                     class="hover:underline hover:bg-green-200 bg-green-100 text-green-800 py-1 px-3 rounded-md text-sm">
                                     <i class="fas fa-eye text-green-600"></i>
@@ -338,6 +341,8 @@
 import { ref, computed, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { Head } from '@inertiajs/vue3'
+import { GlobalPermissions } from '../Components/GlobalPermissions'
+const { can } = GlobalPermissions()
 
 // Componentes
 import ModalSolicitarDeclaracao from './Layouts/components/ModalSolicitarDeclaracao.vue'

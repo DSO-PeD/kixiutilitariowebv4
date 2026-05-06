@@ -36,7 +36,8 @@ class AuthController extends Controller
         ]);
 
         // Procurar utilizador ativo
-        $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])->where('UtSenha', $credentials['UtSenha'])
+        $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])
+            ->where('UtSenha', $credentials['UtSenha'])
             ->where('activo', 1)
             ->first();
 
@@ -254,7 +255,6 @@ class AuthController extends Controller
 
     protected function getComprovativosData(array $basesOperacao, ?array $dateFilter, string $hoje)
     {
-
 
         $query = ComprovativoModel::whereIn('BaseOperacao', $basesOperacao)
             ->where('Eliminado', 0);

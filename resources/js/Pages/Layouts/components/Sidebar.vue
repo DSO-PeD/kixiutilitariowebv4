@@ -127,7 +127,7 @@ const confirmLogout = () => {
                 <i class="fas fa-box text-lg"></i>
                 <span class="nav-tooltip">Fecho</span>
             </a>
-            
+
             <!-- Declarações negativas -->
             <a v-if="$page.props.user.reconci_habilita" href="/declacaongtv" class="nav-link-icon group" data-preload
                 :class="{ 'active': $page.url.startsWith('/declacaongtv') }" title="Declarações Negativas">
