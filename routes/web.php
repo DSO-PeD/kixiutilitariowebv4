@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
@@ -9,9 +10,9 @@ use App\Http\Controllers\ReportDomPDFController;
 use App\Http\Controllers\TKuPendentesController;
 use App\Http\Controllers\TKxExtratoController;
 use App\Http\Controllers\DebugPgtRefController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteCEController;
+use App\Http\Controllers\DeclaracaoController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 
 //'geoblock'
@@ -68,11 +69,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirmarRecuperacao', [RecuperacaoController::class, 'confirmarRecuperacao']);
     Route::post('/confirmar-recuperacoes', [RecuperacaoController::class, 'confirmarMultiplas']);
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
+
+    Route::get('/declacaongtv', [DeclaracaoController::class, 'viewDeclaracoes'])->name('declacaongtv');
+    Route::get('/verDeclaracao/{id}', [DeclaracaoController::class, 'viewDeclaracao'])->name('ver-declaracao');
+    Route::post('/guardar-declaracao', [DeclaracaoController::class, 'guardarDeclaracao']);
+    Route::post('/recusar-declaracao', [DeclaracaoController::class, 'recusarDeclaracao']);
+    Route::post('/aprovar-declaracao/{id}', [DeclaracaoController::class, 'aprovarDeclaracao']);
+    Route::get('/imprimir-declaracao/{id}', [DeclaracaoController::class, 'imprimirDeclaracao']);
+
+    Route::get('/users', [AuthController::class, 'listarUtilizadores']);
+    Route::get('/verUtilizador/{UtCodigo}', [AuthController::class, 'verUtilizador']);
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 Route::get('/sendsmsteste', [PgtRefNotificacaoController::class, 'sendSms'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-
 
 Route::get('/carregarcomprovativos', [ComprovativosController::class, 'carregaComprovativosKP'])->name('comprovativos_kxu');
 Route::get('/carregarextratos', [TKxExtratoController::class, 'carregaExtratosKP'])->name('extrato_kxu');
@@ -86,7 +96,6 @@ Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile
 Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 /******************************************************************************************************************************************************************************************************************************************************** */
-
 
 Route::get('/test-redis', function () {
     try {

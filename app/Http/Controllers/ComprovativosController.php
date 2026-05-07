@@ -21,10 +21,7 @@ use Inertia\Inertia;
 use App\Services\IziPayService;
 use Illuminate\Support\Facades\Http;
 
-
-
 use Illuminate\Support\Facades\Log;
-
 
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -371,7 +368,6 @@ class ComprovativosController extends Controller
         }
     }
 
-
     public function guardar(Request $request)
     {
         try {
@@ -602,8 +598,6 @@ class ComprovativosController extends Controller
         ]);
     }
 
-
-
     public function editarMontante(Request $request)
     {
 
@@ -622,6 +616,7 @@ class ComprovativosController extends Controller
 
         return back()->with('success', 'Montante atualizado com sucesso!');
     }
+
     public function editarDataRegistro(Request $request)
     {
 
@@ -640,6 +635,7 @@ class ComprovativosController extends Controller
 
         return back()->with('success', 'Data actualizada com sucesso');
     }
+
     public function editarVoucher(Request $request)
     {
 
@@ -664,6 +660,7 @@ class ComprovativosController extends Controller
 
         return back()->with('success', 'Data actualizada com sucesso');
     }
+
     public function finalizaraeliminacao(Request $request)
     {
 
@@ -720,13 +717,13 @@ class ComprovativosController extends Controller
         }
 
     }
+
     public static function diasDatas($data_inicial = '2013-08-01', $data_final = '2013-08-16')
     {
         $diferenca = strtotime($data_final) - strtotime($data_inicial);
         $dias = floor($diferenca / (60 * 60 * 24));
         return $dias;
     }
-
 
     public function carregaComprovativosKP(Request $request)
     {
@@ -741,11 +738,8 @@ class ComprovativosController extends Controller
     }
 
     // REQUISÕES MOBILE *********************************************************************************************
-
     public function viewComprovativosMobile(Request $request)
     {
-
-
 
         //  $authenticatedUser = TKxUsUtilizadorModel::where('UtCodigo', '=', 'albe.ebo')->first(); //Auth::user();
         // $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', 2)->first();
@@ -922,33 +916,20 @@ class ComprovativosController extends Controller
 
     }
 
-
-
-
     // PAGAMENTOS POR REFERENCIA MANUAIS:******************************************************************
-
 
     public function viewReferenciaPGT(Request $request)
     {
 
-
-        $authenticatedUser = Auth::user();
+        $authenticatedUser = Auth::user(); 
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
-
-
-
 
         $tipoDeBusca = $request->tipo;
         $tipoProdutoPP = $request->filtrar_poupancas;
         $tipoProdutoPT = $request->filtrar_prestacoes;
 
-
-
-        $lista_produtos = TKxClProdutoModel::getProdutos();
-
-
-
+        $lista_produtos = TKxClProdutoModel::getProdutos(); 
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
         $dataFecho = $resultagencia_user->DataFecho;
@@ -971,22 +952,16 @@ class ComprovativosController extends Controller
 
         $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
 
-
-
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
-
 
         $ESTADO = "'" . $ids_estados . "'";
         $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
 
-
         $TIPO = 7371;
         $LOAN = "'DS/280890'";
 
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
-
-
+        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao); 
 
         if ($tipoDeBusca == 1) {
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
@@ -1010,19 +985,10 @@ class ComprovativosController extends Controller
                 $Bases = "'" . $request->agencia_imput . "'";
             }
 
-
-
             $TIPO = 73714;
         }
-
-
-
-
+    
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, "'DJA'");
-
-
-
-
 
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
         $total = sizeof($lista_comprovativo);
@@ -1034,19 +1000,12 @@ class ComprovativosController extends Controller
         $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
         $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
 
-
-
-
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
         ];
         // dd($lista_comprovativo );
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
-
-
-
-
             return [
                 'id' => $item->id,
                 'data' => $item->dataRegistoFomatada,
@@ -1069,12 +1028,8 @@ class ComprovativosController extends Controller
                 // Mantenha todos os campos necessários para filtros client-side
                 'CiFecha' => $item->created_at, // Para filtro por data
                 'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
-
-
             ];
         });
-
-
 
         $NumeroPaginator = 30;
         //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
@@ -1105,7 +1060,6 @@ class ComprovativosController extends Controller
 
             'dataInicioPeriodo' => $DataFimFormatada,
             'dataFimPeriodo' => $DataInicioFormatada
-
         ]);
     }
 
@@ -1122,13 +1076,11 @@ class ComprovativosController extends Controller
 
             if ($referenciaExistente) {
 
-
                 return redirect()->back()
                     ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
                     ->withInput();
-
-
             }
+            
             $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
             $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
 
@@ -1232,10 +1184,4 @@ class ComprovativosController extends Controller
                 ->withInput();
         }
     }
-
-
-
-
-
-
 }

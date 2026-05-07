@@ -38,8 +38,15 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             // Usuário autenticado
             'user' => fn () => $request->user(),
+            'permissions' => fn () => $request->user()
+                ? $request->user()->permissions->pluck('name') : [],
 
-             // Mensagens de sessão (flash)
+            /*'user' => fn () => $request->user() ? [
+                'user' => $request->user(),
+                'permissions' => $request->user()->permissions->pluck('name'),
+            ] : null,*/
+
+            // Mensagens de sessão (flash)
              'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

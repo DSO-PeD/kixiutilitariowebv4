@@ -34,12 +34,12 @@ class PgtRefNotificacaoController extends Controller
     public function carregarPagamentoPorReferencia(Request $request)
     { 
         // 1. Validar a access-key
-        /*$accessKey = $request->header('Access-Key') ?? $request->input('access_key');
+        $accessKey = $request->header('Access-Key') ?? $request->input('access_key');
 
         if (!$this->validateAccessKey($accessKey)) {
             Log::warning('Tentativa de acesso com chave inválida', ['ip' => $request->ip()]);
             return response()->json(['error' => 'Unauthorized', 'message' => $request->ip()], 401);
-        }*/
+        }
 
         // Captura todos os dados do JSON
         $item = $request->all(); 

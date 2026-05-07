@@ -37,9 +37,7 @@
                 </div>
             </div>
 
-
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-
                 <button class="btn btn-outline-primary-pgr flex items-center gap-2" @click="abrirModalGerarRefManual">
 
                     <i class="fas fa-credit-card text-purple-600 text-xl"></i>
@@ -49,9 +47,6 @@
         </div>
 
         <div class="border-t border-gray-200 my-4"></div>
-
-
-
 
         <!-- Filtros Avançados -->
         <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -134,13 +129,8 @@
                                 </div>
                             </div>
                         </div>
-
-
-
                     </div>
                 </div>
-
-
 
                 <!-- Botões de ação -->
                 <div
@@ -774,16 +764,6 @@ const filtrarPagamentosPorReferencia = () => {
         return formaPagamento.includes('Referência');
     });
 }
-
-
-
-
-
-
-
-
-
-
 
 // Dados selecionados
 const selectedComprovativo = ref({

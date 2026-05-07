@@ -312,6 +312,7 @@ class CpvtReconciliacaoController extends Controller
             })
         );
     }
+    
     public function editarVoucherRec(Request $request)
     {
 

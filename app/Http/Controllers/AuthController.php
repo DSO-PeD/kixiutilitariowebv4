@@ -17,6 +17,7 @@ use App\Models\{
 };
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -36,7 +37,8 @@ class AuthController extends Controller
         ]);
 
         // Procurar utilizador ativo
-        $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])->where('UtSenha', $credentials['UtSenha'])
+        $user = TKxUsUtilizadorModel::where('UtCodigo', $credentials['UtCodigo'])
+            ->where('UtSenha', $credentials['UtSenha'])
             ->where('activo', 1)
             ->first();
 
@@ -255,7 +257,6 @@ class AuthController extends Controller
     protected function getComprovativosData(array $basesOperacao, ?array $dateFilter, string $hoje)
     {
 
-
         $query = ComprovativoModel::whereIn('BaseOperacao', $basesOperacao)
             ->where('Eliminado', 0);
 
@@ -339,5 +340,36 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function listarUtilizadores(Request $request)
+    {
+        $query = DB::table('tkxusutilizador as us')
+                    ->select('us.UtCodigo','us.UtNome','us.UtFuncao');
+        
+        //Filtros
+        if ($request->filled('nome')) {
+            $query->where('us.UtNome', 'like', '%' . $request->nome . '%');
+        }
+
+        $utilizadores = $query->orderBy('us.UtNome','asc')
+                        ->paginate(48)
+                        ->withQueryString(); //Manter os filtros na URL durante a paginação
+    
+        return Inertia::render('ListaUtilizadores', [
+            'utilizadores' => $utilizadores,
+            'filters' => $request->only(['nome']),
+        ]);
+    }
+
+    public function verUtilizador($UtCodigo){
+        $user = DB::table('tkxusutilizador as us')
+                    ->join('tkxagencias as ag','ag.OfCodigo','=','us.UtAgencia')
+                    ->select('us.UtCodigo','us.UtNome','us.UtFuncao','us.UtFuncao','us.activo','ag.OfNombre')
+                    ->where('UtCodigo',$UtCodigo)
+                    ->first();
+        return Inertia::render('VerUtilizador', [
+            'utilizador' => $user,
+        ]);
     }
 }

@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import SmallLogo from '../../../../../public/imagens/smalllogo.png';
 import Modal from './ModalExit.vue';
+import { GlobalPermissions } from "../../../Components/GlobalPermissions";
+const { can } = GlobalPermissions()
 
 const isExpanded = ref(false);
 const windowWidth = ref(0);
@@ -121,35 +123,51 @@ const confirmLogout = () => {
                 <span class="nav-tooltip">Referências de PGT</span>
             </a>
 
-             <!-- Fecho -->
+            <!-- Fecho -->
             <a v-if="$page.props.user.reconci_habilita" href="/fechoPagamento" class="nav-link-icon group" data-preload
                 :class="{ 'active': $page.url.startsWith('/fechoPagamento') }" title="Fecho">
                 <i class="fas fa-box text-lg"></i>
                 <span class="nav-tooltip">Fecho</span>
             </a>
 
+            <!-- Declarações negativas -->
+            <a v-if="can('mn_declaracao')" href="/declacaongtv" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/declacaongtv') }" title="Declarações Negativas">
+                <i class="fas fa-file text-lg"></i>
+                <span class="nav-tooltip">Declarações</span>
+            </a>
+
             <!-- Clientes Kixi Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group"
-                data-preload :class="{ 'active': $page.url.startsWith('/clientecorp') }" title="Cliente">
+            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/clientecorp') }" title="Cliente">
                 <i class="fas fa-user-tie  text-lg"></i>
 
                 <span class="nav-tooltip">Cliente</span>
             </a>
 
-            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link-icon group"
-                data-preload :class="{ 'active': $page.url.startsWith('/rdcorp') }" title="RDCORP">
+            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/rdcorp') }" title="RDCORP">
 
                 <i class="fas solid fa-chart-pie text-lg"></i>
                 <span class="nav-tooltip">Report DAY</span>
             </a>
 
-
+            <!-- Utilizadores -->
+            <a v-if="can('mn_user')" href="/users" class="nav-link-icon group" data-preload
+                :class="{ 'active': $page.url.startsWith('/users') }" title="Utilizadores">
+                <i class="fas fa-users text-lg"></i>
+                <span class="nav-tooltip">Utilizadores</span>
+            </a>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 py-4 border-t border-gray-100 bg-gray-50">
-            <div class="text-center px-2">
+        <div class="absolute bottom-0 left-0 right-0 py-4">
+            <div class="text-center px-2"> 
                 <button @click="logout"
-                    class="flex items-center w-full px-4 py-2 text-lg text-red-600 hover:bg-red-200 rounded-lg transition-colors duration-150">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                    class="flex items-center p-1 w-full text-lg text-red-600 hover:bg-red-200 rounded-lg transition-colors duration-150">
+                    <svg class="w-7 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg> 
                 </button>
             </div>
         </div>
@@ -266,6 +284,16 @@ const confirmLogout = () => {
                 <div class="nav-link-indicator"></div>
             </a>
 
+            <!-- Declarações Negativas -->
+            <a v-if="can('mn_declaracao')" href="/declacaongtv" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/declacaongtv') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-file nav-link-icon"></i>
+                    <span class="nav-link-text">Declarações</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
+
             <!-- Cliente Kixi_Corp -->
             <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link group" data-preload
                 :class="{ 'active': $page.url.startsWith('/clientecorp') }">
@@ -276,7 +304,7 @@ const confirmLogout = () => {
                 <div class="nav-link-indicator"></div>
             </a>
 
-             <!-- RD Kixi_Corp -->
+            <!-- RD Kixi_Corp -->
             <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link group" data-preload
                 :class="{ 'active': $page.url.startsWith('/rdcorp') }">
                 <div class="nav-link-content">
@@ -287,6 +315,15 @@ const confirmLogout = () => {
                 <div class="nav-link-indicator"></div>
             </a>
 
+            <!-- Utilizadores -->
+            <a v-if="can('mn_user')" href="/users" class="nav-link group" data-preload
+                :class="{ 'active': $page.url.startsWith('/users') }">
+                <div class="nav-link-content">
+                    <i class="fas fa-users nav-link-icon"></i>
+                    <span class="nav-link-text">Utilizadores</span>
+                </div>
+                <div class="nav-link-indicator"></div>
+            </a>
         </nav>
 
         <!-- Footer da sidebar -->
@@ -294,8 +331,12 @@ const confirmLogout = () => {
             <div class="text-center">
                 <div class="text-center">
                     <button @click="logout"
-                        class="flex items-center w-full px-4 py-2 rounded-md text-md text-red-600 hover:bg-red-50 transition-colors duration-150">
-                        <i class="fa-solid fa-right-from-bracket mr-2"></i> Sair
+                        class="flex items-center w-full px-4 py-2 rounded-md text-md text-red-600 hover:bg-red-50 hover:border transition-colors duration-150">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg> Sair
                     </button>
                 </div>
             </div>

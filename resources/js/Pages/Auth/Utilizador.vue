@@ -60,8 +60,4 @@ const submit = () => {
         </form>
 
     </div>
-
-
-
-
 </template>
