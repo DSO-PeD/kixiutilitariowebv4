@@ -68,13 +68,13 @@
                         </div>
                         <div class="flex justify-end lg:col-span-4 col-span-4 gap-2">
                             <button
-                                v-if="declaracao.descricao_estado != 'Aprovado' && declaracao.descricao_estado != 'Recusado'"
+                                v-if="declaracao.descricao_estado != 'Aprovado' && declaracao.descricao_estado != 'Recusado' && can('reject_declaracao')"
                                 @click="abrirModal"
                                 class="bg-orange-400 hover:bg-orange-500 text-white h-10 px-4 rounded-lg gap-2">
                                 <i class="fas fa-times text-white"></i>
                                 Recusar
                             </button>
-                            <button v-if="declaracao.descricao_estado != 'Aprovado'" @click="aprovarRequisicao"
+                            <button v-if="declaracao.descricao_estado != 'Aprovado' && can('aprove_declaracao')" @click="aprovarRequisicao"
                                 class="bg-green-600 hover:bg-green-700 text-white h-10 px-4 rounded-lg gap-2">
                                 <i class="fas fa-check text-white"></i>
                                 Aprovar
@@ -86,7 +86,7 @@
                             </a>
                         </div>
                     </div>
-
+                    
                     <div class="grid grid-cols-12 gap-5">
                         <div class="lg:col-span-7 col-span-7 bg-gray-100 p-2 rounded-lg">
                             <div class="grid grid-cols-12 gap-5">
@@ -148,6 +148,8 @@ import { router } from '@inertiajs/vue3'
 import { Head } from '@inertiajs/vue3'
 import ModalSolicitarDeclaracao from './Layouts/components/ModalSolicitarDeclaracao.vue'
 import ModalRecusarDeclaracao from './Layouts/components/ModalRecusarDeclaracao.vue'
+import { GlobalPermissions } from '../Components/GlobalPermissions'
+const { can } = GlobalPermissions()
 
 // Props
 const props = defineProps({

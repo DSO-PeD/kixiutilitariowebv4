@@ -76,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/recusar-declaracao', [DeclaracaoController::class, 'recusarDeclaracao']);
     Route::post('/aprovar-declaracao/{id}', [DeclaracaoController::class, 'aprovarDeclaracao']);
     Route::get('/imprimir-declaracao/{id}', [DeclaracaoController::class, 'imprimirDeclaracao']);
+
+    Route::get('/users', [AuthController::class, 'listarUtilizadores']);
+    Route::get('/verUtilizador/{UtCodigo}', [AuthController::class, 'verUtilizador']);
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

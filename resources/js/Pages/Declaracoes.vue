@@ -57,9 +57,7 @@
         </div>
 
         <div class="border-t border-gray-200 my-4"></div>
-        {{ $page.props.user }}-
-        {{ $page.props.permissions }}
-
+        
         <!-- Filtros Avançados -->
         <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
             <div class="flex items-center justify-between mb-4">
