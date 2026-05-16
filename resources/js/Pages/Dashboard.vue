@@ -2,67 +2,69 @@
 
     <Head :title="`${$page.component}`" />
 
-
-
     <div class="flex flex-col min-h-screen font-sans">
-
-
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto  ">
             <!-- Welcome Banner -->
 
-           <div class="bg-gradient-to-r from-green-800 to-green-700 rounded-xl p-6 mb-8 text-white shadow-lg relative overflow-hidden pointer-events-none transform-gpu">
+            <div
+                class="bg-gradient-to-r from-green-800 to-green-700 rounded-xl p-6 mb-8 text-white shadow-lg relative overflow-hidden pointer-events-none transform-gpu">
 
-    <!-- Decorative elements -->
-    <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-white bg-opacity-10 pointer-events-none"></div>
-    <div class="absolute -right-5 -bottom-5 w-20 h-20 rounded-full bg-orange-300 bg-opacity-20 pointer-events-none"></div>
+                <!-- Decorative elements -->
+                <div
+                    class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-white bg-opacity-10 pointer-events-none">
+                </div>
+                <div
+                    class="absolute -right-5 -bottom-5 w-20 h-20 rounded-full bg-orange-300 bg-opacity-20 pointer-events-none">
+                </div>
 
-    <div class="flex items-start relative z-10 gap-6 pointer-events-auto">
-        <!-- Icon container -->
-        <div class="flex-shrink-0 p-3 bg-white bg-opacity-20 rounded-full flex items-center justify-center pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                class="h-20 w-20 text-orange-300">
-                <path fill-rule="evenodd"
-                    d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-                    clip-rule="evenodd" />
-            </svg>
-        </div>
+                <div class="flex items-start relative z-10 gap-6 pointer-events-auto">
+                    <!-- Icon container -->
+                    <div
+                        class="flex-shrink-0 p-3 bg-white bg-opacity-20 rounded-full flex items-center justify-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                            class="h-20 w-20 text-orange-300">
+                            <path fill-rule="evenodd"
+                                d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
 
-        <!-- Main content area -->
-        <div class="flex-1 flex flex-col pointer-events-auto">
-            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                <!-- Text content -->
-                <div class="space-y-2 pointer-events-none">
-                    <h1 class="text-3xl font-bold text-orange-300">Olá, {{ $page.props.user.UtNome }}</h1>
-                    <h4 class="text-xl font-thin text-orange-100 flex">
-                        <!-- SVG e conteúdo -->
-                        {{ $page.props.user.UtFuncao }}
-                    </h4>
-                    <div class="flex items-center gap-2 text-gray-100">
-                        <!-- SVG e conteúdo da agência -->
-                        <span>AGÊNCIA:&ThinSpace; {{ agencia_principal }}</span>
+                    <!-- Main content area -->
+                    <div class="flex-1 flex flex-col pointer-events-auto">
+                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                            <!-- Text content -->
+                            <div class="space-y-2 pointer-events-none">
+                                <h1 class="text-3xl font-bold text-orange-300">Olá, {{ $page.props.user.UtNome }}</h1>
+                                <h4 class="text-xl font-thin text-orange-100 flex">
+                                    <!-- SVG e conteúdo -->
+                                    {{ $page.props.user.UtFuncao }}
+                                </h4>
+                                <div class="flex items-center gap-2 text-gray-100">
+                                    <!-- SVG e conteúdo da agência -->
+                                    <span>AGÊNCIA:&ThinSpace; {{ agencia_principal }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Version info -->
+                            <div class="flex flex-col items-end pointer-events-none">
+                                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">
+                                    Kixi Utilitário | Versão 9.1.1
+                                </span>
+                                <p class="text-xs text-white text-opacity-80 mt-2 text-right max-w-xs">
+                                    Seja Bem vindo,Sistema interno para o controlo de reembolsos,<br />
+                                    cálculos de desembolsos e recuperação de crédito.<br />
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 border-t border-white border-opacity-10 pt-3 pointer-events-none">
+                            <!-- Additional content -->
+                        </div>
                     </div>
                 </div>
-
-                <!-- Version info -->
-                <div class="flex flex-col items-end pointer-events-none">
-                    <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">
-                        Kixi Utilitário | Versão 9.1
-                    </span>
-                    <p class="text-xs text-white text-opacity-80 mt-2 text-right max-w-xs">
-                        Seja Bem vindo,Sistema interno para o controlo de reembolsos,<br />
-                        cálculos de desembolsos e recuperação de crédito.<br />
-                    </p>
-                </div>
             </div>
-
-            <div class="mt-4 border-t border-white border-opacity-10 pt-3 pointer-events-none">
-                <!-- Additional content -->
-            </div>
-        </div>
-    </div>
-</div>
 
             <!-- Filtro e Período -->
             <div class="flex items-center gap-3 py-4 mb-6">

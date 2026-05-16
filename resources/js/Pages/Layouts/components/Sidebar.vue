@@ -138,7 +138,7 @@ const confirmLogout = () => {
             </a>
 
             <!-- Clientes Kixi Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group" data-preload
+            <!--<a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group" data-preload
                 :class="{ 'active': $page.url.startsWith('/clientecorp') }" title="Cliente">
                 <i class="fas fa-user-tie  text-lg"></i>
 
@@ -150,7 +150,7 @@ const confirmLogout = () => {
 
                 <i class="fas solid fa-chart-pie text-lg"></i>
                 <span class="nav-tooltip">Report DAY</span>
-            </a>
+            </a>-->
 
             <!-- Utilizadores -->
             <a v-if="can('mn_user')" href="/users" class="nav-link-icon group" data-preload
@@ -295,17 +295,17 @@ const confirmLogout = () => {
             </a>
 
             <!-- Cliente Kixi_Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link group" data-preload
+            <!--<a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link group" data-preload
                 :class="{ 'active': $page.url.startsWith('/clientecorp') }">
                 <div class="nav-link-content">
                     <i class="fas fa-user-tie nav-link-icon"></i>
                     <span class="nav-link-text">Cliente Corp</span>
                 </div>
                 <div class="nav-link-indicator"></div>
-            </a>
+            </a>-->
 
             <!-- RD Kixi_Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link group" data-preload
+            <!--<a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link group" data-preload
                 :class="{ 'active': $page.url.startsWith('/rdcorp') }">
                 <div class="nav-link-content">
 
@@ -313,7 +313,7 @@ const confirmLogout = () => {
                     <span class="nav-link-text">RD Corp</span>
                 </div>
                 <div class="nav-link-indicator"></div>
-            </a>
+            </a>-->
 
             <!-- Utilizadores -->
             <a v-if="can('mn_user')" href="/users" class="nav-link group" data-preload

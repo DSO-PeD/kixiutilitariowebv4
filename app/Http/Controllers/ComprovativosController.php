@@ -1146,21 +1146,17 @@ class ComprovativosController extends Controller
 
                     $telefone = $request->telefone;
 
-
                     if ($telefone) {
                         $response = Http::withHeaders([
                             'Access-Key' => $validKey,
                             'Content-Type' => 'application/json',
-                        ])->post('https://kixisms.kixicredito.com/api/enviarSMS', [
+                        ])->post('http://kixisms.kixicredito.com/api/enviarSMS', [
                                     'contacto' => $telefone,
                                     'mensagem' => $mensagem,
                                 ]);
-
-
                     }
                     Log::info('Tentativa de envio SMS', ['telefone' => $telefone, 'mensagem ' => $mensagem, 'montante' => $request->txtMontante]);
                 }
-
 
                 return redirect()->route('referenciapgt')
                     ->with('success', 'Referência de pagamento guardada com sucesso!');
@@ -1174,11 +1170,7 @@ class ComprovativosController extends Controller
                 return back()->with('error', 'Lamentamos, O Serviços de Activação de referencia  Indisponível');
             }
 
-
-
         } catch (\Exception $e) {
-
-
             return redirect()->back()
                 ->with('error', 'Erro ao processar referência de pagamento: ' . $e->getMessage())
                 ->withInput();

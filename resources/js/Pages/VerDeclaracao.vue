@@ -74,19 +74,26 @@
                                 <i class="fas fa-times text-white"></i>
                                 Recusar
                             </button>
-                            <button v-if="declaracao.descricao_estado != 'Aprovado' && can('aprove_declaracao')" @click="aprovarRequisicao"
+                            <button v-if="declaracao.descricao_estado == 'Registado' && can('aprove_declaracao')"
+                                @click="aprovarRequisicao"
                                 class="bg-green-600 hover:bg-green-700 text-white h-10 px-4 rounded-lg gap-2">
                                 <i class="fas fa-check text-white"></i>
                                 Aprovar
                             </button>
-                            <a v-if="declaracao.descricao_estado == 'Aprovado'" :href="`/imprimir-declaracao/${declaracao.id}`"
+                            <a target="_blank" v-if="declaracao.descricao_estado == 'Aprovado' && declaracao.isPago"
+                                :href="`/imprimir-declaracao/${declaracao.id}`"
                                 class="bg-green-600 hover:bg-green-700 text-white h-10 p-2 rounded-lg gap-2">
                                 <i class="fas fa-print text-white"></i>
                                 Imprimir
                             </a>
+                            <span v-if="declaracao.descricao_estado == 'Aprovado' && !declaracao.isPago"
+                                class="border border-orange-400 text-orange-400 h-10 p-2 rounded-lg gap-2">
+                                <i class="fas fa-money-bill text-orange-400"></i>
+                                Aguardando o Pagamento
+                            </span>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-12 gap-5">
                         <div class="lg:col-span-7 col-span-7 bg-gray-100 p-2 rounded-lg">
                             <div class="grid grid-cols-12 gap-5">
@@ -101,7 +108,7 @@
                                 <div class="lg:col-span-3 col-span-3">
                                     <p class="text-sm text-gray-600">Estado:</p>
                                     <span :class="declaracao.color"
-                                        class="px-2 mt-2 rounded-full text-base font-medium">{{
+                                        class="px-2 mt-2 rounded-full border border-1 border-gray-300 text-base font-medium">{{
                                             declaracao.descricao_estado }}</span>
                                 </div>
                                 <div class="lg:col-span-12 col-span-12">
@@ -122,8 +129,9 @@
                                 </div>
                                 <div v-if="declaracao.comentario" class="lg:col-span-12 col-span-12">
                                     <p class="text-sm text-gray-600">Comentário:</p>
-                                    <p class="text-base font-medium text-gray-800 border border-gray-300 p-2 shadow-sm">
-                                        {{ declaracao.comentario }}</p>
+                                    <p class="text-base font-bold text-green-600">
+                                        <i class="fa fa-info-circle"></i> {{ declaracao.comentario }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -188,7 +196,6 @@ const recusarRequisicao = async (formValue) => {
 
 const aprovarRequisicao = async () => {
     try {
-
         Swal.fire({
             title: "Tem a certeza?",
             text: "A requisição será aprovada!",

@@ -52,17 +52,72 @@
         <div class="border-t border-gray-200 my-4"></div>
 
         <div class="bg-white rounded-xl shadow-md p-4 md:p-6">
-            <div class="flex flex-col items-center justify-center p-6">
+            <div class="flex flex-col items-center justify-center">
                 <i class="fa fa-user-circle text-8xl text-gray-400"></i>
-                <h1 class="text-xl font-bold">
+                <h1 class="text-3xl font-medium">
                     {{ utilizador.UtNome }}
+                    <hr>
                 </h1>
+                <hr>
+                <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 mt-4 items-center justify-start">
+                    <span class="text-gray-400 text-sm text-right">🪪 Código:</span>
+                    <span class="font-medium">{{ utilizador.UtCodigo }}</span>
 
-                <p><b>UtCodigo:</b> {{ utilizador.UtCodigo }}</p>
-                <p><b>Função:</b> {{ utilizador.UtFuncao }}</p>
-                <p><b>Agência:</b> {{ utilizador.OfNombre }}</p>
-                <p><b>Estado:</b> <span :class="utilizador.activo == 1 ? 'bg-green-300':'bg-orange-300'" class="px-2 rounded-md">{{ utilizador.activo ? 'Activo':'Desactivado' }}</span></p>
+                    <span class="text-gray-400 text-sm text-right">💼 Função:</span>
+                    <span class="font-medium">{{ utilizador.UtFuncao }}</span>
 
+                    <span class="text-gray-400 text-sm text-right">🏦 Agência: </span>
+                    <span class="font-medium">{{ utilizador.OfNombre }}</span>
+
+                    <span class="text-gray-400 text-sm text-right">Estado</span>
+                    <span
+                        :class="utilizador.activo == 1 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'"
+                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium w-fit">
+                        {{ utilizador.activo ? '● Activo' : '● Desactivado' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 mt-2">
+            <div class="lg:col-span-6 col-span-12 sm:col-span-12 bg-orange-50 rounded-xl shadow-2xl px-4 py-2 mt-2">
+
+                <div class="relative w-48 mt-4">
+                    <i class="fa fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="ex.: Criar..." v-model="pesquisa"
+                        class="w-full pl-2 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 py-1.5 pr-10">
+                </div>
+
+                <div class="mt-2 rounded-lg p-4 h-48 overflow-y-auto space-y-1">
+                    <div v-for="perm in filteredPermissions" :key="perm.id" class="flex items-center gap-2">
+                        <input type="checkbox" :value="perm.id" v-model="selecionadoPermissoes" />
+                        <span class="text-gray-500">{{ perm.label }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:col-span-1 col-span-12 sm:col-span-12 px-4 py-2">
+                <div class="flex flex-col items-center justify-center mt-24 gap-2">
+                    <button @click="atribuirPermissao" title="Adicionar Permissão"
+                        class="bg-green-300 hover:bg-green-400 rounded-lg py-2 px-3">>></button>
+                    <button @click="removerPermissao" title="Remover Permissão"
+                        class="bg-orange-300 text-orange-900 font-medium hover:bg-orange-400 rounded-lg py-2 px-3">
+                        << </button>
+                </div>
+            </div>
+            <div class="lg:col-span-5 col-span-12 sm:col-span-12 bg-green-50 rounded-xl shadow-2xl px-4 py-2 mt-2">
+
+                <div class="relative w-48 mt-4">
+                    <i class="fa fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="ex.: Criar..." v-model="pesquisaAtr"
+                        class="w-full pl-2 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 py-1.5 pr-10">
+                </div>
+
+                <div class="mt-2 rounded-lg p-4 h-48 overflow-y-auto space-y-1">
+                    <div v-for="(permissao, index) in filterUserPermissions" class="flex items-center gap-2">
+                        <input type="checkbox" :value="permissao.id" v-model="salvoPermissoes" />
+                        <span class="text-gray-500">{{ permissao.label }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -81,33 +136,90 @@ const props = defineProps({
     permissions: Array
 })
 
-const getSigla = (nome) => {
-    const partes = nome.trim().split(' ').filter(n => n)
-    if (partes.length === 1) return partes[0][0].toUpperCase()
-    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
-}
+/** Filtrar permissões de um utilizador */
+const pesquisaAtr = ref('');
 
-const formFiltro = ref({
-    nome: props.formFiltro?.nome || '',
+const filterUserPermissions = computed(() => {
+    if (!pesquisaAtr.value) return props.utilizador.permissoes;
+
+    return props.utilizador.permissoes.filter(perfil =>
+        perfil.label?.toLowerCase().includes(pesquisaAtr.value.toLowerCase())
+    );
 });
 
-watch(() => formFiltro.value.nome, () => {
-    aplicarFiltros();
-})
+/** Filtrar geral permissões */
+const pesquisa = ref('');
+const filteredPermissions = computed(() => {
+    const termo = pesquisa.value?.toLowerCase().trim();
 
-// Chama next page na paginação sem recarregar a página 
-const goTo = (url) => {
-    router.visit(url, {
-        preserveState: true,
-    });
+    return props.permissions
+        .filter(fp => !props.utilizador.permissoes.some(up => up.id === fp.id))
+        .filter(fp => {
+            if (!termo) return true;
+            return fp?.label?.toLowerCase().includes(pesquisa.value);
+        });
+});
+
+// Atribui permissões a um user
+const selecionadoPermissoes = ref([]);
+const atribuirPermissao = async () => {
+    if (selecionadoPermissoes.value.length < 1) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Ups!!! Nenhuma permissão selecionada!"
+        });
+        return;
+    }
+
+    try {
+        const payload = {
+            permission_ids: selecionadoPermissoes.value
+        };
+
+        router.post('/atribuir-permission/' + props.utilizador.UtCodigo, payload, {
+            onSuccess: () => {
+                selecionadoPermissoes.value = [];
+            }
+        });
+
+    } catch (error) {
+
+    } finally {
+
+    }
 }
 
-const aplicarFiltros = () => {
-    router.get('/users', formFiltro.value, {
-        preserveState: true,
-        replace: true,
-    })
+//Remove permissões de um user
+const salvoPermissoes = ref([]);
+const removerPermissao = async () => {
+    if (salvoPermissoes.value.length < 1) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Ups!!! Escolha a permissão que deseja remover."
+        });
+        return;
+    }
+
+    try {
+        const payload = {
+            permission_ids: salvoPermissoes.value
+        };
+
+        router.post('/remover-permission/' + props.utilizador.UtCodigo, payload, {
+            onSuccess: () => {
+                salvoPermissoes.value = [];
+            }
+        });
+
+    } catch (error) {
+
+    } finally {
+
+    }
 }
+
 </script>
 
 <style scoped>

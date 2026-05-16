@@ -70,8 +70,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/confirmar-recuperacoes', [RecuperacaoController::class, 'confirmarMultiplas']);
     Route::get('/gerar-relatorio-pdf', [ReportDomPDFController::class, 'gerarRelatorioRecuperadoresPdf'])->name('recuperacoes.pdf');
 
-    Route::get('/declacaongtv', [DeclaracaoController::class, 'viewDeclaracoes'])->name('declacaongtv');
-    Route::get('/verDeclaracao/{id}', [DeclaracaoController::class, 'viewDeclaracao'])->name('ver-declaracao');
+    Route::get('/declacaongtv', [DeclaracaoController::class, 'viewDeclaracoes']);
+    Route::get('/verDeclaracao/{id}', [DeclaracaoController::class, 'viewDeclaracao']);
     Route::post('/guardar-declaracao', [DeclaracaoController::class, 'guardarDeclaracao']);
     Route::post('/recusar-declaracao', [DeclaracaoController::class, 'recusarDeclaracao']);
     Route::post('/aprovar-declaracao/{id}', [DeclaracaoController::class, 'aprovarDeclaracao']);
@@ -79,6 +79,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/users', [AuthController::class, 'listarUtilizadores']);
     Route::get('/verUtilizador/{UtCodigo}', [AuthController::class, 'verUtilizador']);
+    Route::post('/atribuir-permission/{UtCodigo}', [AuthController::class, 'atribuirPermissionUser']);
+    Route::post('/remover-permission/{UtCodigo}', [AuthController::class, 'removerPermissionUser']);
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

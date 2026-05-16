@@ -723,7 +723,6 @@ const props = defineProps({
     lista_pendentes: Object,
     dataInicioPeriodo: String,
     dataFimPeriodo: String,
-
 })
 
 // Refs
@@ -810,7 +809,6 @@ const toggleFiltros = () => {
     filtrosVisiveis.value = !filtrosVisiveis.value
 }
 
-
 // Novo comprovativo
 const novoComprovativo = ref({
     ls: 'Loan',
@@ -868,19 +866,12 @@ const formatCurrency = (value) => {
 }
 const calcularNumeroLinha = (index) => (paginaAtual.value - 1) * perPage.value + index + 1
 
-
-
-
-
 const podeEliminar = (comprovativo) => {
     const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
     const isRegistadoHoje = comprovativo.estado_id === 1 && dataItem === hoje.value
     const temPermissao = props.user.elimina_confirmado_exportado == 1
     return isRegistadoHoje || temPermissao
 }
-
-
-
 
 const initiateDeletion = (comprovativo) => {
     if (!podeEliminar(comprovativo)) return
@@ -946,8 +937,6 @@ const cancelDeletion = () => {
     showDeleteModal.value = false
 }
 
-
-
 const validarDatas = () => {
     erros.value = { dataInicio: '', dataFim: '' }
     let isValid = true
@@ -998,8 +987,6 @@ const aplicarFiltros = () => {
         onSuccess: () => paginaAtual.value = 1
     })
 }
-
-
 
 const resetarFiltros = () => {
     filtro.value = {
@@ -1060,8 +1047,6 @@ const abrirModalGerarRefManual = () => {
         selectProdutoSaving: '',
         txtLoanR: 'Loan Repayment',
         txtSavingD: 'Savings Deposit',
-
-
         txtMontante: '',
 
         txtInfoAdicional: '',
@@ -1093,8 +1078,6 @@ const guardarComprovativo = async () => {
         Object.entries(novoComprovativo.value).forEach(([key, value]) => {
             if (value) formData.append(key, value)
         })
-
-
 
         await router.post('/guardar-referencia-pagamento', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
