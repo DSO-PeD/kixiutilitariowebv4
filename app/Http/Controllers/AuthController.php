@@ -368,8 +368,48 @@ class AuthController extends Controller
                     ->select('us.UtCodigo','us.UtNome','us.UtFuncao','us.UtFuncao','us.activo','ag.OfNombre')
                     ->where('UtCodigo',$UtCodigo)
                     ->first();
+                    
+        $permissoesUser = DB::table('tkxusutilizador_permissions as up')
+                            ->join('permissions as p', 'p.id', '=', 'up.permission_id')
+                            ->where('up.UtCodigo', $UtCodigo)
+                            ->select('p.id','p.name','p.label')
+                            ->get();
+
+        $user->permissoes = $permissoesUser;
+                            
+        /** Todas permissões */
+        $permissoes = DB::table('permissions as p')
+                            ->select('p.id','p.name','p.label')
+                            ->get();
+        
         return Inertia::render('VerUtilizador', [
             'utilizador' => $user,
+            'permissions' => $permissoes
         ]);
+    }
+
+    public function atribuirPermissionUser(Request $request, $UtCodigo){
+
+        foreach ($request->permission_ids as $permissionId) {
+            DB::table('tkxusutilizador_permissions')->updateOrInsert(
+                [
+                    'UtCodigo' => $UtCodigo,
+                    'permission_id' => $permissionId,
+                ],
+                []
+            );
+        }
+
+        return back()->with('success', 'Permissão atribuída com sucesso.');
+    }
+    
+    public function removerPermissionUser(Request $request, $UtCodigo){
+
+        DB::table('tkxusutilizador_permissions')
+            ->where('UtCodigo', $UtCodigo)
+            ->whereIn('permission_id', $request->permission_ids)
+            ->delete();
+
+        return back()->with('success', 'Permissão removida com sucesso.');
     }
 }

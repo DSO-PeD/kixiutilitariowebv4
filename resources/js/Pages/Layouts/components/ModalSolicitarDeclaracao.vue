@@ -49,9 +49,9 @@
                                 Número do Empréstimo (Loan Nr)
                             </label>
                             <div class="relative group">
-                                <input v-model="formData.lnr"
+                                <input v-model="formData.lnr" @input="maskLnr"
                                     class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
-                                    maxlength="125" placeholder="Ex.: AC/12345" required />
+                                    maxlength="10" placeholder="Ex.: AC/12345" required />
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <!--i class="fas fa-signature text-gray-400 group-hover:text-blue-500 transition-colors"></i-->
                                 </div>
@@ -65,7 +65,7 @@
                                 Número de Poupança
                             </label>
                             <div class="relative group">
-                                <input v-model="formData.saving"
+                                <input v-model="formData.saving" @input="maskSaving"
                                     class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
                                     maxlength="125" placeholder="Ex.: AC/I/12345" required />
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -105,7 +105,8 @@
                                 Nome do Cliente
                             </label>
                             <div class="relative group">
-                                <input v-model="formData.nome" @input="formData.nome = formData.nome.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')"
+                                <input v-model="formData.nome"
+                                    @input="formData.nome = formData.nome.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')"
                                     class="form-input w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
                                     placeholder="Ex. Nome completo do cliente" required />
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -255,6 +256,32 @@ const handleFileUpload = (event) => {
         formData.value.ficheiro = file;
         selectedFile.value = URL.createObjectURL(file);
     }
+}
+
+const maskLnr = (e) => {
+    let raw = e.target.value.replace(/[^A-Za-z0-9]/g, '')
+
+    let letras = raw.substring(0, 2).replace(/[^A-Za-z]/g, '').toUpperCase()
+    let numeros = raw.substring(2).replace(/[^0-9]/g, '').substring(0, 5)
+
+    let value = letras
+    if (letras.length === 2) value += '/' + numeros
+
+    formData.value.lnr = value
+    e.target.value = value
+}
+
+const maskSaving = (e) => {
+    let raw = e.target.value.replace(/[^A-Za-z0-9]/g, '')
+
+    let letras = raw.substring(0, 2).replace(/[^A-Za-z]/g, '').toUpperCase()
+    let numeros = raw.substring(2).replace(/[^0-9]/g, '').substring(0, 5)
+
+    let value = letras
+    if (letras.length === 2) value += '/I/' + numeros
+
+    formData.value.saving = value
+    e.target.value = value
 }
 
 const isSubmitting = ref(false);

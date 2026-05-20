@@ -18,7 +18,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DeclaracaoController extends Controller
 {
-    private $montante = 10;
+    private $montante = 11000; //Valor fixo para comparação de pagamento
 
     public function viewDeclaracoes(Request $request)
     {
@@ -80,6 +80,19 @@ class DeclaracaoController extends Controller
                     : null;
 
         $declaracao->ficheiro = $fileUrl;
+
+        //Ver se já tem pagamento
+        $limit = $this->montante;
+
+        $refPagamento = DB::table('referenciasmanuais')
+                        ->where('BuDadoOrigem',$declaracao->saving)
+                        ->where(function ($q) use ($limit) {
+                            $q->whereNull('montantepago')
+                            ->orWhere('montantepago', '<', $limit);
+                        })
+                        ->count();
+
+        $declaracao->isPago = $refPagamento < 1 ? true:false;  
 
         return Inertia::render('VerDeclaracao', [
             'declaracao' => $declaracao
@@ -292,7 +305,7 @@ class DeclaracaoController extends Controller
         $declaracao = DB::table('tkxpedidodeclaracao as decl')
                         ->join('tkxclbanco as banc', 'decl.banco_id', '=', 'banc.BaCodigo')
                         ->join('estado as est', 'decl.estado_id', '=', 'est.id')
-                        ->select('decl.*','banc.BaNome', 'est.descricao_estado','est.color')
+                        ->select('decl.*','banc.BaSigla','banc.BaNome', 'est.descricao_estado','est.color')
                         ->where('decl.id', $id)
                         ->first(); 
 
@@ -324,7 +337,7 @@ class DeclaracaoController extends Controller
 
         $qr = base64_encode(
             QrCode::format('svg')
-                ->size(100)
+                ->size(70)
                 ->errorCorrection('H')
                 ->generate($key)
         );

@@ -37,7 +37,8 @@ class VoucherHelper extends Model
         'MO' =>	24,
         'MC' =>	25,
         'PE' =>	26,
-        'AC' =>	27
+        'AC' =>	27,
+        'DP' =>	28
     ];
 
     const RADIX = [3, 32, 13, 9, 28, 100000, 24, 60, 60];
