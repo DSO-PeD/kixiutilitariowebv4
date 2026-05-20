@@ -43,25 +43,27 @@
         <p style="margin-top: 20px"><strong>Ref.</strong>DECN. {{ $declaracao->lnr }}</p>
         <p style="margin-top: 15px"><strong>Data:</strong> {{ $declaracao->data_aprovacao }}</p>
         @if($declaracao->BaSigla != 'GN')
-            <p style="margin-top: 15px"><strong>Assunto:</strong> Declaração Negativa</p>
+            <p style="margin-top: 25px"><strong>Assunto:</strong> Declaração Negativa</p>
         @endif
     </div>
 
-    @if($declaracao->BaSigla == 'GN')
-        <div>
-            <p style="margin-top:80px">A quem possa interessar,</p>
-        </div>
-    @endif
+    <div @if($declaracao->BaSigla == 'GN') style="margin-top: -50px" @endif>
+        @if($declaracao->BaSigla == 'GN')
+            <div>
+                <p style="margin-top:90px">A quem possa interessar,</p>
+            </div>
+        @endif
 
-    <div style="margin-top: 0px">
-        <p style="text-align: justify;line-height: 1.8;"><strong>KIXICRÉDITO (ANGOLA), S.A.,</strong> sociedade de microcrédito licenciada desde 2008, com 
-        sede social na Província de Luanda, Largo de Teixeira Pascoaes, Vila Alice, Caixa Postal n.º
-        3876, Contribuinte Fisccal n.º 5403096116, vem por este meio declarar que o(a)
-        Senhor(a) <strong>{{ $declaracao->nome }}</strong>, titular do Bilhete de Identidade <strong>N.º {{ $declaracao->documento }}</strong> está
-        isento de responsabilidades creditícias ativas com esta Instituição.</p>
-        <p style="margin-top: 10px">A presente Declaração tem a validade de <strong>20 (vinte)</strong> dias.</p> 
-        <p style="margin-top: 10px">Atentamente,</p> 
-        <p style="margin-top: 20px">A Direção de Particulares e Parcerias</p> 
+        <div @if($declaracao->BaSigla == 'GN') style="margin-top: -20px" @endif>
+            <p style="text-align: justify;line-height: 1.8;"><strong>KIXICRÉDITO (ANGOLA), S.A.,</strong> sociedade de microcrédito licenciada desde 2008, com 
+            sede social na Província de Luanda, Largo de Teixeira Pascoaes, Vila Alice, Caixa Postal n.º
+            3876, Contribuinte Fisccal n.º 5403096116, vem por este meio declarar que o(a)
+            Senhor(a) <strong>{{ $declaracao->nome }}</strong>, titular do Bilhete de Identidade <strong>N.º {{ $declaracao->documento }}</strong> está
+            isento de responsabilidades creditícias ativas com esta Instituição.</p>
+            <p style="margin-top: 10px">A presente Declaração tem a validade de <strong>20 (vinte)</strong> dias.</p> 
+            <p style="margin-top: 10px">Atentamente,</p> 
+            <p style="margin-top: 20px">A Direção de Particulares e Parcerias</p> 
+        </div>
     </div>
 
     <!--<div style="margin-top: 20px">

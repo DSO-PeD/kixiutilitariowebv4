@@ -18,7 +18,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DeclaracaoController extends Controller
 {
-    private $montante = 10;
+    private $montante = 11000; //Valor fixo para comparação de pagamento
 
     public function viewDeclaracoes(Request $request)
     {
