@@ -208,8 +208,6 @@
             </div>
         </main>
 
-
-
         <!-- Modals (mantidos do código anterior) -->
 
         <ModalNovoComprovativo ref="modalNovoComprovativoRef" v-if="showModalNovo" @close="fecharModalNovoComprovativo"
@@ -358,8 +356,6 @@ const {
     agencia_principal,
 } = page.props
 
-
-
 const dataFormatada = ref('');
 const startDate = ref('');
 const endDate = ref('');
@@ -402,24 +398,18 @@ const displayedBases = computed(() => {
     return showAllBases.value ? bases : bases.slice(0, 5)
 })
 
-
-
 const showModalNovo = ref(false);
 const modalNovoComprovativoRef = ref(null);
 const showModal = ref(false);
 const showModalSMS = ref(false)
 const showModalDate = ref(false)
 
-
-
 const sms = () => {
     showModalSMS.value = true;
-
 };
 
 const modalDate = () => {
     showModalDate.value = true;
-
 };
 
 const novoComprovativo = ref({

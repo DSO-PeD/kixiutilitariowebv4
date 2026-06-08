@@ -184,15 +184,16 @@ class AuthController extends Controller
 
     public function carregamentoInicial(Request $request)
     {
-        $authenticatedUser = Auth::user();
+        $authenticatedUser = Auth::user(); 
         $agenciaUser = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)
-            ->first(['BasesOperacao']);
+            ->first(['BasesOperacao']); 
 
         if (!$agenciaUser) {
             return redirect()->back()->withErrors(['error' => 'Agência não encontrada']);
         }
 
-        $basesOperacao = explode(',', $agenciaUser->BasesOperacao);
+        $basesOperacao = explode(',', $agenciaUser->BasesOperacao); 
+
 
         $staticData = $this->loadStaticData();
         $dynamicData = $this->processDynamicData($request, $basesOperacao);

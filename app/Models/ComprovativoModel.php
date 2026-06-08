@@ -61,9 +61,9 @@ class ComprovativoModel extends Model
 
         return $affectedeCifecha;
     }
-    /*   public static function setEliminarComprovativo($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao, $djascript, $loan)
-       {
 
+    /*public static function setEliminarComprovativo($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao, $djascript, $loan)
+       {
 
            $statusEliminacao = false;
 
@@ -82,13 +82,6 @@ class ComprovativoModel extends Model
                }
            }
 
-
-
-
-
-
-
-
            return $statusEliminacao;
        }*/
 
@@ -103,9 +96,9 @@ class ComprovativoModel extends Model
             ->first();
         return $c;
     }
+
     public static function setEliminarComprovativoMASTER($id)
     {
-
 
         $statusEliminacao = false;
 
@@ -122,13 +115,6 @@ class ComprovativoModel extends Model
             $statusEliminacao = true;
 
         }
-
-
-
-
-
-
-
 
         return $statusEliminacao;
     }

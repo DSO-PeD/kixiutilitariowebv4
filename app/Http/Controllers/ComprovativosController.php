@@ -35,17 +35,13 @@ class ComprovativosController extends Controller
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
 
-
-
         $tipoDeBusca = $request->tipo;
         $tipoProdutoPP = $request->filtrar_poupancas;
         $tipoProdutoPT = $request->filtrar_prestacoes;
 
 
-
         $lista_produtos = TKxClProdutoModel::getProdutos();
         $lista_das_formaspagamento = TKxClTipopagamentoModel::getFormasDePamentos();
-
 
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
@@ -84,14 +80,10 @@ class ComprovativosController extends Controller
 
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
-
-
         if ($tipoDeBusca == 1) {
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
-
-            //dd( $DataFim );
         }
 
         if ($tipoDeBusca == 3) {
@@ -105,8 +97,8 @@ class ComprovativosController extends Controller
 
             if ($request->estado_input !== '28') {
                 $ESTADO = $request->estado_input;
-                // dd($request->estado_input);
             }
+
             if ($request->agencia_imput !== 'T') {
                 $Bases = "'" . $request->agencia_imput . "'";
             }
@@ -139,10 +131,7 @@ class ComprovativosController extends Controller
             $TIPO = $tipoDeBusca;
         }
 
-
-
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, $formaspagamento_geral);
-
 
         $lista_banco = TKxBancoModel::getBancos();
         $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
@@ -168,15 +157,13 @@ class ComprovativosController extends Controller
         $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
         $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
 
-
-
         $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
-        //dd($lista_pendentes->count());
+
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
         ];
-        // dd($lista_comprovativo );
+       
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             $vcr_view = "-";
 
@@ -221,7 +208,7 @@ class ComprovativosController extends Controller
             ];
         });
 
-
+        
 
         $NumeroPaginator = 30;
         //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
@@ -265,8 +252,6 @@ class ComprovativosController extends Controller
             'totalPendente' => $lista_pendentes->count(),
             'dataInicioPeriodo' => $DataFimFormatada,
             'dataFimPeriodo' => $DataInicioFormatada,
-
-
         ]);
     }
 
@@ -802,8 +787,6 @@ class ComprovativosController extends Controller
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
-
-            //dd( $DataFim );
         }
 
         if ($tipoDeBusca == 3) {
@@ -817,7 +800,6 @@ class ComprovativosController extends Controller
 
             if ($request->estado_input !== '28') {
                 $ESTADO = $request->estado_input;
-                // dd($request->estado_input);
             }
             if ($request->agencia_imput !== 'T') {
                 $Bases = "'" . $request->agencia_imput . "'";
@@ -884,12 +866,11 @@ class ComprovativosController extends Controller
 
 
         $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
-        //dd($lista_pendentes->count());
+        
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
         ];
-        // dd($lista_comprovativo );
 
 
         if ($lista_comprovativo) {
@@ -967,8 +948,6 @@ class ComprovativosController extends Controller
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
-
-            //dd( $DataFim );
         }
 
         if ($tipoDeBusca == 3) {
@@ -1004,7 +983,7 @@ class ComprovativosController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-        // dd($lista_comprovativo );
+      
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             return [
                 'id' => $item->id,

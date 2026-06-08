@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Redis;
 Route::middleware(['guest', 'web'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -28,7 +27,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'carregamentoInicial'])->name('dashboard');
-
 
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
     Route::get('/referenciapgt', [ComprovativosController::class, 'viewReferenciaPGT'])->name('referenciapgt');

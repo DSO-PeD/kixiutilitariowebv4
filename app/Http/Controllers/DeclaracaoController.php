@@ -28,7 +28,18 @@ class DeclaracaoController extends Controller
         $query = DB::table('tkxpedidodeclaracao as decl')
                         ->join('tkxclbanco as banc', 'decl.banco_id', '=', 'banc.BaCodigo')
                         ->join('estado as est', 'decl.estado_id', '=', 'est.id')
-                        ->select('decl.*', 'banc.BaNome', 'est.descricao_estado', 'est.color');
+                        ->leftjoin('referenciasmanuais as ref','ref.referencia','=','decl.referencia')
+                        ->select(
+                            'decl.*',
+                            'banc.BaNome', 
+                            'est.descricao_estado', 
+                            'est.color',
+                            'ref.inicio',
+                            'ref.fim',
+                            'ref.montante',
+                            'ref.montantepago',
+                            'ref.activo'
+                        );
         
         //Filtros
         if ($request->filled('lnr')) {
@@ -52,8 +63,8 @@ class DeclaracaoController extends Controller
         }
 
         $declaracoes = $query->orderByDesc('decl.id')
-            ->paginate(10)
-            ->withQueryString(); //Manter os filtros na URL durante a paginação
+                            ->paginate(50)
+                            ->withQueryString(); //Manter os filtros na URL durante a paginação
         
         return Inertia::render('Declaracoes', [
             'bancos' => $lista_bancos,
@@ -68,7 +79,18 @@ class DeclaracaoController extends Controller
         $declaracao = DB::table('tkxpedidodeclaracao as decl')
                         ->join('tkxclbanco as banc', 'decl.banco_id', '=', 'banc.BaCodigo')
                         ->join('estado as est', 'decl.estado_id', '=', 'est.id')
-                        ->select('decl.*', 'banc.BaNome', 'est.descricao_estado','est.color')
+                        ->leftjoin('referenciasmanuais as ref','ref.referencia','=','decl.referencia')
+                        ->select(
+                            'decl.*', 
+                            'banc.BaNome', 
+                            'est.descricao_estado',
+                            'est.color',
+                            'ref.inicio',
+                            'ref.fim',
+                            'ref.montante',
+                            'ref.montantepago',
+                            'ref.activo'
+                        )
                         ->where('decl.id', $id)
                         ->first();
         if (!$declaracao) {
@@ -82,17 +104,9 @@ class DeclaracaoController extends Controller
         $declaracao->ficheiro = $fileUrl;
 
         //Ver se já tem pagamento
-        $limit = $this->montante;
+        $limit = $this->montante; 
 
-        $refPagamento = DB::table('referenciasmanuais')
-                        ->where('BuDadoOrigem',$declaracao->saving)
-                        ->where(function ($q) use ($limit) {
-                            $q->whereNull('montantepago')
-                            ->orWhere('montantepago', '<', $limit);
-                        })
-                        ->count();
-
-        $declaracao->isPago = $refPagamento < 1 ? true:false;  
+        $declaracao->isPago = $declaracao->montantepago >= $limit ? true:false;   
 
         return Inertia::render('VerDeclaracao', [
             'declaracao' => $declaracao
@@ -119,13 +133,13 @@ class DeclaracaoController extends Controller
             ]);
 
             //Verificar se quer registar
-            $exists = TKxDeclaracaoModel::where('lnr', $request->lnr)
+            /*$exists = TKxDeclaracaoModel::where('lnr', $request->lnr)
                     ->whereDate('created_at', now())
                     ->exists();
 
             if($exists) {
                 return redirect()->back()->with('error', 'Já existe uma declaração registada para este LNR!');
-            }
+            }*/
 
             // Processar arquivo
             $nomeArquivo = null;
@@ -265,7 +279,7 @@ class DeclaracaoController extends Controller
                     'fim' => Carbon::now()->addDays(1),
                     'montante' => $this->montante,
                     'idestado' => 21,
-                    'BaseOperacao' => 'AC',
+                    'BaseOperacao' => substr($declaracao->lnr, 0, 2),
                     'activo' => 1, // Mudado para 1 para indicar que está ativo
                     'UtCodigo' => Auth::user()->UtCodigo,
                     'created_at' => Carbon::now(),
@@ -284,6 +298,8 @@ class DeclaracaoController extends Controller
             
             $declaracao->estado_id = $estadoAprovado->id;
             $declaracao->comentario = 'Declaração aprovada com referência de pagamento gerada: ' . $referencia;  
+            $declaracao->referencia = $referencia;
+
             if($declaracao->save()) {
                 $sucesso2 = true;
             }
@@ -305,7 +321,15 @@ class DeclaracaoController extends Controller
         $declaracao = DB::table('tkxpedidodeclaracao as decl')
                         ->join('tkxclbanco as banc', 'decl.banco_id', '=', 'banc.BaCodigo')
                         ->join('estado as est', 'decl.estado_id', '=', 'est.id')
-                        ->select('decl.*','banc.BaSigla','banc.BaNome', 'est.descricao_estado','est.color')
+                        ->leftjoin('referenciasmanuais as ref','ref.referencia','=','decl.referencia')
+                        ->select(
+                            'decl.*',
+                            'banc.BaSigla',
+                            'banc.BaNome',
+                            'est.descricao_estado',
+                            'est.color',
+                            'ref.montantepago'
+                        )
                         ->where('decl.id', $id)
                         ->first(); 
 
@@ -315,16 +339,8 @@ class DeclaracaoController extends Controller
 
         /** Verificar se existe pagamento desta declaração */
         $limit = $this->montante;
-
-        $refPagamento = DB::table('referenciasmanuais')
-                        ->where('BuDadoOrigem',$declaracao->saving)
-                        ->where(function ($q) use ($limit) {
-                            $q->whereNull('montantepago')
-                            ->orWhere('montantepago', '<', $limit);
-                        })
-                        ->count();
         
-        if($refPagamento > 0){
+        if($declaracao->montantepago < $limit){
             return redirect()->back()->with('error', 'Nenhum pagamento encontrado.');  
         }
 
