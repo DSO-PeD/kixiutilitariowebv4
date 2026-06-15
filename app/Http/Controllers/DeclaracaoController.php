@@ -15,10 +15,18 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\HelperModel;
 
 class DeclaracaoController extends Controller
 {
+
+    protected $authenticatedUser;
     private $montante = 11000; //Valor fixo para comparação de pagamento
+
+    public function __construct()
+    {
+        $this->authenticatedUser = Auth::user();
+    }
 
     public function viewDeclaracoes(Request $request)
     {
@@ -132,15 +140,6 @@ class DeclaracaoController extends Controller
                 'saving.regex' => 'O campo SAVING deve seguir o formato AC/I/00000',
             ]);
 
-            //Verificar se quer registar
-            /*$exists = TKxDeclaracaoModel::where('lnr', $request->lnr)
-                    ->whereDate('created_at', now())
-                    ->exists();
-
-            if($exists) {
-                return redirect()->back()->with('error', 'Já existe uma declaração registada para este LNR!');
-            }*/
-
             // Processar arquivo
             $nomeArquivo = null;
             if ($request->hasFile('ficheiro')) {
@@ -159,6 +158,8 @@ class DeclaracaoController extends Controller
             $declaracao->banco_id = $request->input('banco');
             $declaracao->estado_id = $estado->id;
             $declaracao->ficheiro = $nomeArquivo;
+            $declaracao->criadoPor = HelperModel::splitName($this->authenticatedUser->UtNome);
+
             if($declaracao->save()) {
                 return redirect()->back()->with('success', 'Declaração solicitada com sucesso!');
             }
@@ -178,6 +179,7 @@ class DeclaracaoController extends Controller
 
         $declaracao->estado_id = $estadoRecusado->id;
         $declaracao->comentario = $request->comentario;
+        $declaracao->recusadoPor = HelperModel::splitName($this->authenticatedUser->UtNome);
         
         if($declaracao->save()) {
             return redirect()->back()->with('success', 'Declaração recusada com sucesso!');
@@ -244,7 +246,7 @@ class DeclaracaoController extends Controller
             
         $dados_activar_referencia = [
                 "numero" => $referencia,
-                "validade" => Carbon::now()->addDays(1)->format('d/m/Y H:i'),
+                "validade" => Carbon::now()->addDays(3)->format('d/m/Y H:i'),
                 "montante" => number_format($this->montante, 2, ',', ' '),
                 "cliente" => [
                     "nome" => $declaracao->nome,
@@ -299,6 +301,7 @@ class DeclaracaoController extends Controller
             $declaracao->estado_id = $estadoAprovado->id;
             $declaracao->comentario = 'Declaração aprovada com referência de pagamento gerada: ' . $referencia;  
             $declaracao->referencia = $referencia;
+            $declaracao->aprovadoPor = HelperModel::splitName($this->authenticatedUser->UtNome);
 
             if($declaracao->save()) {
                 $sucesso2 = true;

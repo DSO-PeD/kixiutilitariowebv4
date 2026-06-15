@@ -129,15 +129,54 @@
                                 </div>
                                 <div v-if="declaracao.comentario" class="lg:col-span-12 col-span-12">
                                     <p class="text-sm text-gray-600">Comentário:</p>
-                                    <p class="text-base font-bold text-green-600">
+                                    <p class="text-base mt-4 font-bold text-green-600">
                                         <i class="fa fa-info-circle"></i> {{ declaracao.comentario }}
                                     </p>
+                                </div>
+                                <div class="lg:col-span-12 col-span-12">
+                                    <hr class="my-8">
+                                    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                                        <h3 class="font-semibold text-gray-800 mb-4">
+                                            <i class="fa fa-history"></i> Histórico da Declaração
+                                        </h3>
+
+                                        <div class="space-y-4">
+
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Criado por</p>
+                                                    <p class="font-medium">{{ declaracao.criadoPor ?? 'N/D' }}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Aprovado por</p>
+                                                    <p class="font-medium">
+                                                        {{ declaracao.aprovadoPor ?? 'Pendente' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Recusado por</p>
+                                                    <p class="font-medium">
+                                                        {{ declaracao.recusadoPor ?? 'N/A' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="lg:col-span-5 col-span-5 bg-gray-100 p-2 rounded-lg">
                             <iframe v-if="declaracao" :src="declaracao.ficheiro"
-                                class="mt-4 w-full h-64 border rounded-lg">
+                                class="mt-4 w-full h-[600px] border rounded-lg">
                             </iframe>
                         </div>
                     </div>

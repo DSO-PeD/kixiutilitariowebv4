@@ -256,7 +256,14 @@
                                 {{ declaracao.nome }}
                             </td>
                             <td class="px-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                <span v-if="declaracao.referencia" class="font-medium text-yellow-700 border border-orange-200 p-1 rounded-xl">{{ declaracao.referencia }}</span>
+                                <span v-if="(declaracao.descricao_estado === 'Aprovado' && declaracao.montantepago < 11000 && new Date() > new Date(declaracao.fim))" class="font-medium text-red-700 border border-red-500 px-2 py-1 rounded-xl">
+                                    <i class="fas fa-circle mr-1"></i>
+                                    Expirada
+                                </span>
+                                <span v-else-if="declaracao.referencia" class="font-medium text-green-700 border border-green-500 px-2 py-1 rounded-xl">
+                                    <i class="fas fa-check mr-1"></i>
+                                    {{ declaracao.referencia }}
+                                </span>
                             </td>
                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                 {{ declaracao.documento }}
@@ -272,7 +279,7 @@
                             <td
                                 class="flex justify-end px-4 py-2 whitespace-nowrap text-sm font-semibold text-green-600">
                                 <a :href="`/verDeclaracao/${declaracao.id}`" target="_blank"
-                                    class="hover:underline hover:bg-green-200 bg-green-100 text-green-800 py-1 px-3 rounded-md text-sm">
+                                    class="hover:underline border hover:border-green-500 hover:bg-green-200 bg-green-100 text-green-800 py-1 px-3 rounded-md text-sm">
                                     <i class="fas fa-eye text-green-600"></i>
                                     Abrir Requisição
                                 </a>

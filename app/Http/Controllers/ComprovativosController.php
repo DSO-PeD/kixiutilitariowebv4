@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\DB;
 
 class ComprovativosController extends Controller
 {
+
     public function viewComprovativos(Request $request)
     {
         $authenticatedUser = Auth::user();
