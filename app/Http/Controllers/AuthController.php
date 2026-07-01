@@ -346,7 +346,8 @@ class AuthController extends Controller
     public function listarUtilizadores(Request $request)
     {
         $query = DB::table('tkxusutilizador as us')
-                    ->select('us.UtCodigo','us.UtNome','us.UtFuncao');
+                    ->leftjoin('sessions_utilitario_v9 as su','su.user_id','=','us.UtCodigo') 
+                    ->select('us.UtCodigo','us.UtNome','us.UtFuncao','su.user_id');
         
         //Filtros
         if ($request->filled('nome')) {
@@ -356,7 +357,7 @@ class AuthController extends Controller
         $utilizadores = $query->orderBy('us.UtNome','asc')
                         ->paginate(48)
                         ->withQueryString(); //Manter os filtros na URL durante a paginação
-    
+        
         return Inertia::render('ListaUtilizadores', [
             'utilizadores' => $utilizadores,
             'filters' => $request->only(['nome']),

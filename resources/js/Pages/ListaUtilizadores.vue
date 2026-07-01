@@ -55,6 +55,7 @@
                     Nova Requisição
                 </button>
             </div>-->
+
         </div>
 
         <div class="border-t border-gray-200 my-4"></div>
@@ -88,7 +89,17 @@
                         </div>
 
                         <!-- Botão -->
-                        <div class="border-t border-gray-100 dark:border-gray-700 pt-3 flex justify-end">
+                        <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
+
+                            <div class="flex items-center gap-1.5 rounded-xl px-1" :class="utilizador.user_id ? 'bg-green-400':'bg-red-400'">
+                                <span class="w-2.5 h-2.5 rounded-full inline-block"
+                                    :class="utilizador.user_id ? 'bg-green-500' : 'bg-red-500'">
+                                </span>
+                                <span class="text-xs text-white font-medium">
+                                    {{ utilizador.user_id ? 'Logado' : 'Não logado' }}
+                                </span>
+                            </div>
+
                             <a :href="`/verUtilizador/${utilizador.UtCodigo}`"
                                 class="text-xs px-4 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition">
                                 <i class="fas fa-eye text-blue-400"></i> Ver utilizador
@@ -153,7 +164,7 @@ const formFiltro = ref({
     nome: props.formFiltro?.nome || '',
 });
 
-watch(() => formFiltro.value.nome,()=>{
+watch(() => formFiltro.value.nome, () => {
     aplicarFiltros();
 })
 

@@ -13,18 +13,18 @@ use App\Models\TKxBancoModel;
 use App\Models\TKxClProdutoModel;
 use App\Models\TKxClTipopagamentoModel;
 use App\Models\TKxUsUtilizadorModel;
-use Carbon\Carbon;
+use App\Models\TKxExtratoModel;
+use App\Models\PgtRefNotificacaoModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Inertia\Inertia;
 use App\Services\IziPayService;
 use Illuminate\Support\Facades\Http;
-
-use Illuminate\Support\Facades\Log;
-
-use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Inertia\Inertia;
+use Exception;
 
 class ComprovativosController extends Controller
 {
@@ -164,8 +164,15 @@ class ComprovativosController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-       
-        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
+
+        /*** Associar com dados não relacionados */
+        $lnrs = collect($lista_comprovativo)->pluck('BuDadoOrigem')->unique();
+        $contactos = TKxExtratoModel::whereIn('Lnr', $lnrs)->pluck('Telefone','Lnr');
+
+        $refs = collect($lista_comprovativo)->pluck('refPagamento')->unique();
+        $ibans = PgtRefNotificacaoModel::whereIn('refPagamento', $refs)->pluck('nib', 'refPagamento');
+
+        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) use ($contactos,$ibans) { 
             $vcr_view = "-";
 
             if ($item->voucher == "" || $item->voucher == null) {
@@ -204,12 +211,11 @@ class ComprovativosController extends Controller
                 'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
                 'BuMontante' => $item->BuMontante, // Para cálculos
                 'refPagamento' => $item->refPagamento,
-                'periodo_trans_pgr' => $item->periodo_trans_pgr
-
+                'periodo_trans_pgr' => $item->periodo_trans_pgr,
+                'telefone' => $contactos[$item->BuDadoOrigem] ?? 'N/A',
+                'iban'     => $ibans[$item->refPagamento] ?? 'N/A'
             ];
         });
-
-        
 
         $NumeroPaginator = 30;
         //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
@@ -236,7 +242,6 @@ class ComprovativosController extends Controller
             'contas' => $lista_bancos_contas,
             'tipocomprovativos' => $TipoComprovativo,
             'estados' => $estados,
-            //  'lista_comprovativo' => $lista_comprovativo,
             'total' => $total,
             'montantetotal' => $totalMontante,
             'totalMontantePoupanca' => $totalMontantePoupanca,
@@ -248,7 +253,6 @@ class ComprovativosController extends Controller
             'totalMontantePoupancaInregulares' => $totalMontantePoupancaInregulares,
             'totalMontantePGREF' => $totalMontantePGREF,
             'formaspagamentos' => $lista_das_formaspagamento,
-            //'hasMorePages' => $comprovativos_list->count() > $request->input('page', 1) * $NumeroPaginator,
             'lista_pendentes' => $lista_pendentes,
             'totalPendente' => $lista_pendentes->count(),
             'dataInicioPeriodo' => $DataFimFormatada,
@@ -888,20 +892,15 @@ class ComprovativosController extends Controller
             // Retornando a resposta JSON
             return response()->json($response, 200);
         } else {
-
-
-
             return response()->json(["title" => "Não existe comprovativo"]);
         }
-
-
-
     }
 
     // PAGAMENTOS POR REFERENCIA MANUAIS:******************************************************************
 
     public function viewReferenciaPGT(Request $request)
-    {
+    { 
+
 
         $authenticatedUser = Auth::user(); 
 
@@ -1012,10 +1011,9 @@ class ComprovativosController extends Controller
         });
 
         $NumeroPaginator = 30;
-        //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
+        
         return Inertia::render('ReferenciasPGT', [
             'lista_comprovativo' => $comprovativos_list,
-            // 'comprovativos' => $paginado,
             'filters' => [
                 'search' => $request->input('search_input', ''),
                 'lnr' => $request->input('lnr_imput', ''),
@@ -1035,7 +1033,6 @@ class ComprovativosController extends Controller
 
             'tipocomprovativos' => $TipoComprovativo,
             'estados' => $estados,
-            //  'lista_comprovativo' => $lista_comprovativo,
             'total' => $total,
 
             'dataInicioPeriodo' => $DataFimFormatada,

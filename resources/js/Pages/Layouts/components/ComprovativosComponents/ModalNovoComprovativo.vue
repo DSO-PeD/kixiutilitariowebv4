@@ -277,12 +277,12 @@
                         </div>
 
                         <!-- Banco de Pagamento -->
-                        <div v-if="modelValue.selectBase === 'AC'" class="flex flex-col">
+                        <div v-if="['AC','DP'].includes(modelValue.selectBase)" class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Banco de Pagamento</label>
                             <div class="relative">
                                 <select v-model.number="modelValue.banco" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.banco }"
-                                    :required="modelValue.selectBase === 'AC'">
+                                    :required="['AC','DP'].includes(modelValue.selectBase)">
                                     <option value="" disabled selected>Selecione o banco</option>
                                     <option v-for="banco in $page.props.bancos" :value="Number(banco.BaCodigo)"
                                         :key="banco.BaCodigo">
@@ -299,12 +299,12 @@
                         </div>
 
                         <!-- Conta Bancária -->
-                        <div v-if="modelValue.selectBase === 'AC'" class="flex flex-col">
+                        <div v-if="['AC','DP'].includes(modelValue.selectBase)" class="flex flex-col">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Conta Bancária</label>
                             <div class="relative">
                                 <select v-model="modelValue.conta" class="form-select w-full pl-3 pr-10"
                                     :class="{ 'border-red-500': fieldErrors.conta }"
-                                    :required="modelValue.selectBase === 'AC'">
+                                    :required="['AC','DP'].includes(modelValue.selectBase)">
                                     <option value="" disabled selected>Selecione a conta</option>
                                     <option v-for="conta in contasFiltradas" :value="conta.codigoConta"
                                         :key="conta.codigoConta">
@@ -339,13 +339,13 @@
                             </div>
 
                             <!-- Voucher -->
-                            <div class="flex flex-col" v-if="modelValue.selectBase === 'AC'">
+                            <div class="flex flex-col" v-if="['AC','DP'].includes(modelValue.selectBase)">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Voucher</label>
                                 <div class="relative">
                                     <input type="text" v-model="modelValue.txtVoucher" placeholder="Voucher"
                                         class="form-input w-full pl-3 pr-10"
                                         :class="{ 'border-red-500': fieldErrors.txtVoucher }"
-                                        :required="modelValue.selectBase === 'AC'" />
+                                        :required="['AC','DP'].includes(modelValue.selectBase)" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                         <i class="fa-solid fa-barcode text-gray-400"></i>
                                     </div>
@@ -883,7 +883,6 @@ watch(displayValue, (newValue) => {
     }
 });
 </script>
-
 <style scoped>
 .border-red-500 {
     border-color: #ef4444 !important;

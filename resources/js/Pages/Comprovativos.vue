@@ -761,8 +761,6 @@
                                     cpvtv.
                                 </a>
 
-
-
                                 <a v-else-if="comprovativo.usuario == 'SUPLITEL'"
                                     :href="`/reports/comprovativo/${comprovativo.id}`"
                                     class="btn btn-outline-primary btn-sm flex items-center gap-1" target="_blank">
@@ -832,11 +830,7 @@
 
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-
                                 <span>{{ comprovativo.referenciatransacao || '-' }}</span>
-
-
-
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ comprovativo.FormaPagoN || '-' }}
@@ -1580,8 +1574,9 @@ const exportarParaExcel = () => {
             'Montante': comprovativo.montante || '0,00',
             'Estado': comprovativo.estado || '-',
             'Operador DCF': comprovativo.operadordcf || '-',
-            'Data de Operação DCF': comprovativo.datareconciliacao || '-'
-
+            'Data de Operação DCF': comprovativo.datareconciliacao || '-',
+            'Telefone': comprovativo.telefone || '-',
+            'IBAN': comprovativo.iban || '-' 
         }))
 
         const ws = XLSX.utils.json_to_sheet(dadosFormatados)
