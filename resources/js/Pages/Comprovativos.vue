@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <div class="border-t border-gray-200 my-4"></div>             
+        <div class="border-t border-gray-200 my-4"></div>
 
         <!-- Seção de Alertas Pendentes -->
         <div v-if="$page.props.user.view_pendentes" class="mb-6">
@@ -122,6 +122,74 @@
                         </svg>
                         Exportar Pendentes
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total de arreadação -->
+        <div v-if="can('view_arrecadacao')" class="bg-green-50 rounded-xl shadow-sm p-5 mb-6 border border-green-300">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Card 1 - Total Montante Reembolsos -->
+                <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 p-3 rounded-full mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6 text-green-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-700">Total Arrecadado</h3>
+                    </div>
+                    <p class="text-2xl font-bold text-green-700 mb-4">{{ formatCurrency(totalReembTaxs) }} AKZ</p>
+                </div>
+
+                <!-- Card 2 - Total de Poupanças -->
+                <!-- Card 2 -->
+                <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-3 rounded-full mr-3">
+
+                            <svg width="132px" height="132px" viewBox="-0.5 0 25 25" fill="none"
+                                xmlns="http://www.w3.org/2000/svg" class="h-6 w-6">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path
+                                        d="M12.8702 16.97V18.0701C12.8702 18.2478 12.7995 18.4181 12.6739 18.5437C12.5482 18.6694 12.3778 18.74 12.2001 18.74C12.0224 18.74 11.852 18.6694 11.7264 18.5437C11.6007 18.4181 11.5302 18.2478 11.5302 18.0701V16.9399C11.0867 16.8668 10.6625 16.7051 10.2828 16.4646C9.90316 16.2241 9.57575 15.9097 9.32013 15.54C9.21763 15.428 9.16061 15.2817 9.16016 15.1299C9.16006 15.0433 9.17753 14.9576 9.21155 14.8779C9.24557 14.7983 9.29545 14.7263 9.35809 14.6665C9.42074 14.6067 9.49484 14.5601 9.57599 14.5298C9.65713 14.4994 9.7436 14.4859 9.83014 14.49C9.91602 14.4895 10.0009 14.5081 10.0787 14.5444C10.1566 14.5807 10.2254 14.6338 10.2802 14.7C10.6 15.1178 11.0342 15.4338 11.5302 15.6099V13.0701C10.2002 12.5401 9.53015 11.77 9.53015 10.76C9.55019 10.2193 9.7627 9.70353 10.1294 9.30566C10.4961 8.9078 10.9929 8.65407 11.5302 8.59009V7.47998C11.5302 7.30229 11.6007 7.13175 11.7264 7.0061C11.852 6.88045 12.0224 6.81006 12.2001 6.81006C12.3778 6.81006 12.5482 6.88045 12.6739 7.0061C12.7995 7.13175 12.8702 7.30229 12.8702 7.47998V8.58008C13.2439 8.63767 13.6021 8.76992 13.9234 8.96924C14.2447 9.16856 14.5226 9.43077 14.7402 9.73999C14.8284 9.85568 14.8805 9.99471 14.8901 10.1399C14.8928 10.2256 14.8783 10.3111 14.8473 10.3911C14.8163 10.4711 14.7696 10.5439 14.7099 10.6055C14.6502 10.667 14.5787 10.7161 14.4998 10.7495C14.4208 10.7829 14.3359 10.8001 14.2501 10.8C14.1607 10.7989 14.0725 10.7787 13.9915 10.7407C13.9104 10.7028 13.8384 10.648 13.7802 10.5801C13.5417 10.2822 13.2274 10.054 12.8702 9.91992V12.1699L13.1202 12.27C14.3902 12.76 15.1802 13.4799 15.1802 14.6299C15.163 15.2399 14.9149 15.8208 14.4862 16.2551C14.0575 16.6894 13.4799 16.9449 12.8702 16.97ZM11.5302 11.5901V9.96997C11.3688 10.0285 11.2298 10.1363 11.1329 10.2781C11.0361 10.4198 10.9862 10.5884 10.9902 10.76C10.9984 10.93 11.053 11.0945 11.1483 11.2356C11.2435 11.3767 11.3756 11.4889 11.5302 11.5601V11.5901ZM13.7302 14.6599C13.7302 14.1699 13.3902 13.8799 12.8702 13.6599V15.6599C13.1157 15.6254 13.3396 15.5009 13.4985 15.3105C13.6574 15.1202 13.74 14.8776 13.7302 14.6299V14.6599Z"
+                                        fill="#3d93f5"></path>
+                                    <path
+                                        d="M12.58 3.96997H6C4.93913 3.96997 3.92178 4.39146 3.17163 5.1416C2.42149 5.89175 2 6.9091 2 7.96997V17.97C2 19.0308 2.42149 20.0482 3.17163 20.7983C3.92178 21.5485 4.93913 21.97 6 21.97H18C19.0609 21.97 20.0783 21.5485 20.8284 20.7983C21.5786 20.0482 22 19.0308 22 17.97V11.8999"
+                                        stroke="#3d93f5" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round"></path>
+                                    <path d="M21.9998 2.91992L16.3398 8.57992" stroke="#3d93f5" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M20.8698 8.5798H16.3398V4.0498" stroke="#3d93f5" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round"></path>
+                                </g>
+                            </svg>
+
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-700">Origem da Arrecadação</h3>
+                    </div>
+
+                    <div class="flex gap-4 border-t border-gray-100 pt-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" v-model="filtros.reembolsos" class="w-4 h-4 accent-green-600" />
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">Reembolsos</p>
+                                <p class="text-xs text-gray-400">{{ formatCurrency(props.totalReembolsos) }} AKZ</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer ml-16">
+                            <input type="checkbox" v-model="filtros.poupancas" class="w-4 h-4 accent-green-600" />
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">Poupanças e Taxas</p>
+                                <p class="text-xs text-gray-400">{{ formatCurrency(props.totalPoupancas) }} AKZ</p>
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -348,6 +416,7 @@
             </div>
         </div>
 
+        <!-- Cards de valores pagos -->
         <div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
             <div
                 class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-white">
@@ -377,7 +446,6 @@
                 <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm card-hover">
                     <div class="flex items-center mb-4">
                         <div class="bg-green-100 p-3 rounded-full mr-3">
-
 
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6 text-green-600">
@@ -414,13 +482,11 @@
                     <div class="flex items-center mb-4">
                         <div class="bg-blue-100 p-3 rounded-full mr-3">
 
-
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6 text-blue-600">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
-
 
                         </div>
                         <h3 class="text-sm font-semibold text-gray-700">Poupanças</h3>
@@ -480,15 +546,7 @@
             </div>
         </div>
 
-
-
-
-
-
         <!-- Resumo do Período -->
-
-
-
 
         <!-- Tabela de Comprovativos -->
         <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
@@ -747,7 +805,7 @@
                             }">
                             <!-- Conteúdo das células (mantido do original) -->
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ calcularNumeroLinha(index) }} 
+                                {{ calcularNumeroLinha(index) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <a v-if="comprovativo.usuario != 'SUPLITEL'"
@@ -1062,11 +1120,10 @@
             </div>
         </div>
     </transition>
-
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, reactive } from 'vue'
 import { router } from '@inertiajs/vue3'
 import * as XLSX from 'xlsx'
 import { Head } from '@inertiajs/vue3'
@@ -1082,6 +1139,8 @@ import ModalEdicaoMontante from './Layouts/components/ComprovativosComponents/Mo
 import ModalEdicaoData from './Layouts/components/ComprovativosComponents/ModalEdicaoData.vue'
 import ModalEdicaoVoucher from './Layouts/components/ComprovativosComponents/ModalEdicaoVoucher.vue'
 
+import { GlobalPermissions } from '../Components/GlobalPermissions'
+const { can } = GlobalPermissions()
 
 // Props
 const props = defineProps({
@@ -1125,7 +1184,18 @@ const props = defineProps({
     produtosPoupancas: Array,
     formaspagamentos: Array,
     refPagamento: String,
-    periodo_trans_pgr: String
+    periodo_trans_pgr: String,
+    totalReembolsos: Number,
+    totalPoupancas: Number
+});
+
+/**  */
+const filtros = reactive({ reembolsos: true, poupancas: true })
+const totalReembTaxs = computed(() => {
+    let t = 0
+    if (filtros.reembolsos) t += parseFloat(props.totalReembolsos) || 0
+    if (filtros.poupancas) t += parseFloat(props.totalPoupancas) || 0
+    return t
 })
 
 // Refs
@@ -1576,7 +1646,7 @@ const exportarParaExcel = () => {
             'Operador DCF': comprovativo.operadordcf || '-',
             'Data de Operação DCF': comprovativo.datareconciliacao || '-',
             'Telefone': comprovativo.telefone || '-',
-            'IBAN': comprovativo.iban || '-' 
+            'IBAN': comprovativo.iban || '-'
         }))
 
         const ws = XLSX.utils.json_to_sheet(dadosFormatados)

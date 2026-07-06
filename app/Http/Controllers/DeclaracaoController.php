@@ -232,9 +232,12 @@ class DeclaracaoController extends Controller
         if(!$estadoAprovado) {
             return redirect()->back()->with('error', 'Estado de aprovação não encontrado!');
         }
+            
+        if($declaracao->referencia){        
+            return redirect()->back()->with('error', 'Declaração já aprovada anteriormente!');
+        }
 
         /** Inicio do processo de geração de referência de pagamento */
-
         do {
             //Gerar referência de pagamento            
             $referencia = $this->gerarReferenciaPagamento();

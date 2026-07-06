@@ -15,6 +15,7 @@ use App\Models\TKxClTipopagamentoModel;
 use App\Models\TKxUsUtilizadorModel;
 use App\Models\TKxExtratoModel;
 use App\Models\PgtRefNotificacaoModel;
+use App\Models\HelperModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -38,7 +39,7 @@ class ComprovativosController extends Controller
 
         $tipoDeBusca = $request->tipo;
         $tipoProdutoPP = $request->filtrar_poupancas;
-        $tipoProdutoPT = $request->filtrar_prestacoes;
+        $tipoProdutoPT = $request->filtrar_prestacoes; //dd($request);
 
 
         $lista_produtos = TKxClProdutoModel::getProdutos();
@@ -74,7 +75,6 @@ class ComprovativosController extends Controller
         $ESTADO = "'" . $ids_estados . "'";
         $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
         $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
-
 
         $TIPO = 0;
         $LOAN = "'DS/280890'";
@@ -217,11 +217,18 @@ class ComprovativosController extends Controller
             ];
         });
 
+        // Mostrar resumo de valores arrecadados (Reembolsos e Taxas)
+        $arrecadacao = HelperModel::getArrecadacao($DataInicio, $DataFim);
+
+        $totalPoupancas = (float) ($arrecadacao->S ?? 0);
+        $totalReembolsos = (float) ($arrecadacao->R ?? 0);
+
         $NumeroPaginator = 30;
         //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
         return Inertia::render('Comprovativos', [
+            'totalPoupancas' => $totalPoupancas, 
+            'totalReembolsos' => $totalReembolsos,
             'lista_comprovativo' => $comprovativos_list,
-            // 'comprovativos' => $paginado,
             'filters' => [
                 'search' => $request->input('search_input', ''),
                 'lnr' => $request->input('lnr_imput', ''),
