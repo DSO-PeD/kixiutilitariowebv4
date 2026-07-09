@@ -63,13 +63,31 @@
         <!-- Tabela -->
         <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
 
-            <div>
+            <div class="flex items-center gap-3">
                 <div class="relative w-1/4">
                     <input v-model="formFiltro.nome"
-                        class="form-input w-full pl-3 pr-10 h-10 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm group-hover:shadow-md"
+                        class="form-input w-full pl-3 pr-10 h-10 text-sm bg-white border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm"
                         placeholder="Ex.: Dionísio André" required />
                     <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 </div>
+
+                <button type="button" @click="formFiltro.status === 'logado' ? formFiltro.status = '' : formFiltro.status = 'logado'" :class="formFiltro.status === 'logado'
+                    ? 'bg-green-500 text-white border-green-500'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-green-400 hover:text-green-600'"
+                    class="h-10 px-4 text-sm font-medium rounded-full border transition-all duration-200 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-current"></span>
+                    Logados
+                    <span class="text-xs font-bold opacity-80">({{ props.totalLogados }})</span>
+                </button>
+
+                <button type="button" @click="formFiltro.status === 'nao_logado' ? formFiltro.status = '' : formFiltro.status = 'nao_logado'" :class="formFiltro.status === 'nao_logado'
+                    ? 'bg-red-500 text-white border-red-500'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-red-400 hover:text-red-600'"
+                    class="h-10 px-4 text-sm font-medium rounded-full border transition-all duration-200 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-current"></span>
+                    Não Logados
+                    <span class="text-xs font-bold opacity-80">({{ props.totalNaoLogados }})</span>
+                </button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-4">
@@ -91,7 +109,8 @@
                         <!-- Botão -->
                         <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
 
-                            <div class="flex items-center gap-1.5 rounded-xl px-1" :class="utilizador.user_id ? 'bg-green-400':'bg-red-400'">
+                            <div class="flex items-center gap-1.5 rounded-xl px-1"
+                                :class="utilizador.user_id ? 'bg-green-400' : 'bg-red-400'">
                                 <span class="w-2.5 h-2.5 rounded-full inline-block"
                                     :class="utilizador.user_id ? 'bg-green-500' : 'bg-red-500'">
                                 </span>
@@ -152,6 +171,8 @@ const { can } = GlobalPermissions()
 // Props
 const props = defineProps({
     utilizadores: Array,
+    totalLogados: Number,
+    totalNaoLogados: Number,
 })
 
 const getSigla = (nome) => {
@@ -162,9 +183,10 @@ const getSigla = (nome) => {
 
 const formFiltro = ref({
     nome: props.formFiltro?.nome || '',
+    status: props.formFiltro?.status || '',
 });
 
-watch(() => formFiltro.value.nome, () => {
+watch(() => [formFiltro.value.nome, formFiltro.value.status], () => {
     aplicarFiltros();
 })
 

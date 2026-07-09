@@ -347,20 +347,57 @@ class AuthController extends Controller
     {
         $query = DB::table('tkxusutilizador as us')
                     ->leftjoin('sessions_utilitario_v9 as su','su.user_id','=','us.UtCodigo') 
-                    ->select('us.UtCodigo','us.UtNome','us.UtFuncao','su.user_id');
+                    ->select(
+                        'us.UtCodigo',
+                        'us.UtNome',
+                        'us.UtFuncao',
+                        'su.user_id',
+                        DB::raw('CASE WHEN su.user_id IS NOT NULL AND su.last_activity >= ' . now()->subMinutes(15)->getTimestamp() . ' THEN 1 ELSE 0 END as logado')
+                    );
         
-        //Filtros
+        //Filtro por nome
         if ($request->filled('nome')) {
             $query->where('us.UtNome', 'like', '%' . $request->nome . '%');
+        }
+
+        // Filtro por status
+        if ($request->filled('status')) {
+            if ($request->status === 'logado') {
+                $query->whereNotNull('su.user_id')
+                    ->where('su.last_activity', '>=', now()->subMinutes(15)->getTimestamp());
+            } elseif ($request->status === 'nao_logado') {
+                $query->where(function ($q) {
+                    $q->whereNull('su.user_id')
+                    ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
+                });
+            }
         }
 
         $utilizadores = $query->orderBy('us.UtNome','asc')
                         ->paginate(48)
                         ->withQueryString(); //Manter os filtros na URL durante a paginação
+
+        //Pegar o total de utilizadores logados e não logados
+        $totalLogados = DB::table('tkxusutilizador as us')
+                            ->leftJoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
+                            ->whereNotNull('su.user_id')
+                            ->where('su.last_activity', '>=', now()->subMinutes(15)->getTimestamp())
+                            ->count();
+
+        $totalNaoLogados = DB::table('tkxusutilizador as us')
+                            ->leftJoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
+                            ->where(function ($q) {
+                                $q->whereNull('su.user_id')
+                                ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
+                            })
+                            ->count();
+        
         
         return Inertia::render('ListaUtilizadores', [
             'utilizadores' => $utilizadores,
-            'filters' => $request->only(['nome']),
+            'filters' => $request->only(['nome','status']),
+            'totalLogados' => $totalLogados,
+            'totalNaoLogados' => $totalNaoLogados,
         ]);
     }
 
