@@ -60,6 +60,7 @@ class AuthController extends Controller
 
         return redirect()->intended(route('dashboard'));
     }
+    
     public function loginMobile(Request $request)
     {
         $utilizador = $request->input('utilizador');
@@ -352,7 +353,8 @@ class AuthController extends Controller
                         'us.UtNome',
                         'us.UtFuncao',
                         'su.user_id',
-                        DB::raw('CASE WHEN su.user_id IS NOT NULL AND su.last_activity >= ' . now()->subMinutes(15)->getTimestamp() . ' THEN 1 ELSE 0 END as logado')
+                        DB::raw('CASE WHEN su.user_id IS NOT NULL AND su.last_activity >= ' . now()->subMinutes(15)->getTimestamp() . ' THEN 1 ELSE 0 END as logado'),
+                        DB::raw('FROM_UNIXTIME(su.last_activity) as ultimo_login')
                     );
         
         //Filtro por nome
@@ -391,7 +393,6 @@ class AuthController extends Controller
                                 ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
                             })
                             ->count();
-        
         
         return Inertia::render('ListaUtilizadores', [
             'utilizadores' => $utilizadores,

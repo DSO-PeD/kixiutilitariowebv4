@@ -177,6 +177,10 @@ class DeclaracaoController extends Controller
         $declaracao = TKxDeclaracaoModel::find($request->id);
         $estadoRecusado = EstadosModel::where('descricao_estado', 'Recusado')->first();
 
+        if($declaracao->referencia){        
+            return redirect()->back()->with('error', 'A Declaração já foi aprovada anteriormente.');
+        }
+
         $declaracao->estado_id = $estadoRecusado->id;
         $declaracao->comentario = $request->comentario;
         $declaracao->recusadoPor = HelperModel::splitName($this->authenticatedUser->UtNome);

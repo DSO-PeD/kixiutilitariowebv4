@@ -90,26 +90,27 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-4">
                 <div v-for="(utilizador, index) in utilizadores?.data || []" :key="utilizador.id" class="max-w-sm">
-                    <div class="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-2 py-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
 
                         <!-- Avatar + Info -->
                         <div class="flex items-center gap-3 mb-4">
-                            <div
-                                class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center text-blue-700 dark:text-blue-300 font-medium">
-                                <p class="ml-2 text-2xl">{{ getSigla(utilizador.UtNome) }}</p>
+                            <div :class="utilizador.user_id ? 'bg-green-200 text-green-700':'bg-red-200 text-red-700'"
+                                class="w-16 h-16 rounded-full flex items-center font-medium">
+                                <p class="ml-3 text-3xl">{{ getSigla(utilizador.UtNome) }}</p>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900 text-sm">{{ utilizador.UtNome }}</p>
-                                <p class="text-xs text-gray-500 font-mono mt-0.5">{{ utilizador.UtCodigo }}</p>
+                                <p class="font-semibold text-gray-900 text-md">{{ primeiroUltimoNome(utilizador.UtNome) }}</p>
+                                <p class="text-sm text-gray-500 font-mono mt-0.5">{{ utilizador.UtCodigo }}</p>
+                                <p class="text-xs text-gray-500 font-mono mt-0.5">{{ formatarDataHora(utilizador.ultimo_login) }}</p>
                             </div>
                         </div>
 
                         <!-- Botão -->
-                        <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
+                        <div class="border-t border-gray-100 pt-3 flex items-center justify-end">
 
-                            <div class="flex items-center gap-1.5 rounded-xl px-1"
+                            <!--<div class="flex items-center gap-1.5 rounded-xl px-1"
                                 :class="utilizador.user_id ? 'bg-green-400' : 'bg-red-400'">
                                 <span class="w-2.5 h-2.5 rounded-full inline-block"
                                     :class="utilizador.user_id ? 'bg-green-500' : 'bg-red-500'">
@@ -117,10 +118,10 @@
                                 <span class="text-xs text-white font-medium">
                                     {{ utilizador.user_id ? 'Logado' : 'Não logado' }}
                                 </span>
-                            </div>
+                            </div>-->
 
                             <a :href="`/verUtilizador/${utilizador.UtCodigo}`"
-                                class="text-xs px-4 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition">
+                                class="text-xs px-4 py-1.5 rounded-lg border border-gray-300 hover:bg-blue-100 text-gray-700 transition">
                                 <i class="fas fa-eye text-blue-400"></i> Ver utilizador
                             </a>
                         </div>
@@ -166,6 +167,7 @@ import { ref, computed, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { Head } from '@inertiajs/vue3'
 import { GlobalPermissions } from '../Components/GlobalPermissions'
+import { formatarDataHora, primeiroUltimoNome } from '../Components/Helper'
 const { can } = GlobalPermissions()
 
 // Props
