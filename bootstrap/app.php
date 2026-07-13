@@ -14,6 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
+        // Trust Proxies (Cloudflare)
+        $middleware->trustProxies(at: '*');
+        $middleware->trustProxies(headers: 
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
+        );
 
         // Middleware global (executado em todas as requisições web)
         // Middleware global com rate limiting
@@ -34,8 +42,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'mobile'   => \App\Http\Middleware\IsMobileApp::class,
 
         ]);
-
-
 
 
         // Middleware para APIs stateful (Sanctum)
