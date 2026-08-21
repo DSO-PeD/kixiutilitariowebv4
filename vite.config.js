@@ -21,6 +21,15 @@ export default defineConfig({
             algorithm: 'gzip',
         }),
     ],
+    server: {
+        host: '0.0.0.0',
+        port: 5174,
+
+        hmr: {
+            host: '192.168.30.64',
+            port: 5174,
+        },
+    },
     build: {
         chunkSizeWarningLimit: 1000,
         rollupOptions: {

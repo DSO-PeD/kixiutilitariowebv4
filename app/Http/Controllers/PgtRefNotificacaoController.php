@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ComprovativoModel;
 use App\Models\CpvtReconciliacaoModel;
+use App\Models\HelperModel;
 use App\Models\PgtRefNotificacaoModel;
 use App\Models\ReferenciaPGTModel;
 use App\Models\TKxClProdutoModel;
@@ -31,6 +32,11 @@ class PgtRefNotificacaoController extends Controller
         return preg_match('/^\d{9}$/', $telefone) ? $telefone : null;
     }
 
+    /**
+     * 
+     * 
+     */
+
     public function carregarPagamentoPorReferencia(Request $request)
     { 
         // 1. Validar a access-key
@@ -42,7 +48,7 @@ class PgtRefNotificacaoController extends Controller
         }
 
         // Captura todos os dados do JSON
-        $item = $request->all(); 
+        $item = $request->all();
 
         DB::beginTransaction();
 
@@ -51,7 +57,7 @@ class PgtRefNotificacaoController extends Controller
             $referenciaKIXI = str_pad($apenasNumeros, 9, '0', STR_PAD_LEFT);
             $dataFormatadaREF = Carbon::parse($item['dataTransaccaoCliente'])->format('dmY');
             $dataHoraFormatadaREF = Carbon::parse($item['dataTransaccaoCliente'])->format('dmY His');
-
+        
             // Verificar se transação já existe
             $ExisteTransacao = PgtRefNotificacaoModel::where('id', '=', $item['Id'])->first();
             if ($ExisteTransacao) {
@@ -60,10 +66,10 @@ class PgtRefNotificacaoController extends Controller
                     'Obs' => 'Já foi processado um pagamento com este ID',
                     'Id' => $ExisteTransacao->IDKixiRegister,
                 ], 200);
-            }
+            } 
 
             // Buscar referência
-            $ExisteReferencia = $this->buscarReferencia($referenciaKIXI); 
+            $ExisteReferencia = $this->buscarReferencia($referenciaKIXI);
             if (!$ExisteReferencia['encontrada']) {
                 return response()->json([
                     'success' => false,
@@ -139,7 +145,7 @@ class PgtRefNotificacaoController extends Controller
     }
 
     private function processarPagamento(array $item, array $dadosReferencia, string $referenciaKIXI, string $dataFormatadaREF, string $dataHoraFormatadaREF)
-    { 
+    {  
         // Criar registro de notificação
         $registro = PgtRefNotificacaoModel::create([
             'idTransacao' => $item['idTransacao'],
@@ -162,7 +168,6 @@ class PgtRefNotificacaoController extends Controller
                 // Calcular o montante total já pago para esta referência
                 $valorPago = PgtRefNotificacaoModel::where('refPagamento', $referenciaKIXI)->sum('montantePago');
                 $this->atualizarReferenciaManual($dadosReferencia['dados']->id, $valorPago);
-
             }
 
             $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF, $dataHoraFormatadaREF, $referenciaKIXI);
@@ -183,7 +188,7 @@ class PgtRefNotificacaoController extends Controller
         $codigo_voucher_dia = VoucherHelper::criptografar(VoucherHelper::parseVoucher($codigo_voucher_dia));
         
         $codigo_voucher = 'PREF' . $dataFormatadaREF . '/' . $dadosReferencia['lnr'];
-
+        
         // Criar comprovativo - ajuste para nomes de colunas diferentes entre tabelas
         $comprovativo = ComprovativoModel::create([
             'CiFecha' => $dataFormatadaBuData,
@@ -203,7 +208,7 @@ class PgtRefNotificacaoController extends Controller
             'BaseOperacao' => $dadosReferencia['dados']->BaseOperacao,
             'infoadicional' => $dadosReferencia['dados']->Cliente ?? $dadosReferencia['dados']->nomecliente ?? 'Desconhecido',
             'filecomprovativo' => 'Sem extrato',
-            'telefonecliente' => $dadosReferencia['telefone'],
+            'telefonecliente' => $dadosReferencia['dados']->Telefone,
             'periodo_trans_pgr' => $item['idLogSistema'],
             'refPagamento' => $referenciaKIXI
         ]);
@@ -211,6 +216,11 @@ class PgtRefNotificacaoController extends Controller
         if ($comprovativo) {
             $this->criarReconciliacao($comprovativo, $codigo_voucher_dia, $codigo_voucher, $dataFormatadaBuData);
             $this->enviarNotificacaoSMS($item, $dadosReferencia);
+            
+            //Calcular capital e juros
+            if($dadosReferencia['tipo'] === 'extrato'){
+                $status = HelperModel::calcularCapitalEJuros($comprovativo->BuMontante,$comprovativo->BuDadoOrigem,$comprovativo->id);
+            }
         }
     }
 

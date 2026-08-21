@@ -61,7 +61,7 @@ class ComprovativoModel extends Model
 
         return $affectedeCifecha;
     }
-
+    
     /*public static function setEliminarComprovativo($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao, $djascript, $loan)
        {
 
@@ -101,8 +101,6 @@ class ComprovativoModel extends Model
     {
 
         $statusEliminacao = false;
-
-        //$insertEraser = TbldjascriptEraserModel::create(['script_recuperacao' => $djascript, 'UtCodigoEliminou' => $UtCodigo, 'DataEliminacao' => $DataEliminacao, 'Motivo' => $MotivoEliminacao]);
 
         $deleterecuperacoes = DB::table('cpvtreconciliacao')->where('idcomprovativo', '=', $id)->delete();
         $deletereconciliacao = DB::table('recuperacao')->where('id_comprovativo', '=', $id)->delete();

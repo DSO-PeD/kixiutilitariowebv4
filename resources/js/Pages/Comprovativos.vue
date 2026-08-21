@@ -37,7 +37,6 @@
                 </div>
             </div>
 
-
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <button class="btn btn-primary flex items-center gap-2" @click="abrirModalNovoComprovativo"
                     v-if="$page.props.user.rec_comprovativo">
@@ -47,7 +46,6 @@
                     </svg>
                     Novo Comprovativo
                 </button>
-
             </div>
         </div>
 

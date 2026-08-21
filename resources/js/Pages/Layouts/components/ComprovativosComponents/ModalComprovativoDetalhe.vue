@@ -123,7 +123,6 @@
                                             <th class="text-left py-2 font-light">Estado</th>
                                             <th class="text-left py-2 font-light">Obs</th>
                                             <th class="text-left py-2 font-light">Descrição</th>
-
                                             <th class="text-left py-2 font-light">Banco</th>
                                             <th class="text-left py-2 font-light">Conta</th>
                                         </tr>

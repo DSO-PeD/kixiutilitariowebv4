@@ -224,7 +224,7 @@ class ComprovativosController extends Controller
         $totalReembolsos = (float) ($arrecadacao->R ?? 0);
 
         $NumeroPaginator = 30;
-        //  $paginado = $comprovativos_list->forPage(page: $request->input('page', 1), $NumeroPaginator)->values();
+        
         return Inertia::render('Comprovativos', [
             'totalPoupancas' => $totalPoupancas, 
             'totalReembolsos' => $totalReembolsos,
@@ -316,8 +316,6 @@ class ComprovativosController extends Controller
                 ]);
             }
 
-
-
             // Se não encontrou, buscar na tabela referenciasmanuais
             $clientData = DB::table('referenciasmanuais')
                 ->where('BuDadoOrigem', $completeNumber)
@@ -368,10 +366,10 @@ class ComprovativosController extends Controller
     public function guardar(Request $request)
     {
         try {
+
             $authenticatedUser = Auth::user();
             $cadastrarTipo = $request->ls;
             $montante = $request->txtMontante;
-
 
             // Validar montante máximo
             if ($montante > 7000000) {
@@ -412,17 +410,15 @@ class ComprovativosController extends Controller
             // Inserir no banco de dados
             $comprovativo = ComprovativoModel::create($dados);
 
-            if (!$comprovativo) {
+            if ($comprovativo) {
+                // Calcular capital e juros se for Loan
+                if ($cadastrarTipo === "Loan") {
+                    $status = HelperModel::calcularCapitalEJuros($dados["BuMontante"],$dados["BuDadoOrigem"],$comprovativo->id);
+                } 
+                return redirect()->route('comprovativos')->with('success', 'Dados guardados com sucesso!');
+            } else{
                 throw new Exception('Falha ao inserir comprovativo');
             }
-
-            // Processar reconciliação se necessário
-            /*  if ($request->selectFormaPagamento == 14) {
-                  $this->processarReconciliacao($request, $comprovativo->id);
-              }*/
-
-            return redirect()->route('comprovativos')
-                ->with('success', 'Dados guardados com sucesso!');
 
         } catch (Exception $e) {
             Log::error('Erro ao guardar comprovativo: ' . $e->getMessage());

@@ -139,9 +139,6 @@
             </div>
         </div>
 
-
-
-
         <div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
             <div
                 class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-white">
@@ -169,9 +166,6 @@
                 <!-- Card 1 - Total Montante Reembolsos -->
                 <div
                     class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 shadow-sm">
-
-
-
 
                     <!-- Card Total Desembolsado -->
 
@@ -202,11 +196,7 @@
                         <h3 class="text-sm font-semibold text-gray-700">Processos Aplicados</h3>
                     </div>
                     <p class="text-2xl font-bold text-blue-700">{{ total }} itens</p>
-
-
                 </div>
-
-
             </div>
         </div>
 
@@ -316,35 +306,42 @@
                                     Montante
                                 </div>
                             </th>
+
+                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+
+                                    <div class="flex items-center gap-1 text-gray-500 ">
+                                        <i class="fa fa-clipboard-check text-sm text-gray-400 "></i>
+                                        Data Desembolso
+                                    </div>
+
+                                    <span class="px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-600 text-[9px] font-bold uppercase tracking-wide">
+                                        Novo
+                                    </span>
+
+                                </div>
+                            </th>
+
                             <th
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
 
                                 <div class="flex items-center text-center gap-1">
-
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
                                     </svg>
-
-
                                     Ref. Pagamento
                                 </div>
                             </th>
                             <th
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-
                                 <div class="flex items-center text-center gap-1">
-
-
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
                                         <path strokeLinecap="round" strokeLinejoin="round"
                                             d="M20.25 3.75v4.5m0-4.5h-4.5m4.5 0-6 6m3 12c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
                                     </svg>
-
-
-
                                     Contacto
                                 </div>
                             </th>
@@ -374,6 +371,41 @@
                             <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-green-600">
                                 {{ formatCurrency(item.ValorTotalCredito) }}
                             </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-center text-sm">
+                                <div v-if="item.DataDesembolso"
+                                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 text-purple-600 font-medium">
+                                    <i class="fa fa-calendar-check"></i>
+                                    <span>
+                                        {{ formatarData(item.DataDesembolso) }}
+                                    </span>
+                                </div>
+                                <button v-else type="button" @click="abrirModalDesembolsar(item)"
+                                    class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 hover:text-blue-800 transition-all duration-200 font-medium">
+                                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg" stroke="#888686">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                        </g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path
+                                                d="M9.5 13.75C9.5 14.72 10.25 15.5 11.17 15.5H13.05C13.85 15.5 14.5 14.82 14.5 13.97C14.5 13.06 14.1 12.73 13.51 12.52L10.5 11.47C9.91 11.26 9.51001 10.94 9.51001 10.02C9.51001 9.17999 10.16 8.48999 10.96 8.48999H12.84C13.76 8.48999 14.51 9.26999 14.51 10.24"
+                                                stroke="#3f71ec" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round"></path>
+                                            <path d="M12 7.5V16.5" stroke="#3f71ec" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path
+                                                d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2"
+                                                stroke="#3f71ec" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round"></path>
+                                            <path d="M22 6V2H18" stroke="#3f71ec" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M17 7L22 2" stroke="#3f71ec" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </g>
+                                    </svg>
+                                    <span>Desembolsar</span>
+                                </button>
+                            </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <button v-if="item.RefPgtActivo === 0" @click="abrirModalActivarRerencia(item)"
                                     class="btn btn-outline-warning btn-sm flex items-center gap-1 mx-auto">
@@ -396,7 +428,6 @@
                                 </button>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-semibold text-black-600">
-
                                 <button @click="abrirModalEditarTelefone(item)" title="Alterar Contacto do Cliente"
                                     class="btn-sm flex items-center gap-1">
                                     <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor"
@@ -508,6 +539,9 @@
 
     <ModalEditarTelefone :show="showModalEditarTelefone" :extratoSelecionado="extratoSelecionado"
         @close="showModalEditarTelefone = false" @telefoneAtualizado="onTelefoneAtualizado" />
+
+    <ModalDesembolsar :show="showModalDesembolsar" :extratoSelecionado="extratoSelecionado"
+        @close="showModalDesembolsar = false" @afterDesembolso="onCreditoDesembolsado" />
 </template>
 
 
@@ -522,6 +556,7 @@ import ModalActivarReferencia from './Layouts/components/ExtratosComponents/Moda
 import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
 import ConfirmationModalExtrato from './Layouts/components/ExtratosComponents/ConfirmationModalExtrato.vue'
 import ModalEditarTelefone from './Layouts/components/ExtratosComponents/ModalEditarTelefone.vue'
+import ModalDesembolsar from './Layouts/components/ExtratosComponents/ModalDesembolsar.vue'
 
 const props = defineProps({
     lista_extrato: Object,
@@ -560,7 +595,6 @@ const props = defineProps({
     },
     dataInicioPeriodo: String,
     dataFimPeriodo: String
-
 })
 
 // Configuração da paginação
@@ -569,7 +603,6 @@ const paginaAtual = ref(1);
 
 // Dados locais para paginação
 const dadosLocais = ref([]);
-
 
 // Estados
 const showModal = ref(false)
@@ -590,8 +623,6 @@ const erros = ref({
     dataFim: ''
 })
 
-
-
 const showDeleteModal = ref(false)
 
 const selectedExtrato = ref({
@@ -599,14 +630,11 @@ const selectedExtrato = ref({
     cliente: '',
     montante: 0,
     data: '',
-
-
 })
 
-// Estados
+// Função para abrir o modal de editar telefone
 const showModalEditarTelefone = ref(false);
 
-// Função para abrir o modal de editar telefone
 const abrirModalEditarTelefone = (extrato) => {
     extratoSelecionado.value = extrato;
     showModalEditarTelefone.value = true;
@@ -620,6 +648,21 @@ const onTelefoneAtualizado = (novoTelefone) => {
     }
 };
 
+// Função para abrir o modal de desembolsar crédito
+const showModalDesembolsar = ref(false);
+
+const abrirModalDesembolsar = (extrato) => {
+    extratoSelecionado.value = extrato;
+    showModalDesembolsar.value = true;
+};
+
+// Função para quando o desembolso for registado com nova data
+const onCreditoDesembolsado = (dataDesembolso) => {
+    // Atualizar o telefone no extrato selecionado
+    if (extratoSelecionado.value) {
+        extratoSelecionado.value.DataDesembolso = dataDesembolso;
+    }
+};
 
 // Watch para atualizar dadosLocais quando lista_comprovativo mudar
 watch(() => props.lista_extrato, (newVal) => {
@@ -797,8 +840,6 @@ const validarDatas = () => {
     return isValid;
 };
 
-
-
 // Função aplicarFiltros modificada
 const aplicarFiltros = () => {
     if (!validarDatas()) return;
@@ -838,7 +879,6 @@ const resetarFiltros = () => {
         replace: true
     });
 };
-
 
 // Filtros
 const filtro = ref({
@@ -917,9 +957,6 @@ const exportarParaExcel = () => {
             return;
         }
 
-
-
-
         // Formata os dados
         const dadosFormatados = listaCompleta.map((extrato, index) => {
             // alert(extrato.CiFecha)
@@ -951,17 +988,14 @@ const exportarParaExcel = () => {
                     'TXAImprePercenta': extrato.TXAImprePercenta || '-',
                     'TXAImprePercentaValor': extrato.TXAImprePercentaValor || '-',
                     'ValorIVATaxaImprevisto': extrato.ValorIVATaxaImprevisto || '-',
-
                     'Actividade Economica': extrato.DescricaoActividadeEconomica || '-',
                     'Codigo Atividade Economica': extrato.CodigoAtividade || '-',
                     'Sector': extrato.Sector || '-',
                     'Magnitude': extrato.Magnitude || '-',
                     'RendaMensal': extrato.RendaMensal || '-',
-
                     'PPE': extrato.ppe || '-',
-                    'Referencia de Pagamento': extrato.referenciapagamento || '-'
-
-
+                    'Referencia de Pagamento': extrato.referenciapagamento || '-',
+                    'Telefone': extrato.Telefone || '-'
                 };
             } catch (error) {
                 console.error('Erro ao formatar registro:', extrato, error);

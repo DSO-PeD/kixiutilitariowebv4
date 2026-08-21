@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HelperModel;
 use App\Models\TKxAgenciaModel;
 use App\Models\TKxBancoContaModel;
 use App\Models\TKxBancoModel;
@@ -9,7 +10,6 @@ use App\Models\TKxClProdutoModel;
 use App\Models\TKxCodigoCaeModel;
 use App\Models\TKxExtratoModel;
 use App\Services\IziPayService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class TKxExtratoController extends Controller
 {
@@ -36,7 +37,6 @@ class TKxExtratoController extends Controller
 
         $tipoDeBusca = $request->tipo;
 
-
         $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
 
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
@@ -46,7 +46,6 @@ class TKxExtratoController extends Controller
         $dataFecho = $resultagencia_user->DataFecho;
 
         $dataFecho = date("Y-m-d", strtotime($dataFecho));
-
 
         $dataActual = date("Y-m-d", strtotime($hoje));
         $sistema_aberto = true;
@@ -58,7 +57,6 @@ class TKxExtratoController extends Controller
         }
 
         if ($tipoDeBusca == 1) {
-
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
             $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
             $TIPO = $tipoDeBusca;
@@ -67,7 +65,6 @@ class TKxExtratoController extends Controller
         if ($tipoDeBusca == 3) {
             $LOAN = "'" . $request->loan . "'";
             $TIPO = $tipoDeBusca;
-
         }
 
         if ($tipoDeBusca == 4) {
@@ -86,21 +83,13 @@ class TKxExtratoController extends Controller
             $TIPO = $tipoDeBusca;
         }
 
-
-
-        // $page = request()->get('page', 1);
-        // $perPage = 30;
-
         $extratos = collect(TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
-        // $paginados = $extratos->forPage($page, $perPage)->values();
-        //  $paginados->transform(fn($item) => (array) $item);
 
         collect($extratos)->max('CiFecha');
         collect($extratos)->min('CiFecha');
 
         $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
         $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
-
 
         $lista_produtos = TKxClProdutoModel::getProdutosDesembolsos();
         $lista_banco = TKxBancoModel::getBancos();
@@ -163,7 +152,6 @@ class TKxExtratoController extends Controller
                 'Magnitude' => $item->Magnitude,
                 'RendaMensal' => $item->RendaMensal,
 
-
                 'ValorPrimeiraPrestacao' => $item->ValorPrimeiraPrestacao,
 
                 'ppe' => $item->ppe,
@@ -172,15 +160,12 @@ class TKxExtratoController extends Controller
                 'BaseOperacao' => $item->BaseOperacao,
                 'referenciapagamento' => $item->referenciapagamento,
                 'RefPgtActivo' => $item->RefPgtActivo,
-                'Telefone' => $item->Telefone
-
-
+                'Telefone' => $item->Telefone,
+                'DataDesembolso' => $item->DataDesembolso
             ];
         });
 
-
         return Inertia::render('Extratos', [
-
             'lista_extrato' => $extrato_list,
             'filters' => [
                 'search' => $request->input('search_input', ''),
@@ -206,16 +191,10 @@ class TKxExtratoController extends Controller
             'dataInicioPeriodo' => $DataFimFormatada,
             'dataFimPeriodo' => $DataInicioFormatada,
         ]);
-
-
-
     }
-
 
     public function guardarDataExtrato(Request $request)
     {
-
-        //  dd($request);
         // Validação dos dados do formulário
         /* $validator = Validator::make($request->all(), [
              // ... outras validações ...
@@ -231,9 +210,6 @@ class TKxExtratoController extends Controller
                  ->withErrors($validator)
                  ->withInput();
          }*/
-
-
-
 
 
         DB::beginTransaction();
@@ -259,7 +235,6 @@ class TKxExtratoController extends Controller
             // Tratar necessidades especiais
             $necessidade = $this->tratarNecessidadesEspeciais($request);
 
-
             $tpaValorAnte = $this->formatDecimal($request->txtValorTPAnte) ?? 0;
             $tpaIvaAnte = $this->formatDecimal($request->txtValorIVATPAnte) ?? 0;
 
@@ -277,16 +252,11 @@ class TKxExtratoController extends Controller
             $dataBorderoux_ti = "";
             $voucher_ti = "";
 
-
             //Dados das Taxas
-
-
             $tipo_tp_Ante = "Antecipado";
             $percent_tp_Ante = $request->txtPecentTPAnte;
 
             $valor_tpAnte = $request->txtValorTPAnte;
-
-
 
             if ($tipo_tp_Ante == 'Antecipado') {
 
@@ -304,32 +274,23 @@ class TKxExtratoController extends Controller
                     $dataBorderoux_tp = $request->dataBorderoux_TP;
                     $voucher_tp = $request->txtVoucherBorderou_TP;
                 }
-
             }
-
-
-
 
             $tipo_ti = $request->TIPO_TI;
 
-
             if ($tipo_ti == 'Antecipado') {
-
-
                 $valor_borderoux_ti = $request->txtMontanteBorderoux_TI;
                 $banco_ti = $request->selectBancoBorderoux_TI;
                 $conta_ti = $request->selectContaBancariaBorderoux_TI;
                 $dataBorderoux_ti = $request->dataBorderoux_TI;
                 $voucher_ti = $request->txtVoucherBorderou_TI;
             }
-
-
-
-
             // Fim dados das taxas
 
-
-
+            //Calcular os valores de capital e juros mensais
+            $capitalEJuros = HelperModel::getCapitalEJuros($this->formatDecimal($request->txtValorCreditoNoContrato), $request->txtMaturidade, $request->selectProduto["PercTaxaMensal"]);
+            $valorCapital = $capitalEJuros['Capital'];
+            $valorJuroMensal = $capitalEJuros['JuroMensal'];
 
             // Preparar dados para inserção
             $data = [
@@ -338,7 +299,7 @@ class TKxExtratoController extends Controller
                 'OficialCredito' => $request->txtOficialCredito,
                 'Lnr' => $loan_number,
                 'Cliente' => $request->txtNomeCliente,
-                'Produto' => $request->selectProduto,
+                'Produto' => $request->selectProduto["PoAgrupado"],
                 'ValorCreditoNoContrato' => $this->formatDecimal($request->txtValorCreditoNoContrato),
                 'PercColateral' => $request->PecentCPD ?? 0,
                 'ValorDoColateral' => $this->formatDecimal($request->txtValorColateralDepositado),
@@ -385,7 +346,12 @@ class TKxExtratoController extends Controller
                 'BaseOperacao' => $siglabase,
                 'referenciapagamento' => $request->txtRefPagamento,
                 'RefPgtActivo' => 0,
-                'Telefone' => $request->txtTelefone
+                'Telefone' => $request->txtTelefone,
+                'Bilhete' => $request->txtBilhete,
+                'TempoCredito' => $request->txtMaturidade,
+                'TaxaMensal' => $request->selectProduto["PercTaxaMensal"],
+                'ValorCapital' => $valorCapital,
+                'ValorJuroMensal' => $valorJuroMensal
             ];
 
             // Garantir que nenhum campo obrigatório fique nulo
@@ -409,6 +375,7 @@ class TKxExtratoController extends Controller
                 ->withInput();
         }
     }
+
     protected function formatDecimal($value)
     {
         if ($value === null || $value === '') {
@@ -554,8 +521,6 @@ class TKxExtratoController extends Controller
             . "PARCEIRA NOS NEGÓCIOS";
     }
 
-
-
     public function carregaExtratosKP(Request $request)
     {
         $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
@@ -564,7 +529,6 @@ class TKxExtratoController extends Controller
 
         return response()->json($extratos);
     }
-
 
     public function finalizaraeliminacao(Request $request)
     {
@@ -651,13 +615,44 @@ class TKxExtratoController extends Controller
                 'success' => false,
                 'message' => 'Erro ao atualizar telefone: ' . $e->getMessage()
             ], 500);
-
-
         }
-
-
     }
+    
+    public function desembolsarCredito(Request $request)
+    {
+    
+        $request->validate([
+            'id' => 'required',
+            'dataDesembolso' => 'required'
+        ]);
 
+        try {
+            // Verifique se o registro existe
+            $exists = DB::table('tkxextrato')->where('Num', $request->id)->exists();
 
+            if (!$exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Extrato não encontrado.'
+                ], 404);
+            }
 
+            // Atualize o telefone
+            $inserted = DB::table('tkxextrato')
+                ->where('Num', $request->id)
+                ->update(['DataDesembolso' => $request->dataDesembolso]);
+
+            if ($inserted) {
+                return back()->with('Desembolsado com sucesso.');
+            } else {
+                return back()->with('error', 'Ups! algo aconteceu errado  ao desembolsar, por favor cotactar a DSO');
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao desembolsar: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
