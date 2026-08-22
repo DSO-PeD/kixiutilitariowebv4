@@ -12,6 +12,7 @@ use App\Http\Controllers\TKxExtratoController;
 use App\Http\Controllers\DebugPgtRefController;
 use App\Http\Controllers\ClienteCEController;
 use App\Http\Controllers\DeclaracaoController;
+use App\Http\Controllers\ExternalAPIController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 
@@ -42,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])->name('extrato.eliminar');
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])->name('recuperacao.eliminar');
     Route::post('/atualizar-telefone', [TKxExtratoController::class, 'atualizarTelefone'])->name('atualizar.telefone');
-
+    
     Route::get('/fechoPagamento', [CpvtReconciliacaoController::class, 'viewFechoReconciliacao']);
 
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');
@@ -79,6 +80,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/verUtilizador/{UtCodigo}', [AuthController::class, 'verUtilizador']);
     Route::post('/atribuir-permission/{UtCodigo}', [AuthController::class, 'atribuirPermissionUser']);
     Route::post('/remover-permission/{UtCodigo}', [AuthController::class, 'removerPermissionUser']);
+
+    Route::post('/desembolsar-credito', [TKxExtratoController::class, 'desembolsarCredito']);
 });
 
 Route::get('/loadautofill', [ComprovativosController::class, 'getClientData'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
@@ -125,3 +128,9 @@ Route::get('/test-redis', function () {
 Route::get('syncPagamentos/{periodoI}/{periodoF}', [DebugPgtRefController::class, 'carregarPagamentoPorReferencia']);
 Route::get('actualizarComprovativos', [DebugPgtRefController::class, 'actualizarComprovativoRef']);
 Route::get('actualizarComprovativosRefManual', [DebugPgtRefController::class, 'actualizarComprovativoRefManual']);
+
+/** Rotas para facturação */
+Route::prefix('api')->group(function () {
+    Route::get('/facturacao/desembolsos', [ExternalAPIController::class, 'getDesembolsos']);
+    Route::get('/facturacao/comprovativos', [ExternalAPIController::class, 'getComprovativos']);
+});

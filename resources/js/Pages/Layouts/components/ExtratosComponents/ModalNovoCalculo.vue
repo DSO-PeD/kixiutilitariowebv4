@@ -23,7 +23,6 @@
 
         <div class="p-6 overflow-y-auto max-h-[calc(100vh-150px)]">
 
-
             <form @submit.prevent="submitForm" class="space-y-6">
 
                 <!-- Seção 1: Dados Básicos - Card melhorado -->
@@ -69,7 +68,7 @@
                                     class="text-red-500">*</span></label>
                             <input v-model="internalForm.txtNomeCliente" class="form-input"
                                 placeholder="Nome completo do cliente" required />
-                        </div>
+                        </div> 
 
                         <div class="space-y-1">
                             <label class="block text-sm font-medium text-gray-700">Produto <span
@@ -77,7 +76,7 @@
                             <select v-model="internalForm.selectProduto" class="form-select" required>
                                 <option disabled value="">Selecione o produto</option>
                                 <option v-for="produto in produtosext" :key="produto.PoAgrupado"
-                                    :value="produto.PoAgrupado">
+                                    :value="produto">
                                     {{ produto.PoAgrupado }}
                                 </option>
                             </select>
@@ -91,7 +90,6 @@
                         </div>
 
                         <div class="space-y-1">
-
                             <label class="block text-sm font-medium text-gray-700">Referência de Pagamento <span
                                     class="text-red-500">*</span></label>
                             <input v-model="internalForm.txtRefPagamento" class="form-input bg-gray-50"
@@ -103,8 +101,7 @@
                             <div class="relative">
                                 <!-- Ícone da bandeira de Angola com tamanho adequado -->
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
-                                    <img src="../../../../../../public/imagens/angola.svg"
-                                        class="h-6 w-8 object-contain" alt="AO">
+                                    <img src="/imagens/angola.svg" class="h-6 w-8 object-contain" alt="AO">
                                 </div>
 
                                 <!-- Input vinculado ao internalForm -->
@@ -116,9 +113,26 @@
                             <p v-if="showPhoneError" class="text-red-500 text-xs mt-1">O telefone deve ter exatamente 9
                                 dígitos</p>
                         </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Nº Bilhete <span
+                                    class="text-red-500">*</span></label>
+
+                            <input type="text" v-model="internalForm.txtBilhete" @input="
+                                internalForm.txtBilhete = $event.target.value
+                                    .toUpperCase()
+                                    .replace(/^([^0-9]*)(.*)/, '$2')
+                                    .replace(/^(\d{0,9})[^A-Z0-9]*(.*)/, '$1$2')
+                                    .slice(0, 14)
+                                " maxlength="14" class="form-input" placeholder="ex.: 000000000LA030" required />
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Maturidade<span
+                                    class="text-red-500">*</span></label>
+
+                            <input type="number" v-model="internalForm.txtMaturidade" min="1" max="36" class="form-input" placeholder="informe nº de meses" required />
+                        </div>
                     </div>
                 </div>
-
 
                 <!-- Seção 2: Informações do Cliente - Card melhorado -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -250,7 +264,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <!-- Seção 3: Necessidades Especiais - Card melhorado -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -388,7 +401,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <!-- Seção 5: Taxa de Processamento - Card melhorado -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -640,10 +652,6 @@
                     </div>
                 </div>
 
-
-
-
-
                 <!-- Seção 7: Totais - Card destacado -->
                 <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm border border-blue-200">
                     <div class="flex items-center mb-5">
@@ -797,7 +805,7 @@ defineExpose({
 // Adicione esta função para verificação
 const validateFormData = (data) => {
     const requiredFields = [
-        'selectBase', 'txtNumeroLoan', 'txtNomeCliente',
+        'selectBase', 'txtNumeroLoan', 'txtNomeCliente', 'txtBilhete',
         'selectProduto', 'txtOficialCredito'
     ];
 
@@ -815,9 +823,6 @@ const validateFormData = (data) => {
 
 const isSubmitting = ref(false);
 
-
-
-
 // No método submitForm do modal:
 const submitForm = async () => {
 
@@ -826,7 +831,6 @@ const submitForm = async () => {
         showPhoneError.value = true;
         return; // Impede o envio do formulário
     }
-
 
     isSubmitting.value = true;
     try {
@@ -851,7 +855,6 @@ const submitForm = async () => {
                 formData[field] = parseCurrency(formData[field]);
             }
         });
-
 
         await emit('submit', formData);// Emite para o componente pai
     } catch (error) {
@@ -931,7 +934,7 @@ const internalForm = ref({
     txtDecricaoAE: '',
     CNE: 'Sim',
     nes: '',
-    txtDesc: ''
+    txtDesc: '',
 });
 
 onMounted(() => {
@@ -950,7 +953,6 @@ const updateReference = () => {
     } else {
         internalForm.value.txtRefPagamento = base && loan ? `00${base}${loan}` : '';
     }
-
 
     emit('update:form', internalForm.value);
 };
@@ -971,9 +973,6 @@ const contasFiltradasTI = computed(() => {
         conta.BaCodigo === internalForm.value.selectBancoBorderoux_TI
     );
 });
-
-
-
 
 // Variáveis reativas para o componente de busca
 const grupoSearchText = ref('');
@@ -1028,8 +1027,6 @@ onMounted(() => {
     filteredGrupos.value = props.grupoatividades;
 });
 
-
-
 //  watchers para limpar a conta quando o banco mudar
 watch(() => internalForm.value.selectBancoBorderoux_TP, (newVal, oldVal) => {
     if (newVal !== oldVal) {
@@ -1045,7 +1042,6 @@ watch(() => internalForm.value.selectBancoBorderoux_TI, (newVal, oldVal) => {
 
 // 3. Watch para monitorar mudanças
 watch(
-
     () => [internalForm.value.selectBase, internalForm.value.txtNumeroLoan],
     () => {
         updateReference();
@@ -1080,7 +1076,6 @@ watch(() => internalForm.value.cbGCAE, (newVal, oldVal) => {
 onMounted(() => {
     atividadesFiltradas.value = [];
 });
-
 
 // Opções para os selects
 const rendaMensalOptions = [
@@ -1123,7 +1118,6 @@ const magnitudeOptions = [
     '3. Grossista'
 ]
 
-
 // FORMANTANDO VALORES
 function formatCurrency(value) {
     if (value == null) return '';
@@ -1140,6 +1134,7 @@ function formatCurrency(value) {
         maximumFractionDigits: 2
     });
 }
+
 function onInput(event) {
     const campo = event.target.name; // ou outro identificador que você usa
     let valor = event.target.value;
@@ -1151,6 +1146,7 @@ function onInput(event) {
         [campo]: valor
     };
 }
+
 function parseCurrency(value) {
     if (!value) return 0;
 
@@ -1175,8 +1171,6 @@ const calcularColateralDepositado = () => {
     }
 
     atualizarTotais()
-
-
 };
 
 const calcularColateralDeduzido = () => {
@@ -1184,8 +1178,6 @@ const calcularColateralDeduzido = () => {
     const percent = internalForm.value.txtPecentCDD || 0;
     const valorCalculado = (valor * (percent / 100));
     const valorCa = formatCurrency(valorCalculado);
-
-
 
     internalForm.value = {
         ...internalForm.value,
@@ -1201,7 +1193,6 @@ const calcularTaxaDeProcessamento = () => {
     const percent = internalForm.value.txtPecentTP || 0
 
     const tp = valor * (percent / 100)
-
 
     const iva = tp * 0.14
 
@@ -1219,7 +1210,6 @@ const calcularTaxaDeProcessamento = () => {
 
 function calcularTaxaDeProcessamentoAnte() {
     var defaultValor = 350000;
-
 
     const valor = parseCurrency(internalForm.value.txtValorCreditoNoContrato) || 0
     const percent = internalForm.value.txtPecentTPAnte || 0
@@ -1239,14 +1229,9 @@ function calcularTaxaDeProcessamentoAnte() {
     }
 
     atualizarTotais()
-
-
-
-
 }
 
 const calcularTaxaDeImprevisto = () => {
-
 
     const PercentTI = parseFloat(internalForm.value.txtPecentTI || 0) / 100;
     const PercentIVATI = 14 / 100;
@@ -1287,7 +1272,6 @@ const calcularTaxaDeImprevisto = () => {
     internalForm.value.txtValorTI = manterCasaDecimais(valorDescontadoTI, 2);
     internalForm.value.txtValorIVATI = manterCasaDecimais(valorIVATI, 2);
 
-
     atualizarTotais()
 };
 
@@ -1320,13 +1304,38 @@ const atualizarTotais = () => {
     internalForm.value.txtFinalValorCreditoNoContrato = formatCurrency(ValorCreditoDoContrato);
     internalForm.value.txtFinalValorAReceber = formatCurrency(ValorAReceber);
 
-
-
-
 };
 function manterCasaDecimais(value, casas) {
     return value.toFixed(casas).replace('.', ',');
 }
+
+const formatBilhete = (e) => {
+    let value = e.target.value.toUpperCase();
+
+    // keep only possible BI structure
+    value = value.replace(/[^0-9A-Z]/g, '');
+
+    // first 9 must be numbers
+    if (value.length <= 9) {
+        value = value.replace(/[^0-9]/g, '');
+    }
+
+    // after 9 positions, letters are allowed
+    if (value.length > 9 && value.length <= 11) {
+        value =
+            value.substring(0, 9) +
+            value.substring(9).replace(/[^A-Z]/g, '');
+    }
+
+    // last 3 must be numbers
+    if (value.length > 11) {
+        value =
+            value.substring(0, 11) +
+            value.substring(11).replace(/[^0-9]/g, '');
+    }
+
+    internalForm.txtBilhete = value.slice(0, 14);
+};
 
 </script>
 
@@ -1383,10 +1392,13 @@ function manterCasaDecimais(value, casas) {
 }
 
 /* Estilos para o dropdown de busca */
-.dropdown-enter-active, .dropdown-leave-active {
+.dropdown-enter-active,
+.dropdown-leave-active {
     transition: opacity 0.2s, transform 0.2s;
 }
-.dropdown-enter-from, .dropdown-leave-to {
+
+.dropdown-enter-from,
+.dropdown-leave-to {
     opacity: 0;
     transform: translateY(-10px);
 }

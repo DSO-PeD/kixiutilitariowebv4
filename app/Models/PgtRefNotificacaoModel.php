@@ -20,6 +20,5 @@ class PgtRefNotificacaoModel extends Model
         'Id',
         'nib',
         'banco'
-
     ];
 }
