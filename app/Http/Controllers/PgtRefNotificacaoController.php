@@ -32,13 +32,23 @@ class PgtRefNotificacaoController extends Controller
         return preg_match('/^\d{9}$/', $telefone) ? $telefone : null;
     }
 
-    /**
-     * 
-     * 
-     */
+    /*******
+    idTransacao	
+    numLogSistema	
+    idLogSistema	
+    dataTransaccaoCliente	
+    montantePago	
+    tipoTerminal	
+    iIdentTerminal	
+    localidadeTerminal	
+    refPagamento	
+    Id	
+    nib	
+    banco
+    *******/	
 
     public function carregarPagamentoPorReferencia(Request $request)
-    { 
+    {
         // 1. Validar a access-key
         $accessKey = $request->header('Access-Key') ?? $request->input('access_key');
 

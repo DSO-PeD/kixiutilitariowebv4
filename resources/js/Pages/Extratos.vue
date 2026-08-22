@@ -373,7 +373,7 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center text-sm">
                                 <div v-if="item.DataDesembolso"
-                                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 text-purple-600 font-medium">
+                                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-green-600 font-medium">
                                     <i class="fa fa-calendar-check"></i>
                                     <span>
                                         {{ formatarData(item.DataDesembolso) }}
