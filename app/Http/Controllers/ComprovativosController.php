@@ -412,7 +412,7 @@ class ComprovativosController extends Controller
 
             if ($comprovativo) {
                 // Calcular capital e juros se for Loan
-                if ($cadastrarTipo === "Loan") {
+                if ($cadastrarTipo === "Loan" && $comprovativo->BaseOperacao !== 'AC' && $comprovativo->BaseOperacao !== 'DP') {
                     $status = HelperModel::calcularCapitalEJuros($dados["BuMontante"],$dados["BuDadoOrigem"],$comprovativo->id);
                 } 
                 return redirect()->route('comprovativos')->with('success', 'Dados guardados com sucesso!');
