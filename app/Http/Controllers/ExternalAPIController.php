@@ -15,11 +15,11 @@ class ExternalAPIController extends Controller
         $dataF = $request->input('dataF');
         $limite = $request->input('limite'); 
 
-        $query = TKxExtratoModel::whereDate('CiFecha', '>=', $dataI)
-                                    ->whereDate('CiFecha', '<=', $dataF)
+        $query = TKxExtratoModel::whereDate('DataDesembolso', '>=', $dataI)
+                                    ->whereDate('DataDesembolso', '<=', $dataF)
                                     ->select(
                                         'UtCodigo',
-                                        'CiFecha',
+                                        'DataDesembolso as CiFecha',
                                         'Lnr',
                                         'Cliente',
                                         'TXAProcePercentaValor',
@@ -47,20 +47,23 @@ class ExternalAPIController extends Controller
         $dataF = $request->input('dataF');
         $limite = $request->input('limite'); 
 
-        $query = ComprovativoModel::whereDate('CiFecha', '>=', $dataI)
-                                    ->whereDate('CiFecha', '<=', $dataF)
-                                    ->where('idestado', 8)
-                                    ->whereNotIn('PoCodigo', ['S00','S02','S03','S06','S08'])
-                                    ->select(
-                                        'UtCodigo',
-                                        'BuDadoOrigem',
-                                        'PoCodigo',
-                                        'BuMontante',
-                                        DB::raw('IFNULL(Capital, 0) as CAPI'),
-                                        DB::raw('IFNULL(Juros, 0) as JURO'),
-                                        'CiFecha',
-                                        'infoadicional'
-                                    );
+        $query = DB::table('comprovativos as c')
+                    ->leftjoin('tkxextrato as ext', 'ext.Lnr','=','c.BuDadoOrigem')
+                    ->whereDate('c.CiFecha', '>=', $dataI)
+                    ->whereDate('c.CiFecha', '<=', $dataF)
+                    ->where('c.idestado', 8)
+                    ->whereNotIn('c.PoCodigo', ['S00','S02','S03','S06','S08'])
+                    ->select(
+                        'c.UtCodigo',
+                        'c.BuDadoOrigem',
+                        'c.PoCodigo',
+                        'c.BuMontante',
+                        DB::raw('IFNULL(c.Capital, 0) as CAPI'),
+                        DB::raw('IFNULL(c.Juros, 0) as JURO'),
+                        'c.CiFecha',
+                        'c.infoadicional',
+                        DB::raw('IFNULL(ext.Bilhete, 999999999) as Bilhete'),
+                    );
 
         if ($limite !== null) {
             $query->limit((int) $limite);
