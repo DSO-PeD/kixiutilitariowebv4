@@ -48,7 +48,7 @@ class PgtRefNotificacaoController extends Controller
     *******/	
 
     public function carregarPagamentoPorReferencia(Request $request)
-    {
+    { 
         // 1. Validar a access-key
         $accessKey = $request->header('Access-Key') ?? $request->input('access_key');
 
@@ -121,7 +121,7 @@ class PgtRefNotificacaoController extends Controller
     {
         // Buscar na tabela principal primeiro
         $referencia = TKxExtratoModel::where('referenciapagamento', $referenciaKIXI)->first();
-
+        
         if ($referencia) {
             $produto = TKxClProdutoModel::where('PoAgrupado', $referencia->Produto)
                 ->where('Estado', 1)
@@ -138,7 +138,27 @@ class PgtRefNotificacaoController extends Controller
         }
 
         // Buscar na tabela de referências manuais
-        $referenciaManual = ReferenciaPGTModel::where('referencia', $referenciaKIXI)->first();
+        $referenciaManual = ReferenciaPGTModel::where('referencia', $referenciaKIXI)
+                                                ->select(
+                                                    'id',
+                                                    'BuDadoOrigem',
+                                                    'nomecliente',
+                                                    'telefone as Telefone',
+                                                    'PoCodigo',
+                                                    'tipo',
+                                                    'referencia',
+                                                    'inicio',
+                                                    'fim',
+                                                    'montante',
+                                                    'montantepago',
+                                                    'activo',
+                                                    'idestado',
+                                                    'BaseOperacao',
+                                                    'UtCodigo',
+                                                    'updated_at',
+                                                    'created_at'
+                                                )
+                                                ->first();
 
         if ($referenciaManual) {
             return [
@@ -179,7 +199,7 @@ class PgtRefNotificacaoController extends Controller
                 $valorPago = PgtRefNotificacaoModel::where('refPagamento', $referenciaKIXI)->sum('montantePago');
                 $this->atualizarReferenciaManual($dadosReferencia['dados']->id, $valorPago);
             }
-
+            
             $this->criarComprovativoEReconciliacao($item, $dadosReferencia, $dataFormatadaREF, $dataHoraFormatadaREF, $referenciaKIXI);
         }
     }
@@ -198,7 +218,7 @@ class PgtRefNotificacaoController extends Controller
         $codigo_voucher_dia = VoucherHelper::criptografar(VoucherHelper::parseVoucher($codigo_voucher_dia));
         
         $codigo_voucher = 'PREF' . $dataFormatadaREF . '/' . $dadosReferencia['lnr'];
-        
+   
         // Criar comprovativo - ajuste para nomes de colunas diferentes entre tabelas
         $comprovativo = ComprovativoModel::create([
             'CiFecha' => $dataFormatadaBuData,
@@ -373,7 +393,7 @@ class PgtRefNotificacaoController extends Controller
         echo "Criptografado: $codigoEncriptado\n <br>";
         
         // Decryptar
-        $dados = VoucherHelper::descriptografar($codigoEncriptado);  //dd($dados);
+        $dados = VoucherHelper::descriptografar($codigoEncriptado);
         $voucherOriginal = VoucherHelper::montarVoucher($dados);
 
         echo "Voucher original: $voucherOriginal\n <br>";
