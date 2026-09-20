@@ -1,1231 +1,1547 @@
 <template>
+    <Head title="Reporting Balance Kixi Crédito Angola" />
 
-    <Head title="Gestão de Referências de Pagamentos" />
+    <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/50">
+        <div class="container mx-auto py-4 md:py-6 px-2 md:px-4 max-w-[1600px]">
 
-    <div class="container mx-auto py-4 md:py-6 max-w-full">
-        <!-- Alertas de Sistema -->
-        <div v-if="$page.props.flash.success" class="alert alert-success mb-4 animate-fade-in">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                {{ $page.props.flash.success }}
-            </div>
-        </div>
-
-        <div v-if="$page.props.flash.error" class="alert alert-danger mb-4 animate-fade-in">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                    </path>
-                </svg>
-                {{ $page.props.flash.error }}
-            </div>
-        </div>
-
-        <!-- Cabeçalho Principal -->
-        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
-            <div class="flex items-center">
-                <div class="bg-green-100 p-3 rounded-full mr-4">
-                    <i class="fas  fa-chart-pie  text-2xl text-green-800"></i>
+            <!-- ═══════════════ HEADER MODERNO ═══════════════ -->
+            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B2E4F] via-[#103E68] to-[#1E5A8E] shadow-xl mb-6">
+                <div class="absolute inset-0 opacity-10"
+                     style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px); background-size: 24px 24px;">
                 </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Reporting Balance Kixi Crédito Angola</h1>
-                    <p class="text-sm text-gray-600 mt-1">Relatório Diário</p>
-                </div>
-            </div>
-
-
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-
-                <a :href="`/reports/rdreport`" class="btn btn-outline-success  btn-sm flex items-center gap-1"
-                    target="_blank">
-
-                     <i class="fa fa-chart-line text-orange-600 text-xl"></i>
-                      Visualizar RD Express
-                </a>
-
-
-            </div>
-        </div>
-
-        <div class="border-t border-gray-200 my-4"></div>
-
-
-
-
-        <!-- Filtros Avançados -->
-   <div v-if="false">
-
-        <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-gray-700">Filtros de Pesquisa</h2>
-                <button @click="toggleFiltros"
-                    class="text-green-600 hover:text-green-800 text-sm font-medium flex items-center">
-                    {{ filtrosVisiveis ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            :d="filtrosVisiveis ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'" />
-                    </svg>
-                </button>
-            </div>
-
-            <div v-if="filtrosVisiveis" class="transition-all duration-300 ease-in-out">
-                <!-- Filtros superiores -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <!-- Loan Number -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Número do Empréstimo</label>
-                        <div class="relative">
-                            <button class="btn btn-primary-filter flex items-center justify-center"
-                                @click="showModalLoan = true">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                &ThinSpace;Código do Cliente
-                            </button>
+                <div class="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-5 md:p-6">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-2xl ring-1 ring-white/20">
+                            <i class="fas fa-chart-pie text-2xl text-emerald-300"></i>
                         </div>
-                    </div>
-
-                    <!-- Período -->
-                    <div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="relative">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Inicio </label>
-                                <input v-model="filtro.dataInicioInput" type="date" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-sm"
-                                    :max="filtro.dataInicioInput" @change="validarDatas" />
-                                <span v-if="erros.dataInicio" class="text-red-500 text-xs">{{ erros.dataInicio }}</span>
-                            </div>
-
-                            <div class="relative">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Fim </label>
-                                <input v-model="filtro.dataFimInput" type="date" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-sm"
-                                    :min="filtro.dataFimInput" @change="validarDatas" />
-                                <span v-if="erros.dataFim" class="text-red-500 text-xs">{{ erros.dataFim }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- As três selects agora estão em uma única div com grid de 3 colunas -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-1 md:col-span-2 lg:col-span-2">
-
-
-                        <!-- Agência -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Agência</label>
-                            <div class="relative">
-                                <select v-model="filtro.agencia"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white">
-                                    <option disabled :value="'s/a'">Escolha agência </option>
-                                    <option v-for="agencia in $page.props.bases" :value="agencia.OfIdentificador"
-                                        :key="agencia.OfIdentificador">
-                                        {{ agencia.OfIdentificador }} - {{ agencia.OfNombre }}
-                                    </option>
-                                    <option :value="'T'">Todas que tenho acesso</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                    <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            </div>
+                            <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
+                                Reporting Balance · Kixi Crédito Angola
+                            </h1>
+                            <p class="text-sm text-blue-100/80 mt-0.5 flex items-center gap-2">
+                                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Relatório Diário Executivo · {{ ultimoMesNome }}
+                            </p>
                         </div>
+                    </div>
 
-
-
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        <button @click="imprimirA4"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all backdrop-blur-sm">
+                            <i class="fa fa-print text-blue-200"></i>
+                            Imprimir Tabelas (A4)
+                        </button>
+                        <a :href="`/reports/rdreport`" target="_blank"
+                           class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
+                            <i class="fa fa-chart-line"></i>
+                            Visualizar RD Express
+                        </a>
                     </div>
                 </div>
-
-
-
-                <!-- Botões de ação -->
-                <div
-                    class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
-                    <button @click="resetarFiltros" class="btn btn-outline-secondary flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Limpar Filtros
-                    </button>
-                    <button @click="aplicarFiltros" class="btn btn-primary-filter flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                        </svg>
-                        Aplicar Filtros
-                    </button>
-                </div>
             </div>
-        </div>
 
-</div>
+            <!-- ═══════════════ KPI CARDS ═══════════════ -->
+            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4 mb-6">
+                <KpiCard
+                    label="Balanço Total"
+                    :value="formatarMoedaCompacta(ultimoRegistro?.BalancoValor)"
+                    :delta="calcularDelta(ultimoRegistro?.BalancoValor, registroAnterior?.BalancoValor)"
+                    icon="fa-wallet"
+                    tone="blue"
+                />
+                <KpiCard
+                    label="Desembolso"
+                    :value="formatarMoedaCompacta(ultimoRegistro?.Desembolsos)"
+                    :delta="calcularDelta(ultimoRegistro?.Desembolsos, registroAnterior?.Desembolsos)"
+                    icon="fa-hand-holding-usd"
+                    tone="emerald"
+                />
+                <KpiCard
+                    label="Reembolso"
+                    :value="formatarMoedaCompacta(ultimoRegistro?.Reembolso)"
+                    :delta="calcularDelta(ultimoRegistro?.Reembolso, registroAnterior?.Reembolso)"
+                    icon="fa-undo"
+                    tone="rose"
+                />
+                <KpiCard
+                    label="Créditos Novos"
+                    :value="formatarInt(ultimoRegistro?.CreditosNovos)"
+                    :delta="calcularDelta(ultimoRegistro?.CreditosNovos, registroAnterior?.CreditosNovos)"
+                    icon="fa-file-invoice-dollar"
+                    tone="amber"
+                />
+                <KpiCard
+                    label="NPL"
+                    :value="formatarPercentual(ultimoRegistro?.NPLPercentual)"
+                    :delta="calcularDelta(ultimoRegistro?.NPLPercentual, registroAnterior?.NPLPercentual)"
+                    icon="fa-exclamation-triangle"
+                    tone="rose"
+                    invert
+                />
+                <KpiCard
+                    label="Taxa de Reembolso"
+                    :value="formatarPercentual(ultimoRegistro?.TaxaReembolsoPercentual)"
+                    :delta="calcularDelta(ultimoRegistro?.TaxaReembolsoPercentual, registroAnterior?.TaxaReembolsoPercentual)"
+                    icon="fa-percentage"
+                    tone="emerald"
+                />
+            </div>
 
-        <!-- Resumo do Período -->
-
-
-<div v-if="false">
-
-        <!-- Tabela de Comprovativos -->
-        <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
-            <!-- Cabeçalho da Tabela -->
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
-                <div class="text-sm text-gray-600">
-                    Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
-                    de {{ totalItens }} registros
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button class="btn btn-outline-excel flex items-center gap-2" @click="exportarParaExcel">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                        Exportar Excel
-                    </button>
-
-                    <div class="flex gap-2">
-                        <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)"
-                            class="btn btn-outline px-3"
-                            :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19l-7-7 7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="flex items-center bg-gray-100 rounded-lg px-3">
-                            <span class="text-sm font-medium">Página {{ paginaAtual }}</span>
+            <!-- ═══════════════ GRÁFICOS ═══════════════ -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                <!-- Evolução do Balanço -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-chart-area text-blue-600"></i>
+                            <h3 class="font-semibold text-slate-800">Evolução do Balanço</h3>
                         </div>
-                        <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)"
-                            class="btn btn-outline px-3" :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                                </path>
-                            </svg>
-                        </button>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">6 meses</span>
+                    </div>
+                    <div class="h-56 relative">
+                        <canvas ref="chartBalancoRef"></canvas>
+                    </div>
+                </div>
+
+                <!-- Desembolso vs Reembolso -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-exchange-alt text-emerald-600"></i>
+                            <h3 class="font-semibold text-slate-800">Fluxo de Caixa</h3>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">12 meses</span>
+                    </div>
+                    <div class="h-56 relative">
+                        <canvas ref="chartFluxoRef"></canvas>
+                    </div>
+                </div>
+
+                <!-- Qualidade da Carteira -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-amber-600"></i>
+                            <h3 class="font-semibold text-slate-800">Qualidade da Carteira (NPL · PAR 1 · PAR 30)</h3>
+                        </div>
+                    </div>
+                    <div class="h-56 relative">
+                        <canvas ref="chartQualidadeRef"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribuição por Agências -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-building text-indigo-600"></i>
+                            <h3 class="font-semibold text-slate-800">Distribuição por Agências</h3>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Top 8</span>
+                    </div>
+                    <div class="h-56 relative">
+                        <canvas ref="chartAgenciasRef"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Alertas de Valores -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div v-if="comprovativosPaginados.some(c => c.montante > 7000000)" class="alert alert-warning">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                            </path>
-                        </svg>
-                        <span>Atenção! Foram identificados reembolsos com montantes superiores a 7.000.000,00
-                            AKZ.</span>
-                    </div>
-                    <button @click="aplicarFiltrosmexc7M" class="btn btn-sm btn-outline mt-2">
-                        Listar todos
-                    </button>
+            <!-- ═══════════════ ÁREA DE IMPRESSÃO (TABELAS) ═══════════════ -->
+            <div ref="areaTabelas">
+                <!-- Título exclusivo da impressão -->
+                <div class="hidden print:block text-center mb-4 pb-2 border-b border-slate-300">
+                    <h1 class="text-base font-bold text-slate-800 uppercase tracking-wide">
+                        RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA]
+                    </h1>
                 </div>
 
-                <div v-if="comprovativosPaginados.some(c => c.montante >= 500000 && c.montante <= 7000000)"
-                    class="alert alert-warning">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>Atenção! Foram identificados reembolsos com montantes entre 500.000,00 e 7.000.000,00
-                            AKZ.</span>
-                    </div>
-                    <button @click="aplicarFiltrosmai5M" class="btn btn-sm btn-outline mt-2">
-                        Listar todos
-                    </button>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 space-y-8">
+
+                    <!-- ═══ TABELA 1: Reporting Global ═══ -->
+                    <section>
+                        <SectionTitle
+                            icon="fa-globe-africa"
+                            title="Reporting Global — KIXICRÉDITO ANGOLA (100%)"
+                            subtitle="PCE: JOAQUIM CATINDA · Histórico Mensal Consolidado"
+                            tone="blue"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-[#0B2E4F] text-white text-center">
+                                        <th rowspan="2"
+                                            class="w-36 bg-slate-50 text-slate-500 font-bold border-r border-b border-slate-300 px-3 py-2 align-bottom text-left text-[11px] uppercase tracking-wider">
+                                            Indicadores
+                                        </th>
+                                        <th :colspan="colunasMeses.length"
+                                            class="border-r border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider">
+                                            Histórico Mensal
+                                        </th>
+                                        <th colspan="2" class="border-r border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider">
+                                            Variação
+                                        </th>
+                                        <th class="border-r border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider bg-[#1E5A8E]">
+                                            Mês Atual
+                                        </th>
+                                        <th class="border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider">OM</th>
+                                    </tr>
+                                    <tr class="bg-[#103E68] text-white text-center">
+                                        <th v-for="mes in colunasMeses" :key="mes.key"
+                                            class="border-r border-b border-slate-300 px-3 py-1.5 whitespace-nowrap text-[11px] font-semibold">
+                                            {{ mes.label }}
+                                        </th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 bg-emerald-500/20 text-emerald-200 text-[11px]">▲</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 bg-rose-500/20 text-rose-200 text-[11px]">▼</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 bg-[#1E5A8E]"></th>
+                                        <th class="border-b border-slate-300 px-3 py-1.5"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <!-- 1. Balanço -->
+                                    <tr class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                            <span class="inline-flex items-center gap-2">
+                                                <span class="w-1 h-5 bg-blue-500 rounded-full"></span>
+                                                1. Balanço
+                                            </span>
+                                        </td>
+                                        <td v-for="item in historicoSeisMeses" :key="item.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums">
+                                            {{ formatarNumero(item.BalancoValor) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.Desembolsos) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.Reembolso) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-amber-50 text-amber-800 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.BalancoValor) }}
+                                        </td>
+                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                            :class="Number(ultimoRegistro?.VariacaoPercentual) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            <span class="inline-flex items-center gap-1">
+                                                <i :class="Number(ultimoRegistro?.VariacaoPercentual) >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
+                                                {{ formatarPercentual(Math.abs(Number(ultimoRegistro?.VariacaoPercentual) || 0)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- 2. Créditos Novos -->
+                                    <tr class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                            <span class="inline-flex items-center gap-2">
+                                                <span class="w-1 h-5 bg-indigo-500 rounded-full"></span>
+                                                <span>2. Créditos | Novos<br>
+                                                <span class="text-[10px] font-normal text-slate-500">Taxa Juros ≤ Kz 2.000</span></span>
+                                            </span>
+                                        </td>
+                                        <td v-for="item in historicoSeisMeses" :key="item.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums leading-relaxed">
+                                            <span class="text-slate-700">{{ formatarInt(item.CreditosQuantidade) }}</span>
+                                            <span class="text-slate-400 mx-1">|</span>
+                                            <span class="text-indigo-700 font-bold">{{ formatarInt(item.CreditosNovos) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarNumero(item.TaxaJuros1) }}% | {{ formatarNumero(item.TaxaJuros2) }}%</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarInt(item.CreditosAteKz2000_Qtd) }} | {{ formatarNumero(item.CreditosAteKz2000_Valor) }}</span>
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                            {{ formatarInt(ultimoRegistro?.CreditosNovos_Mais) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                            {{ formatarInt(ultimoRegistro?.CreditosNovos_Menos) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums leading-relaxed">
+                                            <span>{{ formatarInt(ultimoRegistro?.CreditosQuantidade) }}</span>
+                                            <span class="text-slate-400 mx-1">|</span>
+                                            <span class="text-indigo-700">{{ formatarInt(ultimoRegistro?.CreditosNovos) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarNumero(ultimoRegistro?.TaxaJuros1) }}% | {{ formatarNumero(ultimoRegistro?.TaxaJuros2) }}%</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarInt(ultimoRegistro?.CreditosAteKz2000_Qtd) }} | {{ formatarNumero(ultimoRegistro?.CreditosAteKz2000_Valor) }}</span>
+                                        </td>
+                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                            :class="Number(ultimoRegistro?.VariacaoCreditosNovos) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            <span class="inline-flex items-center gap-1">
+                                                <i :class="Number(ultimoRegistro?.VariacaoCreditosNovos) >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
+                                                {{ formatarPercentual(Math.abs(Number(ultimoRegistro?.VariacaoCreditosNovos) || 0)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- 3. Clientes Novos -->
+                                    <tr class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                            <span class="inline-flex items-center gap-2">
+                                                <span class="w-1 h-5 bg-cyan-500 rounded-full"></span>
+                                                <span>3. Clientes | Novos<br>
+                                                <span class="text-[10px] font-normal text-slate-500">≤ Kz 2.000</span></span>
+                                            </span>
+                                        </td>
+                                        <td v-for="item in historicoSeisMeses" :key="item.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums leading-relaxed">
+                                            <span>{{ formatarInt(item.ClientesQuantidade) }}</span>
+                                            <span class="text-slate-400 mx-1">|</span>
+                                            <span class="text-cyan-700 font-bold">{{ formatarInt(item.ClientesNovos) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">≤2k: {{ formatarInt(item.ClientesAteKz2000) }}</span>
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                            {{ formatarInt(ultimoRegistro?.ClientesNovos_Mais) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                            {{ formatarInt(ultimoRegistro?.ClientesNovos_Menos) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums leading-relaxed">
+                                            <span>{{ formatarInt(ultimoRegistro?.ClientesQuantidade) }}</span>
+                                            <span class="text-slate-400 mx-1">|</span>
+                                            <span class="text-cyan-700">{{ formatarInt(ultimoRegistro?.ClientesNovos) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">≤2k: {{ formatarInt(ultimoRegistro?.ClientesAteKz2000) }}</span>
+                                        </td>
+                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                            :class="Number(ultimoRegistro?.VariacaoClientesNovos) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            <span class="inline-flex items-center gap-1">
+                                                <i :class="Number(ultimoRegistro?.VariacaoClientesNovos) >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
+                                                {{ formatarPercentual(Math.abs(Number(ultimoRegistro?.VariacaoClientesNovos) || 0)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Linhas 4-6 (NPL, PAR1, PAR30) -->
+                                    <tr v-for="linha in linhasRisco" :key="linha.key" class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                            <span class="inline-flex items-center gap-2">
+                                                <span class="w-1 h-5 rounded-full" :class="linha.cor"></span>
+                                                {{ linha.numero }}. {{ linha.label }}
+                                            </span>
+                                        </td>
+                                        <td v-for="item in historicoSeisMeses" :key="item.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums">
+                                            <span class="font-bold" :class="linha.classePerc">{{ formatarPercentual(item[linha.percKey]) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarK(item[linha.valKey]) }}</span>
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.[linha.maisKey]) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.[linha.menosKey]) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums">
+                                            <span class="font-bold" :class="linha.classePerc">{{ formatarPercentual(ultimoRegistro?.[linha.percKey]) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarK(ultimoRegistro?.[linha.valKey]) }}</span>
+                                        </td>
+                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                            :class="Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            <span class="inline-flex items-center gap-1">
+                                                <i :class="Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'fas fa-arrow-down' : 'fas fa-arrow-up'" class="text-[9px]"></i>
+                                                {{ formatarPercentual(Math.abs(Number(ultimoRegistro?.[linha.variacaoKey]) || 0)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- 7. Provisão -->
+                                    <tr class="bg-rose-50/40 hover:bg-rose-50/70 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                            <span class="inline-flex items-center gap-2">
+                                                <span class="w-1 h-5 bg-rose-500 rounded-full"></span>
+                                                7. Provisão
+                                            </span>
+                                        </td>
+                                        <td v-for="item in historicoSeisMeses" :key="item.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-semibold text-rose-700 tabular-nums">
+                                            {{ formatarNumero(item.ProvisaoValor) }}
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarProvisaoCobertura(item.ProvisaoDiasAtraso, item.ProvisaoCoberturaPerc) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-400">DA: {{ item.ProvisaoDiasAtraso ?? 0 }}</span>
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.Provisao_Mais) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.Provisao_Menos) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold text-rose-700 tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.ProvisaoValor) }}
+                                            <br>
+                                            <span class="text-[10px] text-slate-500">{{ formatarProvisaoCobertura(ultimoRegistro?.ProvisaoDiasAtraso, ultimoRegistro?.ProvisaoCoberturaPerc) }}</span>
+                                            <br>
+                                            <span class="text-[10px] text-slate-400">DA: {{ ultimoRegistro?.ProvisaoDiasAtraso ?? 0 }}</span>
+                                        </td>
+                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                            :class="Number(ultimoRegistro?.VariacaoProvisao) <= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            <span class="inline-flex items-center gap-1">
+                                                <i :class="Number(ultimoRegistro?.VariacaoProvisao) <= 0 ? 'fas fa-arrow-down' : 'fas fa-arrow-up'" class="text-[9px]"></i>
+                                                {{ formatarPercentual(Math.abs(Number(ultimoRegistro?.VariacaoProvisao) || 0)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Linhas 8, 9, 10 -->
+                                    <tr v-for="linha in linhasPercentuais" :key="linha.key" class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                            <span class="inline-flex items-center gap-2">
+                                                <span class="w-1 h-5 rounded-full" :class="linha.cor"></span>
+                                                {{ linha.numero }}. {{ linha.label }}
+                                            </span>
+                                        </td>
+                                        <td v-for="item in historicoSeisMeses" :key="item.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums"
+                                            :class="linha.classeFixa">
+                                            {{ formatarPercentual(item[linha.key]) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.[linha.maisKey]) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                            {{ formatarNumero(ultimoRegistro?.[linha.menosKey]) }}
+                                        </td>
+                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums"
+                                            :class="linha.classeFixa">
+                                            {{ formatarPercentual(ultimoRegistro?.[linha.key]) }}
+                                        </td>
+                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                            :class="linha.invertido
+                                                ? (Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'text-emerald-700' : 'text-rose-700')
+                                                : (Number(ultimoRegistro?.[linha.variacaoKey]) >= 0 ? 'text-emerald-700' : 'text-rose-700')">
+                                            <span class="inline-flex items-center gap-1">
+                                                <i :class="(linha.invertido
+                                                    ? Number(ultimoRegistro?.[linha.variacaoKey]) <= 0
+                                                    : Number(ultimoRegistro?.[linha.variacaoKey]) >= 0)
+                                                    ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
+                                                {{ formatarPercentual(Math.abs(Number(ultimoRegistro?.[linha.variacaoKey]) || 0)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 2: Agências ═══ -->
+                    <section v-if="agenciasCapital.length > 0 || agenciasProvincia.length > 0">
+                        <SectionTitle
+                            icon="fa-wallet"
+                            title="Distribuição da Carteira por Agências"
+                            subtitle="Performance detalhada por localidade"
+                            tone="emerald"
+                        />
+
+                        <div class="space-y-6">
+                            <AgenciasTable titulo="Capital (Luanda)" :agencias="agenciasCapital" />
+                            <AgenciasTable titulo="Províncias" :agencias="agenciasProvincia" />
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 3: Produtos agrupados por Direção / Gestor ═══ -->
+                    <section v-if="produtosAgrupados.length > 0">
+                        <SectionTitle
+                            icon="fa-sitemap"
+                            title="Detalhamento por Direção / Gestor"
+                            subtitle="Consolidado de produtos agrupados por responsável"
+                            tone="indigo"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-[#0B2E4F] text-white">
+                                        <th colspan="12" class="px-3 py-2.5 text-sm tracking-wider uppercase text-left">
+                                            <i class="fas fa-user-tie mr-2 opacity-70"></i>
+                                            Detalhamento por Direção / Gestor
+                                        </th>
+                                    </tr>
+                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left w-56 uppercase tracking-wider">Tipo / Produto</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Direção / Gestor</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">OA/PA</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Balanço</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Créditos | Novos</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Clientes | Novos</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">PAR 1</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">PAR 30</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Desemb. | TA</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Reembolso</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Provisão</th>
+                                        <th class="border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Gestão</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template v-for="grupo in produtosAgrupados" :key="grupo.gestor">
+                                        <!-- Cabeçalho do grupo Diretor -->
+                                        <tr class="bg-gradient-to-r from-indigo-100 via-indigo-50 to-transparent border-y-2 border-indigo-200">
+                                            <td colspan="12" class="px-3 py-2.5">
+                                                <div class="flex items-center justify-between gap-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-sm">
+                                                            <i class="fas fa-user-tie text-xs"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-sm font-bold text-indigo-900 leading-tight uppercase tracking-wide">
+                                                                {{ grupo.gestor }}
+                                                            </div>
+                                                            <div class="text-[10px] text-indigo-600/80 font-medium mt-0.5">
+                                                                <i class="fas fa-sitemap mr-1"></i>{{ grupo.tipoDireccao }}
+                                                                <span class="mx-2 text-indigo-300">•</span>
+                                                                <i class="fas fa-cube mr-1"></i>{{ grupo.itens.length }}
+                                                                {{ grupo.itens.length === 1 ? 'produto' : 'produtos' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="hidden md:flex items-center gap-4 text-[11px]">
+                                                        <div class="text-right">
+                                                            <div class="text-[9px] uppercase tracking-wider text-indigo-500 font-bold">Balanço</div>
+                                                            <div class="font-bold text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.BalancoValor) }}</div>
+                                                        </div>
+                                                        <div class="text-right border-l border-indigo-200 pl-4">
+                                                            <div class="text-[9px] uppercase tracking-wider text-indigo-500 font-bold">Desemb.</div>
+                                                            <div class="font-bold text-emerald-700 tabular-nums">{{ formatarNumero(grupo.total.DesembolsoValor) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Linhas de produtos do grupo -->
+                                        <tr v-for="prod in grupo.itens" :key="prod.Id"
+                                            class="hover:bg-indigo-50/30 transition-colors">
+                                            <td class="border-r border-slate-200 px-3 py-2 text-left whitespace-nowrap pl-6 font-medium text-slate-700">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                                    {{ prod.NomeProduto }}
+                                                </span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-left bg-slate-50/50 text-[11px]">
+                                                <span class="font-semibold text-slate-700">{{ prod.DirectorNome || '—' }}</span>
+                                                <span v-if="prod.TipoDireccao" class="text-slate-500 block text-[10px]">{{ prod.TipoDireccao }}</span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-center bg-slate-50/50 text-slate-600 tabular-nums">
+                                                {{ prod.OA_Qtd ?? '—' }}/{{ prod.PA_Qtd ?? '—' }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right font-semibold tabular-nums">{{ formatarNumero(prod.BalancoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                                <span class="text-slate-700">{{ formatarInt(prod.CreditosTotal_Qtd) }}</span>
+                                                <span class="text-slate-400 mx-1">|</span>
+                                                <span class="text-indigo-700 font-bold">{{ formatarInt(prod.CreditosNovos_Qtd) }}</span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                                <span class="text-slate-700">{{ formatarInt(prod.ClientesTotal_Qtd) }}</span>
+                                                <span class="text-slate-400 mx-1">|</span>
+                                                <span class="text-cyan-700 font-bold">{{ formatarInt(prod.ClientesNovos_Qtd) }}</span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                                {{ formatarK(prod.PAR1_Valor) }}
+                                                <span v-if="prod.PAR1_Percentual !== null" class="text-[10px] text-amber-700 font-semibold ml-1">({{ Math.round(prod.PAR1_Percentual) }}%)</span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                                {{ formatarK(prod.PAR30_Valor) }}
+                                                <span v-if="prod.PAR30_Percentual !== null" class="text-[10px] text-rose-700 font-semibold ml-1">({{ Math.round(prod.PAR30_Percentual) }}%)</span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-emerald-50/50 text-emerald-700 font-semibold tabular-nums">
+                                                {{ formatarNumero(prod.DesembolsoValor) }}
+                                                <span v-if="prod.TempoAtendimentodias !== null" class="text-[10px] text-slate-500 ml-1">| {{ String(prod.TempoAtendimentodias).padStart(2, '0') }}</span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-rose-50/50 text-rose-700 tabular-nums">{{ formatarNumero(prod.ReembolsoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                                {{ formatarNumero(prod.ProvisaoValor) }}
+                                                <span v-if="prod.ProvisaoClasseRisco" class="font-bold text-slate-700 ml-1">({{ prod.ProvisaoClasseRisco }})</span>
+                                            </td>
+                                            <td class="px-3 py-2 text-center font-bold tabular-nums">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px]"
+                                                      :class="obterCorGestao(prod.GestaoValor)">
+                                                    {{ prod.GestaoValor !== null ? prod.GestaoValor + (prod.GestaoSufixo || '') : '—' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Subtotalizador do grupo -->
+                                        <tr class="bg-indigo-50/70 font-bold border-t-2 border-b-2 border-indigo-200">
+                                            <td colspan="2" class="border-r border-slate-200 px-3 py-2.5 text-left text-indigo-900 uppercase tracking-wider text-[10px]">
+                                                <i class="fas fa-calculator mr-2 text-indigo-500"></i>
+                                                Subtotal — {{ grupo.gestor }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-center text-indigo-900 tabular-nums">
+                                                {{ grupo.total.OA_Qtd || '—' }}/{{ grupo.total.PA_Qtd || '—' }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.BalancoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">
+                                                {{ formatarInt(grupo.total.CreditosTotal_Qtd) }}
+                                                <span class="text-indigo-400 mx-1">|</span>
+                                                {{ formatarInt(grupo.total.CreditosNovos_Qtd) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">
+                                                {{ formatarInt(grupo.total.ClientesTotal_Qtd) }}
+                                                <span class="text-indigo-400 mx-1">|</span>
+                                                {{ formatarInt(grupo.total.ClientesNovos_Qtd) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarK(grupo.total.PAR1_Valor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarK(grupo.total.PAR30_Valor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-emerald-100 text-emerald-800 tabular-nums">{{ formatarNumero(grupo.total.DesembolsoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-rose-100 text-rose-800 tabular-nums">{{ formatarNumero(grupo.total.ReembolsoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.ProvisaoValor) }}</td>
+                                            <td class="px-3 py-2 text-center text-indigo-400">—</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 4: Desembolsos/Reembolsos 12 Meses ═══ -->
+                    <section v-if="desembolsosReembolsos12MesesRD.length > 0">
+                        <SectionTitle
+                            icon="fa-money-bill-wave"
+                            title="Desembolsos e Reembolsos"
+                            subtitle="Evolução dos últimos 12 meses"
+                            tone="emerald"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead>
+                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left w-44 uppercase tracking-wider">Fluxo / Mês</th>
+                                        <th v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
+                                            class="border-r border-b border-slate-300 px-2 py-2 min-w-[90px] uppercase tracking-wider">
+                                            {{ mes.NomeDoMes }}
+                                        </th>
+                                        <th class="border-b border-slate-300 px-3 py-2 bg-[#0B2E4F] uppercase tracking-wider">Total Acumulado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr class="hover:bg-emerald-50/30 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left bg-emerald-50 text-emerald-800">
+                                            <i class="fas fa-arrow-down mr-2 text-emerald-600"></i>Desembolso (+)
+                                        </td>
+                                        <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-semibold text-emerald-700 tabular-nums">
+                                            {{ formatarNumero(mes.DesembolsoValor) }}
+                                        </td>
+                                        <td class="text-right px-3 py-2 font-bold bg-emerald-100 text-emerald-800 tabular-nums">
+                                            {{ formatarNumero(totalDesembolso12Meses) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-rose-50/30 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left bg-rose-50 text-rose-800">
+                                            <i class="fas fa-arrow-up mr-2 text-rose-600"></i>Reembolso (−)
+                                        </td>
+                                        <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 font-semibold text-rose-700 tabular-nums">
+                                            {{ formatarNumero(mes.ReembolsoValor) }}
+                                        </td>
+                                        <td class="text-right px-3 py-2 font-bold bg-rose-100 text-rose-800 tabular-nums">
+                                            {{ formatarNumero(totalReembolso12Meses) }}
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-amber-50/70 font-bold border-t-2 border-amber-200">
+                                        <td class="border-r border-slate-200 px-3 py-2.5 text-left text-amber-900">
+                                            <i class="fas fa-balance-scale mr-2 text-amber-600"></i>Saldo Líquido
+                                        </td>
+                                        <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
+                                            class="text-right border-r border-slate-200 px-2 py-2 tabular-nums"
+                                            :class="Number(mes.ReembolsoValor) - Number(mes.DesembolsoValor) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            {{ formatarDelta(Number(mes.ReembolsoValor) - Number(mes.DesembolsoValor)) }}
+                                        </td>
+                                        <td class="text-right px-3 py-2 font-bold tabular-nums"
+                                            :class="totalReembolso12Meses - totalDesembolso12Meses >= 0 ? 'text-emerald-700' : 'text-rose-700'">
+                                            {{ formatarDelta(totalReembolso12Meses - totalDesembolso12Meses) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 5: Provisões por Produtos ═══ -->
+                    <section v-if="provisoesAgrupadas.length > 0">
+                        <SectionTitle
+                            icon="fa-shield-virus"
+                            title="Provisões por Produtos"
+                            subtitle="Comparativo anual e mensal por tipo"
+                            tone="amber"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left w-56 uppercase tracking-wider">Tipo / Produto</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Dado</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Fecho AA</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Mês Anterior</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">Mês Actual</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Dif. Mensal</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Dif. Anual</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Dif. Média Mensal</th>
+                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Var. Anual</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template v-for="grupo in provisoesAgrupadas" :key="grupo.tipo">
+                                        <tr class="bg-gradient-to-r from-blue-50 to-transparent">
+                                            <td colspan="9" class="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-blue-800 border-y border-blue-100">
+                                                <i class="fas fa-folder-open mr-2 text-blue-500"></i>{{ grupo.tipo }}
+                                            </td>
+                                        </tr>
+                                        <tr v-for="item in grupo.itens" :key="item.Id" class="hover:bg-blue-50/40 transition-colors">
+                                            <td class="border-r border-slate-200 px-3 py-2 text-left whitespace-nowrap pl-6 font-medium text-slate-700">
+                                                <span class="inline-flex items-center gap-2">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                                    {{ item.NomeProduto }}
+                                                </span>
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-center bg-slate-50/50 font-semibold text-slate-700 tabular-nums">
+                                                {{ item.PercentagemDado !== null ? item.PercentagemDado + '%' : '—' }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums">
+                                                {{ formatarNumero(item.ProvisaoValorFechoAnoAnterior) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">
+                                                {{ formatarNumero(item.ProvisaoValorMesAnterior) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-bold text-amber-900 bg-amber-50 tabular-nums">
+                                                {{ formatarNumero(item.ProvisaoValorMesActual) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums"
+                                                :class="obterCorDiferenca(item.ProvisaoDiferencaMensal)">
+                                                {{ formatarDelta(item.ProvisaoDiferencaMensal) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums"
+                                                :class="obterCorDiferenca(item.ProvisaoDiferencaAnual)">
+                                                {{ formatarDelta(item.ProvisaoDiferencaAnual) }}
+                                            </td>
+                                            <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums text-slate-600">
+                                                {{ formatarNumero(item.ProvisaoDiferencaMediaMensal) }}
+                                            </td>
+                                            <td class="px-2 py-2 text-center font-bold tabular-nums">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px]"
+                                                      :class="obterCorDiferenca(item.PercentVariaAnual)">
+                                                    {{ formatarPercentual(item.PercentVariaAnual) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 6: Dados Estatísticos ═══ -->
+                    <section v-if="dadosEstatisticosRD.length > 0">
+                        <SectionTitle
+                            icon="fa-users"
+                            title="Dados Estatísticos Operacionais & Demográficos"
+                            subtitle="Demografia, tempos de atendimento e taxas médias"
+                            tone="indigo"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left uppercase tracking-wider">Escopo</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">♂ Homens</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">♀ Mulheres</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Solic→Aprov</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Aprov→Desemb</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">TA Total</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Média Desemb.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Média Créd.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Média Prest.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Reemb.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Cumpr.</th>
+                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Recup.</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr v-for="est in dadosEstatisticosRD" :key="est.Id" class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="border-r border-slate-200 px-3 py-2 font-bold text-slate-900 bg-slate-50">
+                                            {{ est.TipoAgrupamento }}
+                                            <span class="text-slate-500 font-normal text-[10px] block">{{ est.NivelEscopo }}</span>
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-blue-700 font-semibold tabular-nums">
+                                            {{ formatarInt(est.Homens_Qtd) }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-pink-600 font-semibold tabular-nums">
+                                            {{ formatarInt(est.Mulheres_Qtd) }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-emerald-700 font-semibold tabular-nums">
+                                            {{ est.TempoSolicitacaoAprovacaoDias ?? '—' }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-emerald-700 font-semibold tabular-nums">
+                                            {{ est.TempoAprovacaoDesembolsoDias ?? '—' }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold bg-emerald-50 text-emerald-800 tabular-nums">
+                                            {{ est.TempoAtendimentoTotalDias ?? '—' }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums">{{ formatarNumero(est.MediaDesembolsoCredito) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center tabular-nums">{{ formatarInt(est.MediaCreditosOficial) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(est.MediaPrestacao) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold tabular-nums">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                                                {{ formatarPercentual(est.TaxaReembolsoPct) }}
+                                            </span>
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold tabular-nums">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                                                {{ formatarPercentual(est.TaxaCumprimentoPct) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-2 py-2 text-center font-bold tabular-nums">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
+                                                {{ formatarPercentual(est.TaxaRecuperacaoPct) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 7: Write-Off ═══ -->
+                    <section v-if="carteiraWriteOffRD.length > 0">
+                        <SectionTitle
+                            icon="fa-shield-alt"
+                            title="Análise de Recuperação da Carteira Write-Off"
+                            subtitle="Períodos de abate & recuperação acumulada"
+                            tone="amber"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left uppercase tracking-wider">Período</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Bal. Inicial</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Bal. Final</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Rec. Ant.</th>
+                                        <th v-for="n in 5" :key="n" class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Mês {{ n }}</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">Total Rec.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Rec. BI</th>
+                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% KR</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr v-for="wo in carteiraWriteOffRD" :key="wo.Id" class="hover:bg-amber-50/40 transition-colors">
+                                        <td class="border-r border-slate-200 px-3 py-2 font-bold text-slate-900 bg-slate-50">
+                                            {{ wo.EtiquetaPeriodoWO }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums">{{ formatarNumero(wo.BalancoInicial) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(wo.BalancoFinal) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-slate-600 tabular-nums">{{ formatarNumero(wo.RecuperadoAcumuladoAnterior) }}</td>
+                                        <td v-for="m in ['RecuperadoMes1','RecuperadoMes2','RecuperadoMes3','RecuperadoMes4','RecuperadoMes5']" :key="m"
+                                            class="border-r border-slate-200 px-2 py-2 text-right bg-emerald-50/40 text-emerald-700 font-semibold tabular-nums">
+                                            {{ formatarNumero(wo[m]) }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold bg-emerald-100 text-emerald-800 tabular-nums">
+                                            {{ formatarNumero(wo.TotalRecuperado) }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold bg-amber-50 text-amber-800 tabular-nums">
+                                            {{ formatarPercentual(wo.PctRecuperadoBalancoInicial) }}
+                                        </td>
+                                        <td class="px-2 py-2 text-center font-bold tabular-nums">
+                                            {{ formatarPercentual(wo.PctKR) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ═══ TABELA 8: Movimento de Prestações ═══ -->
+                    <section v-if="movimentoPrestacaoRD.length > 0">
+                        <SectionTitle
+                            icon="fa-calculator"
+                            title="Movimento de Prestações (Capitais e Juros)"
+                            subtitle="Evolução do fluxo financeiro"
+                            tone="blue"
+                        />
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs border-collapse text-slate-800">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left uppercase tracking-wider">Período</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Inicial</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Desemb.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Reemb.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Final</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Inicial</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Desemb.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Reemb.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Final</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">Total Rec.</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Rec.</th>
+                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Tx Rec.</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr v-for="mp in movimentoPrestacaoRD" :key="mp.Id" class="hover:bg-blue-50/40 transition-colors">
+                                        <td class="border-r border-slate-200 px-3 py-2 font-bold text-slate-900 bg-slate-50">
+                                            {{ mp.PeriodoPrestacao }}
+                                        </td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(mp.CapIniValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-emerald-700 font-semibold tabular-nums">{{ formatarNumero(mp.CapDesValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-rose-700 font-semibold tabular-nums">{{ formatarNumero(mp.CapReeValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold tabular-nums">{{ formatarNumero(mp.CapFimValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(mp.JurIniValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-emerald-700 tabular-nums">{{ formatarNumero(mp.JurDesValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-rose-700 tabular-nums">{{ formatarNumero(mp.JurReeValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold tabular-nums">{{ formatarNumero(mp.JurFimValor) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold bg-emerald-100 text-emerald-800 tabular-nums">{{ formatarNumero(mp.TotalRecuperado) }}</td>
+                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold bg-amber-50 text-amber-800 tabular-nums">{{ formatarPercentual(mp.PctRecuperado) }}</td>
+                                        <td class="px-2 py-2 text-center font-bold tabular-nums">{{ formatarPercentual(mp.TxRecuperacao) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
                 </div>
             </div>
-
-            <!-- Tabela -->
-            <div class="overflow-x-auto rounded-lg border border-gray-200">
-                <table class="min-w-full">
-                    <thead class="bg-gray-50 ">
-                        <tr>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                #
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider flex">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                    </svg>
-                                    Card
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                    </svg>
-
-                                    Registado
-                                </div>
-
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                    </svg>
-
-                                    Por
-                                </div>
-
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg>
-
-                                    Código do Cliente
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                    </svg>
-
-                                    Cliente
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
-                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                            d="M14.25 9.75v-4.5m0 4.5h4.5m-4.5 0 6-6m-3 18c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 0 1 4.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 0 0-.38 1.21 12.035 12.035 0 0 0 7.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 0 1 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 0 1-2.25 2.25h-2.25Z" />
-                                    </svg>
-
-                                    Telefone do Cliente
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                                    </svg>
-
-
-                                    Produto de Pagamento
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                                    </svg>
-
-                                    Montante
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M8.25 9.75h4.875a2.625 2.625 0 0 1 0 5.25H12M8.25 9.75 10.5 7.5M8.25 9.75 10.5 12m9-7.243V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
-                                    </svg>
-
-                                    Referência
-                                </div>
-                            </th>
-
-
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
-                                    </svg>
-
-                                    Estado
-                                </div>
-                            </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <div class="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                                    </svg>
-
-                                    Montante Pago
-                                </div>
-                            </th>
-
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="(comprovativo, index) in comprovativosPaginados" :key="comprovativo.id"
-                            class="hover:bg-gray-50 transition-colors duration-150" :class="{
-                                'bg-yellow-50': comprovativo.idestado === 23,
-                                'bg-red-50': [23].includes(comprovativo.idestado),
-                                'bg-purple-50': comprovativo.idestado === 21,
-                                'bg-green-50': comprovativo.idestado === 22
-                            }">
-                            <!-- Conteúdo das células (mantido do original) -->
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ calcularNumeroLinha(index) }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-
-
-
-
-                                <a :href="`/reports/cardpgtr/${comprovativo.id}`"
-                                    class="btn btn-outline-primary-pgr btn-sm flex items-center gap-1" target="_blank">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z">
-                                        </path>
-                                    </svg>
-                                    Ver-Card
-                                </a>
-
-
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.data }}
-
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.usuario }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ comprovativo.lnr }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ comprovativo.cliente }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.telefone }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ comprovativo.metodologia }}
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                                {{ formatCurrency(comprovativo.montante) }}
-
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-
-                                <span>{{ comprovativo.referencia || '-' }}</span>
-
-
-
-                            </td>
-
-
-
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span :class="comprovativo.color" class="px-2 py-1 text-xs font-medium rounded-full">
-                                    {{ comprovativo.estado }}
-                                </span>
-                            </td>
-
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-purple-600">
-                                {{ formatCurrency(comprovativo.montantepago) }}
-
-                            </td>
-
-                        </tr>
-                        <tr v-if="comprovativosPaginados.length === 0">
-                            <td colspan="12" class="px-4 py-8 text-center text-gray-500">
-                                <div class="flex flex-col items-center justify-center py-8">
-                                    <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
-                                    <p class="text-sm">Nenhum comprovativo encontrado</p>
-                                    <p class="text-xs text-gray-400 mt-1">Tente ajustar os filtros de pesquisa</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Paginação Inferior -->
-            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-                <div class="text-sm text-gray-600">
-                    Mostrando {{ (paginaAtual - 1) * perPage + 1 }} a {{ Math.min(paginaAtual * perPage, totalItens) }}
-                    de {{ totalItens }} registros
-                </div>
-                <div class="flex gap-2">
-                    <button :disabled="paginaAtual === 1" @click="mudarPagina(paginaAtual - 1)"
-                        class="btn btn-outline px-3" :class="{ 'opacity-50 cursor-not-allowed': paginaAtual === 1 }">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                            </path>
-                        </svg>
-                    </button>
-                    <div class="flex items-center bg-gray-100 rounded-lg px-3">
-                        <span class="text-sm font-medium">Página {{ paginaAtual }}</span>
-                    </div>
-                    <button :disabled="!hasMorePages" @click="mudarPagina(paginaAtual + 1)" class="btn btn-outline px-3"
-                        :class="{ 'opacity-50 cursor-not-allowed': !hasMorePages }">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
         </div>
     </div>
-
-    <!-- Modais (mantidos do original) -->
-    <ModalLoan :isOpen="showModalLoan" @close="showModalLoan = false" @search="buscarPorLoan" v-model="filtroLoan" />
-    <ModalDate :isOpen="showModalData" @close="showModalData = false" @search="buscarPorDatas"
-        v-model:dataInicio="dataInicio" v-model:dataFim="dataFim" />
-    <ModalDelete :isOpen="showDeleteModal" @close="cancelDeletion" @confirm="proceedWithDeletion"
-        v-model:motivo="formEliminacao.txtMotivo" :dados="formEliminacao.txtDadosEliminado"
-        :loan="formEliminacao.txtLoan" :id="formEliminacao.txtId" />
-
-
-
-    <ModalGerarRefPGT ref="modalCriarRefManual" v-if="showModalGerarREF" @close="fecharModalCriarRefManual"
-        @save="guardarComprovativo" :bases="$page.props.bases" :tipocomprovativos="$page.props.tipocomprovativos"
-        :produtos="$page.props.produtos" :bancos="$page.props.bancos" :contas="$page.props.contas"
-        :formaspagamentos="$page.props.formaspagamentos" v-model="novoComprovativo" />
-
-
-
-
-
-
-
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { router } from '@inertiajs/vue3'
-import * as XLSX from 'xlsx'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
 import { Head } from '@inertiajs/vue3'
+import Chart from 'chart.js/auto'
 
-// Componentes
-import ModalLoan from './Layouts/components/ComprovativosComponents/ModalLoan.vue'
-import ModalDate from './Layouts/components/ComprovativosComponents/ModalDate.vue'
-import ModalDelete from './Layouts/components/ComprovativosComponents/ModalDelete.vue'
-import ModalGerarRefPGT from './Layouts/components/ComprovativosComponents/ModalGerarRefPGT.vue'
-
-
-
-// Props
+/* ══════════════════════════════════════════════════
+   PROPS
+   ══════════════════════════════════════════════════ */
 const props = defineProps({
-    comprovativos: Array,
-    filters: Object,
-    page: Number,
-    hasMorePages: Boolean,
-    perPage: {
-        type: Number,
-        default: 100
-    },
-    lista_comprovativo: Array,
-    total: Number,
-    dataInicioInput: String,
-    dataFimInput: String,
-    montantetotal: Number,
-    totalMontantePoupanca: Number,
-    totalMontantePoupancaRegistado: Number,
-    totalMontanteRegistado: Number,
-    totalMontanteReflete: Number,
-    totalMontantePoupancaReflete: Number,
-    totalMontanteInregulares: Number,
-    totalMontantePoupancaInregulares: Number,
-    totalMontantePGREF: Number,
-    totalPendente: Number,
-    bases: Array,
-    produtos: Array,
-    bancos: Array,
-    contas: Array,
-    tipocomprovativos: Object,
-    estados: Array,
-    auth: Object,
-    errors: Object,
-    session: Object,
-    flash: Object,
-    user: Object,
-    lista_pendentes: Object,
-    dataInicioPeriodo: String,
-    dataFimPeriodo: String,
-
+    historicoRD: { type: Array, default: () => [] },
+    agenciasRD: { type: Array, default: () => [] },
+    produtosRD: { type: Array, default: () => [] },
+    provisoesProdutosRD: { type: Array, default: () => [] },
+    desembolsosReembolsos12MesesRD: { type: Array, default: () => [] },
+    dadosEstatisticosRD: { type: Array, default: () => [] },
+    carteiraWriteOffRD: { type: Array, default: () => [] },
+    movimentoPrestacaoRD: { type: Array, default: () => [] },
+    user: Object
 })
 
-// Refs
-const showModalLoan = ref(false)
-const showModalData = ref(false)
-const showModalNovo = ref(false)
-const showModalGerarREF = ref(false)
-const showModalObservacao = ref(false)
-const showDeleteModal = ref(false)
-const showEditModal = ref(false)
-const modalNovoComprovativoRef = ref(null)
-const modalCriarRefManual = ref(null)
-const activeDetails = ref(null)
-const mostrarTodos = ref(false)
-const isDeleting = ref(false)
-const novoMontante = ref('')
-const paginaAtual = ref(1)
-const perPage = ref(100)
-const filtroLoan = ref('')
-const dataInicio = ref('')
-const dataFim = ref('')
-const dateError = ref('')
-const showModalDataEdicao = ref(false)
-const novaDataRegistro = ref('')
-const comprovativoSelecionadoData = ref(null)
-
-const showModalVoucherEdicao = ref(false)
-const novoVoucher = ref('')
-const comprovativoSelecionadoVoucher = ref(null)
-// Adicione estas refs
-const showModalPagamentosReferencia = ref(false)
-const pagamentosReferencia = ref([])
-
-// Método para filtrar pagamentos por referência
-const filtrarPagamentosPorReferencia = () => {
-    pagamentosReferencia.value = props.lista_comprovativo.filter(comprovativo => {
-        const formaPagamento = comprovativo.FormaPagoN || comprovativo.forma_pagamento || '';
-        return formaPagamento.includes('Referência');
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-// Dados selecionados
-const selectedComprovativo = ref({
-    lnr: '',
-    cliente: '',
-    montante: 0,
-    data: '',
-    estado: '',
-    file: null,
-    idestado: 0,
-    id: null
-})
-
-const comprovativoSelecionado = ref(null)
-
-// Filtros
-const filtro = ref({
-    search: props.filters.search || '',
-    lnr: props.filters.lnr || '',
-    estado: props.filters.estado || 28,
-    agencia: props.filters.agencia || 'T',
-    dataInicioInput: props.filters.data_inicio || '',
-    dataFimInput: props.filters.data_fim || '',
-
-})
-
-const erros = ref({
-    dataInicio: '',
-    dataFim: ''
-})
-
-const formEliminacao = ref({
-    txtMotivo: '',
-    txtDadosEliminado: '',
-    txtLoan: '',
-    txtId: null
-})
-
-// Adicione esta variável para controlar a visibilidade dos filtros
-const filtrosVisiveis = ref(true)
-
-// Função para alternar a visibilidade dos filtros
-const toggleFiltros = () => {
-    filtrosVisiveis.value = !filtrosVisiveis.value
-}
-
-
-// Novo comprovativo
-const novoComprovativo = ref({
-    ls: 'Loan',
-    selectBase: '',
-    selectGrupoIndividual: '',
-    txtNumeroLoanSaving: '',
-    selectProdutoLoan: '',
-    selectProdutoSaving: '',
-    txtLoanR: 'Loan Repayment',
-    txtSavingD: 'Savings Deposit',
-    selectBanco: '',
-    selectBancoConta: '',
-    txtMontante: '',
-    calDataBorderoux: '',
-    txtInfoAdicional: '',
-    selectFormaPagamento: '',
-    telefone: ''
-})
-
-const novoReferenciaManual = ref({
-    ls: 'Loan',
-    selectBase: '',
-    selectGrupoIndividual: '',
-    txtNumeroLoanSaving: '',
-    selectProdutoLoan: '',
-    selectProdutoSaving: '',
-    txtLoanR: 'Loan Repayment',
-    txtSavingD: 'Savings Deposit',
-    selectBanco: '',
-    selectBancoConta: '',
-    txtMontante: '',
-    calDataBorderoux: '',
-    txtInfoAdicional: '',
-    selectFormaPagamento: '',
-    telefone: ''
-})
-// Computed
-const hoje = computed(() => new Date().toISOString().split('T')[0])
-const listaCompletaPendentes = computed(() => props.lista_pendentes || [])
-const pendentesVisiveis = computed(() => mostrarTodos.value ? listaCompletaPendentes.value : listaCompletaPendentes.value.slice(0, 10))
-const comprovativosPaginados = computed(() => props.lista_comprovativo.slice((paginaAtual.value - 1) * perPage.value, paginaAtual.value * perPage.value))
-const totalItens = computed(() => props.lista_comprovativo.length)
-const hasMorePages = computed(() => paginaAtual.value * perPage.value < props.lista_comprovativo.length)
-
-// Métodos
-
-const formatCurrency = (value) => {
-    if (value == null) return ''
-    if (typeof value === 'string') {
-        value = value.replace(/\D/g, '')
-        if (!value) return '0,00'
-        value = parseFloat(value) / 100
+/* ══════════════════════════════════════════════════
+   COMPONENTES INTERNOS
+   ══════════════════════════════════════════════════ */
+const KpiCard = (p) => {
+    const tones = {
+        blue:    { bg: 'bg-blue-50',    text: 'text-blue-700',    ring: 'ring-blue-100',    grad: 'from-blue-500/10' },
+        emerald: { bg: 'bg-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-100', grad: 'from-emerald-500/10' },
+        rose:    { bg: 'bg-rose-50',    text: 'text-rose-700',    ring: 'ring-rose-100',    grad: 'from-rose-500/10' },
+        amber:   { bg: 'bg-amber-50',   text: 'text-amber-700',   ring: 'ring-amber-100',   grad: 'from-amber-500/10' },
     }
-    return value.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    const t = tones[p.tone] || tones.blue
+    const deltaNum = p.delta === null || p.delta === undefined ? null : Number(p.delta)
+    const positivo = deltaNum === null ? null : (p.invert ? deltaNum <= 0 : deltaNum >= 0)
+    const arrowClass = deltaNum === null ? '' : (deltaNum >= 0 ? 'fa-arrow-up' : 'fa-arrow-down')
+    const deltaColor = deltaNum === null ? 'text-slate-400'
+        : positivo ? 'text-emerald-600' : 'text-rose-600'
+
+    return h('div', {
+        class: `relative bg-white rounded-2xl shadow-sm border border-slate-200 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden`
+    }, [
+        h('div', { class: `absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br ${t.grad} to-transparent opacity-60` }),
+        h('div', { class: 'relative' }, [
+            h('div', { class: 'flex items-center justify-between mb-2' }, [
+                h('span', { class: 'text-[10px] font-bold uppercase tracking-wider text-slate-500' }, p.label),
+                h('div', { class: `w-8 h-8 rounded-lg ${t.bg} flex items-center justify-center ring-1 ${t.ring}` }, [
+                    h('i', { class: `fas ${p.icon} ${t.text} text-xs` })
+                ])
+            ]),
+            h('div', { class: 'text-lg font-bold text-slate-900 tabular-nums tracking-tight leading-tight' }, p.value),
+            deltaNum !== null && h('div', { class: `flex items-center gap-1 mt-1 text-[11px] font-semibold ${deltaColor}` }, [
+                h('i', { class: `fas ${arrowClass} text-[9px]` }),
+                h('span', { class: 'tabular-nums' }, Math.abs(Math.round(deltaNum)) + '%'),
+                h('span', { class: 'text-slate-400 font-normal ml-0.5' }, 'vs mês ant.')
+            ])
+        ])
+    ])
 }
-const calcularNumeroLinha = (index) => (paginaAtual.value - 1) * perPage.value + index + 1
+KpiCard.props = ['label', 'value', 'delta', 'icon', 'tone', 'invert']
 
-
-
-
-
-const podeEliminar = (comprovativo) => {
-    const dataItem = new Date(comprovativo.CiFecha).toISOString().split('T')[0] // só pega a data
-    const isRegistadoHoje = comprovativo.estado_id === 1 && dataItem === hoje.value
-    const temPermissao = props.user.elimina_confirmado_exportado == 1
-    return isRegistadoHoje || temPermissao
-}
-
-
-
-
-const initiateDeletion = (comprovativo) => {
-    if (!podeEliminar(comprovativo)) return
-
-    // Preencha os dados para o modal
-    formEliminacao.value = {
-        txtMotivo: '',
-        txtDadosEliminado: `${comprovativo.cliente} - ${formatCurrency(comprovativo.montante)} AKZ`,
-        txtLoan: comprovativo.lnr || 'N/A',
-        txtId: comprovativo.id
+const SectionTitle = (p) => {
+    const tones = {
+        blue:    'border-blue-500 text-blue-700',
+        emerald: 'border-emerald-500 text-emerald-700',
+        amber:   'border-amber-500 text-amber-700',
+        indigo:  'border-indigo-500 text-indigo-700',
     }
+    return h('div', { class: 'flex items-center gap-3 mb-4 border-l-4 pl-3 py-1 ' + (tones[p.tone] || tones.blue) }, [
+        h('i', { class: `fas ${p.icon} text-lg` }),
+        h('div', [
+            h('h2', { class: 'text-base font-bold text-slate-900 leading-tight' }, p.title),
+            p.subtitle && h('p', { class: 'text-[11px] text-slate-500 mt-0.5' }, p.subtitle)
+        ])
+    ])
+}
+SectionTitle.props = ['icon', 'title', 'subtitle', 'tone']
 
-    selectedComprovativo.value = {
-        lnr: comprovativo.lnr || 'N/A',
-        cliente: comprovativo.cliente || 'N/A',
-        montante: comprovativo.montante || 0,
-        data: comprovativo.data || 'N/A',
-        estado: comprovativo.estado || 'N/A',
-        file: comprovativo.file || null,
-        id: comprovativo.id,
-        idestado: comprovativo.estado_id
-    }
+const AgenciasTable = (p) => {
+    return h('div', { class: 'overflow-x-auto rounded-xl border border-slate-200' }, [
+        h('table', { class: 'w-full text-xs border-collapse text-slate-800' }, [
+            h('thead', [
+                h('tr', { class: 'bg-[#0B2E4F] text-white' }, [
+                    h('th', { colspan: 11, class: 'px-3 py-2 text-sm tracking-wider uppercase text-left' }, [
+                        h('i', { class: 'fas fa-location-dot mr-2 opacity-70' }),
+                        p.titulo
+                    ])
+                ]),
+                h('tr', { class: 'bg-[#103E68] text-white text-center text-[11px]' }, [
+                    h('th', { class: 'border-r border-b border-slate-300 px-3 py-2 text-left w-48 uppercase tracking-wider' }, 'Localidade'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'OA/PA'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Balanço'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Créditos | Novos'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Clientes | Novos'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'PAR 1'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'PAR 30'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Desemb. | TA'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Reembolso'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Provisão'),
+                    h('th', { class: 'border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Gestão')
+                ])
+            ]),
+            h('tbody', { class: 'divide-y divide-slate-100' },
+                p.agencias.map(a => h('tr', {
+                    key: a.Id,
+                    class: a.IsTotalizador
+                        ? 'bg-gradient-to-r from-amber-50 to-amber-50/40 font-bold text-slate-900 border-t-2 border-b-2 border-amber-200'
+                        : 'hover:bg-blue-50/40 transition-colors font-medium'
+                }, [
+                    h('td', { class: 'border-r border-slate-200 px-3 py-2 text-left whitespace-nowrap' }, [
+                        !a.IsTotalizador && h('span', { class: 'text-slate-400 mr-1' }, '─'),
+                        h('span', { class: a.IsTotalizador ? '' : 'pl-2' }, a.NomeLocal),
+                        a.PesoPercentual && h('span', { class: 'text-slate-500 font-normal ml-1 text-[10px]' }, `(${Math.round(a.PesoPercentual)}%)`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-center bg-slate-50/60 text-slate-600 tabular-nums' },
+                        `${a.OA_Qtd ?? '—'}/${a.PA_Qtd ?? '—'}`),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums' }, formatarNumero(a.BalancoValor)),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                        h('span', { class: 'text-slate-700' }, formatarInt(a.CreditosTotal_Qtd)),
+                        h('span', { class: 'text-slate-400 mx-1' }, '|'),
+                        h('span', { class: 'text-indigo-700 font-bold' }, formatarInt(a.CreditosNovos_Qtd))
+                    ]),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                        h('span', { class: 'text-slate-700' }, formatarInt(a.ClientesTotal_Qtd)),
+                        h('span', { class: 'text-slate-400 mx-1' }, '|'),
+                        h('span', { class: 'text-cyan-700 font-bold' }, formatarInt(a.ClientesNovos_Qtd))
+                    ]),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                        formatarK(a.PAR1_Valor),
+                        a.PAR1_Percentual !== null && h('span', { class: 'text-[10px] text-amber-700 font-semibold ml-1' }, `(${Math.round(a.PAR1_Percentual)}%)`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                        formatarK(a.PAR30_Valor),
+                        a.PAR30_Percentual !== null && h('span', { class: 'text-[10px] text-rose-700 font-semibold ml-1' }, `(${Math.round(a.PAR30_Percentual)}%)`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right bg-emerald-50/50 text-emerald-700 font-semibold tabular-nums' }, [
+                        formatarNumero(a.DesembolsoValor),
+                        a.TempoAtendimentodias !== null && h('span', { class: 'text-[10px] text-slate-500 ml-1' }, `| ${String(a.TempoAtendimentodias).padStart(2, '0')}`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right bg-rose-50/50 text-rose-700 tabular-nums' }, formatarNumero(a.ReembolsoValor)),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                        formatarNumero(a.ProvisaoValor),
+                        a.ProvisaoClasseRisco && h('span', { class: 'font-bold text-slate-700 ml-1' }, `(${a.ProvisaoClasseRisco})`)
+                    ]),
+                    h('td', { class: 'px-2 py-2 text-center font-bold tabular-nums' }, [
+                        h('span', {
+                            class: 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] ' + obterCorGestao(a.GestaoValor)
+                        }, a.GestaoValor !== null ? a.GestaoValor + (a.GestaoSufixo || '') : '—')
+                    ])
+                ]))
+            )
+        ])
+    ])
+}
+AgenciasTable.props = ['titulo', 'agencias']
 
-    showDeleteModal.value = true
+/* ══════════════════════════════════════════════════
+   REFS & CHARTS
+   ══════════════════════════════════════════════════ */
+const areaTabelas = ref(null)
+const chartBalancoRef = ref(null)
+const chartFluxoRef = ref(null)
+const chartQualidadeRef = ref(null)
+const chartAgenciasRef = ref(null)
+const charts = { balanco: null, fluxo: null, qualidade: null, agencias: null }
+
+/* ══════════════════════════════════════════════════
+   COMPUTED
+   ══════════════════════════════════════════════════ */
+const historicoSeisMeses = computed(() => (props.historicoRD || []).slice(0, 6))
+
+const ultimoRegistro = computed(() => {
+    if (!props.historicoRD || props.historicoRD.length === 0) return null
+    return props.historicoRD.length >= 7
+        ? props.historicoRD[6]
+        : props.historicoRD[props.historicoRD.length - 1]
+})
+
+const registroAnterior = computed(() => {
+    if (!props.historicoRD || props.historicoRD.length < 2) return null
+    const idx = props.historicoRD.length >= 7 ? 6 : props.historicoRD.length - 1
+    return props.historicoRD[idx - 1] || null
+})
+
+const colunasMeses = computed(() => historicoSeisMeses.value.map(item => {
+    const data = new Date(item.DataReferencia)
+    const mesExtenso = data.toLocaleDateString('pt-PT', { month: 'short' })
+    const anoCurto = data.getFullYear().toString().substring(2)
+    const label = mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1, 3) + '/' + anoCurto
+    return { key: item.Id, label }
+}))
+
+const ultimoMesNome = computed(() => {
+    if (!ultimoRegistro.value) return ''
+    const d = new Date(ultimoRegistro.value.DataReferencia)
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+})
+
+/* ── Agrupamento de Provisões (por tipo) ── */
+const provisoesAgrupadas = computed(() => agrupar(props.provisoesProdutosRD, 'TipoAgrupamento'))
+
+/* ── Agrupamento de Produtos POR DIREÇÃO / GESTOR ── */
+const produtosAgrupados = computed(() => {
+    if (!props.produtosRD || props.produtosRD.length === 0) return []
+
+    const grupos = {}
+
+    props.produtosRD.forEach(item => {
+        const gestor = item.DirectorNome || 'SEM GESTOR ATRIBUÍDO'
+        const tipoDireccao = item.TipoDireccao || 'GERAL'
+
+        if (!grupos[gestor]) {
+            grupos[gestor] = {
+                gestor,
+                tipoDireccao,
+                itens: [],
+                total: {
+                    BalancoValor: 0,
+                    CreditosTotal_Qtd: 0,
+                    CreditosNovos_Qtd: 0,
+                    ClientesTotal_Qtd: 0,
+                    ClientesNovos_Qtd: 0,
+                    PAR1_Valor: 0,
+                    PAR30_Valor: 0,
+                    DesembolsoValor: 0,
+                    ReembolsoValor: 0,
+                    ProvisaoValor: 0,
+                    OA_Qtd: 0,
+                    PA_Qtd: 0,
+                }
+            }
+        }
+
+        grupos[gestor].itens.push(item)
+
+        const t = grupos[gestor].total
+        t.BalancoValor      += Number(item.BalancoValor)      || 0
+        t.CreditosTotal_Qtd += Number(item.CreditosTotal_Qtd) || 0
+        t.CreditosNovos_Qtd += Number(item.CreditosNovos_Qtd) || 0
+        t.ClientesTotal_Qtd += Number(item.ClientesTotal_Qtd) || 0
+        t.ClientesNovos_Qtd += Number(item.ClientesNovos_Qtd) || 0
+        t.PAR1_Valor        += Number(item.PAR1_Valor)        || 0
+        t.PAR30_Valor       += Number(item.PAR30_Valor)       || 0
+        t.DesembolsoValor   += Number(item.DesembolsoValor)   || 0
+        t.ReembolsoValor    += Number(item.ReembolsoValor)    || 0
+        t.ProvisaoValor     += Number(item.ProvisaoValor)     || 0
+        t.OA_Qtd            += Number(item.OA_Qtd)            || 0
+        t.PA_Qtd            += Number(item.PA_Qtd)            || 0
+    })
+
+    return Object.values(grupos).sort((a, b) =>
+        a.gestor.localeCompare(b.gestor, 'pt-PT', { sensitivity: 'base' })
+    )
+})
+
+const agenciasCapital  = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'CAPITAL'))
+const agenciasProvincia = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'PROVINCIA'))
+
+const totalDesembolso12Meses = computed(() =>
+    (props.desembolsosReembolsos12MesesRD || []).reduce((a, i) => a + Number(i.DesembolsoValor || 0), 0))
+const totalReembolso12Meses = computed(() =>
+    (props.desembolsosReembolsos12MesesRD || []).reduce((a, i) => a + Number(i.ReembolsoValor || 0), 0))
+
+const linhasRisco = [
+    { key: 'npl',   numero: 4, label: 'NPL',    cor: 'bg-rose-500',   percKey: 'NPLPercentual',   valKey: 'NPLValor',   maisKey: 'NPL_Mais',   menosKey: 'NPL_Menos',   variacaoKey: 'VariacaoNPL',   classePerc: 'text-rose-700' },
+    { key: 'par1',  numero: 5, label: 'PAR 1',  cor: 'bg-orange-500', percKey: 'PAR1Percentual',  valKey: 'PAR1Valor',  maisKey: 'PAR1_Mais',  menosKey: 'PAR1_Menos',  variacaoKey: 'VariacaoPAR1',  classePerc: 'text-orange-700' },
+    { key: 'par30', numero: 6, label: 'PAR 30', cor: 'bg-amber-500',  percKey: 'PAR30Percentual', valKey: 'PAR30Valor', maisKey: 'PAR30_Mais', menosKey: 'PAR30_Menos', variacaoKey: 'VariacaoPAR30', classePerc: 'text-amber-700' },
+]
+
+const linhasPercentuais = [
+    { key: 'TaxaReembolsoPercentual',   numero: 8,  label: 'Taxa de Reembolso',   cor: 'bg-emerald-500', maisKey: 'TaxaReembolso_Mais',   menosKey: 'TaxaReembolso_Menos',   variacaoKey: 'VariacaoTaxaReembolso',   classeFixa: 'text-emerald-700', invertido: false },
+    { key: 'TaxaCumprimentoPercentual', numero: 9,  label: 'Taxa de Cumprimento', cor: 'bg-blue-500',    maisKey: 'TaxaCumprimento_Mais', menosKey: 'TaxaCumprimento_Menos', variacaoKey: 'VariacaoTaxaCumprimento', classeFixa: 'text-blue-700',    invertido: false },
+    { key: 'TaxaRecuperacaoPercentual', numero: 10, label: 'Taxa de Recuperação', cor: 'bg-indigo-500',  maisKey: 'TaxaRecuperacao_Mais', menosKey: 'TaxaRecuperacao_Menos', variacaoKey: 'VariacaoTaxaRecuperacao', classeFixa: 'text-indigo-700',  invertido: false },
+]
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════════ */
+function agrupar(lista, chave) {
+    if (!lista || lista.length === 0) return []
+    const g = {}
+    lista.forEach(i => {
+        const t = i[chave] || 'OUTROS'
+        ;(g[t] ||= []).push(i)
+    })
+    return Object.keys(g).map(t => ({ tipo: t, itens: g[t] }))
 }
 
-const proceedWithDeletion = async (id, motivo) => {
-    isDeleting.value = true
-    try {
-        await router.post("/eliminar-comprovativo", {
-            id: id,
-            estado_id: selectedComprovativo.value.idestado,
-            motivo: motivo
-        }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                showDeleteModal.value = false
-                // Limpar formulário
-                formEliminacao.value = {
-                    txtMotivo: '',
-                    txtDadosEliminado: '',
-                    txtLoan: '',
-                    txtId: null
+const calcularDelta = (atual, anterior) => {
+    const a = Number(atual), b = Number(anterior)
+    if (!isFinite(a) || !isFinite(b) || b === 0) return null
+    return ((a - b) / Math.abs(b)) * 100
+}
+
+const obterNivelRisco = (diasAtraso) => {
+    if (diasAtraso === null || diasAtraso === undefined) return 'A'
+    const da = Number(diasAtraso)
+    if (da <= 7) return 'A'
+    if (da <= 15) return 'B'
+    if (da <= 30) return 'C'
+    if (da <= 45) return 'D'
+    if (da <= 75) return 'E'
+    if (da <= 90) return 'F'
+    return 'G'
+}
+
+const formatarProvisaoCobertura = (diasAtraso, percentual) => {
+    if (percentual === null || percentual === undefined) return '—'
+    return `(${obterNivelRisco(diasAtraso)} :: ${formatarNumero(percentual)}%)`
+}
+
+/* ══════════════════════════════════════════════════
+   FORMATADORES NUMÉRICOS (pt-PT)
+   ══════════════════════════════════════════════════ */
+const _toNum = (val) => {
+    if (val === null || val === undefined || val === '') return NaN
+    if (typeof val === 'string') {
+        return Number(val.includes(',') ? val.replace(/\./g, '').replace(',', '.') : val.trim())
+    }
+    return Number(val)
+}
+
+const formatarNumero = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    return n.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+const formatarInt = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
+}
+
+const formatarCompacto = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    const abs = Math.abs(n)
+    if (abs >= 1e9) return (n / 1e9).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'B'
+    if (abs >= 1e6) return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'M'
+    if (abs >= 1e3) return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + 'K'
+    return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
+}
+
+const formatarK = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    const abs = Math.abs(n)
+    if (abs >= 1e6) return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + 'M'
+    if (abs >= 1e3) return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + 'K'
+    return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
+}
+
+const formatarMoedaCompacta = (val) => {
+    const s = formatarCompacto(val)
+    return s === '—' ? s : s + ' Kz'
+}
+
+const formatarPercentual = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    return n.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + '%'
+}
+
+const formatarDelta = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    const prefixo = n > 0 ? '+' : ''
+    return prefixo + n.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+/* ══════════════════════════════════════════════════
+   CORES AUXILIARES
+   ══════════════════════════════════════════════════ */
+const obterCorGestao = (valor) => {
+    const n = Number(valor)
+    if (!isFinite(n)) return 'bg-slate-100 text-slate-500'
+    if (n > 0) return 'bg-emerald-100 text-emerald-700'
+    if (n < 0) return 'bg-rose-100 text-rose-700'
+    return 'bg-amber-100 text-amber-800'
+}
+
+const obterCorDiferenca = (val) => {
+    const n = Number(val)
+    if (!isFinite(n)) return 'text-slate-500'
+    if (n < 0) return 'text-emerald-700'
+    if (n > 0) return 'text-rose-700'
+    return 'text-slate-600'
+}
+
+/* ══════════════════════════════════════════════════
+   CHARTS
+   ══════════════════════════════════════════════════ */
+const CHART_FONT = { family: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' }
+
+const destroyCharts = () => {
+    Object.keys(charts).forEach(k => { if (charts[k]) { charts[k].destroy(); charts[k] = null } })
+}
+
+const initCharts = () => {
+    destroyCharts()
+
+    /* ── 1. Evolução do Balanço ── */
+    if (chartBalancoRef.value && historicoSeisMeses.value.length > 0) {
+        const labels = colunasMeses.value.map(m => m.label)
+        const data = historicoSeisMeses.value.map(i => Number(i.BalancoValor) || 0)
+
+        const ctx = chartBalancoRef.value.getContext('2d')
+        const grad = ctx.createLinearGradient(0, 0, 0, 220)
+        grad.addColorStop(0, 'rgba(59, 130, 246, 0.35)')
+        grad.addColorStop(1, 'rgba(59, 130, 246, 0.0)')
+
+        charts.balanco = new Chart(chartBalancoRef.value, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Balanço',
+                    data,
+                    borderColor: '#2563EB',
+                    backgroundColor: grad,
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#2563EB',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0B2E4F',
+                        padding: 10,
+                        titleFont: { ...CHART_FONT, size: 11 },
+                        bodyFont: { ...CHART_FONT, size: 12, weight: 'bold' },
+                        callbacks: { label: c => ' ' + formatarNumero(c.parsed.y) }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { ...CHART_FONT, size: 10 }, color: '#64748b' } },
+                    y: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            font: { ...CHART_FONT, size: 10 }, color: '#64748b',
+                            callback: v => formatarCompacto(v)
+                        }
+                    }
                 }
             }
         })
-    } catch (error) {
-        console.error('Erro ao eliminar:', error)
-    } finally {
-        isDeleting.value = false
-    }
-}
-
-const cancelDeletion = () => {
-    selectedComprovativo.value = {
-        lnr: '',
-        cliente: '',
-        montante: 0,
-        data: '',
-        estado: '',
-        id: null
-    }
-    showDeleteModal.value = false
-}
-
-
-
-const validarDatas = () => {
-    erros.value = { dataInicio: '', dataFim: '' }
-    let isValid = true
-
-    if (!filtro.value.dataInicioInput) {
-        erros.value.dataInicio = 'A data de início é obrigatória'
-        isValid = false
     }
 
-    if (!filtro.value.dataFimInput) {
-        erros.value.dataFim = 'A data de fim é obrigatória'
-        isValid = false
-    }
+    /* ── 2. Desembolso vs Reembolso ── */
+    if (chartFluxoRef.value && props.desembolsosReembolsos12MesesRD?.length) {
+        const labels = props.desembolsosReembolsos12MesesRD.map(m => m.NomeDoMes)
+        const desemb = props.desembolsosReembolsos12MesesRD.map(m => Number(m.DesembolsoValor) || 0)
+        const reemb  = props.desembolsosReembolsos12MesesRD.map(m => Number(m.ReembolsoValor) || 0)
 
-    if (filtro.value.dataInicioInput && filtro.value.dataFimInput) {
-        const dataInicio = new Date(filtro.value.dataInicioInput)
-        const dataFim = new Date(filtro.value.dataFimInput)
-
-        if (dataInicio > dataFim) {
-            erros.value.dataInicio = 'A data de início não pode ser maior que a data de fim'
-            erros.value.dataFim = 'A data de fim não pode ser menor que a data de início'
-            isValid = false
-        }
-    }
-
-    return isValid
-}
-
-const aplicarFiltros = () => {
-    if (!validarDatas()) return
-
-    router.get('/referenciapgt', {
-        search_input: filtro.value.search,
-        lnr_imput: filtro.value.lnr,
-        estado_input: filtro.value.estado,
-        agencia_imput: filtro.value.agencia,
-        data_inicio_imput: filtro.value.dataInicioInput,
-        data_fim_imput: filtro.value.dataFimInput,
-        filtrar_prestacoes: filtro.value.filtrarPrestacoes ? 1 : 0,
-        filtrar_poupancas: filtro.value.filtrarPoupancas ? 1 : 0,
-        produto_prestacao: filtro.value.produtoPrestacao,
-        produto_poupanca: filtro.value.produtoPoupanca,
-        forma_pagamento: filtro.value.formaPagamento,
-        tipo: 4
-    }, {
-        preserveState: true,
-        replace: true,
-        onSuccess: () => paginaAtual.value = 1
-    })
-}
-
-
-
-const resetarFiltros = () => {
-    filtro.value = {
-        search: '',
-        lnr: '',
-        estado: 28,
-        agencia: 'T',
-        formaPagamento: 'TP',
-        produtoPrestacao: 'TL',
-        produtoPoupanca: 'TS',
-        dataInicioInput: '',
-        dataFimInput: '',
-        filtrarPrestacoes: true,
-        filtrarPoupancas: true
-    }
-
-    router.get('/referenciapgt', { page: 1 }, {
-        preserveState: true,
-        replace: true
-    })
-}
-
-const exportarParaExcel = () => {
-    try {
-        const dadosFormatados = props.lista_comprovativo.map((comprovativo, index) => ({
-            '#': index + 1,
-            'Data': comprovativo.data ? new Date(comprovativo.data).toLocaleString('pt-PT') : '-',
-            'Agência': comprovativo.agencia || '-',
-            'Registado Por': comprovativo.usuario || '-',
-            'Código do Cliente': comprovativo.lnr || '-',
-            'Cliente': comprovativo.cliente || '-',
-            'Produto': comprovativo.metodologia || '-',
-            'Montante': comprovativo.montante || '0,00',
-            'Referência de Pagamento': comprovativo.referencia || '-',
-            'Estado': comprovativo.estado || '-',
-
-        }))
-
-        const ws = XLSX.utils.json_to_sheet(dadosFormatados)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, "Comprovativos")
-        XLSX.writeFile(wb, `lista_refpagamentos_completa_${new Date().toISOString().split('T')[0]}.xlsx`)
-    } catch (error) {
-        console.error('Erro ao exportar:', error)
-        alert(`Erro ao exportar: ${error.message}`)
-    }
-}
-
-
-const abrirModalGerarRefManual = () => {
-    showModalGerarREF.value = true
-    novoReferenciaManual.value = {
-        ls: 'Saving', // Já está como 'Saving', isso está correto
-        selectBase: '',
-        selectGrupoIndividual: '',
-        txtNumeroLoanSaving: '',
-        selectProdutoLoan: '',
-        selectProdutoSaving: '',
-        txtLoanR: 'Loan Repayment',
-        txtSavingD: 'Savings Deposit',
-
-
-        txtMontante: '',
-
-        txtInfoAdicional: '',
-
-        telefone: ''
-    }
-}
-// Função para resetar o formulário
-const resetarFormularioReferencia = () => {
-    novoReferenciaManual.value = {
-        ls: 'Saving',
-        selectBase: '',
-        selectGrupoIndividual: '',
-        txtNumeroLoanSaving: '',
-        selectProdutoSaving: '',
-        txtSavingD: 'Savings Deposit',
-        txtMontante: '',
-        txtInfoAdicional: '',
-        telefone: '',
-        txtRefPagamento: ''
-    };
-};
-const fecharModalCriarRefManual = () => showModalGerarREF.value = false
-
-
-const guardarComprovativo = async () => {
-    try {
-        const formData = new FormData()
-        Object.entries(novoComprovativo.value).forEach(([key, value]) => {
-            if (value) formData.append(key, value)
-        })
-
-
-
-        await router.post('/guardar-referencia-pagamento', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            onSuccess: () => {
-                fecharModalCriarRefManual();
-
-                // Resetar formulário
-                resetarFormularioReferencia();
-
+        charts.fluxo = new Chart(chartFluxoRef.value, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Desembolso', data: desemb, backgroundColor: '#10B981', borderRadius: 6, maxBarThickness: 22 },
+                    { label: 'Reembolso',  data: reemb,  backgroundColor: '#F43F5E', borderRadius: 6, maxBarThickness: 22 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top', align: 'end',
+                        labels: { font: { ...CHART_FONT, size: 10 }, boxWidth: 10, boxHeight: 10, usePointStyle: true, pointStyle: 'circle' }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0B2E4F',
+                        padding: 10,
+                        titleFont: { ...CHART_FONT, size: 11 },
+                        bodyFont: { ...CHART_FONT, size: 11 },
+                        callbacks: { label: c => ' ' + c.dataset.label + ': ' + formatarNumero(c.parsed.y) }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { ...CHART_FONT, size: 9 }, color: '#64748b' } },
+                    y: { grid: { color: '#f1f5f9' }, ticks: { font: { ...CHART_FONT, size: 10 }, color: '#64748b', callback: v => formatarCompacto(v) } }
+                }
             }
         })
-    } catch (error) {
-        console.error('Erro ao gerar referência:', error)
+    }
+
+    /* ── 3. Qualidade da Carteira ── */
+    if (chartQualidadeRef.value && historicoSeisMeses.value.length > 0) {
+        const labels = colunasMeses.value.map(m => m.label)
+        const npl = historicoSeisMeses.value.map(i => Number(i.NPLPercentual) || 0)
+        const p1  = historicoSeisMeses.value.map(i => Number(i.PAR1Percentual) || 0)
+        const p30 = historicoSeisMeses.value.map(i => Number(i.PAR30Percentual) || 0)
+
+        charts.qualidade = new Chart(chartQualidadeRef.value, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'NPL',    data: npl, borderColor: '#E11D48', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 3, pointHoverRadius: 5 },
+                    { label: 'PAR 1',  data: p1,  borderColor: '#F97316', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 3, pointHoverRadius: 5 },
+                    { label: 'PAR 30', data: p30, borderColor: '#F59E0B', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 3, pointHoverRadius: 5 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top', align: 'end',
+                        labels: { font: { ...CHART_FONT, size: 10 }, boxWidth: 10, boxHeight: 10, usePointStyle: true, pointStyle: 'circle' }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0B2E4F', padding: 10,
+                        titleFont: { ...CHART_FONT, size: 11 },
+                        bodyFont: { ...CHART_FONT, size: 11 },
+                        callbacks: { label: c => ' ' + c.dataset.label + ': ' + formatarPercentual(c.parsed.y) }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { ...CHART_FONT, size: 10 }, color: '#64748b' } },
+                    y: { grid: { color: '#f1f5f9' }, ticks: { font: { ...CHART_FONT, size: 10 }, color: '#64748b', callback: v => v + '%' } }
+                }
+            }
+        })
+    }
+
+    /* ── 4. Distribuição por Agências ── */
+    if (chartAgenciasRef.value && props.agenciasRD?.length) {
+        const itens = [...props.agenciasRD]
+            .filter(a => !a.IsTotalizador && Number(a.BalancoValor) > 0)
+            .sort((a, b) => Number(b.BalancoValor) - Number(a.BalancoValor))
+            .slice(0, 8)
+
+        if (itens.length) {
+            const palette = ['#2563EB', '#10B981', '#F59E0B', '#E11D48', '#8B5CF6', '#06B6D4', '#F97316', '#64748B']
+            charts.agencias = new Chart(chartAgenciasRef.value, {
+                type: 'doughnut',
+                data: {
+                    labels: itens.map(i => i.NomeLocal),
+                    datasets: [{
+                        data: itens.map(i => Number(i.BalancoValor)),
+                        backgroundColor: palette,
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '62%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: { ...CHART_FONT, size: 10 }, boxWidth: 10, boxHeight: 10,
+                                usePointStyle: true, pointStyle: 'circle', padding: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0B2E4F', padding: 10,
+                            titleFont: { ...CHART_FONT, size: 11 },
+                            bodyFont: { ...CHART_FONT, size: 11 },
+                            callbacks: { label: c => ' ' + c.label + ': ' + formatarNumero(c.parsed) }
+                        }
+                    }
+                }
+            })
+        }
     }
 }
 
-const buscarPorLoan = () => {
-    router.get('/referenciapgt', { tipo: 3, loan: filtroLoan.value }, { preserveState: true })
-    showModalLoan.value = false
+onMounted(() => nextTick(initCharts))
+
+watch(
+    () => [props.historicoRD, props.desembolsosReembolsos12MesesRD, props.agenciasRD],
+    () => nextTick(initCharts),
+    { deep: true }
+)
+
+onBeforeUnmount(destroyCharts)
+
+/* ══════════════════════════════════════════════════
+   IMPRESSÃO A4
+   ══════════════════════════════════════════════════ */
+const imprimirA4 = () => {
+    if (!areaTabelas.value) return
+    const iframe = document.createElement('iframe')
+    iframe.style.cssText = 'position:absolute;width:0;height:0;border:none;'
+    document.body.appendChild(iframe)
+    const doc = iframe.contentWindow.document
+
+    const estilos = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map(s => s.outerHTML).join('')
+
+    doc.open()
+    doc.write(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA]</title>
+                ${estilos}
+                <style>
+                    @page { size: A4 landscape; margin: 8mm; }
+                    body { background-color: #fff !important; padding: 0 !important; margin: 0 !important;
+                           -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+                           font-family: ui-sans-serif, system-ui, sans-serif; }
+                    table { font-size: 8.5px !important; page-break-inside: auto; }
+                    tr { page-break-inside: avoid; }
+                    thead { display: table-header-group; }
+                    .shadow-sm, .shadow-xl, .shadow-lg { box-shadow: none !important; }
+                    .rounded-2xl, .rounded-xl { border-radius: 6px !important; }
+                    section { page-break-inside: avoid; margin-bottom: 12px; }
+                </style>
+            </head>
+            <body>${areaTabelas.value.outerHTML}</body>
+        </html>
+    `)
+    doc.close()
+
+    setTimeout(() => {
+        iframe.contentWindow.focus()
+        iframe.contentWindow.print()
+        document.body.removeChild(iframe)
+    }, 600)
 }
-
-const buscarPorDatas = () => {
-    router.get('/referenciapgt', {
-        tipo: 1,
-        data_inicio: dataInicio.value,
-        data_fim: dataFim.value
-    }, { preserveState: true })
-    showModalData.value = false
-}
-
-const mudarPagina = (novaPagina) => {
-    paginaAtual.value = novaPagina
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-
-
-// Watchers
-watch(() => props.filters, (newFilters) => {
-    filtro.value = {
-        search: newFilters.search || '',
-        lnr: newFilters.lnr || '',
-        estado: newFilters.estado || 28,
-        agencia: newFilters.agencia || 'T',
-        formaPagamento: newFilters.formaPagamento || 'TP',
-        produtoPrestacao: newFilters.produtoPrestacao || 'TL',
-        produtoPoupanca: newFilters.produtoPoupanca || 'TS',
-        dataInicioInput: newFilters.data_inicio || '',
-        dataFimInput: newFilters.data_fim || '',
-        filtrarPrestacoes: newFilters.filtrar_prestacoes !== undefined ? Boolean(Number(newFilters.filtrar_prestacoes)) : true,
-        filtrarPoupancas: newFilters.filtrar_poupancas !== undefined ? Boolean(Number(newFilters.filtrar_poupancas)) : true
-    }
-}, { immediate: true, deep: true })
-
-watch(() => props.page, (newPage) => {
-    paginaAtual.value = newPage
-})
-
-watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], () => {
-    validarDatas()
-})
 </script>
 
 <style scoped>
-/* Sistema de Cores */
-:root {
-    --color-primary: #08583d;
-    --color-primary-light: #0c7a5a;
-    --color-secondary: #6b7280;
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-danger: #ef4444;
-    --color-info: #3b82f6;
-}
-
-/* Componentes Estilizados */
-.alert {
-    @apply p-4 rounded-lg border-l-4;
-}
-
-.alert-success {
-    @apply bg-green-50 text-green-800 border-green-500;
-}
-
-.alert-danger {
-    @apply bg-red-50 text-red-800 border-red-500;
-}
-
-.alert-warning {
-    @apply bg-yellow-50 text-yellow-800 border-yellow-500;
-}
-
-.alert-info {
-    @apply bg-blue-50 text-blue-800 border-blue-500;
-}
-
-.btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center;
-}
-
-.btn-primary {
-    @apply bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
-}
-
-.btn-outline-primary {
-    @apply border border-blue-500 text-blue-500 hover:bg-blue-50;
-}
-
-.btn-outline-primary-pgr {
-    @apply border border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-purple-50;
-}
-
-.btn-primary-filter {
-    @apply bg-green-900 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-900 focus:ring-offset-2;
-}
-
-.btn-outline {
-    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
-}
-
-.btn-outline-secondary {
-    @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
-}
-
-.btn-outline-excel {
-    @apply border border-green-600 text-green-600 hover:bg-green-50;
-}
-
-.btn-outline-success {
-    @apply border border-green-500 text-green-500 hover:bg-green-50;
-}
-
-.btn-sm {
-    @apply px-3 py-1 text-sm;
-}
-
-/* Componentes de Formulário */
-.select-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white;
-}
-
-.checkbox-label {
-    @apply flex items-center cursor-pointer p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100;
-}
-
-.checkbox-input {
-    @apply sr-only;
-}
-
-.checkbox-custom {
-    @apply w-4 h-4 border border-gray-300 rounded mr-3 relative;
-}
-
-.checkbox-input:checked+.checkbox-custom {
-    @apply bg-green-600 border-green-600;
-}
-
-.checkbox-input:checked+.checkbox-custom::after {
-    content: '';
-    @apply absolute inset-0.5 bg-white rounded-sm;
-}
-
-/* Cards e Efeitos */
-.card-hover {
-    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
-}
-
-.badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-}
-
-.badge-warning {
-    @apply bg-yellow-100 text-yellow-800;
-}
-
-/* Tooltips */
-.tooltip {
-    @apply absolute z-10 left-0 mt-2 w-64 bg-white shadow-lg rounded-lg border border-gray-200 p-3;
-}
-
-/* Animações */
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .container {
-        @apply px-4;
-    }
-
-    .btn {
-        @apply px-3 py-1.5 text-sm;
-    }
-
-    /* Otimizações para mobile */
-    .hidden-mobile {
-        display: none;
-    }
-}
-
-/* Melhorias de Performance */
-* {
-    box-sizing: border-box;
-}
-
-/* Scroll personalizado */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    @apply bg-gray-100;
-}
-
-::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
-}
-
-/* Estados de foco melhorados */
-button:focus,
-input:focus,
-select:focus {
-    @apply outline-none ring-2 ring-green-500 ring-offset-2;
-}
-
-/* Transições suaves */
-.transition-all {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
 }
 </style>

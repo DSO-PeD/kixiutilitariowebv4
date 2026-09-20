@@ -61,29 +61,6 @@ class ComprovativoModel extends Model
 
         return $affectedeCifecha;
     }
-    
-    /*public static function setEliminarComprovativo($id, $UtCodigo, $DataEliminacao, $MotivoEliminacao, $djascript, $loan)
-       {
-
-           $statusEliminacao = false;
-
-           $insertEraser = Tbldjascript_eraser::create(['script_recuperacao' => $djascript, 'UtCodigoEliminou' => $UtCodigo, 'DataEliminacao' => $DataEliminacao, 'Motivo' => $MotivoEliminacao]);
-
-           if ($insertEraser) {
-               $deleteCpvtv = DB::table('comprovativos')->where('id', $id)->delete();
-
-               if ($deleteCpvtv) {
-                   $delete_eraser_excepcoes = DB::table('eraser_excepcoes')->where('Lnr', $loan)->delete();
-
-                   if ($delete_eraser_excepcoes) {
-                       $statusEliminacao = true;
-                   }
-                   $statusEliminacao = true;
-               }
-           }
-
-           return $statusEliminacao;
-       }*/
 
     public static function verificarSeBorderouxExiste($BuReferencia,  $Eliminado)
     {
