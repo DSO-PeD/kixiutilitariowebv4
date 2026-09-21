@@ -26,7 +26,7 @@ export default defineConfig({
         port: 5174,
 
         hmr: {
-            host: '192.168.30.64',
+            host: 'localhost',
             port: 5174,
         },
     },
