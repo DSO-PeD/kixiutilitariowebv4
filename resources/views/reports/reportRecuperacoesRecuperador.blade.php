@@ -837,13 +837,13 @@
 <!-- Assinaturas alinhadas -->
 <div style="margin-top: 100px;">
     <div style="float: left; width: 40%;">
-        <div class="signature-label">Aprovado por:</div>
+        <div class="signature-label">Verificado por:</div>
         <div class="signature-line" style="width: 250px;"></div>
         <!--div style="text-align: center; font-size: 10px; margin-top: 5px;">Nome e Assinatura</div-->
     </div>
 
     <div style="float: right; width: 40%; text-align: left;">
-        <div class="signature-label">Verificado por:</div>
+        <div class="signature-label">Aprovado por:</div>
         <div class="signature-line" style="width: 250px; margin-left: auto;"></div>
         <!--div style="text-align: center; font-size: 10px; margin-top: 5px;">Nome e Assinatura</div-->
     </div>
