@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class TblRDPrintCarteiraWriteOffModel extends Model
 {
-    protected $table = 'tblRDPrintCarteiraWriteOff';
+    protected $table = 'tblRDprintCarteiraWriteOff';
     protected $primaryKey = 'Id';
 
     public $timestamps = false;
@@ -35,7 +35,7 @@ class TblRDPrintCarteiraWriteOffModel extends Model
 
     public static function getPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblRDPrintCarteiraWriteOff')
+        return DB::table('tblRDprintCarteiraWriteOff')
             ->where('DataReferencia', $dataReferencia)
             ->where('Activo', 1)
             ->orderBy('Orden', 'asc')
@@ -44,7 +44,7 @@ class TblRDPrintCarteiraWriteOffModel extends Model
 
     public static function salvarOuAtualizarDados(array $dados)
     {
-        return DB::table('tblRDPrintCarteiraWriteOff')->updateOrInsert(
+        return DB::table('tblRDprintCarteiraWriteOff')->updateOrInsert(
             [
                 'DataReferencia'    => $dados['DataReferencia'],
                 'EtiquetaPeriodoWO' => $dados['EtiquetaPeriodoWO']
@@ -55,7 +55,7 @@ class TblRDPrintCarteiraWriteOffModel extends Model
 
     public static function eliminarPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblRDPrintCarteiraWriteOff')
+        return DB::table('tblRDprintCarteiraWriteOff')
             ->where('DataReferencia', $dataReferencia)
             ->delete();
     }
