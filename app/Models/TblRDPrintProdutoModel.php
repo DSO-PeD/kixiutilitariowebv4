@@ -43,7 +43,7 @@ class TblRDPrintProdutoModel extends Model
 
     public static function getPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblrdprintproduto')
+        return DB::table('tblRDprintProduto')
             ->where('DataReferencia', $dataReferencia)
             ->where('Activo', 1)
             ->get();
@@ -51,7 +51,7 @@ class TblRDPrintProdutoModel extends Model
 
     public static function salvarOuAtualizarDados(array $dados)
     {
-        return DB::table('tblrdprintproduto')->updateOrInsert(
+        return DB::table('tblRDprintProduto')->updateOrInsert(
             [
                 'DataReferencia' => $dados['DataReferencia'],
                 'NomeProduto'    => $dados['NomeProduto']
@@ -62,7 +62,7 @@ class TblRDPrintProdutoModel extends Model
 
     public static function eliminarPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblrdprintproduto')
+        return DB::table('tblRDprintProduto')
             ->where('DataReferencia', $dataReferencia)
             ->delete();
     }
