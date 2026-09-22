@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class TblRDPrintDesembolsosReembolsos12MesesModel extends Model
 {
-    protected $table = 'tblrdprintdesembolsosreembolsos12meses';
+    protected $table = 'tblRDprintDesembolsosReembolsos12meses';
     protected $primaryKey = 'Id';
 
     public $timestamps = false;

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class TblRDPrintProdutoModel extends Model
 {
-    protected $table = 'tblrdprintproduto';
+    protected $table = 'tblRDprintProduto';
     protected $primaryKey = 'Id';
 
     public $timestamps = false;
