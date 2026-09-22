@@ -27,7 +27,7 @@ class TblRDPrintDesembolsosReembolsos12MesesModel extends Model
      */
     public static function getPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblrdprintdesembolsosreembolsos12meses')
+        return DB::table('tblRDprintDesembolsosReembolsos12meses')
             ->where('DataReferencia', $dataReferencia)
             ->where('Activo', 1)
             ->orderBy('Id', 'asc')
@@ -39,7 +39,7 @@ class TblRDPrintDesembolsosReembolsos12MesesModel extends Model
      */
     public static function salvarOuAtualizarDados(array $dados)
     {
-        return DB::table('tblrdprintdesembolsosreembolsos12meses')->updateOrInsert(
+        return DB::table('tblRDprintDesembolsosReembolsos12meses')->updateOrInsert(
             [
                 'DataReferencia' => $dados['DataReferencia'],
                 'NomeDoMes'      => $dados['NomeDoMes']
@@ -53,7 +53,7 @@ class TblRDPrintDesembolsosReembolsos12MesesModel extends Model
      */
     public static function eliminarPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblrdprintdesembolsosreembolsos12meses')
+        return DB::table('tblRDprintDesembolsosReembolsos12meses')
             ->where('DataReferencia', $dataReferencia)
             ->delete();
     }
