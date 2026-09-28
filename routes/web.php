@@ -133,4 +133,10 @@ Route::get('actualizarComprovativosRefManual', [DebugPgtRefController::class, 'a
 Route::prefix('api')->group(function () {
     Route::get('/facturacao/desembolsos', [ExternalAPIController::class, 'getDesembolsos']);
     Route::get('/facturacao/comprovativos', [ExternalAPIController::class, 'getComprovativos']);
+    Route::post('/rd/carregartblRDprintCarteiraWriteOff', [ExternalAPIController::class, 'carregartblRDprintCarteiraWriteOff']);
+    Route::post('/rd/carregartblRDprintDadosEstatisticos', [ExternalAPIController::class, 'carregartblRDprintDadosEstatisticos']);
+    Route::post('/rd/carregartblRDprintDesembolsosReembolsos12meses', [ExternalAPIController::class, 'carregartblRDprintDesembolsosReembolsos12meses']);
+    Route::post('/rd/carregartblRDprintKixiCredito', [ExternalAPIController::class, 'carregartblRDprintKixiCredito']);
+    Route::post('/rd/carregartblRDprintMovimentoPrestacao', [ExternalAPIController::class, 'carregartblRDprintMovimentoPrestacao']);
+    Route::post('/rd/carregartblRDprintProduto', [ExternalAPIController::class, 'carregartblRDprintProduto']);
 });
