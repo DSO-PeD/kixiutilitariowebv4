@@ -11,6 +11,8 @@ use App\Models\TblRDPrintDesembolsosReembolsos12MesesModel;
 use App\Models\TblRDprintKixiCreditoModel;
 use App\Models\TblRDPrintMovimentoPrestacaoModel;
 use App\Models\TblRDPrintProdutoModel;
+use App\Models\TblRDPrintProdutoProvisaoModel;
+use App\Models\TblRDprintRegionalModel;
 use Illuminate\Support\Facades\DB;
 
 class ExternalAPIController extends Controller
@@ -370,6 +372,98 @@ class ExternalAPIController extends Controller
             // Inserir os novos
             if (!empty($data)) {
                 TblRDPrintProdutoModel::insert($data);
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'processed' => count($data),
+        ]);
+    }
+    
+    public function carregartblRDprintProdutoProvisao(Request $request){
+        $records = $request->input('records');
+
+        $data = collect($records)->map(function ($record) {
+            return [
+                'Id' => $record['Id'],
+                'DataReferencia' => $record['DataReferencia'],	
+                'TipoAgrupamento' => $record['TipoAgrupamento'],	
+                'NomeProduto' => $record['NomeProduto'],	
+                'TipoDireccao' => $record['TipoDireccao'],	
+                'DirectorNome' => $record['DirectorNome'],	
+                'PercentagemDado' => $record['PercentagemDado'],	
+                'ProvisaoValorFechoAnoAnterior' => $record['ProvisaoValorFechoAnoAnterior'],	
+                'ProvisaoValorMesAnterior' => $record['ProvisaoValorMesAnterior'],	
+                'ProvisaoValorInferiorAnoActual' => $record['ProvisaoValorInferiorAnoActual'],	
+                'ProvisaoValorAnoActual' => $record['ProvisaoValorAnoActual'],	
+                'ProvisaoValorMesActual' => $record['ProvisaoValorMesActual'],	
+                'ProvisaoDiferencaMensal' => $record['ProvisaoDiferencaMensal'],	
+                'ProvisaoDiferencaAnual' => $record['ProvisaoDiferencaAnual'],	
+                'ProvisaoDiferencaMediaMensal' => $record['ProvisaoDiferencaMediaMensal'],	
+                'PercentVariaAnual' => $record['PercentVariaAnual'],	
+                'DataCriacao' => $record['DataCriacao'],	
+                'Activo' => $record['Activo']
+            ];
+        })->toArray();
+
+        DB::transaction(function () use ($data) {
+
+            // Eliminar os dados existentes
+            TblRDPrintProdutoProvisaoModel::query()->delete();
+
+            // Inserir os novos
+            if (!empty($data)) {
+                TblRDPrintProdutoProvisaoModel::insert($data);
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'processed' => count($data),
+        ]);
+    }
+
+    public function carregartblRDprintRegional(Request $request){
+        $records = $request->input('records');
+
+        $data = collect($records)->map(function ($record) {
+            return [
+                'Id' => $record['Id'],
+                'DataReferencia' => $record['DataReferencia'],	
+                'TipoAgrupamento' => $record['TipoAgrupamento'],	
+                'NomeLocal' => $record['NomeLocal'],	
+                'OA_Qtd' => $record['OA_Qtd'],	
+                'PA_Qtd' => $record['PA_Qtd'],	
+                'BalancoValor' => $record['BalancoValor'],	
+                'CreditosTotal_Qtd' => $record['CreditosTotal_Qtd'],	
+                'CreditosNovos_Qtd' => $record['CreditosNovos_Qtd'],	
+                'ClientesTotal_Qtd' => $record['ClientesTotal_Qtd'],	
+                'ClientesNovos_Qtd' => $record['ClientesNovos_Qtd'],	
+                'PAR1_Valor' => $record['PAR1_Valor'],	
+                'PAR1_Percentual' => $record['PAR1_Percentual'],	
+                'PAR30_Valor' => $record['PAR30_Valor'],	
+                'PAR30_Percentual' => $record['PAR30_Percentual'],	
+                'DesembolsoValor' => $record['DesembolsoValor'],	
+                'TempoAtendimentodias' => $record['TempoAtendimentodias'],	
+                'ReembolsoValor' => $record['ReembolsoValor'],	
+                'ProvisaoValor' => $record['ProvisaoValor'],	
+                'ProvisaoClasseRisco' => $record['ProvisaoClasseRisco'],	
+                'GestaoValor' => $record['GestaoValor'],	
+                'GestaoSufixo' => $record['GestaoSufixo'],	
+                'DataCriacao' => $record['DataCriacao'],	
+                'Activo' => $record['Activo']
+            ];
+        })->toArray();
+
+        DB::transaction(function () use ($data) {
+
+            // Eliminar os dados existentes
+            TblRDprintRegionalModel::query()->delete();
+
+            // Inserir os novos
+            if (!empty($data)) {
+                TblRDprintRegionalModel::insert($data);
             }
         });
 

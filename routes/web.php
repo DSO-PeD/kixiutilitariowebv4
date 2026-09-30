@@ -129,14 +129,18 @@ Route::get('syncPagamentos/{periodoI}/{periodoF}', [DebugPgtRefController::class
 Route::get('actualizarComprovativos', [DebugPgtRefController::class, 'actualizarComprovativoRef']);
 Route::get('actualizarComprovativosRefManual', [DebugPgtRefController::class, 'actualizarComprovativoRefManual']);
 
-/** Rotas para facturação */
 Route::prefix('api')->group(function () {
+    /** Rotas para facturação */
     Route::get('/facturacao/desembolsos', [ExternalAPIController::class, 'getDesembolsos']);
     Route::get('/facturacao/comprovativos', [ExternalAPIController::class, 'getComprovativos']);
+
+    /** Rotas para RD */
     Route::post('/rd/carregartblRDprintCarteiraWriteOff', [ExternalAPIController::class, 'carregartblRDprintCarteiraWriteOff']);
     Route::post('/rd/carregartblRDprintDadosEstatisticos', [ExternalAPIController::class, 'carregartblRDprintDadosEstatisticos']);
     Route::post('/rd/carregartblRDprintDesembolsosReembolsos12meses', [ExternalAPIController::class, 'carregartblRDprintDesembolsosReembolsos12meses']);
     Route::post('/rd/carregartblRDprintKixiCredito', [ExternalAPIController::class, 'carregartblRDprintKixiCredito']);
     Route::post('/rd/carregartblRDprintMovimentoPrestacao', [ExternalAPIController::class, 'carregartblRDprintMovimentoPrestacao']);
     Route::post('/rd/carregartblRDprintProduto', [ExternalAPIController::class, 'carregartblRDprintProduto']);
+    Route::post('/rd/carregartblRDprintProdutoProvisao', [ExternalAPIController::class, 'carregartblRDprintProdutoProvisao']);
+    Route::post('/rd/carregartblRDprintRegional', [ExternalAPIController::class, 'carregartblRDprintRegional']);
 });
