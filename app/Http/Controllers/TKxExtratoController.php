@@ -102,7 +102,7 @@ class TKxExtratoController extends Controller
         $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
 
         $total = $extratos->count();
-        $totalMontante = collect($extratos)->sum('ValorTotalCredito');
+        $totalMontante = collect($extratos)->sum('ValorTotalCredito'); 
 
         $extrato_list = $extratos->map(function ($item) {
             return [
