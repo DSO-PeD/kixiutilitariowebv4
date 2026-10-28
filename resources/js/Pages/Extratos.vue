@@ -177,9 +177,28 @@
                                 </path>
                             </svg>
                         </div>
-                        <h3 class="text-sm font-semibold text-gray-700">Total Desembolsado</h3>
+                        <h3 class="text-sm font-semibold text-gray-700">Total Aplicados</h3>
                     </div>
                     <p class="text-2xl font-bold text-green-700">{{ formatCurrency(montantetotal) }} AKZ</p>
+
+                </div>
+
+                 <div
+                    class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 shadow-sm">
+
+                    <!-- Card Total Desembolsado -->
+
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 p-3 rounded-full mr-3">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-700">Total Desembolsado</h3>
+                    </div>
+                    <p class="text-2xl font-bold text-green-700">{{ formatCurrency(montantetotalDesembolso) }} AKZ</p>
 
                 </div>
 
@@ -196,6 +215,20 @@
                         <h3 class="text-sm font-semibold text-gray-700">Processos Aplicados</h3>
                     </div>
                     <p class="text-2xl font-bold text-blue-700">{{ total }} itens</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-3 rounded-full mr-3">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-semibold text-gray-700">Processos Desembolsados</h3>
+                    </div>
+                    <p class="text-2xl font-bold text-blue-700">{{ totalProcessosDesembolsados }} itens</p>
                 </div>
             </div>
         </div>
@@ -571,9 +604,11 @@ const props = defineProps({
     lista_nes_tipo: Array,
 
     total: Number,
+    totalProcessosDesembolsados:Number,
     dataInicioInput: String,
     dataFimInput: String,
     montantetotal: Number,
+    montantetotalDesembolso: Number,
     bases: Array,
     produtos: Array,
     bancos: Array,

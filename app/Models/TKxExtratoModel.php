@@ -70,7 +70,8 @@ class TKxExtratoModel extends Model
         'TempoCredito',
         'TaxaMensal',
         'ValorCapital',
-        'ValorJuroMensal'
+        'ValorJuroMensal',
+        'DataDesembolso'
     ];
 
     public static function getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN)

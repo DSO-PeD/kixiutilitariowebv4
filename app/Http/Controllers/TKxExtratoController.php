@@ -102,7 +102,9 @@ class TKxExtratoController extends Controller
         $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
 
         $total = $extratos->count();
-        $totalMontante = collect($extratos)->sum('ValorTotalCredito'); 
+        $totalMontante = collect($extratos)->sum('ValorTotalCredito');
+        $totalProcessosDesembolsados = collect($extratos)->filter(fn($item) => !empty($item->DataDesembolso))->count();
+        $totalDesembolsado = collect($extratos) ->filter(fn($item) => !empty($item->DataDesembolso)) ->sum('ValorTotalCredito');
 
         $extrato_list = $extratos->map(function ($item) {
             return [
@@ -187,7 +189,10 @@ class TKxExtratoController extends Controller
             'lista_nes_tipo' => $lista_nes_tipo,
             'bases' => $BasesOperacaoAgencias,
             'total' => $total,
+            'totalProcessosDesembolsados'=> $totalProcessosDesembolsados,
             'montantetotal' => $totalMontante,
+            'montantetotalDesembolso' => $totalDesembolsado,
+
             'dataInicioPeriodo' => $DataFimFormatada,
             'dataFimPeriodo' => $DataInicioFormatada,
         ]);
@@ -617,10 +622,10 @@ class TKxExtratoController extends Controller
             ], 500);
         }
     }
-    
+
     public function desembolsarCredito(Request $request)
     {
-    
+
         $request->validate([
             'id' => 'required',
             'dataDesembolso' => 'required'
