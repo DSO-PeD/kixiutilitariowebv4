@@ -60,7 +60,7 @@ class AuthController extends Controller
 
         return redirect()->intended(route('dashboard'));
     }
-    
+
     public function loginMobile(Request $request)
     {
         $utilizador = $request->input('utilizador');
@@ -83,13 +83,13 @@ class AuthController extends Controller
             )->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
 
             $ProdutosPrestacao = TKxClProdutoModel::where(
-                'TipoProduto'               ,
+                'TipoProduto',
                 '=',
                 'L'
             )->where('Estado', 1)->get(['Metodologia', 'PoAgrupado']);
 
-             $ProdutosPoupancas= TKxClProdutoModel::where(
-                'TipoProduto'               ,
+            $ProdutosPoupancas = TKxClProdutoModel::where(
+                'TipoProduto',
                 '=',
                 'S'
             )->where('Estado', 1)->get(['Metodologia', 'PoAgrupado']);
@@ -145,7 +145,7 @@ class AuthController extends Controller
                     'basesOperacionais' => $basesOperacionais,
                     'ProdutosPrestacao' => $ProdutosPrestacao,
                     'ProdutosPoupancas' => $ProdutosPoupancas,
-                    'FormasDePagamento'=>  $FormasDePagamento
+                    'FormasDePagamento' => $FormasDePagamento
 
                 ]
             ];
@@ -185,15 +185,15 @@ class AuthController extends Controller
 
     public function carregamentoInicial(Request $request)
     {
-        $authenticatedUser = Auth::user(); 
+        $authenticatedUser = Auth::user();
         $agenciaUser = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)
-            ->first(['BasesOperacao']); 
+            ->first(['BasesOperacao']);
 
         if (!$agenciaUser) {
             return redirect()->back()->withErrors(['error' => 'Agência não encontrada']);
         }
 
-        $basesOperacao = explode(',', $agenciaUser->BasesOperacao); 
+        $basesOperacao = explode(',', $agenciaUser->BasesOperacao);
 
 
         $staticData = $this->loadStaticData();
@@ -306,7 +306,7 @@ class AuthController extends Controller
         ];
     }
 
-    protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
+    /*protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
     {
         $query = TKxExtratoModel::whereIn('BaseOperacao', $basesOperacao)
             ->where('Eliminado', 0);
@@ -321,7 +321,32 @@ class AuthController extends Controller
             'QtdRegistosDesembosos' => $query->count(),
             'QtdValorRegistosDesembosos' => $query->sum('ValorDoCredito'),
         ];
+    }*/
+
+
+
+protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
+{
+    $query = TKxExtratoModel::whereIn('BaseOperacao', $basesOperacao)
+        ->where('Eliminado', 0)
+        ->whereNotNull('DataDesembolso');
+
+    if ($dateFilter) {
+        $query->whereBetween('CiFecha', [
+            $dateFilter['start'],
+            $dateFilter['end']
+        ]);
+    } else {
+        $query->whereDate('CiFecha', $hoje);
     }
+
+    return [
+        'QtdRegistosDesembosos' => (clone $query)->count(),
+        'QtdValorRegistosDesembosos' => (clone $query)->sum('ValorDoCredito'),
+    ];
+}
+
+
 
     protected function getPendentesData(array $basesOperacao)
     {
@@ -347,16 +372,16 @@ class AuthController extends Controller
     public function listarUtilizadores(Request $request)
     {
         $query = DB::table('tkxusutilizador as us')
-                    ->leftjoin('sessions_utilitario_v9 as su','su.user_id','=','us.UtCodigo') 
-                    ->select(
-                        'us.UtCodigo',
-                        'us.UtNome',
-                        'us.UtFuncao',
-                        'su.user_id',
-                        DB::raw('CASE WHEN su.user_id IS NOT NULL AND su.last_activity >= ' . now()->subMinutes(15)->getTimestamp() . ' THEN 1 ELSE 0 END as logado'),
-                        DB::raw('FROM_UNIXTIME(su.last_activity) as ultimo_login')
-                    );
-        
+            ->leftjoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
+            ->select(
+                'us.UtCodigo',
+                'us.UtNome',
+                'us.UtFuncao',
+                'su.user_id',
+                DB::raw('CASE WHEN su.user_id IS NOT NULL AND su.last_activity >= ' . now()->subMinutes(15)->getTimestamp() . ' THEN 1 ELSE 0 END as logado'),
+                DB::raw('FROM_UNIXTIME(su.last_activity) as ultimo_login')
+            );
+
         //Filtro por nome
         if ($request->filled('nome')) {
             $query->where('us.UtNome', 'like', '%' . $request->nome . '%');
@@ -370,65 +395,67 @@ class AuthController extends Controller
             } elseif ($request->status === 'nao_logado') {
                 $query->where(function ($q) {
                     $q->whereNull('su.user_id')
-                    ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
+                        ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
                 });
             }
         }
 
-        $utilizadores = $query->orderBy('us.UtNome','asc')
-                        ->paginate(48)
-                        ->withQueryString(); //Manter os filtros na URL durante a paginação
+        $utilizadores = $query->orderBy('us.UtNome', 'asc')
+            ->paginate(48)
+            ->withQueryString(); //Manter os filtros na URL durante a paginação
 
         //Pegar o total de utilizadores logados e não logados
         $totalLogados = DB::table('tkxusutilizador as us')
-                            ->leftJoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
-                            ->whereNotNull('su.user_id')
-                            ->where('su.last_activity', '>=', now()->subMinutes(15)->getTimestamp())
-                            ->count();
+            ->leftJoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
+            ->whereNotNull('su.user_id')
+            ->where('su.last_activity', '>=', now()->subMinutes(15)->getTimestamp())
+            ->count();
 
         $totalNaoLogados = DB::table('tkxusutilizador as us')
-                            ->leftJoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
-                            ->where(function ($q) {
-                                $q->whereNull('su.user_id')
-                                ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
-                            })
-                            ->count();
-        
+            ->leftJoin('sessions_utilitario_v9 as su', 'su.user_id', '=', 'us.UtCodigo')
+            ->where(function ($q) {
+                $q->whereNull('su.user_id')
+                    ->orWhere('su.last_activity', '<', now()->subMinutes(15)->getTimestamp());
+            })
+            ->count();
+
         return Inertia::render('ListaUtilizadores', [
             'utilizadores' => $utilizadores,
-            'filters' => $request->only(['nome','status']),
+            'filters' => $request->only(['nome', 'status']),
             'totalLogados' => $totalLogados,
             'totalNaoLogados' => $totalNaoLogados,
         ]);
     }
 
-    public function verUtilizador($UtCodigo){
+    public function verUtilizador($UtCodigo)
+    {
         $user = DB::table('tkxusutilizador as us')
-                    ->join('tkxagencias as ag','ag.OfCodigo','=','us.UtAgencia')
-                    ->select('us.UtCodigo','us.UtNome','us.UtFuncao','us.UtFuncao','us.activo','ag.OfNombre')
-                    ->where('UtCodigo',$UtCodigo)
-                    ->first();
-                    
+            ->join('tkxagencias as ag', 'ag.OfCodigo', '=', 'us.UtAgencia')
+            ->select('us.UtCodigo', 'us.UtNome', 'us.UtFuncao', 'us.UtFuncao', 'us.activo', 'ag.OfNombre')
+            ->where('UtCodigo', $UtCodigo)
+            ->first();
+
         $permissoesUser = DB::table('tkxusutilizador_permissions as up')
-                            ->join('permissions as p', 'p.id', '=', 'up.permission_id')
-                            ->where('up.UtCodigo', $UtCodigo)
-                            ->select('p.id','p.name','p.label')
-                            ->get();
+            ->join('permissions as p', 'p.id', '=', 'up.permission_id')
+            ->where('up.UtCodigo', $UtCodigo)
+            ->select('p.id', 'p.name', 'p.label')
+            ->get();
 
         $user->permissoes = $permissoesUser;
-                            
+
         /** Todas permissões */
         $permissoes = DB::table('permissions as p')
-                            ->select('p.id','p.name','p.label')
-                            ->get();
-        
+            ->select('p.id', 'p.name', 'p.label')
+            ->get();
+
         return Inertia::render('VerUtilizador', [
             'utilizador' => $user,
             'permissions' => $permissoes
         ]);
     }
 
-    public function atribuirPermissionUser(Request $request, $UtCodigo){
+    public function atribuirPermissionUser(Request $request, $UtCodigo)
+    {
 
         foreach ($request->permission_ids as $permissionId) {
             DB::table('tkxusutilizador_permissions')->updateOrInsert(
@@ -442,8 +469,9 @@ class AuthController extends Controller
 
         return back()->with('success', 'Permissão atribuída com sucesso.');
     }
-    
-    public function removerPermissionUser(Request $request, $UtCodigo){
+
+    public function removerPermissionUser(Request $request, $UtCodigo)
+    {
 
         DB::table('tkxusutilizador_permissions')
             ->where('UtCodigo', $UtCodigo)
