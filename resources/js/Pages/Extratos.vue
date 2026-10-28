@@ -804,8 +804,6 @@ const form = useForm({
     // ... outros campos do formulário
 })
 
-
-
 // Métodos
 const formatarData = (data) => {
     if (!data) return '-'
@@ -827,6 +825,7 @@ function formatCurrency(value) {
         maximumFractionDigits: 2
     });
 }
+
 function formatTelefone(telefone) {
     if (!telefone) return "";
     // Garante que seja string
@@ -838,7 +837,6 @@ function formatTelefone(telefone) {
 const calcularNumeroLinha = (index) => {
     return (paginaAtual.value - 1) * props.perPage + index + 1
 }
-
 
 const validarDatas = () => {
     // Resetar erros
@@ -1030,7 +1028,8 @@ const exportarParaExcel = () => {
                     'RendaMensal': extrato.RendaMensal || '-',
                     'PPE': extrato.ppe || '-',
                     'Referencia de Pagamento': extrato.referenciapagamento || '-',
-                    'Telefone': extrato.Telefone || '-'
+                    'Telefone': extrato.Telefone || '-',
+                    'DataDesembolso': extrato.DataDesembolso || '-'
                 };
             } catch (error) {
                 console.error('Erro ao formatar registro:', extrato, error);

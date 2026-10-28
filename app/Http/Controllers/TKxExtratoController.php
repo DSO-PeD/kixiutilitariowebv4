@@ -104,7 +104,6 @@ class TKxExtratoController extends Controller
         $total = $extratos->count();
         $totalMontante = collect($extratos)->sum('ValorTotalCredito');
         $totalProcessosDesembolsados = collect($extratos)->filter(fn($item) => !empty($item->DataDesembolso))->count();
-        $totalMontante = collect($extratos)->sum('ValorTotalCredito');
         $totalDesembolsado = collect($extratos) ->filter(fn($item) => !empty($item->DataDesembolso)) ->sum('ValorTotalCredito');
 
         $extrato_list = $extratos->map(function ($item) {

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class TblRDPrintMovimentoPrestacaoModel extends Model
 {
-    protected $table = 'tblRDPrintMovimentoPrestacao';
+    protected $table = 'tblRDprintMovimentoPrestacao';
     protected $primaryKey = 'Id';
 
     public $timestamps = false;
@@ -35,7 +35,7 @@ class TblRDPrintMovimentoPrestacaoModel extends Model
 
     public static function getPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblRDPrintMovimentoPrestacao')
+        return DB::table('tblRDprintMovimentoPrestacao')
             ->where('DataReferencia', $dataReferencia)
             ->where('Activo', 1)
             ->orderBy('Orden', 'asc')
@@ -44,7 +44,7 @@ class TblRDPrintMovimentoPrestacaoModel extends Model
 
     public static function salvarOuAtualizarDados(array $dados)
     {
-        return DB::table('tblRDPrintMovimentoPrestacao')->updateOrInsert(
+        return DB::table('tblRDprintMovimentoPrestacao')->updateOrInsert(
             [
                 'DataReferencia'   => $dados['DataReferencia'],
                 'PeriodoPrestacao' => $dados['PeriodoPrestacao']
@@ -55,7 +55,7 @@ class TblRDPrintMovimentoPrestacaoModel extends Model
 
     public static function eliminarPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblRDPrintMovimentoPrestacao')
+        return DB::table('tblRDprintMovimentoPrestacao')
             ->where('DataReferencia', $dataReferencia)
             ->delete();
     }
