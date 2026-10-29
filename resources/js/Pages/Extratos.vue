@@ -981,7 +981,8 @@ const exportarParaExcel = () => {
                     'RendaMensal': extrato.RendaMensal || '-',
                     'PPE': extrato.ppe || '-',
                     'Referencia de Pagamento': extrato.referenciapagamento || '-',
-                    'Telefone': extrato.Telefone || '-'
+                    'Telefone': extrato.Telefone || '-',
+                    'DataDesembolso': extrato.DataDesembolso || '-'
                 };
             } catch (error) {
                 console.error('Erro ao formatar registro:', extrato, error);
