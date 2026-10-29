@@ -85,6 +85,16 @@ class TKxExtratoModel extends Model
     }
 
 
+    public static function getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN)
+    {
+
+        $extratos2 = DB::select("CALL PKxExtratoDesembolsados(" . $Bases . ",'" . $DataInicio . "','" . $DataFim . "'," . $NumeroRegistroTabela . "," . $TIPO . "," . $LOAN . ")");
+
+
+
+        return $extratos2;
+    }
+
     public static function getDadosReport($numRegistro)
     {
 

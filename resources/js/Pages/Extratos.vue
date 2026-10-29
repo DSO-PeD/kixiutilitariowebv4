@@ -85,7 +85,23 @@
 
                     <!-- Período -->
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Período</label>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-1">
+                            <label class="block text-sm font-medium text-gray-700">Período</label>
+                            <!-- Seleção por Checkbox/Radio do Tipo de Data -->
+                            <div class="flex items-center gap-4 text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded-md border border-gray-200">
+                                <label class="inline-flex items-center cursor-pointer select-none">
+                                    <input type="radio" v-model="filtro.tipoData" value="aplicacao" name="tipo_data"
+                                        class="text-green-600 focus:ring-green-500 h-3.5 w-3.5 border-gray-300" />
+                                    <span class="ml-1.5">Data Aplicação</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer select-none">
+                                    <input type="radio" v-model="filtro.tipoData" value="desembolso" name="tipo_data"
+                                        class="text-green-600 focus:ring-green-500 h-3.5 w-3.5 border-gray-300" />
+                                    <span class="ml-1.5">Data Desembolso</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <input v-model="filtro.dataInicioInput" type="date" required
@@ -151,11 +167,15 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Processos Aplicados no periodo:</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            Processos por {{ filtro.tipoData === 'desembolso' ? 'Data de Desembolso' : 'Data de Aplicação' }} no período:
+                        </h3>
                         <p class="text-sm text-gray-600">
-                            <span class="font-medium text-green-700">{{ dataFimPeriodo }}</span>
-                            <span class="mx-2">até</span>
                             <span class="font-medium text-green-700">{{ dataInicioPeriodo }}</span>
+
+                            <span class="mx-2">até</span>
+                            <span class="font-medium text-green-700">{{ dataFimPeriodo }}</span>
+
                         </p>
                     </div>
                 </div>
@@ -166,9 +186,6 @@
                 <!-- Card 1 - Total Montante Reembolsos -->
                 <div
                     class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 shadow-sm">
-
-                    <!-- Card Total Desembolsado -->
-
                     <div class="flex items-center mb-4">
                         <div class="bg-green-100 p-3 rounded-full mr-3">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,14 +197,10 @@
                         <h3 class="text-sm font-semibold text-gray-700">Total Aplicados</h3>
                     </div>
                     <p class="text-2xl font-bold text-green-700">{{ formatCurrency(montantetotal) }} AKZ</p>
-
                 </div>
 
-                 <div
+                <div
                     class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 shadow-sm">
-
-                    <!-- Card Total Desembolsado -->
-
                     <div class="flex items-center mb-4">
                         <div class="bg-green-100 p-3 rounded-full mr-3">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +212,6 @@
                         <h3 class="text-sm font-semibold text-gray-700">Total Desembolsado</h3>
                     </div>
                     <p class="text-2xl font-bold text-green-700">{{ formatCurrency(montantetotalDesembolso) }} AKZ</p>
-
                 </div>
 
                 <!-- Card 2 - Total de Poupanças -->
@@ -289,7 +301,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                                     </svg>
-
                                     Registado
                                 </div>
                             </th>
@@ -300,7 +311,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
-
                                     Loan Number
                                 </div>
                             </th>
@@ -311,20 +321,16 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                     </svg>
-
                                     Cliente
                                 </div>
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center gap-1">
-
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                                     </svg>
-
-
                                     Produto
                                 </div>
                             </th>
@@ -335,29 +341,23 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                                     </svg>
-
                                     Montante
                                 </div>
                             </th>
 
                             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                 <div class="flex items-center gap-2">
-
-                                    <div class="flex items-center gap-1 text-gray-500 ">
-                                        <i class="fa fa-clipboard-check text-sm text-gray-400 "></i>
+                                    <div class="flex items-center gap-1 text-gray-500">
+                                        <i class="fa fa-clipboard-check text-sm text-gray-400"></i>
                                         Data Desembolso
                                     </div>
-
                                     <span class="px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-600 text-[9px] font-bold uppercase tracking-wide">
                                         Novo
                                     </span>
-
                                 </div>
                             </th>
 
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center text-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -367,8 +367,7 @@
                                     Ref. Pagamento
                                 </div>
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <div class="flex items-center text-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
@@ -378,8 +377,7 @@
                                     Contacto
                                 </div>
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Ações</th>
                         </tr>
                     </thead>
@@ -506,7 +504,7 @@
                             </td>
                         </tr>
                         <tr v-if="extratosPaginados.length === 0">
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                            <td colspan="10" class="px-4 py-8 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center py-8">
                                     <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -604,7 +602,7 @@ const props = defineProps({
     lista_nes_tipo: Array,
 
     total: Number,
-    totalProcessosDesembolsados:Number,
+    totalProcessosDesembolsados: Number,
     dataInicioInput: String,
     dataFimInput: String,
     montantetotal: Number,
@@ -620,8 +618,6 @@ const props = defineProps({
     session: Object,
     flash: Object,
     user: Object,
-    dataInicioInput: String,
-    dataFimInput: String,
     page: Number,
     hasMorePages: Boolean,
     perPage: {
@@ -629,7 +625,8 @@ const props = defineProps({
         default: 100
     },
     dataInicioPeriodo: String,
-    dataFimPeriodo: String
+    dataFimPeriodo: String,
+    filters: Object
 })
 
 // Configuração da paginação
@@ -677,7 +674,6 @@ const abrirModalEditarTelefone = (extrato) => {
 
 // Função para quando o telefone for atualizado
 const onTelefoneAtualizado = (novoTelefone) => {
-    // Atualizar o telefone no extrato selecionado
     if (extratoSelecionado.value) {
         extratoSelecionado.value.Telefone = novoTelefone;
     }
@@ -693,15 +689,14 @@ const abrirModalDesembolsar = (extrato) => {
 
 // Função para quando o desembolso for registado com nova data
 const onCreditoDesembolsado = (dataDesembolso) => {
-    // Atualizar o telefone no extrato selecionado
     if (extratoSelecionado.value) {
         extratoSelecionado.value.DataDesembolso = dataDesembolso;
     }
 };
 
-// Watch para atualizar dadosLocais quando lista_comprovativo mudar
+// Watch para atualizar dadosLocais quando lista_extrato mudar
 watch(() => props.lista_extrato, (newVal) => {
-    dadosLocais.value = newVal;
+    dadosLocais.value = newVal || [];
     paginaAtual.value = 1; // Resetar para primeira página
 }, { immediate: true });
 
@@ -722,29 +717,19 @@ const mudarPagina = (novaPagina) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-const extratosFiltrados = computed(() => {
-    return props.extratos // Agora usamos diretamente os extratos recebidos do backend
-})
-const extratoTotalFiltrado = computed(() => {
-    return props.montanteFiltrado || 0 // Usamos o valor calculado no backend
-})
-
 const hoje = computed(() => new Date().toISOString().split('T')[0])
 
 const podeEliminar = (item) => {
-
-    const dataItem = new Date(item.CiFecha).toISOString().split('T')[0] // só pega a data
-
+    const dataItem = new Date(item.CiFecha).toISOString().split('T')[0]
     const isRegistadoHoje = dataItem === hoje.value
-    const temPermissao = props.user.elimina_confirmado_exportado == 1
+    const temPermissao = props.user?.elimina_confirmado_exportado == 1
 
     return isRegistadoHoje || temPermissao
 }
-const initiateDeletion = (item) => {
 
+const initiateDeletion = (item) => {
     if (!podeEliminar(item)) return
 
-    // Prepara os dados para exibir no modal
     selectedExtrato.value = {
         lnr: item.Lnr || 'N/A',
         cliente: item.Cliente || 'N/A',
@@ -752,29 +737,25 @@ const initiateDeletion = (item) => {
         data: item.CiFecha || 'N/A',
         montante: item.ValorCreditoNoContrato || 'N/A',
         id: item.Num,
-
     }
 
     showDeleteModal.value = true
 }
+
 const isDeleting = ref(false)
 
 const proceedWithDeletion = async () => {
     isDeleting.value = true
 
     try {
-
         await router.post("/eliminar-extrato", {
             id: selectedExtrato.value.id,
-
         }, {
             preserveScroll: true,
             onSuccess: () => {
                 showDeleteModal.value = false
-                // Opcional: Mostrar notificação de sucesso
             },
             onError: (errors) => {
-                // Opcional: Mostrar notificação de erro
                 console.error('Erro ao eliminar:', errors)
             }
         })
@@ -791,17 +772,14 @@ const cancelDeletion = () => {
         cliente: '',
         montante: 0,
         data: ''
-
     }
     showDeleteModal.value = false
 }
 
 // Formulário
 const form = useForm({
-    // (Manter o mesmo formulário existente)
     selectBase: '',
     txtNumeroLoan: '',
-    // ... outros campos do formulário
 })
 
 // Métodos
@@ -812,7 +790,7 @@ const formatarData = (data) => {
 }
 
 function formatCurrency(value) {
-    if (value == null) return '';
+    if (value == null) return '0,00';
 
     if (typeof value === 'string') {
         value = value.replace(/\D/g, '');
@@ -828,9 +806,7 @@ function formatCurrency(value) {
 
 function formatTelefone(telefone) {
     if (!telefone) return "";
-    // Garante que seja string
     telefone = String(telefone);
-    // Quebra em blocos de 3
     return telefone.replace(/(\d{3})(?=\d)/g, "$1 ");
 }
 
@@ -839,7 +815,6 @@ const calcularNumeroLinha = (index) => {
 }
 
 const validarDatas = () => {
-    // Resetar erros
     erros.value = {
         dataInicio: '',
         dataFim: ''
@@ -847,7 +822,6 @@ const validarDatas = () => {
 
     let isValid = true;
 
-    // Validar se as datas foram preenchidas
     if (!filtro.value.dataInicioInput) {
         erros.value.dataInicio = 'A data de início é obrigatória';
         isValid = false;
@@ -858,7 +832,6 @@ const validarDatas = () => {
         isValid = false;
     }
 
-    // Validar se a data de início é maior que a data de fim
     if (filtro.value.dataInicioInput && filtro.value.dataFimInput) {
         const dataInicio = new Date(filtro.value.dataInicioInput);
         const dataFim = new Date(filtro.value.dataFimInput);
@@ -873,7 +846,18 @@ const validarDatas = () => {
     return isValid;
 };
 
-// Função aplicarFiltros modificada
+// Filtros
+const filtro = ref({
+    search: props.filters?.search || '',
+    lnr: props.filters?.lnr || '',
+    estado: props.filters?.estado || 28,
+    agencia: props.filters?.agencia || 'T',
+    dataInicioInput: props.filters?.data_inicio || '',
+    dataFimInput: props.filters?.data_fim || '',
+    tipoData: props.filters?.tipo_data || 'aplicacao'
+})
+
+// Função aplicarFiltros
 const aplicarFiltros = () => {
     if (!validarDatas()) return;
 
@@ -884,12 +868,13 @@ const aplicarFiltros = () => {
         agencia_imput: filtro.value.agencia,
         data_inicio_imput: filtro.value.dataInicioInput,
         data_fim_imput: filtro.value.dataFimInput,
+        tipo_data_input: filtro.value.tipoData,
         tipo: 4
     }, {
         preserveState: true,
         replace: true,
         onSuccess: () => {
-            paginaAtual.value = 1; // Resetar paginação
+            paginaAtual.value = 1;
         }
     });
 };
@@ -902,7 +887,8 @@ const resetarFiltros = () => {
         estado: 28,
         agencia: 'T',
         dataInicioInput: '',
-        dataFimInput: ''
+        dataFimInput: '',
+        tipoData: 'aplicacao'
     };
 
     router.get('/extratos', {
@@ -913,15 +899,6 @@ const resetarFiltros = () => {
     });
 };
 
-// Filtros
-const filtro = ref({
-    search: props.filters?.search || '',
-    lnr: props.filters?.lnr || '',
-    estado: props.filters?.estado || 28,
-    agencia: props.filters?.agencia || 'T',
-    dataInicioInput: props.filters?.data_inicio || '',
-    dataFimInput: props.filters?.data_fim || ''
-})
 const buscarPorLoan = () => {
     router.get('/extratos', { tipo: 3, loan: filtroLoan.value }, { preserveState: true })
     showModalLoan.value = false
@@ -960,43 +937,19 @@ const submitForm = (form) => {
 
 const exportarParaExcel = () => {
     try {
-        // Acessando a lista_comprovativo corretamente (dependendo do seu contexto)
-        let listaCompleta;
+        let listaCompleta = props.lista_extrato;
 
-        // Opção 1: Se estiver usando Inertia.js em Composition API
-        if (typeof usePage !== 'undefined') {
-            const { props } = usePage();
-            listaCompleta = props.value.lista_extrato;
-        }
-        // Opção 2: Se estiver usando Options API
-        else if (this && this.$page && this.$page.props) {
-            listaCompleta = this.$page.props.lista_extrato;
-        }
-        // Opção 3: Se a lista estiver disponível como prop no componente
-        else if (props && props.lista_extrato) {
-            listaCompleta = props.lista_extrato;
-        }
-        // Opção 4: Se estiver disponível diretamente no escopo
-        else if (typeof lista_extrato !== 'undefined') {
-            listaCompleta = lista_extrato;
-        }
-        else {
-            throw new Error('Não foi possível encontrar a lista de comprovativos');
-        }
-
-        // Verifica se há dados
         if (!listaCompleta || listaCompleta.length === 0) {
             alert('Nenhum dado disponível para exportar');
             return;
         }
 
-        // Formata os dados
         const dadosFormatados = listaCompleta.map((extrato, index) => {
-            // alert(extrato.CiFecha)
             try {
                 return {
                     '#': index + 1,
-                    'Data': extrato.CiFecha ? new Date(extrato.CiFecha).toLocaleString('pt-PT') : '-',
+                    'Data Aplicação': extrato.CiFecha ? new Date(extrato.CiFecha).toLocaleString('pt-PT') : '-',
+                    'Data Desembolso': extrato.DataDesembolso ? new Date(extrato.DataDesembolso).toLocaleDateString('pt-PT') : '-',
                     'Registado': extrato.UtCodigo || '-',
                     'OficialCredito': extrato.OficialCredito || '-',
                     'Loan Number': extrato.Lnr || '-',
@@ -1015,7 +968,7 @@ const exportarParaExcel = () => {
                     'Valor IVA Taxa Processamento': extrato.ValorIVATaxaProcessamento || '-',
                     'Taxa Processamento Antecipado': extrato.TaxaProcessamentoAnte || '-',
                     '% Taxa de Processamento Antecipado': extrato.TXAProcePercentaAnte || '-',
-                    'Valor  Taxa de Processamento Antecipado': extrato.TXAProcePercentaValorAnte || '-',
+                    'Valor Taxa de Processamento Antecipado': extrato.TXAProcePercentaValorAnte || '-',
                     'Valor IVA Taxa Processamento Antecipado': extrato.ValorIVATaxaProcessamentoAnte || '-',
                     'Taxa Imprevisto': extrato.TaxaImprevisto || '-',
                     'TXAImprePercenta': extrato.TXAImprePercenta || '-',
@@ -1042,16 +995,13 @@ const exportarParaExcel = () => {
             return;
         }
 
-        // Cria a planilha
         const ws = XLSX.utils.json_to_sheet(dadosFormatados);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Extrato");
 
-        // Gera o nome do arquivo
         const dataHoje = new Date().toISOString().split('T')[0];
         const nomeArquivo = `extratos_DOP_completa_${dataHoje}.xlsx`;
 
-        // Faz o download
         XLSX.writeFile(wb, nomeArquivo);
 
     } catch (error) {
@@ -1059,7 +1009,6 @@ const exportarParaExcel = () => {
         alert(`Erro ao exportar: ${error.message || 'Verifique o console para mais detalhes'}`);
     }
 };
-
 
 watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInicio, newFim]) => {
     if (newInicio && newFim && newInicio > newFim) {
@@ -1069,7 +1018,6 @@ watch(() => [filtro.value.dataInicioInput, filtro.value.dataFimInput], ([newInic
     }
 });
 
-// Watcher para sincronizar quando as props forem atualizadas
 watch(() => props.filters, (newFilters) => {
     filtro.value = {
         search: newFilters?.search || '',
@@ -1077,7 +1025,8 @@ watch(() => props.filters, (newFilters) => {
         estado: newFilters?.estado || 28,
         agencia: newFilters?.agencia || 'T',
         dataInicioInput: newFilters?.data_inicio || '',
-        dataFimInput: newFilters?.data_fim || ''
+        dataFimInput: newFilters?.data_fim || '',
+        tipoData: newFilters?.tipo_data || 'aplicacao'
     }
 }, { immediate: true, deep: true })
 
@@ -1085,8 +1034,6 @@ watch(() => props.page, (newPage) => {
     paginaAtual.value = newPage
 })
 
-
-// Validação das datas
 const validateDates = () => {
     if (dataInicioInput.value && dataFimInput.value) {
         if (new Date(dataInicioInput.value) > new Date(dataFimInput.value)) {
@@ -1098,7 +1045,6 @@ const validateDates = () => {
     return true
 }
 
-// Watchers para validação
 watch([dataInicioInput, dataFimInput], () => {
     validateDates()
 })
@@ -1111,21 +1057,14 @@ watch(() => props.dataFimInput, (newVal) => {
     dataFimInput.value = newVal || ''
 })
 
-
-// Adicione esta variável para controlar a visibilidade dos filtros
 const filtrosVisiveis = ref(true)
 
-// Função para alternar a visibilidade dos filtros
 const toggleFiltros = () => {
     filtrosVisiveis.value = !filtrosVisiveis.value
 }
-
-
-
-
 </script>
+
 <style scoped>
-/* Sistema de Cores */
 :root {
     --color-primary: #08583d;
     --color-primary-light: #0c7a5a;
@@ -1136,7 +1075,6 @@ const toggleFiltros = () => {
     --color-info: #3b82f6;
 }
 
-/* Componentes Estilizados */
 .alert {
     @apply p-4 rounded-lg border-l-4;
 }
@@ -1197,23 +1135,19 @@ const toggleFiltros = () => {
     @apply px-3 py-1 text-sm;
 }
 
-/* Componentes de Formulário */
 .select-input {
     @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none bg-white;
 }
 
-/* Cards e Efeitos */
 .card-hover {
     @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
 }
 
-/* Animações */
 @keyframes fade-in {
     from {
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1224,7 +1158,6 @@ const toggleFiltros = () => {
     animation: fade-in 0.3s ease-out;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .container {
         @apply px-4;
@@ -1234,18 +1167,15 @@ const toggleFiltros = () => {
         @apply px-3 py-1.5 text-sm;
     }
 
-    /* Otimizações para mobile */
     .hidden-mobile {
         display: none;
     }
 }
 
-/* Melhorias de Performance */
 * {
     box-sizing: border-box;
 }
 
-/* Scroll personalizado */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -1263,19 +1193,16 @@ const toggleFiltros = () => {
     @apply bg-gray-400;
 }
 
-/* Estados de foco melhorados */
 button:focus,
 input:focus,
 select:focus {
     @apply outline-none ring-2 ring-green-500 ring-offset-2;
 }
 
-/* Transições suaves */
 .transition-all {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Tabela responsiva */
 @media (max-width: 1024px) {
     table {
         @apply block;
