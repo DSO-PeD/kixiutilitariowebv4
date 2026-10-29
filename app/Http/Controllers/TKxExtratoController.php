@@ -22,182 +22,177 @@ use Carbon\Carbon;
 
 class TKxExtratoController extends Controller
 {
-    public function viewExtrato(Request $request)
-    {
-        $authenticatedUser = Auth::user();
-        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
-        $tipoDeBusca = $request->tipo;
+  public function viewExtrato(Request $request)
+{
+    $authenticatedUser = Auth::user();
+    $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
-        $hoje = date('Y-m-d');
-        $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
-        $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
-        $TIPO = 0;
-        $LOAN = "'DS/280891'";
+    $tipoDeBusca = $request->tipo;
+    $tipoData = $request->input('tipo_data_input', 'aplicacao'); // <-- Captura o tipo de data selecionado (aplicacao ou desembolso)
 
-        $tipoDeBusca = $request->tipo;
+    $hoje = date('Y-m-d');
+    $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
+    $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
+    $TIPO = 0;
+    $LOAN = "'DS/280891'";
 
-        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+    $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
+    $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
-        $ConsultaBaseConsulta = "'" . $resultagencia_user->BasesOperacao . "'";
+    $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
+    $dataFecho = date("Y-m-d", strtotime($resultagencia_user->DataFecho));
+    $dataActual = date("Y-m-d", strtotime($hoje));
 
-        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
-        $dataFecho = $resultagencia_user->DataFecho;
+    $sistema_aberto = ($dataFecho != $dataActual);
 
-        $dataFecho = date("Y-m-d", strtotime($dataFecho));
+    if ($tipoDeBusca == 1) {
+        $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
+        $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
+        $TIPO = $tipoDeBusca;
+    }
 
-        $dataActual = date("Y-m-d", strtotime($hoje));
-        $sistema_aberto = true;
+    if ($tipoDeBusca == 3) {
+        $LOAN = "'" . $request->loan . "'";
+        $TIPO = $tipoDeBusca;
+    }
 
-        if ($dataFecho == $dataActual) {
-            $sistema_aberto = false;
-        } else {
-            $sistema_aberto = true;
+    if ($tipoDeBusca == 4) {
+        $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
+        $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
+
+        if ($request->estado_input !== '28') {
+            $ESTADO = $request->estado_input;
+        }
+        if ($request->agencia_imput !== 'T') {
+            $Bases = "'" . $request->agencia_imput . "'";
         }
 
-        if ($tipoDeBusca == 1) {
-            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
-            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
-            $TIPO = $tipoDeBusca;
-        }
+        $TIPO = $tipoDeBusca;
+    }
+  $totalProcessosDesembolsados =0;
+   $totalDesembolsado = 0;
+    // Consulta condicional com base no tipo de data selecionado
+    if ($tipoData === 'desembolso') {
+        $extratos = collect(TKxExtratoModel::getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
+       // dd('Entrei desembolso');
 
-        if ($tipoDeBusca == 3) {
-            $LOAN = "'" . $request->loan . "'";
-            $TIPO = $tipoDeBusca;
-        }
-
-        if ($tipoDeBusca == 4) {
-
-            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
-            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
-
-            if ($request->estado_input !== '28') {
-                $ESTADO = $request->estado_input;
-                // dd($request->estado_input);
-            }
-            if ($request->agencia_imput !== 'T') {
-                $Bases = "'" . $request->agencia_imput . "'";
-            }
-
-            $TIPO = $tipoDeBusca;
-        }
-
+         $totalProcessosDesembolsados = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->count();
+         $totalDesembolsado = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->sum('ValorTotalCredito');
+    } else {
         $extratos = collect(TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
 
-        collect($extratos)->max('CiFecha');
-        collect($extratos)->min('CiFecha');
+        $extratosResumo = collect(TKxExtratoModel::getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
+         $totalProcessosDesembolsados = $extratosResumo->filter(fn($item) => !empty($item->DataDesembolso))->count();
+         $totalDesembolsado = $extratosResumo->filter(fn($item) => !empty($item->DataDesembolso))->sum('ValorTotalCredito');
 
-        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
-        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
 
-        $lista_produtos = TKxClProdutoModel::getProdutosDesembolsos();
-        $lista_banco = TKxBancoModel::getBancos();
-        $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
-        $lista_actividade_economica = TKxCodigoCaeModel::getActividadeEconomica();
-        $lista_grupo_actividade_economica = TKxCodigoCaeModel::getGrupoActividadeEconomica();
-
-        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
-        $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
-        $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
-
-        $total = $extratos->count();
-        $totalMontante = collect($extratos)->sum('ValorTotalCredito');
-        $totalProcessosDesembolsados = collect($extratos)->filter(fn($item) => !empty($item->DataDesembolso))->count();
-        $totalMontante = collect($extratos)->sum('ValorTotalCredito');
-        $totalDesembolsado = collect($extratos) ->filter(fn($item) => !empty($item->DataDesembolso)) ->sum('ValorTotalCredito');
-
-        $extrato_list = $extratos->map(function ($item) {
-            return [
-                'Num' => $item->Num,
-                'CiFecha' => $item->CiFecha,
-                'UtCodigo' => $item->UtCodigo,
-                'OficialCredito' => $item->OficialCredito,
-                'Lnr' => $item->Lnr,
-                'Cliente' => $item->Cliente,
-                'Produto' => $item->Produto,
-                'ValorCreditoNoContrato' => $item->ValorCreditoNoContrato,
-                'PercColateral' => $item->PercColateral,
-                'ValorDoColateral' => $item->ValorDoColateral,
-                'PercColateralDeduzido' => $item->PercColateralDeduzido,
-                'ValorDoColateralDeduzido' => $item->ValorDoColateralDeduzido,
-                'ValorDoCredito' => $item->ValorDoCredito,
-                'ValorTotalCredito' => $item->ValorTotalCredito,
-                'TaxaProcessamento' => $item->TaxaProcessamento,
-                'TXAProcePercenta' => $item->TXAProcePercenta,
-                'TXAProcePercentaValor' => $item->TXAProcePercentaValor,
-                'ValorIVATaxaProcessamento' => $item->ValorIVATaxaProcessamento,
-                'TaxaProcessamentoAnte' => $item->TaxaProcessamentoAnte,
-                'TXAProcePercentaAnte' => $item->TXAProcePercentaAnte,
-                'TXAProcePercentaValorAnte' => $item->TXAProcePercentaValorAnte,
-                'ValorIVATaxaProcessamentoAnte' => $item->ValorIVATaxaProcessamentoAnte,
-                'TXAProceAnteBuReferencia' => $item->TXAProceAnteBuReferencia,
-                'TXAProceAnteBuBanco' => $item->TXAProceAnteBuBanco,
-
-                'TXAProceAnteBuNumeroConta' => $item->TXAProceAnteBuNumeroConta,
-                'TXAProceAnteBuMontante' => $item->TXAProceAnteBuMontante,
-                'TaxaImprevisto' => $item->TaxaImprevisto,
-                'TXAImprePercenta' => $item->TXAImprePercenta,
-                'TXAImprePercentaValor' => $item->TXAImprePercentaValor,
-                'ValorIVATaxaImprevisto' => $item->ValorIVATaxaImprevisto,
-
-                'TXAImpreBuBanco' => $item->TXAImpreBuBanco,
-                'TXAImpreBuNumeroConta' => $item->TXAImpreBuNumeroConta,
-                'TXAImpreBuMontante' => $item->TXAImpreBuMontante,
-                'TXAImpreBuData' => $item->TXAImpreBuData,
-                'ValorAKZTaxaDeConfirmacao' => $item->ValorAKZTaxaDeConfirmacao,
-                'DataRetiradaTaxaDeConfirmacao' => $item->DataRetiradaTaxaDeConfirmacao,
-
-                'ValorIVATaxaConfirmacao' => $item->ValorIVATaxaConfirmacao,
-                'DescricaoActividadeEconomica' => $item->DescricaoActividadeEconomica,
-                'CodigoAtividade' => $item->CodigoAtividade,
-                'Sector' => $item->Sector,
-                'Magnitude' => $item->Magnitude,
-                'RendaMensal' => $item->RendaMensal,
-
-                'ValorPrimeiraPrestacao' => $item->ValorPrimeiraPrestacao,
-
-                'ppe' => $item->ppe,
-                'Eliminado' => $item->Eliminado,
-
-                'BaseOperacao' => $item->BaseOperacao,
-                'referenciapagamento' => $item->referenciapagamento,
-                'RefPgtActivo' => $item->RefPgtActivo,
-                'Telefone' => $item->Telefone,
-                'DataDesembolso' => $item->DataDesembolso
-            ];
-        });
-
-        return Inertia::render('Extratos', [
-            'lista_extrato' => $extrato_list,
-            'filters' => [
-                'search' => $request->input('search_input', ''),
-                'lnr' => $request->input('lnr_imput', ''),
-                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
-                'agencia' => $request->input('agencia_imput', 'T'), // Valor padrão 'T' (Todas)
-                'data_inicio' => $request->input('data_inicio_imput', ''),
-                'data_fim' => $request->input('data_fim_imput', '')
-            ],
-            'BasesOperacao' => explode(',', $resultagencia_user->BasesOperacao),
-            'agencia' => session('Agencia'),
-            'produtosextratos' => $lista_produtos,
-            'lista_banco' => $lista_banco,
-            'lista_bancos_contas' => $lista_bancos_contas,
-            'lista_actividade_economica' => $lista_actividade_economica,
-            'lista_grupo_actividade_economica' => $lista_grupo_actividade_economica,
-            'sistema_aberto' => $sistema_aberto,
-            'lista_nes_grupo' => $lista_nes_grupo,
-            'lista_nes_tipo' => $lista_nes_tipo,
-            'bases' => $BasesOperacaoAgencias,
-            'total' => $total,
-            'totalProcessosDesembolsados'=> $totalProcessosDesembolsados,
-            'montantetotal' => $totalMontante,
-            'montantetotalDesembolso' => $totalDesembolsado,
-
-            'dataInicioPeriodo' => $DataFimFormatada,
-            'dataFimPeriodo' => $DataInicioFormatada,
-        ]);
     }
+
+  $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
+    $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
+
+    $lista_produtos = TKxClProdutoModel::getProdutosDesembolsos();
+    $lista_banco = TKxBancoModel::getBancos();
+    $lista_bancos_contas = TKxBancoContaModel::getBancosContas();
+    $lista_actividade_economica = TKxCodigoCaeModel::getActividadeEconomica();
+    $lista_grupo_actividade_economica = TKxCodigoCaeModel::getGrupoActividadeEconomica();
+
+    $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
+    $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
+    $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
+
+    // Métricas calculadas sobre os extratos retornados
+    $total = $extratos->count();
+    $totalMontante = $extratos->sum('ValorTotalCredito');
+    $totalProcessosDesembolsados = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->count();
+    $totalDesembolsado = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->sum('ValorTotalCredito');
+
+    $extrato_list = $extratos->map(function ($item) {
+        return [
+            'Num' => $item->Num,
+            'CiFecha' => $item->CiFecha,
+            'UtCodigo' => $item->UtCodigo,
+            'OficialCredito' => $item->OficialCredito,
+            'Lnr' => $item->Lnr,
+            'Cliente' => $item->Cliente,
+            'Produto' => $item->Produto,
+            'ValorCreditoNoContrato' => $item->ValorCreditoNoContrato,
+            'PercColateral' => $item->PercColateral,
+            'ValorDoColateral' => $item->ValorDoColateral,
+            'PercColateralDeduzido' => $item->PercColateralDeduzido,
+            'ValorDoColateralDeduzido' => $item->ValorDoColateralDeduzido,
+            'ValorDoCredito' => $item->ValorDoCredito,
+            'ValorTotalCredito' => $item->ValorTotalCredito,
+            'TaxaProcessamento' => $item->TaxaProcessamento,
+            'TXAProcePercenta' => $item->TXAProcePercenta,
+            'TXAProcePercentaValor' => $item->TXAProcePercentaValor,
+            'ValorIVATaxaProcessamento' => $item->ValorIVATaxaProcessamento,
+            'TaxaProcessamentoAnte' => $item->TaxaProcessamentoAnte,
+            'TXAProcePercentaAnte' => $item->TXAProcePercentaAnte,
+            'TXAProcePercentaValorAnte' => $item->TXAProcePercentaValorAnte,
+            'ValorIVATaxaProcessamentoAnte' => $item->ValorIVATaxaProcessamentoAnte,
+            'TXAProceAnteBuReferencia' => $item->TXAProceAnteBuReferencia,
+            'TXAProceAnteBuBanco' => $item->TXAProceAnteBuBanco,
+            'TXAProceAnteBuNumeroConta' => $item->TXAProceAnteBuNumeroConta,
+            'TXAProceAnteBuMontante' => $item->TXAProceAnteBuMontante,
+            'TaxaImprevisto' => $item->TaxaImprevisto,
+            'TXAImprePercenta' => $item->TXAImprePercenta,
+            'TXAImprePercentaValor' => $item->TXAImprePercentaValor,
+            'ValorIVATaxaImprevisto' => $item->ValorIVATaxaImprevisto,
+            'TXAImpreBuBanco' => $item->TXAImpreBuBanco,
+            'TXAImpreBuNumeroConta' => $item->TXAImpreBuNumeroConta,
+            'TXAImpreBuMontante' => $item->TXAImpreBuMontante,
+            'TXAImpreBuData' => $item->TXAImpreBuData,
+            'ValorAKZTaxaDeConfirmacao' => $item->ValorAKZTaxaDeConfirmacao,
+            'DataRetiradaTaxaDeConfirmacao' => $item->DataRetiradaTaxaDeConfirmacao,
+            'ValorIVATaxaConfirmacao' => $item->ValorIVATaxaConfirmacao,
+            'DescricaoActividadeEconomica' => $item->DescricaoActividadeEconomica,
+            'CodigoAtividade' => $item->CodigoAtividade,
+            'Sector' => $item->Sector,
+            'Magnitude' => $item->Magnitude,
+            'RendaMensal' => $item->RendaMensal,
+            'ValorPrimeiraPrestacao' => $item->ValorPrimeiraPrestacao,
+            'ppe' => $item->ppe,
+            'Eliminado' => $item->Eliminado,
+            'BaseOperacao' => $item->BaseOperacao,
+            'referenciapagamento' => $item->referenciapagamento,
+            'RefPgtActivo' => $item->RefPgtActivo,
+            'Telefone' => $item->Telefone,
+            'DataDesembolso' => $item->DataDesembolso
+        ];
+    });
+
+    return Inertia::render('Extratos', [
+        'lista_extrato' => $extrato_list,
+        'filters' => [
+            'search' => $request->input('search_input', ''),
+            'lnr' => $request->input('lnr_imput', ''),
+            'estado' => $request->input('estado_input', 28),
+            'agencia' => $request->input('agencia_imput', 'T'),
+            'data_inicio' => $request->input('data_inicio_imput', ''),
+            'data_fim' => $request->input('data_fim_imput', ''),
+            'tipo_data' => $tipoData
+        ],
+        'BasesOperacao' => explode(',', $resultagencia_user->BasesOperacao),
+        'agencia' => session('Agencia'),
+        'produtosextratos' => $lista_produtos,
+        'lista_banco' => $lista_banco,
+        'lista_bancos_contas' => $lista_bancos_contas,
+        'lista_actividade_economica' => $lista_actividade_economica,
+        'lista_grupo_actividade_economica' => $lista_grupo_actividade_economica,
+        'sistema_aberto' => $sistema_aberto,
+        'lista_nes_grupo' => $lista_nes_grupo,
+        'lista_nes_tipo' => $lista_nes_tipo,
+        'bases' => $BasesOperacaoAgencias,
+        'total' => $total,
+        'totalProcessosDesembolsados' => $totalProcessosDesembolsados,
+        'montantetotal' => $totalMontante,
+        'montantetotalDesembolso' => $totalDesembolsado,
+        'dataInicioPeriodo' => $DataInicioFormatada, // Corrigido para a data de início real
+        'dataFimPeriodo' => $DataFimFormatada,       // Corrigido para a data de fim real
+    ]);
+}
 
     public function guardarDataExtrato(Request $request)
     {
@@ -610,7 +605,7 @@ class TKxExtratoController extends Controller
             if ($updated) {
 
 
-                 return back()->with('Telefone atualizado com sucesso.');
+                return back()->with('Telefone atualizado com sucesso.');
             } else {
                 return back()->with('error', 'Ups! algo aconteceu errado  ao aleterar o Telefone, por favor cotactar a DSO');
             }
