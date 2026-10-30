@@ -138,14 +138,14 @@ const confirmLogout = () => {
             </a>
 
             <!-- Clientes Kixi Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group" data-preload
+            <!--<a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link-icon group" data-preload
                 :class="{ 'active': $page.url.startsWith('/clientecorp') }" title="Cliente">
                 <i class="fas fa-user-tie  text-lg"></i>
 
                 <span class="nav-tooltip">Cliente</span>
-            </a>
+            </a>-->
 
-            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link-icon group" data-preload
+            <a v-if="$page.props.user.rec_subsidio && can('mn_rd')" href="/rdcorp" class="nav-link-icon group" data-preload
                 :class="{ 'active': $page.url.startsWith('/rdcorp') }" title="RDCORP">
 
                 <i class="fas solid fa-chart-pie text-lg"></i>
@@ -295,17 +295,17 @@ const confirmLogout = () => {
             </a>
 
             <!-- Cliente Kixi_Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link group" data-preload
+            <!--<a v-if="$page.props.user.rec_subsidio" href="/clientecorp" class="nav-link group" data-preload
                 :class="{ 'active': $page.url.startsWith('/clientecorp') }">
                 <div class="nav-link-content">
                     <i class="fas fa-user-tie nav-link-icon"></i>
                     <span class="nav-link-text">Cliente Corp</span>
                 </div>
                 <div class="nav-link-indicator"></div>
-            </a>
+            </a>-->
 
             <!-- RD Kixi_Corp -->
-            <a v-if="$page.props.user.rec_subsidio" href="/rdcorp" class="nav-link group" data-preload
+            <a v-if="$page.props.user.rec_subsidio && can('mn_rd')" href="/rdcorp" class="nav-link group" data-preload
                 :class="{ 'active': $page.url.startsWith('/rdcorp') }">
                 <div class="nav-link-content">
 

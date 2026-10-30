@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class TblRDPrintProdutoProvisaoModel extends Model
 {
-    protected $table = 'tblrdprintprodutoprovisao';
+    protected $table = 'tblRDprintProdutoProvisao';
     protected $primaryKey = 'Id';
 
     public $timestamps = false;
@@ -35,7 +35,7 @@ class TblRDPrintProdutoProvisaoModel extends Model
 
     public static function getPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblrdprintprodutoprovisao')
+        return DB::table('tblRDprintProdutoProvisao')
             ->where('DataReferencia', $dataReferencia)
             ->where('Activo', 1)
             ->get();
@@ -43,7 +43,7 @@ class TblRDPrintProdutoProvisaoModel extends Model
 
     public static function salvarOuAtualizarDados(array $dados)
     {
-        return DB::table('tblrdprintprodutoprovisao')->updateOrInsert(
+        return DB::table('tblRDprintProdutoProvisao')->updateOrInsert(
             [
                 'DataReferencia' => $dados['DataReferencia'],
                 'NomeProduto'    => $dados['NomeProduto']
@@ -54,7 +54,7 @@ class TblRDPrintProdutoProvisaoModel extends Model
 
     public static function eliminarPorDataReferencia($dataReferencia)
     {
-        return DB::table('tblrdprintprodutoprovisao')
+        return DB::table('tblRDprintProdutoProvisao')
             ->where('DataReferencia', $dataReferencia)
             ->delete();
     }
