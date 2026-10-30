@@ -332,12 +332,12 @@ protected function getExtratosData(array $basesOperacao, ?array $dateFilter, str
         ->whereNotNull('DataDesembolso');
 
     if ($dateFilter) {
-        $query->whereBetween('CiFecha', [
+        $query->whereBetween('DataDesembolso', [
             $dateFilter['start'],
             $dateFilter['end']
         ]);
     } else {
-        $query->whereDate('CiFecha', $hoje);
+        $query->whereDate('DataDesembolso', $hoje);
     }
 
     return [
