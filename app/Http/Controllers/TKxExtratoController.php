@@ -70,22 +70,41 @@ class TKxExtratoController extends Controller
 
         $TIPO = $tipoDeBusca;
     }
-  $totalProcessosDesembolsados =0;
+   $totalProcessosDesembolsados =0;
    $totalDesembolsado = 0;
+
+     // Métricas calculadas sobre os extratos retornados
+    $total = 0;
+    $totalMontante = 0;
+    $totalProcessosDesembolsados = 0;
+    $totalDesembolsado =0;
+
     // Consulta condicional com base no tipo de data selecionado
     if ($tipoData === 'desembolso') {
-        $extratos = collect(TKxExtratoModel::getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
-       // dd('Entrei desembolso');
 
-         $totalProcessosDesembolsados = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->count();
-         $totalDesembolsado = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->sum('ValorTotalCredito');
+        $extratos = collect(TKxExtratoModel::getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
+        $totalDesembolsado = $extratos->sum('ValorTotalCredito');
+
+        $totalProcessosDesembolsados = $extratos->count();
+
+         $extratosResumoAplicacao = collect(TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
+          $totalMontante = $extratosResumoAplicacao->sum('ValorTotalCredito');
+         $total = $extratosResumoAplicacao->count();
+
+
     } else {
         $extratos = collect(TKxExtratoModel::getExtratosPorDataRegistro($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
+        $totalMontante = $extratos->sum('ValorTotalCredito');
+        $total = $extratos->count();
 
-        $extratosResumo = collect(TKxExtratoModel::getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
-         $totalProcessosDesembolsados = $extratosResumo->filter(fn($item) => !empty($item->DataDesembolso))->count();
-         $totalDesembolsado = $extratosResumo->filter(fn($item) => !empty($item->DataDesembolso))->sum('ValorTotalCredito');
+ //dd($DataInicio, $DataFim,$totalMontante, $total,$NumeroRegistroTabela, $TIPO);
 
+
+        $extratosResumoDesembolso = collect(TKxExtratoModel::getExtratosPorDataDesembolso($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN));
+        $totalDesembolsado = $extratosResumoDesembolso->sum('ValorTotalCredito');
+        $totalProcessosDesembolsados = $extratosResumoDesembolso->count();
+
+//dd($DataInicio, $DataFim,$totalProcessosDesembolsados, $totalDesembolsado,$NumeroRegistroTabela, $TIPO);
 
     }
 
@@ -102,11 +121,7 @@ class TKxExtratoController extends Controller
     $lista_nes_grupo = TKxExtratoModel::getNecesidadesGrupo();
     $lista_nes_tipo = TKxExtratoModel::getNecesidadesTipo();
 
-    // Métricas calculadas sobre os extratos retornados
-    $total = $extratos->count();
-    $totalMontante = $extratos->sum('ValorTotalCredito');
-    $totalProcessosDesembolsados = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->count();
-    $totalDesembolsado = $extratos->filter(fn($item) => !empty($item->DataDesembolso))->sum('ValorTotalCredito');
+
 
     $extrato_list = $extratos->map(function ($item) {
         return [
