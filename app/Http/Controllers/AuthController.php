@@ -306,46 +306,26 @@ class AuthController extends Controller
         ];
     }
 
-    /*protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
+    protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
     {
         $query = TKxExtratoModel::whereIn('BaseOperacao', $basesOperacao)
-            ->where('Eliminado', 0);
+            ->where('Eliminado', 0)
+            ->whereNotNull('DataDesembolso');
 
         if ($dateFilter) {
-            $query->whereBetween('CiFecha', [$dateFilter['start'], $dateFilter['end']]);
+            $query->whereBetween('DataDesembolso', [
+                $dateFilter['start'],
+                $dateFilter['end']
+            ]);
         } else {
-            $query->whereDate('CiFecha', $hoje);
+            $query->whereDate('DataDesembolso', $hoje);
         }
 
         return [
-            'QtdRegistosDesembosos' => $query->count(),
-            'QtdValorRegistosDesembosos' => $query->sum('ValorDoCredito'),
+            'QtdRegistosDesembosos' => (clone $query)->count(),
+            'QtdValorRegistosDesembosos' => (clone $query)->sum('ValorDoCredito'),
         ];
-    }*/
-
-
-
-protected function getExtratosData(array $basesOperacao, ?array $dateFilter, string $hoje)
-{
-    $query = TKxExtratoModel::whereIn('BaseOperacao', $basesOperacao)
-        ->where('Eliminado', 0)
-        ->whereNotNull('DataDesembolso');
-
-    if ($dateFilter) {
-        $query->whereBetween('DataDesembolso', [
-            $dateFilter['start'],
-            $dateFilter['end']
-        ]);
-    } else {
-        $query->whereDate('DataDesembolso', $hoje);
     }
-
-    return [
-        'QtdRegistosDesembosos' => (clone $query)->count(),
-        'QtdValorRegistosDesembosos' => (clone $query)->sum('ValorDoCredito'),
-    ];
-}
-
 
 
     protected function getPendentesData(array $basesOperacao)
