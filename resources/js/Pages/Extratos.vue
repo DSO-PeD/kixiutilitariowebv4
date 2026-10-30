@@ -155,95 +155,158 @@
             </div>
         </div>
 
-        <div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
-            <div
-                class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-white">
-                <div class="flex items-center">
-                    <div class="bg-blue-50 p-2 rounded-lg mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
+<!-- ============================================ -->
+<!-- BLOCO 1 — PROCESSOS POR DATA DE APLICAÇÃO    -->
+<!-- ============================================ -->
+<div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-gray-200">
+        <div class="flex items-center">
+            <div class="bg-amber-50 p-2 rounded-lg mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800 uppercase tracking-wider">
+                        Aplicados No Período :
+                    </span>
+                    <!--h3 class="text-lg font-semibold text-gray-800">
+                        Processos por Data de Aplicação no período
+                    </h3-->
+                </div>
+                <p class="text-sm text-gray-600 mt-0.5">
+                    <span class="font-medium text-amber-700">{{ dataInicioPeriodo }}</span>
+                    <span class="mx-2">até</span>
+                    <span class="font-medium text-amber-700">{{ dataFimPeriodo }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Card 1 - Total Aplicado -->
+        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border border-amber-200 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-amber-200/40 rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center mb-4">
+                    <div class="bg-amber-100 p-3 rounded-full mr-3">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            Processos por {{ filtro.tipoData === 'desembolso' ? 'Data de Desembolso' : 'Data de Aplicação' }} no período:
-                        </h3>
-                        <p class="text-sm text-gray-600">
-                            <span class="font-medium text-green-700">{{ dataInicioPeriodo }}</span>
-
-                            <span class="mx-2">até</span>
-                            <span class="font-medium text-green-700">{{ dataFimPeriodo }}</span>
-
-                        </p>
+                        <h3 class="text-sm font-semibold text-gray-700">Total Aplicado</h3>
+                        <p class="text-xs text-amber-700">Processos aplicados na execução</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Cards de métricas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Card 1 - Total Montante Reembolsos -->
-                <div
-                    class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-green-100 p-3 rounded-full mr-3">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-gray-700">Total Aplicados</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-green-700">{{ formatCurrency(montantetotal) }} AKZ</p>
-                </div>
-
-                <div
-                    class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200 shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-green-100 p-3 rounded-full mr-3">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-gray-700">Total Desembolsado</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-green-700">{{ formatCurrency(montantetotalDesembolso) }} AKZ</p>
-                </div>
-
-                <!-- Card 2 - Total de Poupanças -->
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-blue-100 p-3 rounded-full mr-3">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-gray-700">Processos Aplicados</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-blue-700">{{ total }} itens</p>
-                </div>
-
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-blue-100 p-3 rounded-full mr-3">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-gray-700">Processos Desembolsados</h3>
-                    </div>
-                    <p class="text-2xl font-bold text-blue-700">{{ totalProcessosDesembolsados }} itens</p>
-                </div>
+                <p class="text-2xl font-bold text-amber-700">{{ formatCurrency(montantetotal) }} AKZ</p>
             </div>
         </div>
+
+        <!-- Card 2 - Nº de Processos Aplicados -->
+        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border border-amber-200 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-amber-200/40 rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center mb-4">
+                    <div class="bg-amber-100 p-3 rounded-full mr-3">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-700">Nº de Processos Aplicados</h3>
+                        <p class="text-xs text-amber-700">Quantidade de processos aplicados</p>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-amber-700">{{ total }} créditos</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- BLOCO 2 — PROCESSOS POR DATA DE DESEMBOLSO   -->
+<!-- ============================================ -->
+<div class="bg-gray-100 rounded-xl shadow-sm p-5 mb-6 border border-white">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-gray-200">
+        <div class="flex items-center">
+            <div class="bg-emerald-50 p-2 rounded-lg mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">
+                        Desembolsados No Período :
+                    </span>
+                    <!--h3 class="text-lg font-semibold text-gray-800">
+                        Processos por Data de Desembolso no período
+                    </h3-->
+                </div>
+                <p class="text-sm text-gray-600 mt-0.5">
+                    <span class="font-medium text-emerald-700">{{ dataInicioPeriodo }}</span>
+                    <span class="mx-2">até</span>
+                    <span class="font-medium text-emerald-700">{{ dataFimPeriodo }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Card 1 - Total Desembolsado -->
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-5 border border-emerald-200 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-200/40 rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center mb-4">
+                    <div class="bg-emerald-100 p-3 rounded-full mr-3">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-700">Total Desembolsado</h3>
+                        <p class="text-xs text-emerald-700">Montantes já desembolsados</p>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-emerald-700">{{ formatCurrency(montantetotalDesembolso) }} AKZ</p>
+            </div>
+        </div>
+
+        <!-- Card 2 - Nº de Processos Desembolsados -->
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-5 border border-emerald-200 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-200/40 rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center mb-4">
+                    <div class="bg-emerald-100 p-3 rounded-full mr-3">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-700">Nº de Processos Desembolsados</h3>
+                        <p class="text-xs text-emerald-700">Quantidade de créditos desembolsados</p>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-emerald-700">{{ totalProcessosDesembolsados }} créditos</p>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Tabela de Desembolsos -->
         <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
@@ -301,7 +364,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                                     </svg>
-                                    Registado
+                                    Aplicado
                                 </div>
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
