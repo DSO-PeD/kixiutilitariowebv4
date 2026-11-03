@@ -45,6 +45,7 @@ class ComprovativoModel extends Model
 
     public static function getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $PRODUTOS, $TIPOPAGAMENTOS)
     {
+      //  dd($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $PRODUTOS, $TIPOPAGAMENTOS);
         if($TIPO==7371){
             DB::select("CALL PKxUActualizaEstadoReferencia");
         }

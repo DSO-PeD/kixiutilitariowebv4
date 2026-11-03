@@ -35,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/rdcorp', [RDKixiCorpController::class, 'viewReportRD'])->name('rdcorp');
     Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
+    Route::get('/reconciliacao/exportar-excel', [CpvtReconciliacaoController::class, 'exportarExcel'])->name('reconciliacao.exportar');
     Route::get('/listarEstadosDCF', [CpvtReconciliacaoController::class, 'listarEstadosReconciliacao']);
     Route::get('/listarCpvtDetalheDCF', [CpvtReconciliacaoController::class, 'listarDetalhesComprovativosDCF']);
     Route::get('/extratos', [TKxExtratoController::class, 'viewExtrato'])->name('extratos');
@@ -43,7 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/eliminar-extrato', [TKxExtratoController::class, 'finalizaraeliminacao'])->name('extrato.eliminar');
     Route::post('/eliminar-recuperacao', [RecuperacaoController::class, 'finalizaraeliminacao'])->name('recuperacao.eliminar');
     Route::post('/atualizar-telefone', [TKxExtratoController::class, 'atualizarTelefone'])->name('atualizar.telefone');
-    
+
     Route::get('/fechoPagamento', [CpvtReconciliacaoController::class, 'viewFechoReconciliacao']);
 
     Route::post('/alterarmontante', [ComprovativosController::class, 'editarMontante'])->name('editar-montante-comprovativo');

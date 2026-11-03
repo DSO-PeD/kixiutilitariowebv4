@@ -22,8 +22,6 @@ class CpvtReconciliacaoController extends Controller
 {
     public function viewComprovativosReconlicacao(Request $request)
     {
-
-
         // Cache de dados estáticos que raramente mudam
         $cacheKey = 'reconciliacao_static_data_' . Auth::id();
         $staticData = Cache::remember($cacheKey, 3600, function () {
@@ -48,10 +46,10 @@ class CpvtReconciliacaoController extends Controller
         $ids_estados = $staticData['estados']->pluck('id')->implode(',');
         $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
-        // Processamento condicional mais eficiente
+        // Processamento condicional dos filtros
         $filterData = $this->processFilters($request, $resultagencia_user, $staticData, $ids_estados, $hoje);
 
-        // Consulta principal com parâmetros já processados
+        // Consulta principal com parâmetros processados (mantida intacta)
         $lista_comprovativo = ComprovativoModel::getComprovativos(
             $filterData['Bases'],
             $filterData['DataInicio'],
@@ -64,16 +62,24 @@ class CpvtReconciliacaoController extends Controller
             $filterData['formaspagamento_geral']
         );
 
-        // Otimização do processamento da lista de comprovativos
-        $comprovativos_list = $this->processComprovativosList($lista_comprovativo);
-
-        // Cálculos de totais mais eficientes
+        // Totais e datas calculados sobre TODOS os registros encontrados (mantido intacto)
         $totals = $this->calculateTotals($lista_comprovativo);
+        $totalRegistos = count($lista_comprovativo);
+
+        // --- SOLUÇÃO DO GARGALO: Paginação do Payload ---
+        $perPage = 100;
+        $page = max((int) $request->input('page', 1), 1);
+        $offset = ($page - 1) * $perPage;
+
+        // Fatiamos a lista para processar e enviar APENAS os registros da página atual
+        $fatiaPagina = array_slice($lista_comprovativo, $offset, $perPage);
+        $comprovativos_list = $this->processComprovativosList($fatiaPagina);
 
         return Inertia::render('Reconciliacao', [
             'lista_comprovativo' => $comprovativos_list,
             'filters' => $this->getFilterParams($request),
-            'page' => (int) $request->input('page', 1),
+            'page' => $page,
+            'perPage' => $perPage,
             'bases' => TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get(),
             'produtos' => $staticData['lista_produtos'],
             'bancos' => $staticData['lista_banco'],
@@ -81,21 +87,21 @@ class CpvtReconciliacaoController extends Controller
             'tipocomprovativos' => ['G' => 'G/', 'I' => 'I/'],
             'formaspagamentos' => $staticData['lista_das_formaspagamento'],
             'estados' => $staticData['estados'],
-            'total' => count($lista_comprovativo),
+            'total' => $totalRegistos,
             'montantetotal' => $totals['montante_total'],
             'dataInicioPeriodo' => $totals['data_inicio_formatada'],
             'dataFimPeriodo' => $totals['data_fim_formatada'],
             'totalMontantePoupanca' => $totals['montante_poupanca'],
             'totalMontantePGREF' => $totals['montante_total_pgref'],
 
-            'totalMontanteRegistado' =>  $totals['totalMontanteRegistado'],
-            'totalMontantePoupancaRegistado' =>  $totals['totalMontantePoupancaRegistado'],
+            'totalMontanteRegistado' => $totals['totalMontanteRegistado'],
+            'totalMontantePoupancaRegistado' => $totals['totalMontantePoupancaRegistado'],
 
             'totalMontanteReflete' => $totals['totalMontanteReflete'],
             'totalMontantePoupancaReflete' => $totals['totalMontantePoupancaReflete'],
 
-            'totalMontanteInregulares' =>  $totals['totalMontanteInregulares'],
-            'totalMontantePoupancaInregulares' =>  $totals['totalMontantePoupancaInregulares'],
+            'totalMontanteInregulares' => $totals['totalMontanteInregulares'],
+            'totalMontantePoupancaInregulares' => $totals['totalMontantePoupancaInregulares'],
         ]);
     }
 
@@ -205,7 +211,7 @@ class CpvtReconciliacaoController extends Controller
                 'conta' => $item->ContaBacaria,
                 'referencia' => $item->BuReferencia,
                 'voucher' => $item->voucher,
-                'vouchertransacao'=> $item->vouchertransacao,
+                'vouchertransacao' => $item->vouchertransacao,
                 'FormaPagoN' => $item->FormaPagoN,
                 'descricao' => $item->descricao,
                 'operadordcf' => $item->operadordcf,
@@ -234,8 +240,8 @@ class CpvtReconciliacaoController extends Controller
             'totalMontantePoupancaRegistado' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 19)->sum('BuMontante'),
             'totalMontanteReflete' => $collection->where('TtCodigo', '=', 'L04')->where('idestado', 8)->sum('BuMontante'),
             'totalMontantePoupancaReflete' => $collection->where('TtCodigo', '=', 'S01')->where('idestado', 8)->sum('BuMontante'),
-            'totalMontanteInregulares' => $collection->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9,11,13,20])->sum('BuMontante'),
-            'totalMontantePoupancaInregulares' => $collection->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9,11,13,20])->sum('BuMontante'),
+            'totalMontanteInregulares' => $collection->where('TtCodigo', '=', 'L04')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante'),
+            'totalMontantePoupancaInregulares' => $collection->where('TtCodigo', '=', 'S01')->whereIn('idestado', [9, 11, 13, 20])->sum('BuMontante'),
             'data_inicio_formatada' => Carbon::parse($collection->max('CiFecha'))->format('d/m/Y'),
             'data_fim_formatada' => Carbon::parse($collection->min('CiFecha'))->format('d/m/Y')
         ];
@@ -312,7 +318,7 @@ class CpvtReconciliacaoController extends Controller
             })
         );
     }
-    
+
     public function editarVoucherRec(Request $request)
     {
 
@@ -373,7 +379,7 @@ class CpvtReconciliacaoController extends Controller
 
     /** Secção do fecho de pagamento */
     public function viewFechoReconciliacao(Request $request)
-    {   
+    {
         // Cache de dados estáticos que raramente mudam
         $cacheKey = 'reconciliacao_static_data_' . Auth::id();
         $staticData = Cache::remember($cacheKey, 3600, function () {
@@ -391,22 +397,128 @@ class CpvtReconciliacaoController extends Controller
 
 
         $dataInicio = Carbon::parse($request->data_inicio)->startOfDay();
-        $dataFim    = Carbon::parse($request->data_fim)->endOfDay();
+        $dataFim = Carbon::parse($request->data_fim)->endOfDay();
 
         $fechos = DB::table('pgtrefnotificacao as p')
-                    ->whereBetween('p.dataTransaccaoCliente', [$dataInicio, $dataFim])
-                    ->select(
-                        'p.idLogSistema as periodo',
-                        DB::raw('MIN(p.dataTransaccaoCliente) as ciFecha'),
-                        DB::raw('SUM(p.montantePago) as total_montante')
-                    )
-                    ->groupBy('p.idLogSistema')
-                    ->orderBy('p.idLogSistema')
-                    ->paginate(20)
-                    ->withQueryString();
+            ->whereBetween('p.dataTransaccaoCliente', [$dataInicio, $dataFim])
+            ->select(
+                'p.idLogSistema as periodo',
+                DB::raw('MIN(p.dataTransaccaoCliente) as ciFecha'),
+                DB::raw('SUM(p.montantePago) as total_montante')
+            )
+            ->groupBy('p.idLogSistema')
+            ->orderBy('p.idLogSistema')
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('FechoPagamento', [
-            'lista_fechos' => $fechos,         
+            'lista_fechos' => $fechos,
         ]);
+    }
+
+
+    public function exportarExcel(Request $request)
+    {
+        $authenticatedUser = Auth::user();
+        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)->first();
+
+        $cacheKey = 'reconciliacao_static_data_' . Auth::id();
+        $staticData = Cache::remember($cacheKey, 3600, function () {
+            return [
+                'lista_produtos' => TKxClProdutoModel::getProdutos(),
+                'lista_das_formaspagamento' => TKxClTipopagamentoModel::getFormasDePamentos(),
+                'estados' => EstadosModel::getEstadosDCF('DCF'),
+                'lista_banco' => TKxBancoModel::getBancos(),
+                'lista_bancos_contas' => TKxBancoContaModel::getBancosContas(),
+            ];
+        });
+
+        $hoje = date('Ymd');
+        $ids_estados = $staticData['estados']->pluck('id')->implode(',');
+        $filterData = $this->processFilters($request, $resultagencia_user, $staticData, $ids_estados, $hoje);
+
+        // Busca TODOS os registos usando a mesma procedure e filtros
+        $lista_comprovativo = ComprovativoModel::getComprovativos(
+            $filterData['Bases'],
+            $filterData['DataInicio'],
+            $filterData['DataFim'],
+            $resultagencia_user->NumeroRegistroTabela,
+            $filterData['TIPO'],
+            $filterData['LOAN'],
+            $filterData['ESTADO'],
+            $filterData['produtos_geral_busca'],
+            $filterData['formaspagamento_geral']
+        );
+
+        $dataHoje = date('Y-m-d');
+        $filename = "comprovativos_reconciliacao_completo_{$dataHoje}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($lista_comprovativo) {
+            $output = fopen('php://output', 'w');
+
+            // BOM UTF-8 para o Excel reconhecer acentuação e caracteres em português
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Cabeçalhos das colunas (separador ponto e vírgula ;)
+            fputcsv($output, [
+                '#',
+                'Data Registo',
+                'Agencia',
+                'Registado Por',
+                'LNR',
+                'Cliente',
+                'Produto',
+                'Montante',
+                'Voucher Dia',
+                'Voucher Transacao',
+                'Forma de Pagamento',
+                'Referencia de Pagamento',
+                'Periodo',
+                'Descricao',
+                'Banco',
+                'Conta Bancaria',
+                'Observacao',
+                'Estado',
+                'Operador DCF',
+                'Data DCF'
+            ], ';');
+
+            foreach ($lista_comprovativo as $index => $item) {
+                fputcsv($output, [
+                    $index + 1,
+                    $item->CiFecha ?? $item->dataRegistoFomatada ?? '-',
+                    $item->OfNombre ?? '-',
+                    $item->UtNome ?? '-',
+                    $item->BuDadoOrigem ?? '-',
+                    $item->infoadicional ?? '-',
+                    $item->PoAgrupado ?? '-',
+                    number_format((float) ($item->BuMontante ?? 0), 2, ',', '.'),
+                    $item->voucher ?? '-',
+                    $item->vouchertransacao ?? '-',
+                    $item->FormaPagoN ?? '-',
+                    $item->refPagamento ?? '-',
+                    $item->periodo_trans_pgr ?? '-',
+                    $item->descricao ?? '-',
+                    $item->BaSigla ?? '-',
+                    $item->ContaBacaria ?? '-',
+                    $item->observacao ?? '-',
+                    $item->estado ?? '-',
+                    $item->operadordcf ?? '-',
+                    $item->datareconciliacao ?? '-'
+                ], ';');
+            }
+
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
