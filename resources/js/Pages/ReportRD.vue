@@ -89,35 +89,32 @@
 
             <!-- ═══════════════ GRÁFICOS ═══════════════ -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                <!-- Evolução do Balanço -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-chart-area text-blue-600"></i>
-                            <h3 class="font-semibold text-slate-800">Evolução do Balanço</h3>
+                            <h3 class="font-semibold text-slate-800">Evolução da Carteira</h3>
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">6 meses</span>
+                        <span class="text-[15px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">6 meses</span>
                     </div>
                     <div class="h-56 relative">
                         <canvas ref="chartBalancoRef"></canvas>
                     </div>
                 </div>
 
-                <!-- Desembolso vs Reembolso -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-exchange-alt text-emerald-600"></i>
-                            <h3 class="font-semibold text-slate-800">Fluxo de Caixa</h3>
+                            <h3 class="font-semibold text-slate-800">Desembolsos e Reembolsos</h3>
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">12 meses</span>
+                        <span class="text-[15px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">12 meses</span>
                     </div>
                     <div class="h-56 relative">
                         <canvas ref="chartFluxoRef"></canvas>
                     </div>
                 </div>
 
-                <!-- Qualidade da Carteira -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
@@ -130,14 +127,13 @@
                     </div>
                 </div>
 
-                <!-- Distribuição por Agências -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-building text-indigo-600"></i>
-                            <h3 class="font-semibold text-slate-800">Distribuição por Agências</h3>
+                            <h3 class="font-semibold text-slate-800">Distribuição da Carteira por Localidade Kixi Crédito</h3>
                         </div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Top 8</span>
+                        <span class="text-[15px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Top 8</span>
                     </div>
                     <div class="h-56 relative">
                         <canvas ref="chartAgenciasRef"></canvas>
@@ -147,7 +143,6 @@
 
             <!-- ═══════════════ ÁREA DE IMPRESSÃO (TABELAS) ═══════════════ -->
             <div ref="areaTabelas">
-                <!-- Título exclusivo da impressão -->
                 <div class="hidden print:block text-center mb-4 pb-2 border-b border-slate-300">
                     <h1 class="text-base font-bold text-slate-800 uppercase tracking-wide">
                         RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA]
@@ -170,55 +165,54 @@
                                 <thead class="sticky top-0 z-10">
                                     <tr class="bg-[#0B2E4F] text-white text-center">
                                         <th rowspan="2"
-                                            class="w-36 bg-slate-50 text-slate-500 font-bold border-r border-b border-slate-300 px-3 py-2 align-bottom text-left text-[11px] uppercase tracking-wider">
+                                            class="w-36 bg-slate-50 text-slate-500 font-bold border-r border-b border-slate-300 px-3 py-1.5 align-bottom text-left text-[11px] uppercase tracking-wider">
                                             Indicadores
                                         </th>
                                         <th :colspan="colunasMeses.length"
-                                            class="border-r border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider">
+                                            class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
                                             Histórico Mensal
                                         </th>
-                                        <th colspan="2" class="border-r border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider">
+                                        <th colspan="2" class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
                                             Variação
                                         </th>
-                                        <th class="border-r border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider bg-[#1E5A8E]">
-                                            Mês Atual
+                                        <th class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider bg-[#1E5A8E]">
+                                            {{ ultimoMesNome || 'Mês Atual' }}
                                         </th>
-                                        <th class="border-b border-slate-300 py-2 text-[11px] uppercase tracking-wider">OM</th>
+                                        <th class="border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">OM</th>
                                     </tr>
                                     <tr class="bg-[#103E68] text-white text-center">
                                         <th v-for="mes in colunasMeses" :key="mes.key"
-                                            class="border-r border-b border-slate-300 px-3 py-1.5 whitespace-nowrap text-[11px] font-semibold">
+                                            class="border-r border-b border-slate-300 px-3 py-1 whitespace-nowrap text-[11px] font-semibold">
                                             {{ mes.label }}
                                         </th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 bg-emerald-500/20 text-emerald-200 text-[11px]">▲</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 bg-rose-500/20 text-rose-200 text-[11px]">▼</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 bg-[#1E5A8E]"></th>
-                                        <th class="border-b border-slate-300 px-3 py-1.5"></th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1 bg-emerald-500/20 text-emerald-200 text-[11px]">▲</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1 bg-rose-500/20 text-rose-200 text-[11px]">▼</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1 bg-[#1E5A8E]"></th>
+                                        <th class="border-b border-slate-300 px-3 py-1"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <!-- 1. Balanço -->
                                     <tr class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="w-1 h-5 bg-blue-500 rounded-full"></span>
+                                                <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
                                                 1. Balanço
                                             </span>
                                         </td>
                                         <td v-for="item in historicoSeisMeses" :key="item.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums">
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-medium tabular-nums">
                                             {{ formatarNumero(item.BalancoValor) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.Desembolsos) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-rose-50 text-rose-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.Reembolso) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-amber-50 text-amber-800 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-amber-50 text-amber-800 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.BalancoValor) }}
                                         </td>
-                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.VariacaoPercentual) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
                                             <span class="inline-flex items-center gap-1">
                                                 <i :class="Number(ultimoRegistro?.VariacaoPercentual) >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
@@ -227,41 +221,40 @@
                                         </td>
                                     </tr>
 
-                                    <!-- 2. Créditos Novos -->
                                     <tr class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="w-1 h-5 bg-indigo-500 rounded-full"></span>
+                                                <span class="w-1 h-4 bg-indigo-500 rounded-full"></span>
                                                 <span>2. Créditos | Novos<br>
-                                                <span class="text-[10px] font-normal text-slate-500">Taxa Juros ≤ Kz 2.000</span></span>
+                                                <span class="text-[9px] font-normal text-slate-500">Taxa Juros ≤ Kz 2.000</span></span>
                                             </span>
                                         </td>
                                         <td v-for="item in historicoSeisMeses" :key="item.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums leading-relaxed">
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-medium tabular-nums leading-tight">
                                             <span class="text-slate-700">{{ formatarInt(item.CreditosQuantidade) }}</span>
                                             <span class="text-slate-400 mx-1">|</span>
                                             <span class="text-indigo-700 font-bold">{{ formatarInt(item.CreditosNovos) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarNumero(item.TaxaJuros1) }}% | {{ formatarNumero(item.TaxaJuros2) }}%</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarNumero(item.TaxaJuros1) }}% | {{ formatarNumero(item.TaxaJuros2) }}%</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarInt(item.CreditosAteKz2000_Qtd) }} | {{ formatarNumero(item.CreditosAteKz2000_Valor) }}</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarInt(item.CreditosAteKz2000_Qtd) }} | {{ formatarNumero(item.CreditosAteKz2000_Valor) }}</span>
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarInt(ultimoRegistro?.CreditosNovos_Mais) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-rose-50 text-rose-700 font-bold tabular-nums">
                                             {{ formatarInt(ultimoRegistro?.CreditosNovos_Menos) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums leading-relaxed">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 font-bold tabular-nums leading-tight">
                                             <span>{{ formatarInt(ultimoRegistro?.CreditosQuantidade) }}</span>
                                             <span class="text-slate-400 mx-1">|</span>
                                             <span class="text-indigo-700">{{ formatarInt(ultimoRegistro?.CreditosNovos) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarNumero(ultimoRegistro?.TaxaJuros1) }}% | {{ formatarNumero(ultimoRegistro?.TaxaJuros2) }}%</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarNumero(ultimoRegistro?.TaxaJuros1) }}% | {{ formatarNumero(ultimoRegistro?.TaxaJuros2) }}%</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarInt(ultimoRegistro?.CreditosAteKz2000_Qtd) }} | {{ formatarNumero(ultimoRegistro?.CreditosAteKz2000_Valor) }}</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarInt(ultimoRegistro?.CreditosAteKz2000_Qtd) }} | {{ formatarNumero(ultimoRegistro?.CreditosAteKz2000_Valor) }}</span>
                                         </td>
-                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.VariacaoCreditosNovos) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
                                             <span class="inline-flex items-center gap-1">
                                                 <i :class="Number(ultimoRegistro?.VariacaoCreditosNovos) >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
@@ -270,37 +263,36 @@
                                         </td>
                                     </tr>
 
-                                    <!-- 3. Clientes Novos -->
                                     <tr class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="w-1 h-5 bg-cyan-500 rounded-full"></span>
+                                                <span class="w-1 h-4 bg-cyan-500 rounded-full"></span>
                                                 <span>3. Clientes | Novos<br>
-                                                <span class="text-[10px] font-normal text-slate-500">≤ Kz 2.000</span></span>
+                                                <span class="text-[9px] font-normal text-slate-500">≤ Kz 2.000</span></span>
                                             </span>
                                         </td>
                                         <td v-for="item in historicoSeisMeses" :key="item.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums leading-relaxed">
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-medium tabular-nums leading-tight">
                                             <span>{{ formatarInt(item.ClientesQuantidade) }}</span>
                                             <span class="text-slate-400 mx-1">|</span>
                                             <span class="text-cyan-700 font-bold">{{ formatarInt(item.ClientesNovos) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">≤2k: {{ formatarInt(item.ClientesAteKz2000) }}</span>
+                                            <span class="text-[9px] text-slate-500">≤2k: {{ formatarInt(item.ClientesAteKz2000) }}</span>
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarInt(ultimoRegistro?.ClientesNovos_Mais) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-rose-50 text-rose-700 font-bold tabular-nums">
                                             {{ formatarInt(ultimoRegistro?.ClientesNovos_Menos) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums leading-relaxed">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 font-bold tabular-nums leading-tight">
                                             <span>{{ formatarInt(ultimoRegistro?.ClientesQuantidade) }}</span>
                                             <span class="text-slate-400 mx-1">|</span>
                                             <span class="text-cyan-700">{{ formatarInt(ultimoRegistro?.ClientesNovos) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">≤2k: {{ formatarInt(ultimoRegistro?.ClientesAteKz2000) }}</span>
+                                            <span class="text-[9px] text-slate-500">≤2k: {{ formatarInt(ultimoRegistro?.ClientesAteKz2000) }}</span>
                                         </td>
-                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.VariacaoClientesNovos) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
                                             <span class="inline-flex items-center gap-1">
                                                 <i :class="Number(ultimoRegistro?.VariacaoClientesNovos) >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'" class="text-[9px]"></i>
@@ -309,32 +301,31 @@
                                         </td>
                                     </tr>
 
-                                    <!-- Linhas 4-6 (NPL, PAR1, PAR30) -->
                                     <tr v-for="linha in linhasRisco" :key="linha.key" class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="w-1 h-5 rounded-full" :class="linha.cor"></span>
+                                                <span class="w-1 h-4 rounded-full" :class="linha.cor"></span>
                                                 {{ linha.numero }}. {{ linha.label }}
                                             </span>
                                         </td>
                                         <td v-for="item in historicoSeisMeses" :key="item.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-medium tabular-nums">
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-medium tabular-nums">
                                             <span class="font-bold" :class="linha.classePerc">{{ formatarPercentual(item[linha.percKey]) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarK(item[linha.valKey]) }}</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarK(item[linha.valKey]) }}</span>
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.[linha.maisKey]) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-rose-50 text-rose-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.[linha.menosKey]) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 font-bold tabular-nums">
                                             <span class="font-bold" :class="linha.classePerc">{{ formatarPercentual(ultimoRegistro?.[linha.percKey]) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarK(ultimoRegistro?.[linha.valKey]) }}</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarK(ultimoRegistro?.[linha.valKey]) }}</span>
                                         </td>
-                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'text-emerald-700' : 'text-rose-700'">
                                             <span class="inline-flex items-center gap-1">
                                                 <i :class="Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'fas fa-arrow-down' : 'fas fa-arrow-up'" class="text-[9px]"></i>
@@ -343,36 +334,35 @@
                                         </td>
                                     </tr>
 
-                                    <!-- 7. Provisão -->
                                     <tr class="bg-rose-50/40 hover:bg-rose-50/70 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="w-1 h-5 bg-rose-500 rounded-full"></span>
+                                                <span class="w-1 h-4 bg-rose-500 rounded-full"></span>
                                                 7. Provisão
                                             </span>
                                         </td>
                                         <td v-for="item in historicoSeisMeses" :key="item.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-semibold text-rose-700 tabular-nums">
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-semibold text-rose-700 tabular-nums">
                                             {{ formatarNumero(item.ProvisaoValor) }}
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarProvisaoCobertura(item.ProvisaoDiasAtraso, item.ProvisaoCoberturaPerc) }}</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarProvisaoCobertura(item.ProvisaoDiasAtraso, item.ProvisaoCoberturaPerc) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-400">DA: {{ item.ProvisaoDiasAtraso ?? 0 }}</span>
+                                            <span class="text-[9px] text-slate-400">DA: {{ item.ProvisaoDiasAtraso ?? 0 }}</span>
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.Provisao_Mais) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-rose-50 text-rose-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.Provisao_Menos) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold text-rose-700 tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 font-bold text-rose-700 tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.ProvisaoValor) }}
                                             <br>
-                                            <span class="text-[10px] text-slate-500">{{ formatarProvisaoCobertura(ultimoRegistro?.ProvisaoDiasAtraso, ultimoRegistro?.ProvisaoCoberturaPerc) }}</span>
+                                            <span class="text-[9px] text-slate-500">{{ formatarProvisaoCobertura(ultimoRegistro?.ProvisaoDiasAtraso, ultimoRegistro?.ProvisaoCoberturaPerc) }}</span>
                                             <br>
-                                            <span class="text-[10px] text-slate-400">DA: {{ ultimoRegistro?.ProvisaoDiasAtraso ?? 0 }}</span>
+                                            <span class="text-[9px] text-slate-400">DA: {{ ultimoRegistro?.ProvisaoDiasAtraso ?? 0 }}</span>
                                         </td>
-                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.VariacaoProvisao) <= 0 ? 'text-emerald-700' : 'text-rose-700'">
                                             <span class="inline-flex items-center gap-1">
                                                 <i :class="Number(ultimoRegistro?.VariacaoProvisao) <= 0 ? 'fas fa-arrow-down' : 'fas fa-arrow-up'" class="text-[9px]"></i>
@@ -381,30 +371,29 @@
                                         </td>
                                     </tr>
 
-                                    <!-- Linhas 8, 9, 10 -->
                                     <tr v-for="linha in linhasPercentuais" :key="linha.key" class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left text-slate-700">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="w-1 h-5 rounded-full" :class="linha.cor"></span>
+                                                <span class="w-1 h-4 rounded-full" :class="linha.cor"></span>
                                                 {{ linha.numero }}. {{ linha.label }}
                                             </span>
                                         </td>
                                         <td v-for="item in historicoSeisMeses" :key="item.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums"
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-bold tabular-nums"
                                             :class="linha.classeFixa">
                                             {{ formatarPercentual(item[linha.key]) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.[linha.maisKey]) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 bg-rose-50 text-rose-700 font-bold tabular-nums">
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 bg-rose-50 text-rose-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.[linha.menosKey]) }}
                                         </td>
-                                        <td class="text-right border-r border-slate-200 px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right border-r border-slate-200 px-2 py-1 font-bold tabular-nums"
                                             :class="linha.classeFixa">
                                             {{ formatarPercentual(ultimoRegistro?.[linha.key]) }}
                                         </td>
-                                        <td class="text-right px-2 py-2 font-bold tabular-nums"
+                                        <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="linha.invertido
                                                 ? (Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'text-emerald-700' : 'text-rose-700')
                                                 : (Number(ultimoRegistro?.[linha.variacaoKey]) >= 0 ? 'text-emerald-700' : 'text-rose-700')">
@@ -426,164 +415,119 @@
                     <section v-if="agenciasCapital.length > 0 || agenciasProvincia.length > 0">
                         <SectionTitle
                             icon="fa-wallet"
-                            title="Distribuição da Carteira por Agências"
+                            title="1. DISTRIBUIÇÃO DA CARTEIRA - KIXICRÉDITO ANGOLA"
                             subtitle="Performance detalhada por localidade"
                             tone="emerald"
                         />
 
-                        <div class="space-y-6">
+                       <div class="space-y-4">
                             <AgenciasTable titulo="Capital (Luanda)" :agencias="agenciasCapital" />
                             <AgenciasTable titulo="Províncias" :agencias="agenciasProvincia" />
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 3: Produtos agrupados por Direção / Gestor ═══ -->
+                    <!-- ═══ TABELA 3: Detalhamento por Produto ═══ -->
                     <section v-if="produtosAgrupados.length > 0">
-                        <SectionTitle
-                            icon="fa-sitemap"
-                            title="Detalhamento por Direção / Gestor"
-                            subtitle="Consolidado de produtos agrupados por responsável"
-                            tone="indigo"
-                        />
-
                         <div class="overflow-x-auto rounded-xl border border-slate-200">
-                            <table class="w-full text-xs border-collapse text-slate-800">
+                            <table class="w-full text-[11px] border-collapse text-slate-800">
                                 <thead class="sticky top-0 z-10">
                                     <tr class="bg-[#0B2E4F] text-white">
-                                        <th colspan="12" class="px-3 py-2.5 text-sm tracking-wider uppercase text-left">
+                                        <th colspan="11" class="px-3 py-1.5 text-xs tracking-wider uppercase text-left">
                                             <i class="fas fa-user-tie mr-2 opacity-70"></i>
-                                            Detalhamento por Direção / Gestor
+                                            Detalhamento por Produto
                                         </th>
                                     </tr>
-                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left w-56 uppercase tracking-wider">Tipo / Produto</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Direção / Gestor</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">OA/PA</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Balanço</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Créditos | Novos</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Clientes | Novos</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">PAR 1</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">PAR 30</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Desemb. | TA</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Reembolso</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Provisão</th>
-                                        <th class="border-b border-slate-300 px-3 py-2 uppercase tracking-wider">Gestão</th>
+                                    <tr class="bg-[#103E68] text-white text-center text-[10px]">
+                                        <th class="border-r border-b border-slate-300 px-3 py-1 text-left w-56 uppercase tracking-wider">Produto</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">OA/PA</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Balanço</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Créditos | Novos</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Clientes | Novos</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">PAR 1</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">PAR 30</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Desembolsos | TA</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Reembolsos</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Provisão</th>
+                                        <th class="border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Gestão</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <template v-for="grupo in produtosAgrupados" :key="grupo.gestor">
-                                        <!-- Cabeçalho do grupo Diretor -->
-                                        <tr class="bg-gradient-to-r from-indigo-100 via-indigo-50 to-transparent border-y-2 border-indigo-200">
-                                            <td colspan="12" class="px-3 py-2.5">
+                                        <tr class="bg-gradient-to-r from-indigo-100 via-indigo-50 to-transparent border-y border-indigo-200">
+                                            <td colspan="11" class="px-3 py-1.5">
                                                 <div class="flex items-center justify-between gap-3">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-sm">
-                                                            <i class="fas fa-user-tie text-xs"></i>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-6 h-6 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-sm">
+                                                            <i class="fas fa-user-tie text-[10px]"></i>
                                                         </div>
                                                         <div>
-                                                            <div class="text-sm font-bold text-indigo-900 leading-tight uppercase tracking-wide">
+                                                            <span class="text-xs font-bold text-indigo-900 uppercase tracking-wide">
                                                                 {{ grupo.gestor }}
-                                                            </div>
-                                                            <div class="text-[10px] text-indigo-600/80 font-medium mt-0.5">
-                                                                <i class="fas fa-sitemap mr-1"></i>{{ grupo.tipoDireccao }}
-                                                                <span class="mx-2 text-indigo-300">•</span>
-                                                                <i class="fas fa-cube mr-1"></i>{{ grupo.itens.length }}
-                                                                {{ grupo.itens.length === 1 ? 'produto' : 'produtos' }}
-                                                            </div>
+                                                            </span>
+                                                            <span class="text-[10px] text-indigo-600/80 font-medium ml-2">
+                                                                ({{ grupo.tipoDireccao }} · {{ grupo.itens.length }} {{ grupo.itens.length === 1 ? 'produto' : 'produtos' }})
+                                                            </span>
                                                         </div>
                                                     </div>
-                                                    <div class="hidden md:flex items-center gap-4 text-[11px]">
-                                                        <div class="text-right">
-                                                            <div class="text-[9px] uppercase tracking-wider text-indigo-500 font-bold">Balanço</div>
-                                                            <div class="font-bold text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.BalancoValor) }}</div>
-                                                        </div>
-                                                        <div class="text-right border-l border-indigo-200 pl-4">
-                                                            <div class="text-[9px] uppercase tracking-wider text-indigo-500 font-bold">Desemb.</div>
-                                                            <div class="font-bold text-emerald-700 tabular-nums">{{ formatarNumero(grupo.total.DesembolsoValor) }}</div>
-                                                        </div>
+                                                    <div class="flex items-center gap-3 text-[10px]">
+                                                        <!--div>
+                                                            <span class="text-indigo-500 font-bold uppercase mr-1">Bal:</span>
+                                                            <span class="font-bold text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.BalancoValor) }}</span>
+                                                        </div-->
+                                                        <!--div class="border-l border-indigo-200 pl-3">
+                                                            <span class="text-emerald-600 font-bold uppercase mr-1">Desemb:</span>
+                                                            <span class="font-bold text-emerald-700 tabular-nums">{{ formatarNumero(grupo.total.DesembolsoValor) }}</span>
+                                                        </div-->
                                                     </div>
                                                 </div>
                                             </td>
                                         </tr>
 
-                                        <!-- Linhas de produtos do grupo -->
                                         <tr v-for="prod in grupo.itens" :key="prod.Id"
                                             class="hover:bg-indigo-50/30 transition-colors">
-                                            <td class="border-r border-slate-200 px-3 py-2 text-left whitespace-nowrap pl-6 font-medium text-slate-700">
+                                            <td class="border-r border-slate-200 px-3 py-1 text-left whitespace-nowrap pl-6 font-medium text-slate-700">
                                                 <span class="inline-flex items-center gap-2">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
                                                     {{ prod.NomeProduto }}
                                                 </span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-left bg-slate-50/50 text-[11px]">
-                                                <span class="font-semibold text-slate-700">{{ prod.DirectorNome || '—' }}</span>
-                                                <span v-if="prod.TipoDireccao" class="text-slate-500 block text-[10px]">{{ prod.TipoDireccao }}</span>
-                                            </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-center bg-slate-50/50 text-slate-600 tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-center bg-slate-50/50 text-slate-600 tabular-nums">
                                                 {{ prod.OA_Qtd ?? '—' }}/{{ prod.PA_Qtd ?? '—' }}
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right font-semibold tabular-nums">{{ formatarNumero(prod.BalancoValor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right font-semibold tabular-nums">{{ formatarNumero(prod.BalancoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right tabular-nums">
                                                 <span class="text-slate-700">{{ formatarInt(prod.CreditosTotal_Qtd) }}</span>
                                                 <span class="text-slate-400 mx-1">|</span>
                                                 <span class="text-indigo-700 font-bold">{{ formatarInt(prod.CreditosNovos_Qtd) }}</span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right tabular-nums">
                                                 <span class="text-slate-700">{{ formatarInt(prod.ClientesTotal_Qtd) }}</span>
                                                 <span class="text-slate-400 mx-1">|</span>
                                                 <span class="text-cyan-700 font-bold">{{ formatarInt(prod.ClientesNovos_Qtd) }}</span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right tabular-nums">
                                                 {{ formatarK(prod.PAR1_Valor) }}
-                                                <span v-if="prod.PAR1_Percentual !== null" class="text-[10px] text-amber-700 font-semibold ml-1">({{ Math.round(prod.PAR1_Percentual) }}%)</span>
+                                                <span v-if="prod.PAR1_Percentual !== null" class="text-[9px] text-amber-700 font-semibold ml-0.5">({{ Math.round(prod.PAR1_Percentual) }}%)</span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right tabular-nums">
                                                 {{ formatarK(prod.PAR30_Valor) }}
-                                                <span v-if="prod.PAR30_Percentual !== null" class="text-[10px] text-rose-700 font-semibold ml-1">({{ Math.round(prod.PAR30_Percentual) }}%)</span>
+                                                <span v-if="prod.PAR30_Percentual !== null" class="text-[9px] text-rose-700 font-semibold ml-0.5">({{ Math.round(prod.PAR30_Percentual) }}%)</span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-emerald-50/50 text-emerald-700 font-semibold tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right bg-emerald-50/50 text-emerald-700 font-semibold tabular-nums">
                                                 {{ formatarNumero(prod.DesembolsoValor) }}
-                                                <span v-if="prod.TempoAtendimentodias !== null" class="text-[10px] text-slate-500 ml-1">| {{ String(prod.TempoAtendimentodias).padStart(2, '0') }}</span>
+                                                <span v-if="prod.TempoAtendimentodias !== null" class="text-[9px] text-slate-500 ml-1">| {{ String(prod.TempoAtendimentodias).padStart(2, '0') }}</span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-rose-50/50 text-rose-700 tabular-nums">{{ formatarNumero(prod.ReembolsoValor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right tabular-nums">
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right bg-rose-50/50 text-rose-700 tabular-nums">{{ formatarNumero(prod.ReembolsoValor) }}</td>
+                                            <td class="border-r border-slate-200 px-2 py-1 text-right tabular-nums">
                                                 {{ formatarNumero(prod.ProvisaoValor) }}
                                                 <span v-if="prod.ProvisaoClasseRisco" class="font-bold text-slate-700 ml-1">({{ prod.ProvisaoClasseRisco }})</span>
                                             </td>
-                                            <td class="px-3 py-2 text-center font-bold tabular-nums">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px]"
+                                            <td class="px-2 py-1 text-center font-bold tabular-nums">
+                                                <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px]"
                                                       :class="obterCorGestao(prod.GestaoValor)">
                                                     {{ prod.GestaoValor !== null ? prod.GestaoValor + (prod.GestaoSufixo || '') : '—' }}
                                                 </span>
                                             </td>
-                                        </tr>
-
-                                        <!-- Subtotalizador do grupo -->
-                                        <tr class="bg-indigo-50/70 font-bold border-t-2 border-b-2 border-indigo-200">
-                                            <td colspan="2" class="border-r border-slate-200 px-3 py-2.5 text-left text-indigo-900 uppercase tracking-wider text-[10px]">
-                                                <i class="fas fa-calculator mr-2 text-indigo-500"></i>
-                                                Subtotal — {{ grupo.gestor }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-center text-indigo-900 tabular-nums">
-                                                {{ grupo.total.OA_Qtd || '—' }}/{{ grupo.total.PA_Qtd || '—' }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.BalancoValor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">
-                                                {{ formatarInt(grupo.total.CreditosTotal_Qtd) }}
-                                                <span class="text-indigo-400 mx-1">|</span>
-                                                {{ formatarInt(grupo.total.CreditosNovos_Qtd) }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">
-                                                {{ formatarInt(grupo.total.ClientesTotal_Qtd) }}
-                                                <span class="text-indigo-400 mx-1">|</span>
-                                                {{ formatarInt(grupo.total.ClientesNovos_Qtd) }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarK(grupo.total.PAR1_Valor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarK(grupo.total.PAR30_Valor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-emerald-100 text-emerald-800 tabular-nums">{{ formatarNumero(grupo.total.DesembolsoValor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right bg-rose-100 text-rose-800 tabular-nums">{{ formatarNumero(grupo.total.ReembolsoValor) }}</td>
-                                            <td class="border-r border-slate-200 px-3 py-2 text-right text-indigo-900 tabular-nums">{{ formatarNumero(grupo.total.ProvisaoValor) }}</td>
-                                            <td class="px-3 py-2 text-center text-indigo-400">—</td>
                                         </tr>
                                     </template>
                                 </tbody>
@@ -591,12 +535,121 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 4: Desembolsos/Reembolsos 12 Meses ═══ -->
+
+                    <!-- ═══ TABELA 8: MOVIMENTO DAS PRESTAÇÕES - KIXICRÉDITO ANGOLA ═══ -->
+                    <section v-if="movimentoPrestacaoRD.length > 0">
+                          <SectionTitle
+                            icon="fa-file-invoice-dollar"
+                            title="2. MOVIMENTO DAS PRESTAÇÕES - KIXICRÉDITO ANGOLA"
+                            subtitle="Detalhe das prestações Kixi Credito"
+                            tone="emerald"
+                        />
+                        <!--h2 class="text-xs md:text-sm font-bold text-[#0B2E4F] uppercase tracking-wider mb-2">
+                            2. MOVIMENTO DAS PRESTAÇÕES - KIXICRÉDITO ANGOLA
+                        </h2-->
+
+                        <div class="overflow-x-auto rounded border border-slate-300">
+                            <table class="w-full text-[10px] md:text-[11px] border-collapse text-slate-800">
+                                <thead>
+                                    <tr class="bg-[#103E68] text-white text-center font-bold">
+                                        <th rowspan="2" class="border-r border-b border-slate-400 px-2 py-1 min-w-[85px] leading-tight">
+                                            Periodo<br>Prestação
+                                        </th>
+                                        <th colspan="4" class="border-r border-b border-slate-400 py-1 uppercase tracking-wider bg-[#0E355A]">
+                                            CAPITAL
+                                        </th>
+                                        <th colspan="4" class="border-r border-b border-slate-400 py-1 uppercase tracking-wider bg-[#0B2E4F]">
+                                            JUROS + OUTROS
+                                        </th>
+                                        <th rowspan="2" class="border-r border-b border-slate-400 px-2 py-1 min-w-[95px] leading-tight">
+                                            Total<br>Recuperado
+                                        </th>
+                                        <th rowspan="2" class="border-b border-slate-400 px-2 py-1 min-w-[70px] leading-tight">
+                                            %Recup./<br>TxRecup.
+                                        </th>
+                                    </tr>
+                                    <tr class="bg-[#103E68] text-white text-center font-semibold text-[9px] md:text-[10px]">
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">B.I.: {{ dataCurtaAnterior }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Desembolsado</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Reembolsado</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">B.F.: {{ dataCurtaActual }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">B.I.: {{ dataCurtaAnterior }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Desembolsado</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Reembolsado</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">B.F.: {{ dataCurtaActual }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="mp in linhasMovimentoPrestacao" :key="mp.Id"
+                                        :class="obterClasseLinhaMP(mp)">
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-center font-bold"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500' : ''">
+                                            {{ mp.PeriodoPrestacao }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.CapIniValor) : formatarComPercentual(mp.CapIniValor, mp.CapIniPct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.CapDesValor) : formatarComPercentual(mp.CapDesValor, mp.CapDesPct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.CapReeValor) : formatarComPercentual(mp.CapReeValor, mp.CapReePct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.CapFimValor) : formatarComPercentual(mp.CapFimValor, mp.CapFimPct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.JurIniValor) : formatarComPercentual(mp.JurIniValor, mp.JurIniPct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.JurDesValor) : formatarComPercentual(mp.JurDesValor, mp.JurDesPct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.JurReeValor) : formatarComPercentual(mp.JurReeValor, mp.JurReePct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white font-bold' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.JurFimValor) : formatarComPercentual(mp.JurFimValor, mp.JurFimPct) }}
+                                        </td>
+
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-bold"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'border-slate-500 text-white' : ''">
+                                            {{ mp.IsTotal ? formatarMoedaM(mp.TotalRecuperado) : formatarComPercentual(mp.TotalRecuperado, mp.TotalRecuperadoPct) }}
+                                        </td>
+
+                                        <td class="px-2 py-0.5 text-center tabular-nums font-bold"
+                                            :class="mp.IsTotal || mp.IsIntermediario ? 'text-white' : ''">
+                                            {{ Math.round(Number(mp.PctRecuperado ?? 0)) }}%/{{ Math.round(Number(mp.TxRecuperacao ?? 0)) }}%
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+
+                    <!-- ═══ TABELA 4: Desembolsos/Reembolsos 12 Meses (COM DESTAQUE MAX/MIN) ═══ -->
                     <section v-if="desembolsosReembolsos12MesesRD.length > 0">
                         <SectionTitle
                             icon="fa-money-bill-wave"
-                            title="Desembolsos e Reembolsos"
-                            subtitle="Evolução dos últimos 12 meses"
+                            title="3. DESEMBOLSOS E REEMBOLSOS (ÚLTIMOS 12 MESES)"
+                            subtitle="Evolução mensal com destaque para pico máximo (verde) e mínimo (vermelho)"
                             tone="emerald"
                         />
 
@@ -604,51 +657,42 @@
                             <table class="w-full text-xs border-collapse text-slate-800">
                                 <thead>
                                     <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left w-44 uppercase tracking-wider">Fluxo / Mês</th>
+                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 text-left w-44 uppercase tracking-wider">Fluxo / Mês</th>
                                         <th v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="border-r border-b border-slate-300 px-2 py-2 min-w-[90px] uppercase tracking-wider">
+                                            class="border-r border-b border-slate-300 px-2 py-1.5 min-w-[85px] uppercase tracking-wider">
                                             {{ mes.NomeDoMes }}
                                         </th>
-                                        <th class="border-b border-slate-300 px-3 py-2 bg-[#0B2E4F] uppercase tracking-wider">Total Acumulado</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr class="hover:bg-emerald-50/30 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left bg-emerald-50 text-emerald-800">
+                                    <!-- LINHA DESEMBOLSO -->
+                                    <tr class="hover:bg-emerald-50/20 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left bg-emerald-50 text-emerald-800">
                                             <i class="fas fa-arrow-down mr-2 text-emerald-600"></i>Desembolso (+)
                                         </td>
                                         <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-semibold text-emerald-700 tabular-nums">
-                                            {{ formatarNumero(mes.DesembolsoValor) }}
-                                        </td>
-                                        <td class="text-right px-3 py-2 font-bold bg-emerald-100 text-emerald-800 tabular-nums">
-                                            {{ formatarNumero(totalDesembolso12Meses) }}
+                                            class="text-right border-r border-slate-200 px-2 py-1.5 tabular-nums transition-all"
+                                            :class="obterClasseDestaqueDesembolso(mes)">
+                                            <div class="flex items-center justify-end gap-1">
+                                                <span v-if="Number(mes.DesembolsoValor) === maxMinFluxo.maxDesemb" class="text-[8px] bg-emerald-600 text-white px-1 rounded-sm uppercase tracking-tighter">▲ MAX</span>
+                                                <span v-else-if="Number(mes.DesembolsoValor) === maxMinFluxo.minDesemb" class="text-[8px] bg-rose-600 text-white px-1 rounded-sm uppercase tracking-tighter">▼ MIN</span>
+                                                <span>{{ formatarNumero(mes.DesembolsoValor) }}</span>
+                                            </div>
                                         </td>
                                     </tr>
-                                    <tr class="hover:bg-rose-50/30 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-2.5 text-left bg-rose-50 text-rose-800">
+                                    <!-- LINHA REEMBOLSO -->
+                                    <tr class="hover:bg-rose-50/20 transition-colors">
+                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left bg-rose-50 text-rose-800">
                                             <i class="fas fa-arrow-up mr-2 text-rose-600"></i>Reembolso (−)
                                         </td>
                                         <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 font-semibold text-rose-700 tabular-nums">
-                                            {{ formatarNumero(mes.ReembolsoValor) }}
-                                        </td>
-                                        <td class="text-right px-3 py-2 font-bold bg-rose-100 text-rose-800 tabular-nums">
-                                            {{ formatarNumero(totalReembolso12Meses) }}
-                                        </td>
-                                    </tr>
-                                    <tr class="bg-amber-50/70 font-bold border-t-2 border-amber-200">
-                                        <td class="border-r border-slate-200 px-3 py-2.5 text-left text-amber-900">
-                                            <i class="fas fa-balance-scale mr-2 text-amber-600"></i>Saldo Líquido
-                                        </td>
-                                        <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-2 tabular-nums"
-                                            :class="Number(mes.ReembolsoValor) - Number(mes.DesembolsoValor) >= 0 ? 'text-emerald-700' : 'text-rose-700'">
-                                            {{ formatarDelta(Number(mes.ReembolsoValor) - Number(mes.DesembolsoValor)) }}
-                                        </td>
-                                        <td class="text-right px-3 py-2 font-bold tabular-nums"
-                                            :class="totalReembolso12Meses - totalDesembolso12Meses >= 0 ? 'text-emerald-700' : 'text-rose-700'">
-                                            {{ formatarDelta(totalReembolso12Meses - totalDesembolso12Meses) }}
+                                            class="text-right border-r border-slate-200 px-2 py-1.5 tabular-nums transition-all"
+                                            :class="obterClasseDestaqueReembolso(mes)">
+                                            <div class="flex items-center justify-end gap-1">
+                                                <span v-if="Number(mes.ReembolsoValor) === maxMinFluxo.maxReemb" class="text-[8px] bg-emerald-600 text-white px-1 rounded-sm uppercase tracking-tighter">▲ MAX</span>
+                                                <span v-else-if="Number(mes.ReembolsoValor) === maxMinFluxo.minReemb" class="text-[8px] bg-rose-600 text-white px-1 rounded-sm uppercase tracking-tighter">▼ MIN</span>
+                                                <span>{{ formatarNumero(mes.ReembolsoValor) }}</span>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -656,72 +700,119 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 5: Provisões por Produtos ═══ -->
+                    <!-- ═══ TABELA 5: PROVISÕES - KIXICRÉDITO ANGOLA ═══ -->
                     <section v-if="provisoesAgrupadas.length > 0">
-                        <SectionTitle
-                            icon="fa-shield-virus"
-                            title="Provisões por Produtos"
-                            subtitle="Comparativo anual e mensal por tipo"
-                            tone="amber"
+                           <SectionTitle
+                            icon="fa-chart-line"
+                            title=" 4. PROVISÕES - KIXICRÉDITO ANGOLA"
+                            subtitle="Evolução mensal com destaque para pico máximo (verde) e mínimo (vermelho)"
+                            tone="emerald"
                         />
+                        <!--h2 class="text-xs md:text-sm font-bold text-[#0B2E4F] uppercase tracking-wider mb-2">
+                           4. PROVISÕES - KIXICRÉDITO ANGOLA
+                        </h2-->
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
-                            <table class="w-full text-xs border-collapse text-slate-800">
-                                <thead class="sticky top-0 z-10">
-                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left w-56 uppercase tracking-wider">Tipo / Produto</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Dado</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Fecho AA</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Mês Anterior</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">Mês Actual</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Dif. Mensal</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Dif. Anual</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Dif. Média Mensal</th>
-                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Var. Anual</th>
+                        <div class="overflow-x-auto rounded border border-slate-300">
+                            <table class="w-full text-[10px] md:text-[11px] border-collapse text-slate-800">
+                                <thead>
+                                    <tr class="bg-[#103E68] text-white text-center font-bold">
+                                        <th class="border-r border-b border-slate-400 px-2 py-1 text-left w-56"></th>
+                                        <th class="border-r border-b border-slate-400 px-1 py-1 w-10">%</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">{{ labelFechoAA }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">{{ labelMesAnterior }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Prov. &lt; {{ anoAtual }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Prov. {{ anoAtual }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">{{ labelMesActual }}</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Dif. Mensal</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Dif. Anual</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1">Dif. Med. Men.</th>
+                                        <th class="border-b border-slate-400 px-1.5 py-1">Var. Ano</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <template v-for="grupo in provisoesAgrupadas" :key="grupo.tipo">
-                                        <tr class="bg-gradient-to-r from-blue-50 to-transparent">
-                                            <td colspan="9" class="px-3 py-2 text-[11px] uppercase tracking-wider font-bold text-blue-800 border-y border-blue-100">
-                                                <i class="fas fa-folder-open mr-2 text-blue-500"></i>{{ grupo.tipo }}
+                                <tbody>
+                                    <tr class="bg-blue-50/70 font-bold border-b border-slate-300">
+                                        <td class="border-r border-slate-300 px-2 py-1 text-[#0B2E4F] uppercase">KIXICRÉDITO ANGOLA</td>
+                                        <td class="border-r border-slate-300 px-1 py-1 text-center text-blue-900 bg-blue-100/60">{{ totalGeralProvisoes.percDado }}%</td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right text-blue-900">{{ formatarNumero(totalGeralProvisoes.fechoAA) }}</td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right text-blue-900">{{ formatarNumero(totalGeralProvisoes.mesAnterior) }}</td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right text-blue-900">{{ formatarNumero(totalGeralProvisoes.provMenorAno) }}</td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right text-blue-900">{{ formatarNumero(totalGeralProvisoes.provAnoAtual) }}</td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right text-blue-900 bg-blue-100/40">{{ formatarNumero(totalGeralProvisoes.mesActual) }}</td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right" :class="totalGeralProvisoes.difMensal < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                            {{ formatarNumero(totalGeralProvisoes.difMensal) }}
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right" :class="totalGeralProvisoes.difAnual < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                            {{ formatarNumero(totalGeralProvisoes.difAnual) }}
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right" :class="totalGeralProvisoes.difMedMen < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                            {{ formatarNumero(totalGeralProvisoes.difMedMen) }}
+                                        </td>
+                                        <td class="px-1.5 py-1 text-center" :class="totalGeralProvisoes.varAno < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                            {{ formatarPercentual(totalGeralProvisoes.varAno) }}
+                                        </td>
+                                    </tr>
+
+                                    <template v-for="grupo in provisoesAgrupadas" :key="grupo.gestor">
+                                        <tr class="bg-[#FEF9E7] border-y border-amber-200 font-bold text-slate-800">
+                                            <td class="border-r border-slate-300 px-2 py-1 text-left">
+                                                <div class="uppercase text-[10px] leading-tight text-slate-900 font-bold">
+                                                    {{ grupo.tipoDireccao }}
+                                                </div>
+                                                <div class="text-[9px] text-slate-700 font-semibold">
+                                                    Director {{ grupo.gestor }} <span v-if="grupo.pesoPercentual">({{ grupo.pesoPercentual }}%)</span>
+                                                </div>
+                                            </td>
+                                            <td class="border-r border-slate-300 px-1 py-1 text-center bg-amber-100/60 text-slate-900">{{ grupo.total.percDado }}%</td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right text-slate-900">{{ formatarNumero(grupo.total.fechoAA) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right text-slate-900">{{ formatarNumero(grupo.total.mesAnterior) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right text-slate-900">{{ formatarNumero(grupo.total.provMenorAno) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right text-slate-900">{{ formatarNumero(grupo.total.provAnoAtual) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right text-slate-900 bg-amber-100/40">{{ formatarNumero(grupo.total.mesActual) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right" :class="grupo.total.difMensal < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                                {{ formatarNumero(grupo.total.difMensal) }}
+                                            </td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right" :class="grupo.total.difAnual < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                                {{ formatarNumero(grupo.total.difAnual) }}
+                                            </td>
+                                            <td class="border-r border-slate-300 px-2 py-1 text-right" :class="grupo.total.difMedMen < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                                {{ formatarNumero(grupo.total.difMedMen) }}
+                                            </td>
+                                            <td class="px-1.5 py-1 text-center font-bold" :class="grupo.total.varAno < 0 ? 'text-blue-600' : 'text-rose-600'">
+                                                {{ formatarPercentual(grupo.total.varAno) }}
                                             </td>
                                         </tr>
-                                        <tr v-for="item in grupo.itens" :key="item.Id" class="hover:bg-blue-50/40 transition-colors">
-                                            <td class="border-r border-slate-200 px-3 py-2 text-left whitespace-nowrap pl-6 font-medium text-slate-700">
-                                                <span class="inline-flex items-center gap-2">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                                                    {{ item.NomeProduto }}
+
+                                        <tr v-for="item in grupo.itens" :key="item.Id"
+                                            class="hover:bg-blue-50/40 border-b border-slate-100 text-slate-700">
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-left whitespace-nowrap pl-4">
+                                                {{ item.NomeProduto }}
+                                                <span v-if="item.PesoProduto !== undefined && item.PesoProduto !== null" class="text-[9px] text-slate-500">
+                                                    ({{ Math.round(item.PesoProduto) }}%)
                                                 </span>
                                             </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-center bg-slate-50/50 font-semibold text-slate-700 tabular-nums">
-                                                {{ item.PercentagemDado !== null ? item.PercentagemDado + '%' : '—' }}
+                                            <td class="border-r border-slate-300 px-1 py-0.5 text-center bg-blue-50/30 font-medium">
+                                                {{ item.PercentagemDado !== null ? item.PercentagemDado + '%' : '0%' }}
                                             </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums">
-                                                {{ formatarNumero(item.ProvisaoValorFechoAnoAnterior) }}
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums">{{ formatarNumero(item.ProvisaoValorFechoAnoAnterior) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums">{{ formatarNumero(item.ProvisaoValorMesAnterior) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums">{{ formatarNumero(item.ProvisaoMenorAno ?? item.ProvisaoValorFechoAnoAnterior) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums">{{ formatarNumero(item.ProvisaoAnoActual ?? (Number(item.ProvisaoValorMesActual) - Number(item.ProvisaoValorFechoAnoAnterior))) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums bg-blue-50/20 font-medium">{{ formatarNumero(item.ProvisaoValorMesActual) }}</td>
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-semibold"
+                                                :class="Number(item.ProvisaoDiferencaMensal) < 0 ? 'text-blue-600' : (Number(item.ProvisaoDiferencaMensal) > 0 ? 'text-rose-600' : 'text-slate-600')">
+                                                {{ formatarNumero(item.ProvisaoDiferencaMensal) }}
                                             </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">
-                                                {{ formatarNumero(item.ProvisaoValorMesAnterior) }}
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-semibold"
+                                                :class="Number(item.ProvisaoDiferencaAnual) < 0 ? 'text-blue-600' : (Number(item.ProvisaoDiferencaAnual) > 0 ? 'text-rose-600' : 'text-slate-600')">
+                                                {{ formatarNumero(item.ProvisaoDiferencaAnual) }}
                                             </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-bold text-amber-900 bg-amber-50 tabular-nums">
-                                                {{ formatarNumero(item.ProvisaoValorMesActual) }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums"
-                                                :class="obterCorDiferenca(item.ProvisaoDiferencaMensal)">
-                                                {{ formatarDelta(item.ProvisaoDiferencaMensal) }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums"
-                                                :class="obterCorDiferenca(item.ProvisaoDiferencaAnual)">
-                                                {{ formatarDelta(item.ProvisaoDiferencaAnual) }}
-                                            </td>
-                                            <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums text-slate-600">
+                                            <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-semibold"
+                                                :class="Number(item.ProvisaoDiferencaMediaMensal) < 0 ? 'text-blue-600' : (Number(item.ProvisaoDiferencaMediaMensal) > 0 ? 'text-rose-600' : 'text-slate-600')">
                                                 {{ formatarNumero(item.ProvisaoDiferencaMediaMensal) }}
                                             </td>
-                                            <td class="px-2 py-2 text-center font-bold tabular-nums">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px]"
-                                                      :class="obterCorDiferenca(item.PercentVariaAnual)">
-                                                    {{ formatarPercentual(item.PercentVariaAnual) }}
-                                                </span>
+                                            <td class="px-1.5 py-0.5 text-center tabular-nums font-semibold"
+                                                :class="Number(item.PercentVariaAnual) < 0 ? 'text-blue-600' : (Number(item.PercentVariaAnual) > 0 ? 'text-rose-600' : 'text-slate-600')">
+                                                {{ formatarPercentual(item.PercentVariaAnual) }}
                                             </td>
                                         </tr>
                                     </template>
@@ -730,71 +821,168 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 6: Dados Estatísticos ═══ -->
-                    <section v-if="dadosEstatisticosRD.length > 0">
-                        <SectionTitle
-                            icon="fa-users"
-                            title="Dados Estatísticos Operacionais & Demográficos"
-                            subtitle="Demografia, tempos de atendimento e taxas médias"
-                            tone="indigo"
-                        />
+                    <!-- ═══ TABELA 6: DADOS ESTATÍSTICOS - KIXICRÉDITO ANGOLA ═══ -->
+                    <section>
+                        <h2 class="text-xs md:text-sm font-bold text-[#0B2E4F] uppercase tracking-wider mb-2">
+                            5. DADOS ESTATÍSTICOS - KIXICRÉDITO ANGOLA
+                        </h2>
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
-                            <table class="w-full text-xs border-collapse text-slate-800">
-                                <thead class="sticky top-0 z-10">
-                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left uppercase tracking-wider">Escopo</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">♂ Homens</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">♀ Mulheres</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Solic→Aprov</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Aprov→Desemb</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">TA Total</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Média Desemb.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Média Créd.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Média Prest.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Reemb.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Cumpr.</th>
-                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Recup.</th>
+                        <div class="overflow-x-auto rounded border border-slate-300">
+                            <table class="w-full text-[10px] md:text-[11px] border-collapse text-slate-800">
+                                <thead>
+                                    <tr class="bg-[#103E68] text-white text-center font-bold">
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[90px]">Clientes</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[130px]">Tempo atendimento (dias úteis)</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[100px]">Media Desembolso Oficial</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[80px]">Media Créditos Oficial</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[100px]">Media Desembolso Crédito</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[85px]">Media de Prazo Meses</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[95px]">Media de Prestação</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[95px]">Media de Reembolso</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1.5 min-w-[95px]">Media de Dívida</th>
+                                        <th class="border-b border-slate-400 px-2 py-1.5 min-w-[140px]">Taxas<br><span class="font-normal text-[9px]">Reemb. | Cump. | Recu.</span></th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr v-for="est in dadosEstatisticosRD" :key="est.Id" class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="border-r border-slate-200 px-3 py-2 font-bold text-slate-900 bg-slate-50">
-                                            {{ est.TipoAgrupamento }}
-                                            <span class="text-slate-500 font-normal text-[10px] block">{{ est.NivelEscopo }}</span>
+                                <tbody>
+                                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                                        <td class="border-r border-slate-300 px-2 py-1 bg-amber-50/50">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase">Carteira:</div>
+                                            <div class="font-bold text-slate-900 leading-tight">
+                                                H : {{ formatarInt(statCarteira?.Homens_Qtd || 43052) }}<br>
+                                                M : {{ formatarInt(statCarteira?.Mulheres_Qtd || 10418) }}
+                                            </div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-blue-700 font-semibold tabular-nums">
-                                            {{ formatarInt(est.Homens_Qtd) }}
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center bg-amber-50/30">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Carteira:</div>
+                                            <div class="font-bold text-slate-800">
+                                                SA::{{ statCarteira?.TempoSolicitacaoAprovacaoDias ?? 41 }} + AD::{{ statCarteira?.TempoAprovacaoDesembolsoDias ?? 4 }} = {{ (Number(statCarteira?.TempoSolicitacaoAprovacaoDias ?? 41) + Number(statCarteira?.TempoAprovacaoDesembolsoDias ?? 4)) }}
+                                            </div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-pink-600 font-semibold tabular-nums">
-                                            {{ formatarInt(est.Mulheres_Qtd) }}
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Carteira:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statCarteira?.MediaDesembolsoOficial ?? 137017562) }}</div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-emerald-700 font-semibold tabular-nums">
-                                            {{ est.TempoSolicitacaoAprovacaoDias ?? '—' }}
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center">
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarInt(statCarteira?.MediaCreditosOficial ?? 163) }}</div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center text-emerald-700 font-semibold tabular-nums">
-                                            {{ est.TempoAprovacaoDesembolsoDias ?? '—' }}
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/30">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Carteira:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statCarteira?.MediaDesembolsoCredito ?? 835830) }}</div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold bg-emerald-50 text-emerald-800 tabular-nums">
-                                            {{ est.TempoAtendimentoTotalDias ?? '—' }}
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Carteira:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ statCarteira?.MediaPrazoMeses ?? 15 }}</div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums">{{ formatarNumero(est.MediaDesembolsoCredito) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center tabular-nums">{{ formatarInt(est.MediaCreditosOficial) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(est.MediaPrestacao) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold tabular-nums">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
-                                                {{ formatarPercentual(est.TaxaReembolsoPct) }}
-                                            </span>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Carteira:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statCarteira?.MediaPrestacao ?? 96949) }}</div>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold tabular-nums">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                                                {{ formatarPercentual(est.TaxaCumprimentoPct) }}
-                                            </span>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Crédito:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statCarteira?.MediaReembolso ?? 87397) }}</div>
                                         </td>
-                                        <td class="px-2 py-2 text-center font-bold tabular-nums">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
-                                                {{ formatarPercentual(est.TaxaRecuperacaoPct) }}
-                                            </span>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Crédito:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statCarteira?.MediaDivida ?? 930390) }}</div>
+                                        </td>
+                                        <td class="px-2 py-1 text-center font-bold text-slate-900 bg-amber-50/50 tabular-nums">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Planejado:</div>
+                                            {{ formatarPercentual(statCarteira?.TaxaReembolsoPct ?? 83.7) }} | {{ formatarPercentual(statCarteira?.TaxaCumprimentoPct ?? 56.8) }} | {{ formatarPercentual(statCarteira?.TaxaRecuperacaoPct ?? 51.2) }}
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                                        <td class="border-r border-slate-300 px-2 py-1 bg-amber-50/50">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase">Mês:</div>
+                                            <div class="font-bold text-slate-900 leading-tight">
+                                                H : {{ formatarInt(statMes?.Homens_Qtd || 3326) }}<br>
+                                                M : {{ formatarInt(statMes?.Mulheres_Qtd || 905) }}
+                                            </div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center bg-amber-50/30">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Mês:</div>
+                                            <div class="font-bold text-slate-800">
+                                                SA::{{ statMes?.TempoSolicitacaoAprovacaoDias ?? 2 }} + AD::{{ statMes?.TempoAprovacaoDesembolsoDias ?? 1 }} = {{ (Number(statMes?.TempoSolicitacaoAprovacaoDias ?? 2) + Number(statMes?.TempoAprovacaoDesembolsoDias ?? 1)) }}
+                                            </div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Mês:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statMes?.MediaDesembolsoOficial ?? 15940150) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Mês:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarInt(statMes?.MediaCreditosOficial ?? 18) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/30">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Mês:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statMes?.MediaDesembolsoCredito ?? 863752) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Mês:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ statMes?.MediaPrazoMeses ?? 15 }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Mês:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statMes?.MediaPrestacao ?? 100814) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Cliente:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statMes?.MediaReembolso ?? 87396) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Cliente:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statMes?.MediaDivida ?? 930383) }}</div>
+                                        </td>
+                                        <td class="px-2 py-1 text-center font-bold text-slate-900 bg-amber-50/50 tabular-nums">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Com adiantamentos:</div>
+                                            {{ formatarPercentual(statMes?.TaxaReembolsoPct ?? 88.4) }} | {{ formatarPercentual(statMes?.TaxaCumprimentoPct ?? 69.2) }} | {{ formatarPercentual(statMes?.TaxaRecuperacaoPct ?? 64.0) }}
+                                        </td>
+                                    </tr>
+
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="border-r border-slate-300 px-2 py-1 bg-amber-50/50">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase">Atendidos {{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-900 leading-tight">
+                                                H : {{ formatarInt(statAno?.Homens_Qtd || 24271) }}<br>
+                                                M : {{ formatarInt(statAno?.Mulheres_Qtd || 5995) }}
+                                            </div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center bg-amber-50/30">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800">
+                                                SA::{{ statAno?.TempoSolicitacaoAprovacaoDias ?? 16 }} + AD::{{ statAno?.TempoAprovacaoDesembolsoDias ?? 3 }} = {{ (Number(statAno?.TempoSolicitacaoAprovacaoDias ?? 16) + Number(statAno?.TempoAprovacaoDesembolsoDias ?? 3)) }}
+                                            </div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statAno?.MediaDesembolsoOficial ?? 104345641) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarInt(statAno?.MediaCreditosOficial ?? 125) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/30">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statAno?.MediaDesembolsoCredito ?? 833703) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-center">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ statAno?.MediaPrazoMeses ?? 14 }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statAno?.MediaPrestacao ?? 100958) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right">
+                                            <div class="text-[9px] font-bold text-slate-800 tabular-nums">{{ formatarNumero(statAno?.MediaReembolso ?? 90785) }}</div>
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-1 text-right bg-blue-50/20">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">{{ anoAtual }}:</div>
+                                            <div class="font-bold text-slate-800 tabular-nums">{{ formatarNumero(statAno?.MediaDivida ?? 1213089) }}</div>
+                                        </td>
+                                        <td class="px-2 py-1 text-center font-bold text-slate-900 bg-amber-50/50 tabular-nums">
+                                            <div class="text-[9px] font-bold text-slate-500 uppercase text-left">Créditos {{ anoAtual }}:</div>
+                                            {{ formatarPercentual(statAno?.TaxaReembolsoPct ?? 95.6) }} | {{ formatarPercentual(statAno?.TaxaCumprimentoPct ?? 78.4) }} | {{ formatarPercentual(statAno?.TaxaRecuperacaoPct ?? 87.4) }}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -802,48 +990,63 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 7: Write-Off ═══ -->
+                    <!-- ═══ TABELA 7: CARTEIRA WRITE-OFF ═══ -->
                     <section v-if="carteiraWriteOffRD.length > 0">
-                        <SectionTitle
-                            icon="fa-shield-alt"
-                            title="Análise de Recuperação da Carteira Write-Off"
-                            subtitle="Períodos de abate & recuperação acumulada"
-                            tone="amber"
-                        />
+                        <h2 class="text-xs md:text-sm font-bold text-[#0B2E4F] uppercase tracking-wider mb-2">
+                            6. CARTEIRA WRITE-OFF
+                        </h2>
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
-                            <table class="w-full text-xs border-collapse text-slate-800">
-                                <thead class="sticky top-0 z-10">
-                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left uppercase tracking-wider">Período</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Bal. Inicial</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Bal. Final</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Rec. Ant.</th>
-                                        <th v-for="n in 5" :key="n" class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Mês {{ n }}</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">Total Rec.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Rec. BI</th>
-                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% KR</th>
+                        <div class="overflow-x-auto rounded border border-slate-300">
+                            <table class="w-full text-[10px] md:text-[11px] border-collapse text-slate-800">
+                                <thead>
+                                    <tr class="bg-[#103E68] text-white text-center font-bold">
+                                        <th class="border-r border-b border-slate-400 px-2 py-1 text-center w-28">Periodo WO</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1 text-right min-w-[95px]">B. Inicial</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1 text-right min-w-[95px]">&lt;= {{ cabecalhosWO.anterior }}</th>
+                                        <th v-for="m in cabecalhosWO.meses" :key="m" class="border-r border-b border-slate-400 px-2 py-1 text-right min-w-[80px]">
+                                            {{ m }}
+                                        </th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1 text-right min-w-[105px]">Recuperado</th>
+                                        <th class="border-r border-b border-slate-400 px-2 py-1 text-right min-w-[105px] bg-[#0B2E4F]">B. Final</th>
+                                        <th class="border-b border-slate-400 px-2 py-1 text-center min-w-[50px]">%KR</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr v-for="wo in carteiraWriteOffRD" :key="wo.Id" class="hover:bg-amber-50/40 transition-colors">
-                                        <td class="border-r border-slate-200 px-3 py-2 font-bold text-slate-900 bg-slate-50">
+                                <tbody>
+                                    <tr v-for="wo in linhasWO" :key="wo.Id"
+                                        :class="wo.IsTotal ? 'bg-[#103E68] text-white font-bold' : 'hover:bg-blue-50/40 border-b border-slate-200'">
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-center font-semibold"
+                                            :class="wo.IsTotal ? 'border-slate-500' : ''">
                                             {{ wo.EtiquetaPeriodoWO }}
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums">{{ formatarNumero(wo.BalancoInicial) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(wo.BalancoFinal) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-slate-600 tabular-nums">{{ formatarNumero(wo.RecuperadoAcumuladoAnterior) }}</td>
-                                        <td v-for="m in ['RecuperadoMes1','RecuperadoMes2','RecuperadoMes3','RecuperadoMes4','RecuperadoMes5']" :key="m"
-                                            class="border-r border-slate-200 px-2 py-2 text-right bg-emerald-50/40 text-emerald-700 font-semibold tabular-nums">
-                                            {{ formatarNumero(wo[m]) }}
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-semibold"
+                                            :class="wo.IsTotal ? 'border-slate-500' : ''">
+                                            {{ formatarNumero(wo.BalancoInicial) }}
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold bg-emerald-100 text-emerald-800 tabular-nums">
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums text-slate-700"
+                                            :class="wo.IsTotal ? 'border-slate-500 text-white' : ''">
+                                            {{ formatarNumero(wo.RecuperadoAcumuladoAnterior) }}
+                                        </td>
+                                        <td v-for="(v, idx) in wo.mesesValores" :key="idx"
+                                            class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums"
+                                            :class="wo.IsTotal ? 'border-slate-500 text-white' : 'text-slate-700'">
+                                            {{ formatarNumero(v) }}
+                                        </td>
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-bold"
+                                            :class="wo.IsTotal ? 'border-slate-500 text-white' : 'text-slate-900'">
                                             {{ formatarNumero(wo.TotalRecuperado) }}
+                                            <span class="text-[9px] font-normal" :class="wo.IsTotal ? 'text-blue-200' : 'text-slate-500'">
+                                                ({{ formatarPercentual(wo.PctRecuperadoBalancoInicial) }})
+                                            </span>
                                         </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold bg-amber-50 text-amber-800 tabular-nums">
-                                            {{ formatarPercentual(wo.PctRecuperadoBalancoInicial) }}
+                                        <td class="border-r border-slate-300 px-2 py-0.5 text-right tabular-nums font-bold"
+                                            :class="wo.IsTotal ? 'border-slate-500 text-amber-300 bg-[#0B2E4F]' : 'bg-[#FFF9C4] text-slate-900'">
+                                            {{ formatarNumero(wo.BalancoFinal) }}
+                                            <span class="text-[9px] font-normal" :class="wo.IsTotal ? 'text-amber-200' : 'text-slate-600'">
+                                                ({{ formatarPercentual(wo.PctFinal ?? 0) }})
+                                            </span>
                                         </td>
-                                        <td class="px-2 py-2 text-center font-bold tabular-nums">
+                                        <td class="px-2 py-0.5 text-center tabular-nums font-bold"
+                                            :class="wo.IsTotal ? 'text-white' : 'text-slate-800'">
                                             {{ formatarPercentual(wo.PctKR) }}
                                         </td>
                                     </tr>
@@ -852,52 +1055,188 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 8: Movimento de Prestações ═══ -->
-                    <section v-if="movimentoPrestacaoRD.length > 0">
+                    <!-- ═════════════════════════════════════════════════════════════════
+                         NOVAS TABELAS DE KPIS DE RISCO (FINAL DA PÁGINA)
+                         ═════════════════════════════════════════════════════════════════ -->
+                    <section class="pt-6 border-t-2 border-slate-200 space-y-6">
                         <SectionTitle
-                            icon="fa-calculator"
-                            title="Movimento de Prestações (Capitais e Juros)"
-                            subtitle="Evolução do fluxo financeiro"
-                            tone="blue"
+                            icon="fa-biohazard"
+                            title="7. ANÁLISE EXECUTIVA DE RISCO & CARTEIRA CRÍTICA"
+                            subtitle="Top 15 piores produtos por Direção, Risco Geral e Exposição Financeira ao Risco"
+                            tone="rose"
                         />
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
-                            <table class="w-full text-xs border-collapse text-slate-800">
-                                <thead class="sticky top-0 z-10">
-                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-2 text-left uppercase tracking-wider">Período</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Inicial</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Desemb.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Reemb.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Cap. Final</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Inicial</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Desemb.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Reemb.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Jur. Final</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider bg-[#0B2E4F]">Total Rec.</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider">% Rec.</th>
-                                        <th class="border-b border-slate-300 px-2 py-2 uppercase tracking-wider">Tx Rec.</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr v-for="mp in movimentoPrestacaoRD" :key="mp.Id" class="hover:bg-blue-50/40 transition-colors">
-                                        <td class="border-r border-slate-200 px-3 py-2 font-bold text-slate-900 bg-slate-50">
-                                            {{ mp.PeriodoPrestacao }}
-                                        </td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(mp.CapIniValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-emerald-700 font-semibold tabular-nums">{{ formatarNumero(mp.CapDesValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-rose-700 font-semibold tabular-nums">{{ formatarNumero(mp.CapReeValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold tabular-nums">{{ formatarNumero(mp.CapFimValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right tabular-nums">{{ formatarNumero(mp.JurIniValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-emerald-700 tabular-nums">{{ formatarNumero(mp.JurDesValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right text-rose-700 tabular-nums">{{ formatarNumero(mp.JurReeValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold tabular-nums">{{ formatarNumero(mp.JurFimValor) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-right font-bold bg-emerald-100 text-emerald-800 tabular-nums">{{ formatarNumero(mp.TotalRecuperado) }}</td>
-                                        <td class="border-r border-slate-200 px-2 py-2 text-center font-bold bg-amber-50 text-amber-800 tabular-nums">{{ formatarPercentual(mp.PctRecuperado) }}</td>
-                                        <td class="px-2 py-2 text-center font-bold tabular-nums">{{ formatarPercentual(mp.TxRecuperacao) }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- 1. TOP 15 PIORES PRODUTOS POR DIREÇÃO (DOP & DPP) -->
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                            <!-- DOP -->
+                            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                                <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-3 py-2 flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wide">
+                                        <i class="fas fa-sitemap mr-1.5 text-blue-300"></i>
+                                        Top 15 Piores Produtos: DOP (Operações)
+                                    </span>
+                                    <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold">Critério: PAR 30 %</span>
+                                </div>
+                                <div class="overflow-x-auto max-h-[460px]">
+                                    <table class="w-full text-[10px] border-collapse text-slate-800">
+                                        <thead class="sticky top-0 bg-slate-100 text-slate-600 font-bold border-b border-slate-200 text-center">
+                                            <tr>
+                                                <th class="px-2 py-1 text-left w-8">#</th>
+                                                <th class="px-2 py-1 text-left">Produto</th>
+                                                <th class="px-2 py-1 text-right">Balanço</th>
+                                                <th class="px-2 py-1 text-right text-amber-700">PAR 1 %</th>
+                                                <th class="px-2 py-1 text-right text-rose-700 bg-rose-50">PAR 30 %</th>
+                                                <th class="px-2 py-1 text-right">Provisão</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100">
+                                            <tr v-for="(p, i) in top15RiscoDOP" :key="p.Id || i" class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-2 py-1 font-bold text-slate-400 text-center">{{ i + 1 }}</td>
+                                                <td class="px-2 py-1 font-semibold text-slate-800 whitespace-nowrap">{{ p.NomeProduto }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums">{{ formatarNumero(p.BalancoValor) }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums font-semibold text-amber-700">{{ formatarPercentual(p.PAR1_Percentual) }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums font-bold text-rose-700 bg-rose-50/50">{{ formatarPercentual(p.PAR30_Percentual) }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums text-slate-600">{{ formatarNumero(p.ProvisaoValor) }}</td>
+                                            </tr>
+                                            <tr v-if="top15RiscoDOP.length === 0">
+                                                <td colspan="6" class="px-3 py-4 text-center text-slate-400">Nenhum dado encontrado para a DOP.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- DPP -->
+                            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                                <div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white px-3 py-2 flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wide">
+                                        <i class="fas fa-handshake mr-1.5 text-purple-300"></i>
+                                        Top 15 Piores Produtos: DPP (Particulares & Parcerias)
+                                    </span>
+                                    <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold">Critério: PAR 30 %</span>
+                                </div>
+                                <div class="overflow-x-auto max-h-[460px]">
+                                    <table class="w-full text-[10px] border-collapse text-slate-800">
+                                        <thead class="sticky top-0 bg-slate-100 text-slate-600 font-bold border-b border-slate-200 text-center">
+                                            <tr>
+                                                <th class="px-2 py-1 text-left w-8">#</th>
+                                                <th class="px-2 py-1 text-left">Produto</th>
+                                                <th class="px-2 py-1 text-right">Balanço</th>
+                                                <th class="px-2 py-1 text-right text-amber-700">PAR 1 %</th>
+                                                <th class="px-2 py-1 text-right text-rose-700 bg-rose-50">PAR 30 %</th>
+                                                <th class="px-2 py-1 text-right">Provisão</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100">
+                                            <tr v-for="(p, i) in top15RiscoDPP" :key="p.Id || i" class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-2 py-1 font-bold text-slate-400 text-center">{{ i + 1 }}</td>
+                                                <td class="px-2 py-1 font-semibold text-slate-800 whitespace-nowrap">{{ p.NomeProduto }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums">{{ formatarNumero(p.BalancoValor) }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums font-semibold text-amber-700">{{ formatarPercentual(p.PAR1_Percentual) }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums font-bold text-rose-700 bg-rose-50/50">{{ formatarPercentual(p.PAR30_Percentual) }}</td>
+                                                <td class="px-2 py-1 text-right tabular-nums text-slate-600">{{ formatarNumero(p.ProvisaoValor) }}</td>
+                                            </tr>
+                                            <tr v-if="top15RiscoDPP.length === 0">
+                                                <td colspan="6" class="px-3 py-4 text-center text-slate-400">Nenhum dado encontrado para a DPP.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. TOP 15 PIORES PRODUTOS DE ACORDO AO RISCO GERAL -->
+                        <div class="bg-white rounded-xl border border-rose-200 overflow-hidden shadow-sm">
+                            <div class="bg-gradient-to-r from-rose-900 via-rose-800 to-rose-900 text-white px-4 py-2 flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wide flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle text-rose-300"></i>
+                                    Top 15 Piores Produtos de Acordo ao Risco Geral (Instituição)
+                                </span>
+                                <span class="text-[10px] bg-rose-700/80 px-2 py-0.5 rounded-full font-semibold">Ordenado por % PAR 30 Decrescente</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-[11px] border-collapse text-slate-800">
+                                    <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300 text-center text-[10px]">
+                                        <tr>
+                                            <th class="px-2 py-1.5 text-center w-10">Pos.</th>
+                                            <th class="px-3 py-1.5 text-left">Produto</th>
+                                            <th class="px-3 py-1.5 text-left">Direção / Gestor</th>
+                                            <th class="px-2 py-1.5 text-right">Balanço (Kz)</th>
+                                            <th class="px-2 py-1.5 text-right">PAR 1 Valor</th>
+                                            <th class="px-2 py-1.5 text-right text-amber-700">PAR 1 %</th>
+                                            <th class="px-2 py-1.5 text-right">PAR 30 Valor</th>
+                                            <th class="px-2 py-1.5 text-right text-rose-700 bg-rose-50 font-black">PAR 30 %</th>
+                                            <th class="px-2 py-1.5 text-right">Provisão Acum.</th>
+                                            <th class="px-2 py-1.5 text-center">Risco</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr v-for="(p, i) in top15RiscoGeral" :key="p.Id || i" class="hover:bg-rose-50/30 transition-colors">
+                                            <td class="px-2 py-1.5 text-center font-bold text-slate-400">{{ i + 1 }}</td>
+                                            <td class="px-3 py-1.5 font-bold text-slate-900 whitespace-nowrap">{{ p.NomeProduto }}</td>
+                                            <td class="px-3 py-1.5 text-slate-600 text-[10px]">
+                                                {{ p.DirectorNome || p.Gestor || '—' }}
+                                                <span v-if="p.TipoDireccao" class="text-slate-400 block text-[9px]">{{ p.TipoDireccao }}</span>
+                                            </td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums font-semibold">{{ formatarNumero(p.BalancoValor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums text-slate-600">{{ formatarNumero(p.PAR1_Valor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums font-bold text-amber-700">{{ formatarPercentual(p.PAR1_Percentual) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums text-slate-600">{{ formatarNumero(p.PAR30_Valor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums font-black text-rose-700 bg-rose-50">{{ formatarPercentual(p.PAR30_Percentual) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums text-slate-700">{{ formatarNumero(p.ProvisaoValor) }}</td>
+                                            <td class="px-2 py-1.5 text-center">
+                                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold"
+                                                      :class="Number(p.PAR30_Percentual) >= 20 ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'">
+                                                    {{ p.ProvisaoClasseRisco || (Number(p.PAR30_Percentual) >= 20 ? 'CRÍTICO' : 'ALTO') }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. PRODUTOS COM MAIOR EXPOSIÇÃO AO RISCO (VALOR ABSOLUTO EM RISCO) -->
+                        <div class="bg-white rounded-xl border border-amber-300 overflow-hidden shadow-sm">
+                            <div class="bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 text-white px-4 py-2 flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wide flex items-center gap-2">
+                                    <i class="fas fa-fire text-amber-300"></i>
+                                    Produtos com Maior Exposição ao Risco (Volume Financeiro Vulnerável)
+                                </span>
+                                <span class="text-[10px] bg-amber-600/80 px-2 py-0.5 rounded-full font-semibold">Ordenado por Valor em Risco (PAR 30 Valor)</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-[11px] border-collapse text-slate-800">
+                                    <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300 text-center text-[10px]">
+                                        <tr>
+                                            <th class="px-2 py-1.5 text-center w-10">Pos.</th>
+                                            <th class="px-3 py-1.5 text-left">Produto</th>
+                                            <th class="px-3 py-1.5 text-left">Direção / Gestor</th>
+                                            <th class="px-2 py-1.5 text-right">Balanço Total (Kz)</th>
+                                            <th class="px-2 py-1.5 text-right font-black text-rose-700 bg-rose-50">Exposição PAR 30 (Kz)</th>
+                                            <th class="px-2 py-1.5 text-right">PAR 30 %</th>
+                                            <th class="px-2 py-1.5 text-right">Exposição PAR 1 (Kz)</th>
+                                            <th class="px-2 py-1.5 text-right">Provisão Constituída (Kz)</th>
+                                            <th class="px-2 py-1.5 text-right">% da Carteira Geral</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr v-for="(p, i) in topMaiorExposicao" :key="p.Id || i" class="hover:bg-amber-50/30 transition-colors">
+                                            <td class="px-2 py-1.5 text-center font-bold text-slate-400">{{ i + 1 }}</td>
+                                            <td class="px-3 py-1.5 font-bold text-slate-900 whitespace-nowrap">{{ p.NomeProduto }}</td>
+                                            <td class="px-3 py-1.5 text-slate-600 text-[10px]">{{ p.DirectorNome || p.Gestor || '—' }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums font-semibold">{{ formatarNumero(p.BalancoValor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums font-black text-rose-700 bg-rose-50/70">{{ formatarNumero(p.PAR30_Valor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums font-bold text-rose-600">{{ formatarPercentual(p.PAR30_Percentual) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums text-amber-700">{{ formatarNumero(p.PAR1_Valor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums text-slate-700 font-semibold">{{ formatarNumero(p.ProvisaoValor) }}</td>
+                                            <td class="px-2 py-1.5 text-right tabular-nums text-slate-500 font-medium">
+                                                {{ ultimoRegistro?.BalancoValor ? ((Number(p.BalancoValor) / Number(ultimoRegistro.BalancoValor)) * 100).toFixed(1) + '%' : '—' }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </section>
 
@@ -945,13 +1284,13 @@ const KpiCard = (p) => {
         : positivo ? 'text-emerald-600' : 'text-rose-600'
 
     return h('div', {
-        class: `relative bg-white rounded-2xl shadow-sm border border-slate-200 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden`
+        class: `relative bg-white rounded-2xl shadow-sm border border-slate-200 p-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden`
     }, [
         h('div', { class: `absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br ${t.grad} to-transparent opacity-60` }),
         h('div', { class: 'relative' }, [
-            h('div', { class: 'flex items-center justify-between mb-2' }, [
+            h('div', { class: 'flex items-center justify-between mb-1.5' }, [
                 h('span', { class: 'text-[10px] font-bold uppercase tracking-wider text-slate-500' }, p.label),
-                h('div', { class: `w-8 h-8 rounded-lg ${t.bg} flex items-center justify-center ring-1 ${t.ring}` }, [
+                h('div', { class: `w-7 h-7 rounded-lg ${t.bg} flex items-center justify-center ring-1 ${t.ring}` }, [
                     h('i', { class: `fas ${p.icon} ${t.text} text-xs` })
                 ])
             ]),
@@ -972,12 +1311,13 @@ const SectionTitle = (p) => {
         emerald: 'border-emerald-500 text-emerald-700',
         amber:   'border-amber-500 text-amber-700',
         indigo:  'border-indigo-500 text-indigo-700',
+        rose:    'border-rose-500 text-rose-700',
     }
-    return h('div', { class: 'flex items-center gap-3 mb-4 border-l-4 pl-3 py-1 ' + (tones[p.tone] || tones.blue) }, [
+    return h('div', { class: 'flex items-center gap-3 mb-2.5 border-l-4 pl-3 py-0.5 ' + (tones[p.tone] || tones.blue) }, [
         h('i', { class: `fas ${p.icon} text-lg` }),
         h('div', [
-            h('h2', { class: 'text-base font-bold text-slate-900 leading-tight' }, p.title),
-            p.subtitle && h('p', { class: 'text-[11px] text-slate-500 mt-0.5' }, p.subtitle)
+            h('h2', { class: 'text-sm md:text-base font-bold text-slate-900 leading-tight' }, p.title),
+            p.subtitle && h('p', { class: 'text-[10px] md:text-[11px] text-slate-500 mt-0.5' }, p.subtitle)
         ])
     ])
 }
@@ -988,23 +1328,23 @@ const AgenciasTable = (p) => {
         h('table', { class: 'w-full text-xs border-collapse text-slate-800' }, [
             h('thead', [
                 h('tr', { class: 'bg-[#0B2E4F] text-white' }, [
-                    h('th', { colspan: 11, class: 'px-3 py-2 text-sm tracking-wider uppercase text-left' }, [
+                    h('th', { colspan: 11, class: 'px-3 py-1.5 text-xs tracking-wider uppercase text-left' }, [
                         h('i', { class: 'fas fa-location-dot mr-2 opacity-70' }),
                         p.titulo
                     ])
                 ]),
-                h('tr', { class: 'bg-[#103E68] text-white text-center text-[11px]' }, [
-                    h('th', { class: 'border-r border-b border-slate-300 px-3 py-2 text-left w-48 uppercase tracking-wider' }, 'Localidade'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'OA/PA'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Balanço'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Créditos | Novos'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Clientes | Novos'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'PAR 1'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'PAR 30'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Desemb. | TA'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Reembolso'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Provisão'),
-                    h('th', { class: 'border-b border-slate-300 px-2 py-2 uppercase tracking-wider' }, 'Gestão')
+                h('tr', { class: 'bg-[#103E68] text-white text-center text-[10px]' }, [
+                    h('th', { class: 'border-r border-b border-slate-300 px-3 py-1 text-left w-48 uppercase tracking-wider' }, 'Localidade'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'OA/PA'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Balanço'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Créditos | Novos'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Clientes | Novos'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'PAR 1'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'PAR 30'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Desembolsos | TA'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Reembolsos'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Provisão'),
+                    h('th', { class: 'border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Gestão')
                 ])
             ]),
             h('tbody', { class: 'divide-y divide-slate-100' },
@@ -1014,44 +1354,44 @@ const AgenciasTable = (p) => {
                         ? 'bg-gradient-to-r from-amber-50 to-amber-50/40 font-bold text-slate-900 border-t-2 border-b-2 border-amber-200'
                         : 'hover:bg-blue-50/40 transition-colors font-medium'
                 }, [
-                    h('td', { class: 'border-r border-slate-200 px-3 py-2 text-left whitespace-nowrap' }, [
+                    h('td', { class: 'border-r border-slate-200 px-3 py-1 text-left whitespace-nowrap' }, [
                         !a.IsTotalizador && h('span', { class: 'text-slate-400 mr-1' }, '─'),
                         h('span', { class: a.IsTotalizador ? '' : 'pl-2' }, a.NomeLocal),
                         a.PesoPercentual && h('span', { class: 'text-slate-500 font-normal ml-1 text-[10px]' }, `(${Math.round(a.PesoPercentual)}%)`)
                     ]),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-center bg-slate-50/60 text-slate-600 tabular-nums' },
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-center bg-slate-50/60 text-slate-600 tabular-nums' },
                         `${a.OA_Qtd ?? '—'}/${a.PA_Qtd ?? '—'}`),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right font-semibold tabular-nums' }, formatarNumero(a.BalancoValor)),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right font-semibold tabular-nums' }, formatarNumero(a.BalancoValor)),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right tabular-nums' }, [
                         h('span', { class: 'text-slate-700' }, formatarInt(a.CreditosTotal_Qtd)),
                         h('span', { class: 'text-slate-400 mx-1' }, '|'),
                         h('span', { class: 'text-indigo-700 font-bold' }, formatarInt(a.CreditosNovos_Qtd))
                     ]),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right tabular-nums' }, [
                         h('span', { class: 'text-slate-700' }, formatarInt(a.ClientesTotal_Qtd)),
                         h('span', { class: 'text-slate-400 mx-1' }, '|'),
                         h('span', { class: 'text-cyan-700 font-bold' }, formatarInt(a.ClientesNovos_Qtd))
                     ]),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right tabular-nums' }, [
                         formatarK(a.PAR1_Valor),
                         a.PAR1_Percentual !== null && h('span', { class: 'text-[10px] text-amber-700 font-semibold ml-1' }, `(${Math.round(a.PAR1_Percentual)}%)`)
                     ]),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right tabular-nums' }, [
                         formatarK(a.PAR30_Valor),
                         a.PAR30_Percentual !== null && h('span', { class: 'text-[10px] text-rose-700 font-semibold ml-1' }, `(${Math.round(a.PAR30_Percentual)}%)`)
                     ]),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right bg-emerald-50/50 text-emerald-700 font-semibold tabular-nums' }, [
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right bg-emerald-50/50 text-emerald-700 font-semibold tabular-nums' }, [
                         formatarNumero(a.DesembolsoValor),
                         a.TempoAtendimentodias !== null && h('span', { class: 'text-[10px] text-slate-500 ml-1' }, `| ${String(a.TempoAtendimentodias).padStart(2, '0')}`)
                     ]),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right bg-rose-50/50 text-rose-700 tabular-nums' }, formatarNumero(a.ReembolsoValor)),
-                    h('td', { class: 'border-r border-slate-200 px-2 py-2 text-right tabular-nums' }, [
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right bg-rose-50/50 text-rose-700 tabular-nums' }, formatarNumero(a.ReembolsoValor)),
+                    h('td', { class: 'border-r border-slate-200 px-2 py-1 text-right tabular-nums' }, [
                         formatarNumero(a.ProvisaoValor),
                         a.ProvisaoClasseRisco && h('span', { class: 'font-bold text-slate-700 ml-1' }, `(${a.ProvisaoClasseRisco})`)
                     ]),
-                    h('td', { class: 'px-2 py-2 text-center font-bold tabular-nums' }, [
+                    h('td', { class: 'px-2 py-1 text-center font-bold tabular-nums' }, [
                         h('span', {
-                            class: 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] ' + obterCorGestao(a.GestaoValor)
+                            class: 'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] ' + obterCorGestao(a.GestaoValor)
                         }, a.GestaoValor !== null ? a.GestaoValor + (a.GestaoSufixo || '') : '—')
                     ])
                 ]))
@@ -1072,7 +1412,7 @@ const chartAgenciasRef = ref(null)
 const charts = { balanco: null, fluxo: null, qualidade: null, agencias: null }
 
 /* ══════════════════════════════════════════════════
-   COMPUTED
+   COMPUTED GERAIS
    ══════════════════════════════════════════════════ */
 const historicoSeisMeses = computed(() => (props.historicoRD || []).slice(0, 6))
 
@@ -1089,6 +1429,13 @@ const registroAnterior = computed(() => {
     return props.historicoRD[idx - 1] || null
 })
 
+const anoAtual = computed(() => {
+    if (ultimoRegistro.value?.DataReferencia) {
+        return new Date(ultimoRegistro.value.DataReferencia).getFullYear()
+    }
+    return 2026
+})
+
 const colunasMeses = computed(() => historicoSeisMeses.value.map(item => {
     const data = new Date(item.DataReferencia)
     const mesExtenso = data.toLocaleDateString('pt-PT', { month: 'short' })
@@ -1103,70 +1450,322 @@ const ultimoMesNome = computed(() => {
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
 })
 
-/* ── Agrupamento de Provisões (por tipo) ── */
-const provisoesAgrupadas = computed(() => agrupar(props.provisoesProdutosRD, 'TipoAgrupamento'))
+const labelMesActual = computed(() => {
+    if (ultimoRegistro.value?.DataReferencia) {
+        const d = new Date(ultimoRegistro.value.DataReferencia)
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+    }
+    return '31/08/2026'
+})
 
-/* ── Agrupamento de Produtos POR DIREÇÃO / GESTOR ── */
-const produtosAgrupados = computed(() => {
-    if (!props.produtosRD || props.produtosRD.length === 0) return []
+const labelMesAnterior = computed(() => {
+    if (registroAnterior.value?.DataReferencia) {
+        const d = new Date(registroAnterior.value.DataReferencia)
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+    }
+    return '31/07/2026'
+})
+
+const labelFechoAA = computed(() => `DEZ ${Number(anoAtual.value) - 1}`)
+
+const dataCurtaActual = computed(() => {
+    if (ultimoRegistro.value?.DataReferencia) {
+        const d = new Date(ultimoRegistro.value.DataReferencia)
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`
+    }
+    return '31/08/26'
+})
+
+const dataCurtaAnterior = computed(() => {
+    if (registroAnterior.value?.DataReferencia) {
+        const d = new Date(registroAnterior.value.DataReferencia)
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`
+    }
+    return '31/07/26'
+})
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: DESTAQUE MAX/MIN FLUXO (12 MESES)
+   ══════════════════════════════════════════════════ */
+const maxMinFluxo = computed(() => {
+    const list = props.desembolsosReembolsos12MesesRD || []
+    if (list.length === 0) return { maxDesemb: 0, minDesemb: 0, maxReemb: 0, minReemb: 0 }
+
+    const desValores = list.map(i => Number(i.DesembolsoValor) || 0)
+    const reeValores = list.map(i => Number(i.ReembolsoValor) || 0)
+
+    return {
+        maxDesemb: Math.max(...desValores),
+        minDesemb: Math.min(...desValores),
+        maxReemb: Math.max(...reeValores),
+        minReemb: Math.min(...reeValores)
+    }
+})
+
+const obterClasseDestaqueDesembolso = (mes) => {
+    const val = Number(mes.DesembolsoValor) || 0
+    if (val === maxMinFluxo.value.maxDesemb) {
+        return 'bg-emerald-200 text-emerald-950 font-black ring-1 ring-emerald-500/50'
+    }
+    if (val === maxMinFluxo.value.minDesemb) {
+        return 'bg-rose-200 text-rose-950 font-black ring-1 ring-rose-500/50'
+    }
+    return 'font-semibold text-emerald-700'
+}
+
+const obterClasseDestaqueReembolso = (mes) => {
+    const val = Number(mes.ReembolsoValor) || 0
+    if (val === maxMinFluxo.value.maxReemb) {
+        return 'bg-emerald-200 text-emerald-950 font-black ring-1 ring-emerald-500/50'
+    }
+    if (val === maxMinFluxo.value.minReemb) {
+        return 'bg-rose-200 text-rose-950 font-black ring-1 ring-rose-500/50'
+    }
+    return 'font-semibold text-rose-700'
+}
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: PROVISÕES
+   ══════════════════════════════════════════════════ */
+const provisoesAgrupadas = computed(() => {
+    if (!props.provisoesProdutosRD || props.provisoesProdutosRD.length === 0) return []
+
+    const mapaProdutos = {}
+    ;(props.produtosRD || []).forEach(p => {
+        if (p.NomeProduto) {
+            mapaProdutos[p.NomeProduto.trim().toLowerCase()] = p
+        }
+    })
 
     const grupos = {}
 
+    props.provisoesProdutosRD.forEach(item => {
+        const nomeProd = (item.NomeProduto || '').trim().toLowerCase()
+        let gestor = ''
+        let tipoDireccao = ''
+
+        if (nomeProd.includes('pame') || nomeProd.includes('colaborador')) {
+            gestor = 'Marta dos Santos'
+            tipoDireccao = 'OUTROS'
+        } else {
+            const prodRef = mapaProdutos[nomeProd]
+            gestor = item.DirectorNome || item.Gestor || prodRef?.DirectorNome || 'SEM GESTOR'
+            tipoDireccao = item.TipoDireccao || item.TipoAgrupamento || prodRef?.TipoDireccao || 'DIRECÇÃO'
+        }
+
+        const gestorKey = gestor.trim().replace(/\s+/g, ' ').toUpperCase()
+
+        if (!grupos[gestorKey]) {
+            grupos[gestorKey] = {
+                gestor: gestor.trim(),
+                tipoDireccao: tipoDireccao.toUpperCase(),
+                pesoPercentual: item.PesoDireccao || null,
+                itens: [],
+                total: {
+                    fechoAA: 0,
+                    mesAnterior: 0,
+                    provMenorAno: 0,
+                    provAnoAtual: 0,
+                    mesActual: 0,
+                    difMensal: 0,
+                    difAnual: 0,
+                    difMedMen: 0,
+                    varAno: 0,
+                    percDado: 0
+                }
+            }
+        }
+
+        grupos[gestorKey].itens.push(item)
+
+        const t = grupos[gestorKey].total
+        t.fechoAA += Number(item.ProvisaoValorFechoAnoAnterior || 0)
+        t.mesAnterior += Number(item.ProvisaoValorMesAnterior || 0)
+        t.provMenorAno += Number(item.ProvisaoMenorAno ?? item.ProvisaoValorFechoAnoAnterior ?? 0)
+        t.provAnoAtual += Number(item.ProvisaoAnoActual ?? (Number(item.ProvisaoValorMesActual || 0) - Number(item.ProvisaoValorFechoAnoAnterior || 0)))
+        t.mesActual += Number(item.ProvisaoValorMesActual || 0)
+        t.difMensal += Number(item.ProvisaoDiferencaMensal || 0)
+        t.difAnual += Number(item.ProvisaoDiferencaAnual || 0)
+        t.difMedMen += Number(item.ProvisaoDiferencaMediaMensal || 0)
+    })
+
+    const lista = Object.values(grupos)
+    lista.forEach(g => {
+        g.total.varAno = g.total.fechoAA > 0 ? ((g.total.mesActual - g.total.fechoAA) / g.total.fechoAA) * 100 : 0
+        const somaPerc = g.itens.reduce((acc, i) => acc + Number(i.PercentagemDado || 0), 0)
+        g.total.percDado = g.itens.length ? Math.round(somaPerc / g.itens.length) : 0
+    })
+
+    return lista
+})
+
+const totalGeralProvisoes = computed(() => {
+    const tot = {
+        fechoAA: 0,
+        mesAnterior: 0,
+        provMenorAno: 0,
+        provAnoAtual: 0,
+        mesActual: 0,
+        difMensal: 0,
+        difAnual: 0,
+        difMedMen: 0,
+        varAno: 0,
+        percDado: 6
+    }
+    provisoesAgrupadas.value.forEach(g => {
+        tot.fechoAA += g.total.fechoAA
+        tot.mesAnterior += g.total.mesAnterior
+        tot.provMenorAno += g.total.provMenorAno
+        tot.provAnoAtual += g.total.provAnoAtual
+        tot.mesActual += g.total.mesActual
+        tot.difMensal += g.total.difMensal
+        tot.difAnual += g.total.difAnual
+        tot.difMedMen += g.total.difMedMen
+    })
+    tot.varAno = tot.fechoAA > 0 ? ((tot.mesActual - tot.fechoAA) / tot.fechoAA) * 100 : 76
+    return tot
+})
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: DADOS ESTATÍSTICOS
+   ══════════════════════════════════════════════════ */
+const statCarteira = computed(() => (props.dadosEstatisticosRD || []).find(d => String(d.TipoAgrupamento).toLowerCase().includes('carteira')) || props.dadosEstatisticosRD?.[0])
+const statMes      = computed(() => (props.dadosEstatisticosRD || []).find(d => String(d.TipoAgrupamento).toLowerCase().includes('mês') || String(d.TipoAgrupamento).toLowerCase().includes('mes')) || props.dadosEstatisticosRD?.[1])
+const statAno      = computed(() => (props.dadosEstatisticosRD || []).find(d => String(d.TipoAgrupamento).toLowerCase().includes('202') || String(d.TipoAgrupamento).toLowerCase().includes('atendido')) || props.dadosEstatisticosRD?.[2])
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: CARTEIRA WRITE-OFF
+   ══════════════════════════════════════════════════ */
+const cabecalhosWO = computed(() => {
+    return {
+        anterior: `MAR ${anoAtual.value}`,
+        meses: [`ABR ${anoAtual.value}`, `MAI ${anoAtual.value}`, `JUN ${anoAtual.value}`, `JUL ${anoAtual.value}`, `AGO ${anoAtual.value}`]
+    }
+})
+
+const linhasWO = computed(() => {
+    return (props.carteiraWriteOffRD || []).map(item => {
+        const isTot = String(item.EtiquetaPeriodoWO).includes('-202') || item.IsTotalizador
+        return {
+            ...item,
+            IsTotal: isTot,
+            mesesValores: [
+                item.RecuperadoMes1 ?? 0,
+                item.RecuperadoMes2 ?? 0,
+                item.RecuperadoMes3 ?? 0,
+                item.RecuperadoMes4 ?? 0,
+                item.RecuperadoMes5 ?? 0
+            ],
+            PctFinal: item.PctFinal ?? (item.BalancoInicial > 0 ? (item.BalancoFinal / item.BalancoInicial) * 100 : 0)
+        }
+    })
+})
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: MOVIMENTO DAS PRESTAÇÕES
+   ══════════════════════════════════════════════════ */
+const linhasMovimentoPrestacao = computed(() => {
+    return (props.movimentoPrestacaoRD || []).map(item => {
+        const p = String(item.PeriodoPrestacao || '').trim().toUpperCase()
+        const isTotal = p.includes('JUL 2021') || p.includes('TOTAL') || item.IsTotalizador
+        const isIntermediario = /^\d{6}\s*-\s*\d{6}$/.test(p) || p.includes('202107 - 202608')
+        const isMesDestaque = p === 'AGO 2026' || item.IsMesCorrente
+        const isHistoricoPassado = p.startsWith('_') || p.startsWith('<') || p.includes('2024') || p.includes('MAI 2026') || p.includes('JUN 2026') || p.includes('JUL 2026')
+
+        return {
+            ...item,
+            IsTotal: isTotal,
+            IsIntermediario: isIntermediario,
+            IsMesDestaque: isMesDestaque,
+            IsHistoricoPassado: isHistoricoPassado
+        }
+    })
+})
+
+const obterClasseLinhaMP = (mp) => {
+    if (mp.IsTotal || mp.IsIntermediario) {
+        return 'bg-[#103E68] text-white font-bold border-t border-slate-500'
+    }
+    if (mp.IsMesDestaque) {
+        return 'bg-[#FFF9C4] font-bold text-slate-900 border-b border-amber-300'
+    }
+    if (mp.IsHistoricoPassado) {
+        return 'bg-[#FDF2E9] hover:bg-amber-100/40 border-b border-amber-200 text-slate-800'
+    }
+    return 'hover:bg-blue-50/40 border-b border-slate-200 text-slate-800'
+}
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: NOVOS KPIS DE RISCO
+   ══════════════════════════════════════════════════ */
+const produtosBaseRisco = computed(() => {
+    return (props.produtosRD || []).map(p => {
+        const par30Pct = Number(p.PAR30_Percentual ?? (Number(p.BalancoValor) > 0 ? (Number(p.PAR30_Valor) / Number(p.BalancoValor)) * 100 : 0))
+        const par1Pct = Number(p.PAR1_Percentual ?? (Number(p.BalancoValor) > 0 ? (Number(p.PAR1_Valor) / Number(p.BalancoValor)) * 100 : 0))
+        const dir = String(p.TipoDireccao || '').toUpperCase()
+
+        return {
+            ...p,
+            PAR30_Percentual: par30Pct,
+            PAR1_Percentual: par1Pct,
+            DirecaoNormalizada: dir.includes('OPERA') || dir.includes('DOP') ? 'DOP' : (dir.includes('PARTIC') || dir.includes('DPP') ? 'DPP' : 'OUTRAS')
+        }
+    })
+})
+
+// 1. Top 15 Piores Produtos de Risco por Direção (DOP & DPP)
+const top15RiscoDOP = computed(() => {
+    return produtosBaseRisco.value
+        .filter(p => p.DirecaoNormalizada === 'DOP' || String(p.DirectorNome || '').toUpperCase().includes('VENÂNCIO'))
+        .sort((a, b) => (b.PAR30_Percentual - a.PAR30_Percentual) || (Number(b.PAR30_Valor) - Number(a.PAR30_Valor)))
+        .slice(0, 15)
+})
+
+const top15RiscoDPP = computed(() => {
+    return produtosBaseRisco.value
+        .filter(p => p.DirecaoNormalizada === 'DPP' || String(p.DirectorNome || '').toUpperCase().includes('TIRSO'))
+        .sort((a, b) => (b.PAR30_Percentual - a.PAR30_Percentual) || (Number(b.PAR30_Valor) - Number(a.PAR30_Valor)))
+        .slice(0, 15)
+})
+
+// 2. Top 15 Piores Produtos de Acordo ao Risco Geral
+const top15RiscoGeral = computed(() => {
+    return [...produtosBaseRisco.value]
+        .sort((a, b) => (b.PAR30_Percentual - a.PAR30_Percentual) || (Number(b.PAR30_Valor) - Number(a.PAR30_Valor)))
+        .slice(0, 15)
+})
+
+// 3. Produtos com Maior Exposição ao Risco (Valor Monetário Vulnerável)
+const topMaiorExposicao = computed(() => {
+    return [...produtosBaseRisco.value]
+        .sort((a, b) => (Number(b.PAR30_Valor) - Number(a.PAR30_Valor)) || (Number(b.ProvisaoValor) - Number(a.ProvisaoValor)))
+        .slice(0, 15)
+})
+
+/* ── Outros computeds de tabelas ── */
+const produtosAgrupados = computed(() => {
+    if (!props.produtosRD || props.produtosRD.length === 0) return []
+    const grupos = {}
     props.produtosRD.forEach(item => {
         const gestor = item.DirectorNome || 'SEM GESTOR ATRIBUÍDO'
         const tipoDireccao = item.TipoDireccao || 'GERAL'
-
         if (!grupos[gestor]) {
             grupos[gestor] = {
                 gestor,
                 tipoDireccao,
                 itens: [],
-                total: {
-                    BalancoValor: 0,
-                    CreditosTotal_Qtd: 0,
-                    CreditosNovos_Qtd: 0,
-                    ClientesTotal_Qtd: 0,
-                    ClientesNovos_Qtd: 0,
-                    PAR1_Valor: 0,
-                    PAR30_Valor: 0,
-                    DesembolsoValor: 0,
-                    ReembolsoValor: 0,
-                    ProvisaoValor: 0,
-                    OA_Qtd: 0,
-                    PA_Qtd: 0,
-                }
+                total: { BalancoValor: 0, DesembolsoValor: 0 }
             }
         }
-
         grupos[gestor].itens.push(item)
-
-        const t = grupos[gestor].total
-        t.BalancoValor      += Number(item.BalancoValor)      || 0
-        t.CreditosTotal_Qtd += Number(item.CreditosTotal_Qtd) || 0
-        t.CreditosNovos_Qtd += Number(item.CreditosNovos_Qtd) || 0
-        t.ClientesTotal_Qtd += Number(item.ClientesTotal_Qtd) || 0
-        t.ClientesNovos_Qtd += Number(item.ClientesNovos_Qtd) || 0
-        t.PAR1_Valor        += Number(item.PAR1_Valor)        || 0
-        t.PAR30_Valor       += Number(item.PAR30_Valor)       || 0
-        t.DesembolsoValor   += Number(item.DesembolsoValor)   || 0
-        t.ReembolsoValor    += Number(item.ReembolsoValor)    || 0
-        t.ProvisaoValor     += Number(item.ProvisaoValor)     || 0
-        t.OA_Qtd            += Number(item.OA_Qtd)            || 0
-        t.PA_Qtd            += Number(item.PA_Qtd)            || 0
+        grupos[gestor].total.BalancoValor += Number(item.BalancoValor) || 0
+        grupos[gestor].total.DesembolsoValor += Number(item.DesembolsoValor) || 0
     })
-
-    return Object.values(grupos).sort((a, b) =>
-        a.gestor.localeCompare(b.gestor, 'pt-PT', { sensitivity: 'base' })
-    )
+    return Object.values(grupos).sort((a, b) => a.gestor.localeCompare(b.gestor, 'pt-PT'))
 })
 
 const agenciasCapital  = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'CAPITAL'))
 const agenciasProvincia = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'PROVINCIA'))
-
-const totalDesembolso12Meses = computed(() =>
-    (props.desembolsosReembolsos12MesesRD || []).reduce((a, i) => a + Number(i.DesembolsoValor || 0), 0))
-const totalReembolso12Meses = computed(() =>
-    (props.desembolsosReembolsos12MesesRD || []).reduce((a, i) => a + Number(i.ReembolsoValor || 0), 0))
 
 const linhasRisco = [
     { key: 'npl',   numero: 4, label: 'NPL',    cor: 'bg-rose-500',   percKey: 'NPLPercentual',   valKey: 'NPLValor',   maisKey: 'NPL_Mais',   menosKey: 'NPL_Menos',   variacaoKey: 'VariacaoNPL',   classePerc: 'text-rose-700' },
@@ -1181,18 +1780,8 @@ const linhasPercentuais = [
 ]
 
 /* ══════════════════════════════════════════════════
-   HELPERS
+   HELPERS & FORMATADORES
    ══════════════════════════════════════════════════ */
-function agrupar(lista, chave) {
-    if (!lista || lista.length === 0) return []
-    const g = {}
-    lista.forEach(i => {
-        const t = i[chave] || 'OUTROS'
-        ;(g[t] ||= []).push(i)
-    })
-    return Object.keys(g).map(t => ({ tipo: t, itens: g[t] }))
-}
-
 const calcularDelta = (atual, anterior) => {
     const a = Number(atual), b = Number(anterior)
     if (!isFinite(a) || !isFinite(b) || b === 0) return null
@@ -1216,9 +1805,6 @@ const formatarProvisaoCobertura = (diasAtraso, percentual) => {
     return `(${obterNivelRisco(diasAtraso)} :: ${formatarNumero(percentual)}%)`
 }
 
-/* ══════════════════════════════════════════════════
-   FORMATADORES NUMÉRICOS (pt-PT)
-   ══════════════════════════════════════════════════ */
 const _toNum = (val) => {
     if (val === null || val === undefined || val === '') return NaN
     if (typeof val === 'string') {
@@ -1229,13 +1815,13 @@ const _toNum = (val) => {
 
 const formatarNumero = (val) => {
     const n = _toNum(val)
-    if (!isFinite(n)) return '—'
-    return n.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    if (!isFinite(n)) return '0'
+    return n.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 }
 
 const formatarInt = (val) => {
     const n = _toNum(val)
-    if (!isFinite(n)) return '—'
+    if (!isFinite(n)) return '0'
     return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
 }
 
@@ -1265,34 +1851,46 @@ const formatarMoedaCompacta = (val) => {
 
 const formatarPercentual = (val) => {
     const n = _toNum(val)
-    if (!isFinite(n)) return '—'
+    if (!isFinite(n)) return '0%'
     return n.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + '%'
 }
 
-const formatarDelta = (val) => {
+const formatarValorNotacao = (val) => {
     const n = _toNum(val)
-    if (!isFinite(n)) return '—'
-    const prefixo = n > 0 ? '+' : ''
-    return prefixo + n.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    if (!isFinite(n) || n === 0) return ''
+    const abs = Math.abs(n)
+    if (abs >= 1e6) {
+        return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + 'M'
+    }
+    if (abs >= 1e3) {
+        return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + 'K'
+    }
+    return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
 }
 
-/* ══════════════════════════════════════════════════
-   CORES AUXILIARES
-   ══════════════════════════════════════════════════ */
+const formatarComPercentual = (val, pct) => {
+    const n = _toNum(val)
+    if (!isFinite(n) || n === 0) return ''
+    const strVal = formatarValorNotacao(n)
+    const p = _toNum(pct)
+    if (isFinite(p)) {
+        return `${strVal} (${Math.round(p)}%)`
+    }
+    return strVal
+}
+
+const formatarMoedaM = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n) || n === 0) return '0.000M'
+    return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + 'M'
+}
+
 const obterCorGestao = (valor) => {
     const n = Number(valor)
     if (!isFinite(n)) return 'bg-slate-100 text-slate-500'
     if (n > 0) return 'bg-emerald-100 text-emerald-700'
     if (n < 0) return 'bg-rose-100 text-rose-700'
     return 'bg-amber-100 text-amber-800'
-}
-
-const obterCorDiferenca = (val) => {
-    const n = Number(val)
-    if (!isFinite(n)) return 'text-slate-500'
-    if (n < 0) return 'text-emerald-700'
-    if (n > 0) return 'text-rose-700'
-    return 'text-slate-600'
 }
 
 /* ══════════════════════════════════════════════════
@@ -1307,7 +1905,6 @@ const destroyCharts = () => {
 const initCharts = () => {
     destroyCharts()
 
-    /* ── 1. Evolução do Balanço ── */
     if (chartBalancoRef.value && historicoSeisMeses.value.length > 0) {
         const labels = colunasMeses.value.map(m => m.label)
         const data = historicoSeisMeses.value.map(i => Number(i.BalancoValor) || 0)
@@ -1341,8 +1938,7 @@ const initCharts = () => {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#0B2E4F',
-                        padding: 10,
+                        backgroundColor: '#0B2E4F', padding: 10,
                         titleFont: { ...CHART_FONT, size: 11 },
                         bodyFont: { ...CHART_FONT, size: 12, weight: 'bold' },
                         callbacks: { label: c => ' ' + formatarNumero(c.parsed.y) }
@@ -1350,19 +1946,12 @@ const initCharts = () => {
                 },
                 scales: {
                     x: { grid: { display: false }, ticks: { font: { ...CHART_FONT, size: 10 }, color: '#64748b' } },
-                    y: {
-                        grid: { color: '#f1f5f9' },
-                        ticks: {
-                            font: { ...CHART_FONT, size: 10 }, color: '#64748b',
-                            callback: v => formatarCompacto(v)
-                        }
-                    }
+                    y: { grid: { color: '#f1f5f9' }, ticks: { font: { ...CHART_FONT, size: 10 }, color: '#64748b', callback: v => formatarCompacto(v) } }
                 }
             }
         })
     }
 
-    /* ── 2. Desembolso vs Reembolso ── */
     if (chartFluxoRef.value && props.desembolsosReembolsos12MesesRD?.length) {
         const labels = props.desembolsosReembolsos12MesesRD.map(m => m.NomeDoMes)
         const desemb = props.desembolsosReembolsos12MesesRD.map(m => Number(m.DesembolsoValor) || 0)
@@ -1385,8 +1974,7 @@ const initCharts = () => {
                         labels: { font: { ...CHART_FONT, size: 10 }, boxWidth: 10, boxHeight: 10, usePointStyle: true, pointStyle: 'circle' }
                     },
                     tooltip: {
-                        backgroundColor: '#0B2E4F',
-                        padding: 10,
+                        backgroundColor: '#0B2E4F', padding: 10,
                         titleFont: { ...CHART_FONT, size: 11 },
                         bodyFont: { ...CHART_FONT, size: 11 },
                         callbacks: { label: c => ' ' + c.dataset.label + ': ' + formatarNumero(c.parsed.y) }
@@ -1400,7 +1988,6 @@ const initCharts = () => {
         })
     }
 
-    /* ── 3. Qualidade da Carteira ── */
     if (chartQualidadeRef.value && historicoSeisMeses.value.length > 0) {
         const labels = colunasMeses.value.map(m => m.label)
         const npl = historicoSeisMeses.value.map(i => Number(i.NPLPercentual) || 0)
@@ -1439,7 +2026,6 @@ const initCharts = () => {
         })
     }
 
-    /* ── 4. Distribuição por Agências ── */
     if (chartAgenciasRef.value && props.agenciasRD?.length) {
         const itens = [...props.agenciasRD]
             .filter(a => !a.IsTotalizador && Number(a.BalancoValor) > 0)
@@ -1515,16 +2101,16 @@ const imprimirA4 = () => {
                 <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA]</title>
                 ${estilos}
                 <style>
-                    @page { size: A4 landscape; margin: 8mm; }
+                    @page { size: A4 landscape; margin: 5mm; }
                     body { background-color: #fff !important; padding: 0 !important; margin: 0 !important;
                            -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
                            font-family: ui-sans-serif, system-ui, sans-serif; }
-                    table { font-size: 8.5px !important; page-break-inside: auto; }
+                    table { font-size: 7.5px !important; page-break-inside: auto; }
                     tr { page-break-inside: avoid; }
                     thead { display: table-header-group; }
                     .shadow-sm, .shadow-xl, .shadow-lg { box-shadow: none !important; }
-                    .rounded-2xl, .rounded-xl { border-radius: 6px !important; }
-                    section { page-break-inside: avoid; margin-bottom: 12px; }
+                    .rounded-2xl, .rounded-xl, .rounded { border-radius: 2px !important; }
+                    section { page-break-inside: avoid; margin-bottom: 6px; }
                 </style>
             </head>
             <body>${areaTabelas.value.outerHTML}</body>

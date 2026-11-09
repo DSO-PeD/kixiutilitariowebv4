@@ -25,6 +25,7 @@ class RDKixiCorpController extends Controller
             ->where('Activo', 1)
             ->get();
 
+
         $ultimaDataRef = $historico->last() ? $historico->last()->DataReferencia : null;
 
         // 2. Buscar regiões / agências
