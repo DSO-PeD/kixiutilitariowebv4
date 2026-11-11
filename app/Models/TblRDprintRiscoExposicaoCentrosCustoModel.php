@@ -14,7 +14,7 @@ class TblRDprintRiscoExposicaoCentrosCustoModel extends Model
      *
      * @var string
      */
-    protected $table = 'tblrdriscoexposicaocentroscusto';
+    protected $table = 'tblRDRiscoExposicaoCentrosCusto';
 
     /**
      * Chave primária da tabela.
