@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TblRDprintRiscoExposicaoCentrosCustoModel;
+use App\Models\TblRDRiscoTopClientesModel;
 use Illuminate\Http\Request;
 use App\Models\TblRDprintKixiCreditoModel;
 use App\Models\TblRDprintRegionalModel;
@@ -20,11 +22,10 @@ class RDKixiCorpController extends Controller
     {
         $authenticatedUser = Auth::user();
 
-        // 1. Buscar histórico global
+        // 1. Buscar histórico global consolidado
         $historico = TblRDprintKixiCreditoModel::orderBy('DataReferencia', 'asc')
             ->where('Activo', 1)
             ->get();
-
 
         $ultimaDataRef = $historico->last() ? $historico->last()->DataReferencia : null;
 
@@ -63,6 +64,22 @@ class RDKixiCorpController extends Controller
             ? TblRDPrintMovimentoPrestacaoModel::getPorDataReferencia($ultimaDataRef)
             : [];
 
+        // 9. Buscar Exposição de Risco por Centros de Custo (ordenado por PosicaoRisco)
+        $riscoExposicaoCentrosCusto = $ultimaDataRef
+            ? TblRDprintRiscoExposicaoCentrosCustoModel::where('DataReferencia', $ultimaDataRef)
+                ->where('Activo', 1)
+                ->orderBy('PosicaoRisco', 'asc')
+                ->get()
+            : [];
+
+        // 10. Buscar Risco Top Clientes (DOP, DPP e Geral)
+        $riscoTopClientes = $ultimaDataRef
+            ? TblRDRiscoTopClientesModel::where('DataReferencia', $ultimaDataRef)
+                ->where('Activo', 1)
+                ->orderBy('Posicao', 'asc')
+                ->get()
+            : [];
+
         return Inertia::render('ReportRD', [
             'historicoRD'                    => $historico,
             'agenciasRD'                     => $agencias,
@@ -72,6 +89,8 @@ class RDKixiCorpController extends Controller
             'dadosEstatisticosRD'           => $dadosEstatisticos,
             'carteiraWriteOffRD'             => $carteiraWriteOff,
             'movimentoPrestacaoRD'           => $movimentoPrestacao,
+            'riscoExposicaoCentrosCustoRD'   => $riscoExposicaoCentrosCusto,
+            'riscoTopClientesRD'             => $riscoTopClientes,
             'user'                           => $authenticatedUser
         ]);
     }
