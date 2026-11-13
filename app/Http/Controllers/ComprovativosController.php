@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CaptacaoClienteModel;
 use App\Models\ComprovativoModel;
 use App\Models\CpvtReconciliacaoModel;
+use App\Models\EstadoRespostaAgenciaModel;
 use App\Models\EstadosModel;
 use App\Models\RecuperacaoModel;
 use App\Models\TKuPendentesModel;
@@ -16,6 +18,7 @@ use App\Models\TKxUsUtilizadorModel;
 use App\Models\TKxExtratoModel;
 use App\Models\PgtRefNotificacaoModel;
 use App\Models\HelperModel;
+use App\Models\TipoNegocioModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -167,12 +170,12 @@ class ComprovativosController extends Controller
 
         /*** Associar com dados não relacionados */
         $lnrs = collect($lista_comprovativo)->pluck('BuDadoOrigem')->unique();
-        $contactos = TKxExtratoModel::whereIn('Lnr', $lnrs)->pluck('Telefone','Lnr');
+        $contactos = TKxExtratoModel::whereIn('Lnr', $lnrs)->pluck('Telefone', 'Lnr');
 
         $refs = collect($lista_comprovativo)->pluck('refPagamento')->unique();
         $ibans = PgtRefNotificacaoModel::whereIn('refPagamento', $refs)->pluck('nib', 'refPagamento');
 
-        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) use ($contactos,$ibans) { 
+        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) use ($contactos, $ibans) {
             $vcr_view = "-";
 
             if ($item->voucher == "" || $item->voucher == null) {
@@ -213,7 +216,7 @@ class ComprovativosController extends Controller
                 'refPagamento' => $item->refPagamento,
                 'periodo_trans_pgr' => $item->periodo_trans_pgr,
                 'telefone' => $contactos[$item->BuDadoOrigem] ?? 'N/A',
-                'iban'     => $ibans[$item->refPagamento] ?? 'N/A'
+                'iban' => $ibans[$item->refPagamento] ?? 'N/A'
             ];
         });
 
@@ -224,9 +227,9 @@ class ComprovativosController extends Controller
         $totalReembolsos = (float) ($arrecadacao->R ?? 0);
 
         $NumeroPaginator = 30;
-        
+
         return Inertia::render('Comprovativos', [
-            'totalPoupancas' => $totalPoupancas, 
+            'totalPoupancas' => $totalPoupancas,
             'totalReembolsos' => $totalReembolsos,
             'lista_comprovativo' => $comprovativos_list,
             'filters' => [
@@ -413,10 +416,10 @@ class ComprovativosController extends Controller
             if ($comprovativo) {
                 // Calcular capital e juros se for Loan
                 if ($cadastrarTipo === "Loan" && $comprovativo->BaseOperacao !== 'AC' && $comprovativo->BaseOperacao !== 'DP') {
-                    $status = HelperModel::calcularCapitalEJuros($dados["BuMontante"],$dados["BuDadoOrigem"],$comprovativo->id);
-                } 
+                    $status = HelperModel::calcularCapitalEJuros($dados["BuMontante"], $dados["BuDadoOrigem"], $comprovativo->id);
+                }
                 return redirect()->route('comprovativos')->with('success', 'Dados guardados com sucesso!');
-            } else{
+            } else {
                 throw new Exception('Falha ao inserir comprovativo');
             }
 
@@ -501,7 +504,118 @@ class ComprovativosController extends Controller
             ], 401);
         }
     }
+    /**
+     * Carregar opções dos comboboxes (Tipos de Negócio e Estados da Agência)
+     */
+    public function dadosAuxiliaresCaptacao()
+    {
+        try {
+            $tiposNegocio = TipoNegocioModel::where('ativo', 1)
+                ->orderBy('id', 'asc')
+                ->get(['id', 'descricao']);
 
+            $estadosAgencia = EstadoRespostaAgenciaModel::where('ativo', 1)
+                ->orderBy('id', 'asc')
+                ->get(['id', 'descricao', 'cor_hex']);
+
+            return response()->json([
+                'status' => 'SUCCESS',
+                'tipos_negocio' => $tiposNegocio,
+                'estados_agencia' => $estadosAgencia,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Erro ao carregar dados auxiliares: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Gravar nova captação (com validação exists nas tabelas relacionais)
+     */
+    public function guardarmobilecaptacao(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nome_cliente_empresa' => 'required|string|max:150',
+            'genero' => 'required|in:M,F,m,f',
+            'local_negocio' => 'required|string|max:300',
+            'valor_solicitado' => 'required|numeric|min:0',
+            'id_tipo_negocio' => 'required|integer|exists:tblTiposNegocio,id',
+            'telefone' => 'required|string|max:20',
+            'data_captacao' => 'required|date',
+            'id_estado_resposta_agencia' => 'nullable|integer|exists:tblEstadosRespostaAgencia,id',
+            'OfCodigoAgencia' => 'required|integer',
+            'UtCodigoCaptador' => 'required|string|max:150',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Erro de validação nos dados enviados.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $captacao = CaptacaoClienteModel::create([
+                'nome_cliente_empresa' => $request->input('nome_cliente_empresa'),
+                'genero' => strtoupper($request->input('genero')),
+                'local_negocio' => $request->input('local_negocio'),
+                'valor_solicitado' => $request->input('valor_solicitado'),
+                'id_tipo_negocio' => (int) $request->input('id_tipo_negocio'),
+                'telefone' => $request->input('telefone'),
+                'data_captacao' => $request->input('data_captacao'),
+                'id_estado_resposta_agencia' => (int) ($request->input('id_estado_resposta_agencia') ?? 1),
+                'OfCodigoAgencia' => (int) $request->input('OfCodigoAgencia'),
+                'UtCodigoCaptador' => $request->input('UtCodigoCaptador'),
+            ]);
+
+            return response()->json([
+                'status' => 'SUCCESS',
+                'message' => 'Potencial cliente registado com sucesso!',
+                'captacao' => $captacao,
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Erro interno ao gravar captação: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Listar captações já trazendo os relacionamentos (tipoNegocio e estadoResposta)
+     */
+    public function listarmobilecaptacao(Request $request)
+    {
+        try {
+            $query = CaptacaoClienteModel::with(['tipoNegocio', 'estadoResposta'])
+                ->orderBy('data_captacao', 'desc')
+                ->orderBy('id', 'desc');
+
+            if ($request->filled('UtCodigoCaptador')) {
+                $query->where('UtCodigoCaptador', $request->input('UtCodigoCaptador'));
+            } elseif ($request->filled('OfCodigoAgencia')) {
+                $query->where('OfCodigoAgencia', $request->input('OfCodigoAgencia'));
+            }
+
+            $lista = $query->get();
+
+            return response()->json([
+                'status' => 'SUCCESS',
+                'listaclientes' => $lista,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Erro ao listar clientes captados: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
     /**
      * Processar dados para Loan
      */
@@ -874,7 +988,7 @@ class ComprovativosController extends Controller
 
 
         $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
-        
+
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
@@ -902,10 +1016,10 @@ class ComprovativosController extends Controller
     // PAGAMENTOS POR REFERENCIA MANUAIS:******************************************************************
 
     public function viewReferenciaPGT(Request $request)
-    { 
+    {
 
 
-        $authenticatedUser = Auth::user(); 
+        $authenticatedUser = Auth::user();
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
@@ -913,7 +1027,7 @@ class ComprovativosController extends Controller
         $tipoProdutoPP = $request->filtrar_poupancas;
         $tipoProdutoPT = $request->filtrar_prestacoes;
 
-        $lista_produtos = TKxClProdutoModel::getProdutos(); 
+        $lista_produtos = TKxClProdutoModel::getProdutos();
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
         $dataFecho = $resultagencia_user->DataFecho;
@@ -945,7 +1059,7 @@ class ComprovativosController extends Controller
         $TIPO = 7371;
         $LOAN = "'DS/280890'";
 
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao); 
+        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
         if ($tipoDeBusca == 1) {
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
@@ -969,7 +1083,7 @@ class ComprovativosController extends Controller
 
             $TIPO = 73714;
         }
-    
+
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, "'DJA'");
 
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
@@ -986,7 +1100,7 @@ class ComprovativosController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-      
+
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             return [
                 'id' => $item->id,
@@ -1014,7 +1128,7 @@ class ComprovativosController extends Controller
         });
 
         $NumeroPaginator = 30;
-        
+
         return Inertia::render('ReferenciasPGT', [
             'lista_comprovativo' => $comprovativos_list,
             'filters' => [
@@ -1060,7 +1174,7 @@ class ComprovativosController extends Controller
                     ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
                     ->withInput();
             }
-            
+
             $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
             $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
 

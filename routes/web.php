@@ -99,6 +99,19 @@ Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMidd
 Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+
+//  CAPTAÇÃO:
+Route::get('/dadosauxiliarescaptacao', [ComprovativosController::class, 'dadosAuxiliaresCaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/guardarpontencialcliente', [ComprovativosController::class, 'guardarmobilecaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/listarpontencialcliente', [ComprovativosController::class, 'listarmobilecaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
 /******************************************************************************************************************************************************************************************************************************************************** */
 
 Route::get('/test-redis', function () {
