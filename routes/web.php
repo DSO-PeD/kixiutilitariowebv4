@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CaptacaoClienteController;
 use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
@@ -101,17 +102,28 @@ Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewCompro
 Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 
 //  CAPTAÇÃO:
-Route::get('/dadosauxiliarescaptacao', [ComprovativosController::class, 'dadosAuxiliaresCaptacao'])
+Route::get('/dadosauxiliarescaptacao', [CaptacaoClienteController::class, 'dadosAuxiliaresCaptacao'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 
-Route::post('/guardarpontencialcliente', [ComprovativosController::class, 'guardarmobilecaptacao'])
+Route::post('/guardarpontencialcliente', [CaptacaoClienteController::class, 'guardarmobilecaptacao'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 
-Route::post('/listarpontencialcliente', [ComprovativosController::class, 'listarmobilecaptacao'])
+Route::post('/listarpontencialcliente', [CaptacaoClienteController::class, 'listarmobilecaptacao'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
+
+Route::post('/oficiaiscreditoporagencia', [CaptacaoClienteController::class, 'listarOficiaisPorAgencia'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+Route::post('/atribuircliente/gerente', [CaptacaoClienteController::class, 'atribuirAoGerente'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+Route::post('/atribuircliente/oficialcredito', [CaptacaoClienteController::class, 'atribuirAoOficial'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
 /******************************************************************************************************************************************************************************************************************************************************** */
 
 Route::get('/test-redis', function () {
