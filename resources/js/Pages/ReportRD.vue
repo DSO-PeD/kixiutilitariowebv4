@@ -1,4 +1,4 @@
- <template>
+<template>
     <Head title="Reporting Balance Kixi Crédito Angola" />
 
     <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/50">
@@ -1012,7 +1012,7 @@ const props = defineProps({
 })
 
 /* ══════════════════════════════════════════════════
-   ESTADO REATIVO DAS ABAS DE RISCO (SEÇÃO 7)
+   ESTADO REATIVO DAS ABAS DE RISCO (SEÇÃO 6)
    ══════════════════════════════════════════════════ */
 const tabRiscoAtiva = ref('GERAL') // 'GERAL' | 'DOP' | 'DPP'
 
@@ -1248,10 +1248,12 @@ const chartAgenciasRef = ref(null)
 const charts = { balanco: null, fluxo: null, qualidade: null, agencias: null }
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: HISTÓRICO DINÂMICO ATÉ AO ÚLTIMO PERÍODO
+   COMPUTED: HISTÓRICO DINÂMICO (ACTIVO = 1 · EXCLUINDO O MÊS EM ANÁLISE DO HISTÓRICO)
    ══════════════════════════════════════════════════ */
 const historicoOrdenado = computed(() => {
-    return [...(props.historicoRD || [])].sort((a, b) => new Date(a.DataReferencia) - new Date(b.DataReferencia))
+    return [...(props.historicoRD || [])]
+        .filter(item => Number(item.Activo ?? item.activo) === 1 || item.Activo === true || item.activo === true)
+        .sort((a, b) => new Date(a.DataReferencia) - new Date(b.DataReferencia))
 })
 
 const ultimoRegistro = computed(() => {
@@ -1265,9 +1267,8 @@ const registroAnterior = computed(() => {
 })
 
 const historicoAteUltimoPeriodo = computed(() => {
-    const arr = historicoOrdenado.value
-    if (arr.length <= 6) return arr
-    return arr.slice(arr.length - 6)
+    if (historicoOrdenado.value.length <= 1) return historicoOrdenado.value
+    return historicoOrdenado.value.slice(0, -1)
 })
 
 const anoAtual = computed(() => {
@@ -1279,9 +1280,11 @@ const anoAtual = computed(() => {
 
 const colunasMeses = computed(() => historicoAteUltimoPeriodo.value.map(item => {
     const data = new Date(item.DataReferencia)
-    const mesExtenso = data.toLocaleDateString('pt-PT', { month: 'short' })
-    const anoCurto = data.getFullYear().toString().substring(2)
-    const label = mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1, 3) + '/' + anoCurto
+    const mesExtenso = data.toLocaleDateString('pt-PT', { month: 'short' }).replace('.', '')
+    const ano = data.getFullYear()
+    const label = (data.getMonth() === 11 && ano < Number(anoAtual.value))
+        ? `DEZ${ano}`
+        : mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1, 3) + '/' + String(ano).substring(2)
     return { key: item.Id || item.DataReferencia, label }
 }))
 
@@ -1585,7 +1588,7 @@ const linhasWO = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: 6. CENTROS DE CUSTO ORDENADOS POR GRAVIDADE DE RISCO
+   COMPUTED: 7. CENTROS DE CUSTO ORDENADOS POR GRAVIDADE DE RISCO
    ══════════════════════════════════════════════════ */
 const centrosCustoOrdenadosPorRisco = computed(() => {
     return [...(props.riscoExposicaoCentrosCustoRD || [])]
@@ -1598,7 +1601,7 @@ const centrosCustoOrdenadosPorRisco = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: 7. TOP 15 CLIENTES POR TIPO DE RANKING
+   COMPUTED: 6. TOP 15 CLIENTES POR TIPO DE RANKING
    ══════════════════════════════════════════════════ */
 const normalizarTipoRanking = (val) => String(val || '').trim().toUpperCase()
 
