@@ -1,5 +1,5 @@
-<template>
-    <Head title="Reporting Balance Kixi Crédito Angola" />
+ <template>
+    <Head :title="`Reporting Balance Kixi Crédito Angola · ${tituloDireccao}`" />
 
     <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/50">
         <div class="container mx-auto py-4 md:py-6 px-2 md:px-4 max-w-[1600px]">
@@ -9,33 +9,83 @@
                 <div class="absolute inset-0 opacity-10"
                      style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px); background-size: 24px 24px;">
                 </div>
-                <div class="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-5 md:p-6">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-2xl ring-1 ring-white/20">
-                            <i class="fas fa-chart-pie text-2xl text-emerald-300"></i>
+                <div class="relative flex flex-col gap-4 p-5 md:p-6">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/10 backdrop-blur-sm p-3 rounded-2xl ring-1 ring-white/20">
+                                <i class="fas fa-chart-pie text-2xl text-emerald-300"></i>
+                            </div>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
+                                        Reporting Balance · Kixi Crédito Angola
+                                    </h1>
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/30">
+                                        {{ tituloDireccao }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-blue-100/80 mt-0.5 flex items-center gap-2">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Relatório Diário Executivo · {{ ultimoMesNome }}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
-                                Reporting Balance · Kixi Crédito Angola
-                            </h1>
-                            <p class="text-sm text-blue-100/80 mt-0.5 flex items-center gap-2">
-                                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Relatório Diário Executivo · {{ ultimoMesNome }}
-                            </p>
+
+                        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <button @click="imprimirA4"
+                                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all backdrop-blur-sm">
+                                <i class="fa fa-print text-blue-200"></i>
+                                Imprimir Tabelas (A4)
+                            </button>
+                            <a :href="`/reports/rdreport`" target="_blank"
+                               class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
+                                <i class="fa fa-chart-line"></i>
+                                Visualizar RD Express
+                            </a>
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <button @click="imprimirA4"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all backdrop-blur-sm">
-                            <i class="fa fa-print text-blue-200"></i>
-                            Imprimir Tabelas (A4)
-                        </button>
-                        <a :href="`/reports/rdreport`" target="_blank"
-                           class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
-                            <i class="fa fa-chart-line"></i>
-                            Visualizar RD Express
-                        </a>
+                    <!-- ═══════════════ NAVEGAÇÃO POR DIRECÇÃO ═══════════════ -->
+                    <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-white/15">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-200/80 mr-1">
+                            <i class="fas fa-layer-group mr-1"></i> Direcção:
+                        </span>
+
+                        <Link href="/reports/rd"
+                              :class="direccaoActiva === 'GLOBAL'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-globe-africa"></i>
+                            Global (100%)
+                        </Link>
+
+                        <Link href="/reports/rd/dpp"
+                              :class="direccaoActiva === 'DPP'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-handshake"></i>
+                            DPP (Particulares & Parcerias)
+                        </Link>
+
+                        <Link href="/reports/rd/dop"
+                              :class="direccaoActiva === 'DOP'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-sitemap"></i>
+                            DOP (Operações)
+                        </Link>
+
+                        <Link href="/reports/rd/out"
+                              :class="direccaoActiva === 'OUT'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-folder-open"></i>
+                            OUT (Outros)
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -96,7 +146,7 @@
                             <h3 class="font-semibold text-slate-800">Evolução da Carteira</h3>
                         </div>
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                            {{ historicoAteUltimoPeriodo.length }} Períodos (até {{ ultimoMesNome }})
+                            {{ historicoOrdenado.length }} Períodos (até {{ ultimoMesNome }})
                         </span>
                     </div>
                     <div class="h-56 relative">
@@ -152,7 +202,7 @@
             <div ref="areaTabelas">
                 <div class="hidden print:block text-center mb-4 pb-2 border-b border-slate-300">
                     <h1 class="text-base font-bold text-slate-800 uppercase tracking-wide">
-                        RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA]
+                        RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA · {{ tituloDireccao }}]
                     </h1>
                 </div>
 
@@ -162,30 +212,32 @@
                     <section>
                         <SectionTitle
                             icon="fa-globe-africa"
-                            title="Reporting Global — KIXICRÉDITO ANGOLA (100%)"
+                            :title="`Reporting Consolidado — KIXICRÉDITO ANGOLA (${tituloDireccao})`"
                             subtitle="Histórico Mensal Consolidado até ao Último Período"
                             tone="blue"
                         />
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-xs border-collapse text-slate-800">
                                 <thead class="sticky top-0 z-10">
-                                    <tr class="bg-[#0B2E4F] text-white text-center">
+                                    <tr class="text-center">
+                                        <!-- Canto superior esquerdo invisível -->
                                         <th rowspan="2"
-                                            class="w-36 bg-slate-50 text-slate-500 font-bold border-r border-b border-slate-300 px-3 py-1.5 align-bottom text-left text-[11px] uppercase tracking-wider">
-                                            Indicadores
+                                            class="w-36 bg-white border-0 px-3 py-1.5 align-bottom text-left text-[11px] uppercase tracking-wider">
                                         </th>
                                         <th :colspan="colunasMeses.length"
-                                            class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
+                                            class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider rounded-tl-xl">
                                             Histórico Mensal
                                         </th>
-                                        <th colspan="2" class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
+                                        <th colspan="2" class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
                                             Variação
                                         </th>
-                                        <th class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider bg-[#1E5A8E]">
+                                        <th rowspan="2" class="text-white border-b border-slate-300 py-1.5 px-3 text-[11px] uppercase tracking-wider bg-[#1E5A8E] rounded-tr-xl">
                                             {{ ultimoMesNome || 'Mês Atual' }}
                                         </th>
-                                        <th class="border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">OM</th>
+                                        <!-- Canto superior direito invisível -->
+                                        <th rowspan="2" class="bg-white border-0 py-1.5 px-3 text-[11px] uppercase tracking-wider">
+                                        </th>
                                     </tr>
                                     <tr class="bg-[#103E68] text-white text-center">
                                         <th v-for="mes in colunasMeses" :key="mes.key"
@@ -194,12 +246,10 @@
                                         </th>
                                         <th class="border-r border-b border-slate-300 px-3 py-1 bg-emerald-500/20 text-emerald-200 text-[11px]">▲</th>
                                         <th class="border-r border-b border-slate-300 px-3 py-1 bg-rose-500/20 text-rose-200 text-[11px]">▼</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-1 bg-[#1E5A8E]"></th>
-                                        <th class="border-b border-slate-300 px-3 py-1"></th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr class="hover:bg-blue-50/40 transition-colors">
+                                <tbody class="divide-y divide-slate-100 border-x border-b border-slate-200">
+                                    <tr class="hover:bg-blue-50/40 transition-colors border-t border-slate-200">
                                         <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
                                                 <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
@@ -785,7 +835,6 @@
 
                     <!-- ═════════════════════════════════════════════════════════════════
                          6. TOP CLIENTES EM RISCO CRÍTICO
-                         Model: tblRDRiscoTopClientes
                          ═════════════════════════════════════════════════════════════════ -->
                     <section v-if="temTopClientes" class="pt-6 border-t-2 border-slate-200 space-y-6">
                         <SectionTitle
@@ -914,7 +963,6 @@
 
                     <!-- ═════════════════════════════════════════════════════════════════
                          7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO
-                         Model: tblrdriscoexposicaocentroscusto
                          ═════════════════════════════════════════════════════════════════ -->
                     <section v-if="centrosCustoOrdenadosPorRisco.length > 0" class="pt-6 border-t-2 border-slate-200">
                         <SectionTitle
@@ -991,13 +1039,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import Chart from 'chart.js/auto'
 
 /* ══════════════════════════════════════════════════
    PROPS
    ══════════════════════════════════════════════════ */
 const props = defineProps({
+    direccaoActiva: { type: String, default: 'GLOBAL' }, // 'GLOBAL' | 'DPP' | 'DOP' | 'OUT'
     historicoRD: { type: Array, default: () => [] },
     agenciasRD: { type: Array, default: () => [] },
     produtosRD: { type: Array, default: () => [] },
@@ -1009,6 +1058,16 @@ const props = defineProps({
     riscoExposicaoCentrosCustoRD: { type: Array, default: () => [] },
     riscoTopClientesRD: { type: Array, default: () => [] },
     user: Object
+})
+
+const tituloDireccao = computed(() => {
+    const map = {
+        GLOBAL: '100% Instituição',
+        DPP: 'Direcção DPP · Particulares & Parcerias',
+        DOP: 'Direcção DOP · Operações',
+        OUT: 'Direcção OUT · Outros',
+    }
+    return map[String(props.direccaoActiva || 'GLOBAL').toUpperCase()] || props.direccaoActiva
 })
 
 /* ══════════════════════════════════════════════════
@@ -1248,12 +1307,33 @@ const chartAgenciasRef = ref(null)
 const charts = { balanco: null, fluxo: null, qualidade: null, agencias: null }
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: HISTÓRICO DINÂMICO (ACTIVO = 1 · EXCLUINDO O MÊS EM ANÁLISE DO HISTÓRICO)
+   HELPER DE DATA SEGURA (SUPORTA ISO YYYY-MM-DD E DD/MM/YYYY)
+   ══════════════════════════════════════════════════ */
+const parseDataLocal = (dataStr) => {
+    if (!dataStr) return null
+    if (dataStr instanceof Date) return dataStr
+    const str = String(dataStr).trim()
+
+    const isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/)
+    if (isoMatch) {
+        return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]))
+    }
+
+    const ptMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/)
+    if (ptMatch) {
+        return new Date(Number(ptMatch[3]), Number(ptMatch[2]) - 1, Number(ptMatch[1]))
+    }
+
+    return new Date(str)
+}
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: HISTÓRICO DINÂMICO (ACTIVO = 1)
    ══════════════════════════════════════════════════ */
 const historicoOrdenado = computed(() => {
     return [...(props.historicoRD || [])]
         .filter(item => Number(item.Activo ?? item.activo) === 1 || item.Activo === true || item.activo === true)
-        .sort((a, b) => new Date(a.DataReferencia) - new Date(b.DataReferencia))
+        .sort((a, b) => parseDataLocal(a.DataReferencia) - parseDataLocal(b.DataReferencia))
 })
 
 const ultimoRegistro = computed(() => {
@@ -1273,41 +1353,49 @@ const historicoAteUltimoPeriodo = computed(() => {
 
 const anoAtual = computed(() => {
     if (ultimoRegistro.value?.DataReferencia) {
-        return new Date(ultimoRegistro.value.DataReferencia).getFullYear()
+        return parseDataLocal(ultimoRegistro.value.DataReferencia).getFullYear()
     }
-    return 2026
+    return new Date().getFullYear()
 })
 
-const colunasMeses = computed(() => historicoAteUltimoPeriodo.value.map(item => {
-    const data = new Date(item.DataReferencia)
-    const mesExtenso = data.toLocaleDateString('pt-PT', { month: 'short' }).replace('.', '')
+const formatarLabelMes = (dataReferencia) => {
+    const data = parseDataLocal(dataReferencia)
+    if (!data || isNaN(data.getTime())) return String(dataReferencia || '')
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    const mesAbrev = meses[data.getMonth()]
     const ano = data.getFullYear()
-    const label = (data.getMonth() === 11 && ano < Number(anoAtual.value))
+    return (data.getMonth() === 11 && ano < Number(anoAtual.value))
         ? `DEZ${ano}`
-        : mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1, 3) + '/' + String(ano).substring(2)
-    return { key: item.Id || item.DataReferencia, label }
-}))
+        : `${mesAbrev}/${String(ano).substring(2)}`
+}
+
+const colunasMeses = computed(() => historicoAteUltimoPeriodo.value.map(item => ({
+    key: item.Id || item.DataReferencia,
+    label: formatarLabelMes(item.DataReferencia)
+})))
+
+const labelsGraficosAutomaticos = computed(() => {
+    if (historicoOrdenado.value.length === 0) return []
+    if (historicoOrdenado.value.length === 1) {
+        return [formatarLabelMes(ultimoRegistro.value.DataReferencia)]
+    }
+    const labelsHistorico = colunasMeses.value.map(m => m.label)
+    const labelMesEmAnalise = formatarLabelMes(ultimoRegistro.value.DataReferencia)
+    return [...labelsHistorico, labelMesEmAnalise]
+})
 
 const ultimoMesNome = computed(() => {
     if (!ultimoRegistro.value) return ''
-    const d = new Date(ultimoRegistro.value.DataReferencia)
+    const d = parseDataLocal(ultimoRegistro.value.DataReferencia)
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
 })
 
-const labelMesActual = computed(() => {
-    if (ultimoRegistro.value?.DataReferencia) {
-        const d = new Date(ultimoRegistro.value.DataReferencia)
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
-    }
-    return '31/08/2026'
-})
+const labelMesActual = computed(() => ultimoMesNome.value)
 
 const labelMesAnterior = computed(() => {
-    if (registroAnterior.value?.DataReferencia) {
-        const d = new Date(registroAnterior.value.DataReferencia)
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
-    }
-    return '31/07/2026'
+    if (!registroAnterior.value?.DataReferencia) return ''
+    const d = parseDataLocal(registroAnterior.value.DataReferencia)
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
 })
 
 const labelFechoAA = computed(() => `DEZ ${Number(anoAtual.value) - 1}`)
@@ -1439,7 +1527,7 @@ const produtosAgrupados = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: PROVISÕES AGRUPADAS (COM GESTORKEY CORRETO)
+   COMPUTED: PROVISÕES AGRUPADAS
    ══════════════════════════════════════════════════ */
 const provisoesAgrupadas = computed(() => {
     if (!props.provisoesProdutosRD || props.provisoesProdutosRD.length === 0) return []
@@ -1458,7 +1546,7 @@ const provisoesAgrupadas = computed(() => {
         let gestor = ''
         let tipoDireccao = ''
 
-        if (nomeProd.includes('pame') || nomeProd.includes('colaborador')) {
+        if ( nomeProd.includes('colaborador')) {
             gestor = 'Marta dos Santos'
             tipoDireccao = 'OUTROS'
         } else {
@@ -1730,7 +1818,7 @@ const obterCorGestao = (valor) => {
 }
 
 /* ══════════════════════════════════════════════════
-   CHARTS AUTOMÁTICOS ATÉ AO ÚLTIMO PERÍODO
+   CHARTS AUTOMÁTICOS (HISTÓRICO DA TABELA PRINCIPAL + MÊS EM ANÁLISE)
    ══════════════════════════════════════════════════ */
 const CHART_FONT = { family: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' }
 
@@ -1741,10 +1829,10 @@ const destroyCharts = () => {
 const initCharts = () => {
     destroyCharts()
 
-    // 1. Gráfico: Evolução da Carteira (Até ao último período disponível)
-    if (chartBalancoRef.value && historicoAteUltimoPeriodo.value.length > 0) {
-        const labels = colunasMeses.value.map(m => m.label)
-        const data = historicoAteUltimoPeriodo.value.map(i => Number(i.BalancoValor) || 0)
+    // 1. Gráfico: Evolução da Carteira (Histórico da Tabela Principal + Mês em Análise)
+    if (chartBalancoRef.value && historicoOrdenado.value.length > 0) {
+        const labels = labelsGraficosAutomaticos.value
+        const data = historicoOrdenado.value.map(i => Number(i.BalancoValor) || 0)
 
         const ctx = chartBalancoRef.value.getContext('2d')
         const grad = ctx.createLinearGradient(0, 0, 0, 220)
@@ -1826,12 +1914,12 @@ const initCharts = () => {
         })
     }
 
-    // 3. Gráfico: Qualidade da Carteira (NPL · PAR 1 · PAR 30 até ao último período)
-    if (chartQualidadeRef.value && historicoAteUltimoPeriodo.value.length > 0) {
-        const labels = colunasMeses.value.map(m => m.label)
-        const npl = historicoAteUltimoPeriodo.value.map(i => Number(i.NPLPercentual) || 0)
-        const p1  = historicoAteUltimoPeriodo.value.map(i => Number(i.PAR1Percentual) || 0)
-        const p30 = historicoAteUltimoPeriodo.value.map(i => Number(i.PAR30Percentual) || 0)
+    // 3. Gráfico: Qualidade da Carteira (Histórico da Tabela Principal + Mês em Análise)
+    if (chartQualidadeRef.value && historicoOrdenado.value.length > 0) {
+        const labels = labelsGraficosAutomaticos.value
+        const npl = historicoOrdenado.value.map(i => Number(i.NPLPercentual) || 0)
+        const p1  = historicoOrdenado.value.map(i => Number(i.PAR1Percentual) || 0)
+        const p30 = historicoOrdenado.value.map(i => Number(i.PAR30Percentual) || 0)
 
         charts.qualidade = new Chart(chartQualidadeRef.value, {
             type: 'line',
@@ -1954,7 +2042,7 @@ const imprimirA4 = () => {
         <html>
             <head>
                 <meta charset="utf-8">
-                <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA]</title>
+                <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]</title>
                 ${estilos}
                 <style>
                     @page { size: A4 landscape; margin: 5mm; }

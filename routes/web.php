@@ -34,6 +34,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/referenciapgt', [ComprovativosController::class, 'viewReferenciaPGT'])->name('referenciapgt');
     Route::get('/clientecorp', [ClienteCEController::class, 'viewClientesCE'])->name('clientecorp');
     Route::get('/rdcorp', [RDKixiCorpController::class, 'viewReportRD'])->name('rdcorp');
+    // Relatórios por Direção
+    Route::get('/reports/rd/dpp', [RDKixiCorpController::class, 'viewReportRDDPP'])->name('reports.rd.dpp');
+    Route::get('/reports/rd/dop', [RDKixiCorpController::class, 'viewReportRDDOP'])->name('reports.rd.dop');
+    Route::get('/reports/rd/out', [RDKixiCorpController::class, 'viewReportRDOUT'])->name('reports.rd.out');
+
     Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/reconciliacao/exportar-excel', [CpvtReconciliacaoController::class, 'exportarExcel'])->name('reconciliacao.exportar');
@@ -169,4 +174,8 @@ Route::prefix('api')->group(function () {
     Route::post('/rd/carregartblRDprintProduto', [ExternalAPIController::class, 'carregartblRDprintProduto']);
     Route::post('/rd/carregartblRDprintProdutoProvisao', [ExternalAPIController::class, 'carregartblRDprintProdutoProvisao']);
     Route::post('/rd/carregartblRDprintRegional', [ExternalAPIController::class, 'carregartblRDprintRegional']);
+
+
+
+
 });
