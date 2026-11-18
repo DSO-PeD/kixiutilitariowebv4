@@ -62,6 +62,100 @@ class AuthController extends Controller
     }
 
     public function loginMobile(Request $request)
+{
+    $utilizador = $request->input('utilizador');
+    $password = $request->input('password');
+
+    // Carrega o utilizador já com as permissões associadas (apenas id, name e label)
+    $user = TKxUsUtilizadorModel::with('permissions:id,name,label')
+        ->where('UtCodigo', $utilizador)
+        ->where('UtSenha', $password)
+        ->where('activo', 1)
+        ->first();
+
+    if ($user) {
+        $agencia = TKxAgenciaModel::where('OfCodigo', $user->UtAgencia)->first();
+
+        $basesOperacao = explode(',', $agencia->BasesOperacao);
+
+        $basesOperacionais = TKxAgenciaModel::whereIn(
+            'OfIdentificador',
+            $basesOperacao
+        )->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
+
+        $ProdutosPrestacao = TKxClProdutoModel::where(
+            'TipoProduto',
+            '=',
+            'L'
+        )->where('Estado', 1)->get(['Metodologia', 'PoAgrupado']);
+
+        $ProdutosPoupancas = TKxClProdutoModel::where(
+            'TipoProduto',
+            '=',
+            'S'
+        )->where('Estado', 1)->get(['Metodologia', 'PoAgrupado']);
+
+        $dateFilter = $this->getDateFilter($request);
+
+        $FormasDePagamento = TKxClTipopagamentoModel::getFormasDePamentos();
+
+        $hoje = Carbon::today()->format('Y-m-d 00:00:00');
+
+        $query = ComprovativoModel::whereIn('BaseOperacao', $basesOperacao)->where('Eliminado', 0);
+        $query->whereDate('CiFecha', $hoje);
+        $cpvtDFC = (clone $query)->where('idestado', 19);
+        $cpvtDFC2 = (clone $query)->where('idestado', 8);
+        $cpvtDFC3 = (clone $query)->whereIn('idestado', [9, 11, 13, 20]);
+
+        // Remove o objeto "pivot" que o Eloquent inclui por defeito em relações belongsToMany
+        $permissoes = $user->permissions->makeHidden('pivot');
+
+        $response = [
+            'status' => 'SUCCESS',
+            'message' => 'Login efectuado com sucesso.',
+            'data' => [
+                'utilizador' => [
+                    'UtCodigo' => $user->UtCodigo,
+                    'UtNome' => $user->UtNome,
+                    'UtFuncao' => $user->UtFuncao,
+                    'UtAgencia' => $user->UtAgencia,
+                    'permissoes' => $permissoes,
+                ],
+                //'permissoes' => $permissoes,
+                'agencia' => $agencia ? [
+                    'OfCodigo' => $agencia->OfCodigo,
+                    'OfNombre' => $agencia->OfNombre,
+                    'OfIdentificador' => $agencia->OfIdentificador,
+                    'BasesOperacao' => $agencia->BasesOperacao,
+                ] : null,
+                'dadosestatisticos' => [
+                    'QtdRegistosComprovativos' => $query->count(),
+                    'QtdValorRegistosComprovativos' => $query->sum('BuMontante'),
+                    'TotaldeRegistossemParacer' => $cpvtDFC->count(),
+                    'TotalValordeRegistossemParacer' => $cpvtDFC->sum('BuMontante'),
+                    'TotaldeRegistosRespondidos' => $cpvtDFC2->count(),
+                    'TotalValordeRegistosRespondidos' => $cpvtDFC2->sum('BuMontante'),
+                    'TotaldeReconciliaNaoFinalizado' => $cpvtDFC3->count(),
+                    'TotalValorReconciliaNaoFinalizado' => $cpvtDFC3->sum('BuMontante'),
+                ],
+                'basesOperacionais' => $basesOperacionais,
+                'ProdutosPrestacao' => $ProdutosPrestacao,
+                'ProdutosPoupancas' => $ProdutosPoupancas,
+                'FormasDePagamento' => $FormasDePagamento
+            ]
+        ];
+
+        return response()->json($response, 200);
+    } else {
+        return response()->json([
+            'status' => 'ERROR',
+            'message' => 'Credenciais inválidas!'
+        ], 401);
+    }
+}
+
+    /*
+    public function loginMobile(Request $request)
     {
         $utilizador = $request->input('utilizador');
         $password = $request->input('password');
@@ -98,10 +192,6 @@ class AuthController extends Controller
             $dateFilter = $this->getDateFilter($request);
 
             $FormasDePagamento = TKxClTipopagamentoModel::getFormasDePamentos();
-
-
-
-
 
 
 
@@ -158,6 +248,7 @@ class AuthController extends Controller
             ], 401);
         }
     }
+    */
 
     protected function loadUserSessionData($user)
     {

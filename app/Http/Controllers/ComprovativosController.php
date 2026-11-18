@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CaptacaoClienteModel;
 use App\Models\ComprovativoModel;
 use App\Models\CpvtReconciliacaoModel;
+use App\Models\EstadoRespostaAgenciaModel;
 use App\Models\EstadosModel;
 use App\Models\RecuperacaoModel;
 use App\Models\TKuPendentesModel;
@@ -16,6 +18,7 @@ use App\Models\TKxUsUtilizadorModel;
 use App\Models\TKxExtratoModel;
 use App\Models\PgtRefNotificacaoModel;
 use App\Models\HelperModel;
+use App\Models\TipoNegocioModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -167,12 +170,12 @@ class ComprovativosController extends Controller
 
         /*** Associar com dados não relacionados */
         $lnrs = collect($lista_comprovativo)->pluck('BuDadoOrigem')->unique();
-        $contactos = TKxExtratoModel::whereIn('Lnr', $lnrs)->pluck('Telefone','Lnr');
+        $contactos = TKxExtratoModel::whereIn('Lnr', $lnrs)->pluck('Telefone', 'Lnr');
 
         $refs = collect($lista_comprovativo)->pluck('refPagamento')->unique();
         $ibans = PgtRefNotificacaoModel::whereIn('refPagamento', $refs)->pluck('nib', 'refPagamento');
 
-        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) use ($contactos,$ibans) { 
+        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) use ($contactos, $ibans) {
             $vcr_view = "-";
 
             if ($item->voucher == "" || $item->voucher == null) {
@@ -213,7 +216,7 @@ class ComprovativosController extends Controller
                 'refPagamento' => $item->refPagamento,
                 'periodo_trans_pgr' => $item->periodo_trans_pgr,
                 'telefone' => $contactos[$item->BuDadoOrigem] ?? 'N/A',
-                'iban'     => $ibans[$item->refPagamento] ?? 'N/A'
+                'iban' => $ibans[$item->refPagamento] ?? 'N/A'
             ];
         });
 
@@ -224,9 +227,9 @@ class ComprovativosController extends Controller
         $totalReembolsos = (float) ($arrecadacao->R ?? 0);
 
         $NumeroPaginator = 30;
-        
+
         return Inertia::render('Comprovativos', [
-            'totalPoupancas' => $totalPoupancas, 
+            'totalPoupancas' => $totalPoupancas,
             'totalReembolsos' => $totalReembolsos,
             'lista_comprovativo' => $comprovativos_list,
             'filters' => [
@@ -413,10 +416,10 @@ class ComprovativosController extends Controller
             if ($comprovativo) {
                 // Calcular capital e juros se for Loan
                 if ($cadastrarTipo === "Loan" && $comprovativo->BaseOperacao !== 'AC' && $comprovativo->BaseOperacao !== 'DP') {
-                    $status = HelperModel::calcularCapitalEJuros($dados["BuMontante"],$dados["BuDadoOrigem"],$comprovativo->id);
-                } 
+                    $status = HelperModel::calcularCapitalEJuros($dados["BuMontante"], $dados["BuDadoOrigem"], $comprovativo->id);
+                }
                 return redirect()->route('comprovativos')->with('success', 'Dados guardados com sucesso!');
-            } else{
+            } else {
                 throw new Exception('Falha ao inserir comprovativo');
             }
 
@@ -874,7 +877,7 @@ class ComprovativosController extends Controller
 
 
         $lista_pendentes = TKuPendentesModel::whereIn('BaseOperacao', $BasesOperacao)->where('Tipo', 'R')->get();
-        
+
         $TipoComprovativo = [
             'G' => 'G/',
             'I' => 'I/'
@@ -902,10 +905,10 @@ class ComprovativosController extends Controller
     // PAGAMENTOS POR REFERENCIA MANUAIS:******************************************************************
 
     public function viewReferenciaPGT(Request $request)
-    { 
+    {
 
 
-        $authenticatedUser = Auth::user(); 
+        $authenticatedUser = Auth::user();
 
         $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
 
@@ -913,7 +916,7 @@ class ComprovativosController extends Controller
         $tipoProdutoPP = $request->filtrar_poupancas;
         $tipoProdutoPT = $request->filtrar_prestacoes;
 
-        $lista_produtos = TKxClProdutoModel::getProdutos(); 
+        $lista_produtos = TKxClProdutoModel::getProdutos();
 
         $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
         $dataFecho = $resultagencia_user->DataFecho;
@@ -945,7 +948,7 @@ class ComprovativosController extends Controller
         $TIPO = 7371;
         $LOAN = "'DS/280890'";
 
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao); 
+        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
 
         if ($tipoDeBusca == 1) {
             $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
@@ -969,7 +972,7 @@ class ComprovativosController extends Controller
 
             $TIPO = 73714;
         }
-    
+
         $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, "'DJA'");
 
         $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
@@ -986,7 +989,7 @@ class ComprovativosController extends Controller
             'G' => 'G/',
             'I' => 'I/'
         ];
-      
+
         $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
             return [
                 'id' => $item->id,
@@ -1014,7 +1017,7 @@ class ComprovativosController extends Controller
         });
 
         $NumeroPaginator = 30;
-        
+
         return Inertia::render('ReferenciasPGT', [
             'lista_comprovativo' => $comprovativos_list,
             'filters' => [
@@ -1060,7 +1063,7 @@ class ComprovativosController extends Controller
                     ->with('error', 'Esta referência de pagamento já está em uso' . $referenciaExistente)
                     ->withInput();
             }
-            
+
             $siglaagencia = TKxAgenciaModel::where('OfCodigo', $request->selectBase)->first();
             $loanNumber = $siglaagencia->OfIdentificador . '/' . $request->selectGrupoIndividual . '/' . $request->txtNumeroLoanSaving;
 

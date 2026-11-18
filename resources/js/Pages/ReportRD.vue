@@ -1,5 +1,5 @@
  <template>
-    <Head title="Reporting Balance Kixi Crédito Angola" />
+    <Head :title="`Reporting Balance Kixi Crédito Angola · ${tituloDireccao}`" />
 
     <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/50">
         <div class="container mx-auto py-4 md:py-6 px-2 md:px-4 max-w-[1600px]">
@@ -9,33 +9,83 @@
                 <div class="absolute inset-0 opacity-10"
                      style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px); background-size: 24px 24px;">
                 </div>
-                <div class="relative flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-5 md:p-6">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-2xl ring-1 ring-white/20">
-                            <i class="fas fa-chart-pie text-2xl text-emerald-300"></i>
+                <div class="relative flex flex-col gap-4 p-5 md:p-6">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/10 backdrop-blur-sm p-3 rounded-2xl ring-1 ring-white/20">
+                                <i class="fas fa-chart-pie text-2xl text-emerald-300"></i>
+                            </div>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
+                                        Reporting Balance · Kixi Crédito Angola
+                                    </h1>
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/30">
+                                        {{ tituloDireccao }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-blue-100/80 mt-0.5 flex items-center gap-2">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Relatório Diário Executivo · {{ ultimoMesNome }}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
-                                Reporting Balance · Kixi Crédito Angola
-                            </h1>
-                            <p class="text-sm text-blue-100/80 mt-0.5 flex items-center gap-2">
-                                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Relatório Diário Executivo · {{ ultimoMesNome }}
-                            </p>
+
+                        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <button @click="imprimirA4"
+                                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all backdrop-blur-sm">
+                                <i class="fa fa-print text-blue-200"></i>
+                                Imprimir Tabelas (A4)
+                            </button>
+                            <a :href="`/reports/rdreport`" target="_blank"
+                               class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
+                                <i class="fa fa-chart-line"></i>
+                                Visualizar RD Express
+                            </a>
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <button @click="imprimirA4"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all backdrop-blur-sm">
-                            <i class="fa fa-print text-blue-200"></i>
-                            Imprimir Tabelas (A4)
-                        </button>
-                        <a :href="`/reports/rdreport`" target="_blank"
-                           class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
-                            <i class="fa fa-chart-line"></i>
-                            Visualizar RD Express
-                        </a>
+                    <!-- ═══════════════ NAVEGAÇÃO POR DIRECÇÃO ═══════════════ -->
+                    <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-white/15">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-200/80 mr-1">
+                            <i class="fas fa-layer-group mr-1"></i> Direcção:
+                        </span>
+
+                        <Link href="/reports/rd"
+                              :class="direccaoActiva === 'GLOBAL'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-globe-africa"></i>
+                            Global (100%)
+                        </Link>
+
+                        <Link href="/reports/rd/dpp"
+                              :class="direccaoActiva === 'DPP'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-handshake"></i>
+                            DPP (Particulares & Parcerias)
+                        </Link>
+
+                        <Link href="/reports/rd/dop"
+                              :class="direccaoActiva === 'DOP'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-sitemap"></i>
+                            DOP (Operações)
+                        </Link>
+
+                        <Link href="/reports/rd/out"
+                              :class="direccaoActiva === 'OUT'
+                                  ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
+                                  : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
+                              class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
+                            <i class="fas fa-folder-open"></i>
+                            OUT (Outros)
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -43,7 +93,7 @@
             <!-- ═══════════════ KPI CARDS ═══════════════ -->
             <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4 mb-6">
                 <KpiCard
-                    label="Balanço Total"
+                    label="Carteira Total"
                     :value="formatarMoedaCompacta(ultimoRegistro?.BalancoValor)"
                     :delta="calcularDelta(ultimoRegistro?.BalancoValor, registroAnterior?.BalancoValor)"
                     icon="fa-wallet"
@@ -96,7 +146,7 @@
                             <h3 class="font-semibold text-slate-800">Evolução da Carteira</h3>
                         </div>
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                            {{ historicoAteUltimoPeriodo.length }} Períodos (até {{ ultimoMesNome }})
+                            {{ historicoOrdenado.length }} Períodos (até {{ ultimoMesNome }})
                         </span>
                     </div>
                     <div class="h-56 relative">
@@ -152,7 +202,7 @@
             <div ref="areaTabelas">
                 <div class="hidden print:block text-center mb-4 pb-2 border-b border-slate-300">
                     <h1 class="text-base font-bold text-slate-800 uppercase tracking-wide">
-                        RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA]
+                        RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA · {{ tituloDireccao }}]
                     </h1>
                 </div>
 
@@ -162,30 +212,32 @@
                     <section>
                         <SectionTitle
                             icon="fa-globe-africa"
-                            title="Reporting Global — KIXICRÉDITO ANGOLA (100%)"
+                            :title="`Reporting Consolidado — KIXICRÉDITO ANGOLA (${tituloDireccao})`"
                             subtitle="Histórico Mensal Consolidado até ao Último Período"
                             tone="blue"
                         />
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-xs border-collapse text-slate-800">
                                 <thead class="sticky top-0 z-10">
-                                    <tr class="bg-[#0B2E4F] text-white text-center">
+                                    <tr class="text-center">
+                                        <!-- Canto superior esquerdo invisível -->
                                         <th rowspan="2"
-                                            class="w-36 bg-slate-50 text-slate-500 font-bold border-r border-b border-slate-300 px-3 py-1.5 align-bottom text-left text-[11px] uppercase tracking-wider">
-                                            Indicadores
+                                            class="w-36 bg-white border-0 px-3 py-1.5 align-bottom text-left text-[11px] uppercase tracking-wider">
                                         </th>
                                         <th :colspan="colunasMeses.length"
-                                            class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
+                                            class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider rounded-tl-xl">
                                             Histórico Mensal
                                         </th>
-                                        <th colspan="2" class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
+                                        <th colspan="2" class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
                                             Variação
                                         </th>
-                                        <th class="border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider bg-[#1E5A8E]">
+                                        <th rowspan="2" class="text-white border-b border-slate-300 py-1.5 px-3 text-[11px] uppercase tracking-wider bg-[#1E5A8E] rounded-tr-xl">
                                             {{ ultimoMesNome || 'Mês Atual' }}
                                         </th>
-                                        <th class="border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">OM</th>
+                                        <!-- Canto superior direito invisível -->
+                                        <th rowspan="2" class="bg-white border-0 py-1.5 px-3 text-[11px] uppercase tracking-wider">
+                                        </th>
                                     </tr>
                                     <tr class="bg-[#103E68] text-white text-center">
                                         <th v-for="mes in colunasMeses" :key="mes.key"
@@ -194,16 +246,14 @@
                                         </th>
                                         <th class="border-r border-b border-slate-300 px-3 py-1 bg-emerald-500/20 text-emerald-200 text-[11px]">▲</th>
                                         <th class="border-r border-b border-slate-300 px-3 py-1 bg-rose-500/20 text-rose-200 text-[11px]">▼</th>
-                                        <th class="border-r border-b border-slate-300 px-3 py-1 bg-[#1E5A8E]"></th>
-                                        <th class="border-b border-slate-300 px-3 py-1"></th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr class="hover:bg-blue-50/40 transition-colors">
+                                <tbody class="divide-y divide-slate-100 border-x border-b border-slate-200">
+                                    <tr class="hover:bg-blue-50/40 transition-colors border-t border-slate-200">
                                         <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left text-slate-700">
                                             <span class="inline-flex items-center gap-2">
                                                 <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
-                                                1. Balanço
+                                                1. Carteira
                                             </span>
                                         </td>
                                         <td v-for="item in historicoAteUltimoPeriodo" :key="item.Id || item.DataReferencia"
@@ -430,7 +480,7 @@
                                     <tr class="bg-[#103E68] text-white text-center text-[10px]">
                                         <th class="border-r border-b border-slate-300 px-3 py-1 text-left w-56 uppercase tracking-wider">Produto</th>
                                         <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">OA/PA</th>
-                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Balanço</th>
+                                        <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Carteira</th>
                                         <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Créditos | Novos</th>
                                         <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">Clientes | Novos</th>
                                         <th class="border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider">PAR 1</th>
@@ -443,23 +493,61 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <template v-for="grupo in produtosAgrupados" :key="grupo.gestor">
-                                        <tr class="bg-gradient-to-r from-indigo-100 via-indigo-50 to-transparent border-y border-indigo-200">
-                                            <td colspan="11" class="px-3 py-1.5">
-                                                <div class="flex items-center justify-between gap-3">
-                                                    <div class="flex items-center gap-2">
-                                                        <div class="w-6 h-6 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-sm">
-                                                            <i class="fas fa-user-tie text-[10px]"></i>
+                                        <tr class="bg-indigo-100/90 border-y border-indigo-300 font-bold text-indigo-950">
+                                            <td class="border-r border-indigo-200 px-3 py-1.5 text-left">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-5 h-5 rounded-md bg-indigo-600 text-white flex items-center justify-center shadow-sm shrink-0">
+                                                        <i class="fas fa-user-tie text-[9px]"></i>
+                                                    </div>
+                                                    <div class="leading-tight">
+                                                        <div class="text-xs font-bold text-indigo-950 uppercase tracking-wide">
+                                                            {{ grupo.gestor }}
                                                         </div>
-                                                        <div>
-                                                            <span class="text-xs font-bold text-indigo-900 uppercase tracking-wide">
-                                                                {{ grupo.gestor }}
-                                                            </span>
-                                                            <span class="text-[10px] text-indigo-600/80 font-medium ml-2">
-                                                                ({{ grupo.tipoDireccao }} · {{ grupo.itens.length }} {{ grupo.itens.length === 1 ? 'produto' : 'produtos' }})
-                                                            </span>
+                                                        <div class="text-[9px] text-indigo-700 font-medium">
+                                                            {{ grupo.tipoDireccao }} · {{ grupo.itens.length }} {{ grupo.itens.length === 1 ? 'produto' : 'produtos' }}
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-center tabular-nums">
+                                                {{ grupo.total.OA_Qtd }}/{{ grupo.total.PA_Qtd }}
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right tabular-nums">
+                                                {{ formatarNumero(grupo.total.BalancoValor) }}
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right tabular-nums">
+                                                <span>{{ formatarInt(grupo.total.CreditosTotal_Qtd) }}</span>
+                                                <span class="text-indigo-400 mx-1">|</span>
+                                                <span class="text-indigo-800">{{ formatarInt(grupo.total.CreditosNovos_Qtd) }}</span>
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right tabular-nums">
+                                                <span>{{ formatarInt(grupo.total.ClientesTotal_Qtd) }}</span>
+                                                <span class="text-indigo-400 mx-1">|</span>
+                                                <span class="text-cyan-800">{{ formatarInt(grupo.total.ClientesNovos_Qtd) }}</span>
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right tabular-nums">
+                                                {{ formatarK(grupo.total.PAR1_Valor) }}
+                                                <span class="text-[9px] text-amber-800 font-semibold ml-0.5">({{ Math.round(grupo.total.PAR1_Percentual) }}%)</span>
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right tabular-nums">
+                                                {{ formatarK(grupo.total.PAR30_Valor) }}
+                                                <span class="text-[9px] text-rose-800 font-semibold ml-0.5">({{ Math.round(grupo.total.PAR30_Percentual) }}%)</span>
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right text-emerald-800 tabular-nums">
+                                                {{ formatarNumero(grupo.total.DesembolsoValor) }}
+                                                <span v-if="grupo.total.TempoAtendimentoMedia !== null" class="text-[9px] text-slate-600 ml-1">| {{ String(Math.round(grupo.total.TempoAtendimentoMedia)).padStart(2, '0') }}</span>
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right text-rose-800 tabular-nums">
+                                                {{ formatarNumero(grupo.total.ReembolsoValor) }}
+                                            </td>
+                                            <td class="border-r border-indigo-200 px-2 py-1.5 text-right tabular-nums">
+                                                {{ formatarNumero(grupo.total.ProvisaoValor) }}
+                                            </td>
+                                            <td class="px-2 py-1.5 text-center tabular-nums">
+                                                <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px]"
+                                                      :class="obterCorGestao(grupo.total.GestaoMedia)">
+                                                    {{ grupo.total.GestaoMedia !== null ? Math.round(grupo.total.GestaoMedia) + (grupo.total.GestaoSufixo || '') : '—' }}
+                                                </span>
                                             </td>
                                         </tr>
 
@@ -747,7 +835,6 @@
 
                     <!-- ═════════════════════════════════════════════════════════════════
                          6. TOP CLIENTES EM RISCO CRÍTICO
-                         Model: tblRDRiscoTopClientes
                          ═════════════════════════════════════════════════════════════════ -->
                     <section v-if="temTopClientes" class="pt-6 border-t-2 border-slate-200 space-y-6">
                         <SectionTitle
@@ -876,7 +963,6 @@
 
                     <!-- ═════════════════════════════════════════════════════════════════
                          7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO
-                         Model: tblrdriscoexposicaocentroscusto
                          ═════════════════════════════════════════════════════════════════ -->
                     <section v-if="centrosCustoOrdenadosPorRisco.length > 0" class="pt-6 border-t-2 border-slate-200">
                         <SectionTitle
@@ -953,13 +1039,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import Chart from 'chart.js/auto'
 
 /* ══════════════════════════════════════════════════
    PROPS
    ══════════════════════════════════════════════════ */
 const props = defineProps({
+    direccaoActiva: { type: String, default: 'GLOBAL' }, // 'GLOBAL' | 'DPP' | 'DOP' | 'OUT'
     historicoRD: { type: Array, default: () => [] },
     agenciasRD: { type: Array, default: () => [] },
     produtosRD: { type: Array, default: () => [] },
@@ -973,8 +1060,18 @@ const props = defineProps({
     user: Object
 })
 
+const tituloDireccao = computed(() => {
+    const map = {
+        GLOBAL: '100% Instituição',
+        DPP: 'Direcção DPP · Particulares & Parcerias',
+        DOP: 'Direcção DOP · Operações',
+        OUT: 'Direcção OUT · Outros',
+    }
+    return map[String(props.direccaoActiva || 'GLOBAL').toUpperCase()] || props.direccaoActiva
+})
+
 /* ══════════════════════════════════════════════════
-   ESTADO REATIVO DAS ABAS DE RISCO (SEÇÃO 7)
+   ESTADO REATIVO DAS ABAS DE RISCO (SEÇÃO 6)
    ══════════════════════════════════════════════════ */
 const tabRiscoAtiva = ref('GERAL') // 'GERAL' | 'DOP' | 'DPP'
 
@@ -1036,6 +1133,49 @@ const SectionTitle = (p) => {
 SectionTitle.props = ['icon', 'title', 'subtitle', 'tone']
 
 const AgenciasTable = (p) => {
+    const linhasBase = (p.agencias || []).filter(a => !a.IsTotalizador)
+    const itensParaSomar = linhasBase.length > 0 ? linhasBase : (p.agencias || [])
+
+    const totais = itensParaSomar.reduce((acc, a) => {
+        acc.OA_Qtd += Number(a.OA_Qtd) || 0
+        acc.PA_Qtd += Number(a.PA_Qtd) || 0
+        acc.BalancoValor += Number(a.BalancoValor) || 0
+        acc.CreditosTotal_Qtd += Number(a.CreditosTotal_Qtd) || 0
+        acc.CreditosNovos_Qtd += Number(a.CreditosNovos_Qtd) || 0
+        acc.ClientesTotal_Qtd += Number(a.ClientesTotal_Qtd) || 0
+        acc.ClientesNovos_Qtd += Number(a.ClientesNovos_Qtd) || 0
+        acc.PAR1_Valor += Number(a.PAR1_Valor) || 0
+        acc.PAR30_Valor += Number(a.PAR30_Valor) || 0
+        acc.DesembolsoValor += Number(a.DesembolsoValor) || 0
+        acc.ReembolsoValor += Number(a.ReembolsoValor) || 0
+        acc.ProvisaoValor += Number(a.ProvisaoValor) || 0
+        acc.PesoPercentual += Number(a.PesoPercentual) || 0
+
+        if (a.TempoAtendimentodias !== null && a.TempoAtendimentodias !== undefined) {
+            acc.taSoma += Number(a.TempoAtendimentodias) || 0
+            acc.taCount += 1
+        }
+        if (a.GestaoValor !== null && a.GestaoValor !== undefined) {
+            acc.gestaoSoma += Number(a.GestaoValor) || 0
+            acc.gestaoCount += 1
+            if (!acc.gestaoSufixo && a.GestaoSufixo) acc.gestaoSufixo = a.GestaoSufixo
+        }
+        return acc
+    }, {
+        OA_Qtd: 0, PA_Qtd: 0, BalancoValor: 0,
+        CreditosTotal_Qtd: 0, CreditosNovos_Qtd: 0,
+        ClientesTotal_Qtd: 0, ClientesNovos_Qtd: 0,
+        PAR1_Valor: 0, PAR30_Valor: 0,
+        DesembolsoValor: 0, ReembolsoValor: 0, ProvisaoValor: 0,
+        PesoPercentual: 0, taSoma: 0, taCount: 0,
+        gestaoSoma: 0, gestaoCount: 0, gestaoSufixo: ''
+    })
+
+    const par1Perc = totais.BalancoValor > 0 ? (totais.PAR1_Valor / totais.BalancoValor) * 100 : 0
+    const par30Perc = totais.BalancoValor > 0 ? (totais.PAR30_Valor / totais.BalancoValor) * 100 : 0
+    const taMedia = totais.taCount > 0 ? Math.round(totais.taSoma / totais.taCount) : null
+    const gestaoMedia = totais.gestaoCount > 0 ? Math.round(totais.gestaoSoma / totais.gestaoCount) : null
+
     return h('div', { class: 'overflow-x-auto rounded-xl border border-slate-200' }, [
         h('table', { class: 'w-full text-xs border-collapse text-slate-800' }, [
             h('thead', [
@@ -1048,7 +1188,7 @@ const AgenciasTable = (p) => {
                 h('tr', { class: 'bg-[#103E68] text-white text-center text-[10px]' }, [
                     h('th', { class: 'border-r border-b border-slate-300 px-3 py-1 text-left w-48 uppercase tracking-wider' }, 'Localidade'),
                     h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'OA/PA'),
-                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Balanço'),
+                    h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Carteira'),
                     h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Créditos | Novos'),
                     h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'Clientes | Novos'),
                     h('th', { class: 'border-r border-b border-slate-300 px-2 py-1 uppercase tracking-wider' }, 'PAR 1'),
@@ -1107,7 +1247,50 @@ const AgenciasTable = (p) => {
                         }, a.GestaoValor !== null ? a.GestaoValor + (a.GestaoSufixo || '') : '—')
                     ])
                 ]))
-            )
+            ),
+            h('tfoot', [
+                h('tr', { class: 'bg-[#0B2E4F] text-white font-bold border-t-2 border-slate-400' }, [
+                    h('td', { class: 'border-r border-slate-600 px-3 py-1.5 text-left uppercase tracking-wider' }, [
+                        `Total ${p.titulo}`,
+                        totais.PesoPercentual > 0 && h('span', { class: 'text-blue-200 font-normal ml-1 text-[10px]' }, `(${Math.round(totais.PesoPercentual)}%)`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-center tabular-nums' },
+                        `${totais.OA_Qtd}/${totais.PA_Qtd}`),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right tabular-nums' },
+                        formatarNumero(totais.BalancoValor)),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right tabular-nums' }, [
+                        h('span', null, formatarInt(totais.CreditosTotal_Qtd)),
+                        h('span', { class: 'text-slate-400 mx-1' }, '|'),
+                        h('span', { class: 'text-indigo-200' }, formatarInt(totais.CreditosNovos_Qtd))
+                    ]),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right tabular-nums' }, [
+                        h('span', null, formatarInt(totais.ClientesTotal_Qtd)),
+                        h('span', { class: 'text-slate-400 mx-1' }, '|'),
+                        h('span', { class: 'text-cyan-200' }, formatarInt(totais.ClientesNovos_Qtd))
+                    ]),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right tabular-nums' }, [
+                        formatarK(totais.PAR1_Valor),
+                        h('span', { class: 'text-[10px] text-amber-300 font-semibold ml-1' }, `(${Math.round(par1Perc)}%)`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right tabular-nums' }, [
+                        formatarK(totais.PAR30_Valor),
+                        h('span', { class: 'text-[10px] text-rose-300 font-semibold ml-1' }, `(${Math.round(par30Perc)}%)`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right text-emerald-300 tabular-nums' }, [
+                        formatarNumero(totais.DesembolsoValor),
+                        taMedia !== null && h('span', { class: 'text-[10px] text-slate-300 ml-1' }, `| ${String(taMedia).padStart(2, '0')}`)
+                    ]),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right text-rose-300 tabular-nums' },
+                        formatarNumero(totais.ReembolsoValor)),
+                    h('td', { class: 'border-r border-slate-600 px-2 py-1.5 text-right tabular-nums' },
+                        formatarNumero(totais.ProvisaoValor)),
+                    h('td', { class: 'px-2 py-1.5 text-center tabular-nums' }, [
+                        h('span', {
+                            class: 'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] ' + obterCorGestao(gestaoMedia)
+                        }, gestaoMedia !== null ? gestaoMedia + totais.gestaoSufixo : '—')
+                    ])
+                ])
+            ])
         ])
     ])
 }
@@ -1124,10 +1307,33 @@ const chartAgenciasRef = ref(null)
 const charts = { balanco: null, fluxo: null, qualidade: null, agencias: null }
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: HISTÓRICO DINÂMICO ATÉ AO ÚLTIMO PERÍODO
+   HELPER DE DATA SEGURA (SUPORTA ISO YYYY-MM-DD E DD/MM/YYYY)
+   ══════════════════════════════════════════════════ */
+const parseDataLocal = (dataStr) => {
+    if (!dataStr) return null
+    if (dataStr instanceof Date) return dataStr
+    const str = String(dataStr).trim()
+
+    const isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/)
+    if (isoMatch) {
+        return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]))
+    }
+
+    const ptMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/)
+    if (ptMatch) {
+        return new Date(Number(ptMatch[3]), Number(ptMatch[2]) - 1, Number(ptMatch[1]))
+    }
+
+    return new Date(str)
+}
+
+/* ══════════════════════════════════════════════════
+   COMPUTED: HISTÓRICO DINÂMICO (ACTIVO = 1)
    ══════════════════════════════════════════════════ */
 const historicoOrdenado = computed(() => {
-    return [...(props.historicoRD || [])].sort((a, b) => new Date(a.DataReferencia) - new Date(b.DataReferencia))
+    return [...(props.historicoRD || [])]
+        .filter(item => Number(item.Activo ?? item.activo) === 1 || item.Activo === true || item.activo === true)
+        .sort((a, b) => parseDataLocal(a.DataReferencia) - parseDataLocal(b.DataReferencia))
 })
 
 const ultimoRegistro = computed(() => {
@@ -1141,46 +1347,55 @@ const registroAnterior = computed(() => {
 })
 
 const historicoAteUltimoPeriodo = computed(() => {
-    const arr = historicoOrdenado.value
-    if (arr.length <= 6) return arr
-    return arr.slice(arr.length - 6)
+    if (historicoOrdenado.value.length <= 1) return historicoOrdenado.value
+    return historicoOrdenado.value.slice(0, -1)
 })
 
 const anoAtual = computed(() => {
     if (ultimoRegistro.value?.DataReferencia) {
-        return new Date(ultimoRegistro.value.DataReferencia).getFullYear()
+        return parseDataLocal(ultimoRegistro.value.DataReferencia).getFullYear()
     }
-    return 2026
+    return new Date().getFullYear()
 })
 
-const colunasMeses = computed(() => historicoAteUltimoPeriodo.value.map(item => {
-    const data = new Date(item.DataReferencia)
-    const mesExtenso = data.toLocaleDateString('pt-PT', { month: 'short' })
-    const anoCurto = data.getFullYear().toString().substring(2)
-    const label = mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1, 3) + '/' + anoCurto
-    return { key: item.Id || item.DataReferencia, label }
-}))
+const formatarLabelMes = (dataReferencia) => {
+    const data = parseDataLocal(dataReferencia)
+    if (!data || isNaN(data.getTime())) return String(dataReferencia || '')
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    const mesAbrev = meses[data.getMonth()]
+    const ano = data.getFullYear()
+    return (data.getMonth() === 11 && ano < Number(anoAtual.value))
+        ? `DEZ${ano}`
+        : `${mesAbrev}/${String(ano).substring(2)}`
+}
+
+const colunasMeses = computed(() => historicoAteUltimoPeriodo.value.map(item => ({
+    key: item.Id || item.DataReferencia,
+    label: formatarLabelMes(item.DataReferencia)
+})))
+
+const labelsGraficosAutomaticos = computed(() => {
+    if (historicoOrdenado.value.length === 0) return []
+    if (historicoOrdenado.value.length === 1) {
+        return [formatarLabelMes(ultimoRegistro.value.DataReferencia)]
+    }
+    const labelsHistorico = colunasMeses.value.map(m => m.label)
+    const labelMesEmAnalise = formatarLabelMes(ultimoRegistro.value.DataReferencia)
+    return [...labelsHistorico, labelMesEmAnalise]
+})
 
 const ultimoMesNome = computed(() => {
     if (!ultimoRegistro.value) return ''
-    const d = new Date(ultimoRegistro.value.DataReferencia)
+    const d = parseDataLocal(ultimoRegistro.value.DataReferencia)
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
 })
 
-const labelMesActual = computed(() => {
-    if (ultimoRegistro.value?.DataReferencia) {
-        const d = new Date(ultimoRegistro.value.DataReferencia)
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
-    }
-    return '31/08/2026'
-})
+const labelMesActual = computed(() => ultimoMesNome.value)
 
 const labelMesAnterior = computed(() => {
-    if (registroAnterior.value?.DataReferencia) {
-        const d = new Date(registroAnterior.value.DataReferencia)
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
-    }
-    return '31/07/2026'
+    if (!registroAnterior.value?.DataReferencia) return ''
+    const d = parseDataLocal(registroAnterior.value.DataReferencia)
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
 })
 
 const labelFechoAA = computed(() => `DEZ ${Number(anoAtual.value) - 1}`)
@@ -1234,26 +1449,85 @@ const obterClasseDestaqueReembolso = (mes) => {
 const produtosAgrupados = computed(() => {
     if (!props.produtosRD || props.produtosRD.length === 0) return []
     const grupos = {}
+
     props.produtosRD.forEach(item => {
         const gestor = item.DirectorNome || 'SEM GESTOR ATRIBUÍDO'
         const tipoDireccao = item.TipoDireccao || 'GERAL'
+
         if (!grupos[gestor]) {
             grupos[gestor] = {
                 gestor,
                 tipoDireccao,
                 itens: [],
-                total: { BalancoValor: 0, DesembolsoValor: 0 }
+                total: {
+                    OA_Qtd: 0,
+                    PA_Qtd: 0,
+                    BalancoValor: 0,
+                    CreditosTotal_Qtd: 0,
+                    CreditosNovos_Qtd: 0,
+                    ClientesTotal_Qtd: 0,
+                    ClientesNovos_Qtd: 0,
+                    PAR1_Valor: 0,
+                    PAR1_Percentual: 0,
+                    PAR30_Valor: 0,
+                    PAR30_Percentual: 0,
+                    DesembolsoValor: 0,
+                    ReembolsoValor: 0,
+                    ProvisaoValor: 0,
+                    taSoma: 0,
+                    taCount: 0,
+                    TempoAtendimentoMedia: null,
+                    gestaoSoma: 0,
+                    gestaoCount: 0,
+                    GestaoMedia: null,
+                    GestaoSufixo: ''
+                }
             }
         }
+
         grupos[gestor].itens.push(item)
-        grupos[gestor].total.BalancoValor += Number(item.BalancoValor) || 0
-        grupos[gestor].total.DesembolsoValor += Number(item.DesembolsoValor) || 0
+
+        const t = grupos[gestor].total
+        t.OA_Qtd += Number(item.OA_Qtd) || 0
+        t.PA_Qtd += Number(item.PA_Qtd) || 0
+        t.BalancoValor += Number(item.BalancoValor) || 0
+        t.CreditosTotal_Qtd += Number(item.CreditosTotal_Qtd) || 0
+        t.CreditosNovos_Qtd += Number(item.CreditosNovos_Qtd) || 0
+        t.ClientesTotal_Qtd += Number(item.ClientesTotal_Qtd) || 0
+        t.ClientesNovos_Qtd += Number(item.ClientesNovos_Qtd) || 0
+        t.PAR1_Valor += Number(item.PAR1_Valor) || 0
+        t.PAR30_Valor += Number(item.PAR30_Valor) || 0
+        t.DesembolsoValor += Number(item.DesembolsoValor) || 0
+        t.ReembolsoValor += Number(item.ReembolsoValor) || 0
+        t.ProvisaoValor += Number(item.ProvisaoValor) || 0
+
+        if (item.TempoAtendimentodias !== null && item.TempoAtendimentodias !== undefined) {
+            t.taSoma += Number(item.TempoAtendimentodias) || 0
+            t.taCount += 1
+        }
+        if (item.GestaoValor !== null && item.GestaoValor !== undefined) {
+            t.gestaoSoma += Number(item.GestaoValor) || 0
+            t.gestaoCount += 1
+            if (!t.GestaoSufixo && item.GestaoSufixo) {
+                t.GestaoSufixo = item.GestaoSufixo
+            }
+        }
     })
-    return Object.values(grupos).sort((a, b) => a.gestor.localeCompare(b.gestor, 'pt-PT'))
+
+    const lista = Object.values(grupos)
+    lista.forEach(g => {
+        const t = g.total
+        t.PAR1_Percentual = t.BalancoValor > 0 ? (t.PAR1_Valor / t.BalancoValor) * 100 : 0
+        t.PAR30_Percentual = t.BalancoValor > 0 ? (t.PAR30_Valor / t.BalancoValor) * 100 : 0
+        t.TempoAtendimentoMedia = t.taCount > 0 ? t.taSoma / t.taCount : null
+        t.GestaoMedia = t.gestaoCount > 0 ? t.gestaoSoma / t.gestaoCount : null
+    })
+
+    return lista.sort((a, b) => a.gestor.localeCompare(b.gestor, 'pt-PT'))
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: PROVISÕES AGRUPADAS (COM GESTORKEY CORRETO)
+   COMPUTED: PROVISÕES AGRUPADAS
    ══════════════════════════════════════════════════ */
 const provisoesAgrupadas = computed(() => {
     if (!props.provisoesProdutosRD || props.provisoesProdutosRD.length === 0) return []
@@ -1272,7 +1546,7 @@ const provisoesAgrupadas = computed(() => {
         let gestor = ''
         let tipoDireccao = ''
 
-        if (nomeProd.includes('pame') || nomeProd.includes('colaborador')) {
+        if ( nomeProd.includes('colaborador')) {
             gestor = 'Marta dos Santos'
             tipoDireccao = 'OUTROS'
         } else {
@@ -1402,7 +1676,7 @@ const linhasWO = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: 6. CENTROS DE CUSTO ORDENADOS POR GRAVIDADE DE RISCO
+   COMPUTED: 7. CENTROS DE CUSTO ORDENADOS POR GRAVIDADE DE RISCO
    ══════════════════════════════════════════════════ */
 const centrosCustoOrdenadosPorRisco = computed(() => {
     return [...(props.riscoExposicaoCentrosCustoRD || [])]
@@ -1415,7 +1689,7 @@ const centrosCustoOrdenadosPorRisco = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: 7. TOP 15 CLIENTES POR TIPO DE RANKING
+   COMPUTED: 6. TOP 15 CLIENTES POR TIPO DE RANKING
    ══════════════════════════════════════════════════ */
 const normalizarTipoRanking = (val) => String(val || '').trim().toUpperCase()
 
@@ -1544,7 +1818,7 @@ const obterCorGestao = (valor) => {
 }
 
 /* ══════════════════════════════════════════════════
-   CHARTS AUTOMÁTICOS ATÉ AO ÚLTIMO PERÍODO
+   CHARTS AUTOMÁTICOS (HISTÓRICO DA TABELA PRINCIPAL + MÊS EM ANÁLISE)
    ══════════════════════════════════════════════════ */
 const CHART_FONT = { family: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' }
 
@@ -1555,10 +1829,10 @@ const destroyCharts = () => {
 const initCharts = () => {
     destroyCharts()
 
-    // 1. Gráfico: Evolução da Carteira (Até ao último período disponível)
-    if (chartBalancoRef.value && historicoAteUltimoPeriodo.value.length > 0) {
-        const labels = colunasMeses.value.map(m => m.label)
-        const data = historicoAteUltimoPeriodo.value.map(i => Number(i.BalancoValor) || 0)
+    // 1. Gráfico: Evolução da Carteira (Histórico da Tabela Principal + Mês em Análise)
+    if (chartBalancoRef.value && historicoOrdenado.value.length > 0) {
+        const labels = labelsGraficosAutomaticos.value
+        const data = historicoOrdenado.value.map(i => Number(i.BalancoValor) || 0)
 
         const ctx = chartBalancoRef.value.getContext('2d')
         const grad = ctx.createLinearGradient(0, 0, 0, 220)
@@ -1570,7 +1844,7 @@ const initCharts = () => {
             data: {
                 labels,
                 datasets: [{
-                    label: 'Balanço Total',
+                    label: 'Carteira Total',
                     data,
                     borderColor: '#2563EB',
                     backgroundColor: grad,
@@ -1592,7 +1866,7 @@ const initCharts = () => {
                         backgroundColor: '#0B2E4F', padding: 10,
                         titleFont: { ...CHART_FONT, size: 11 },
                         bodyFont: { ...CHART_FONT, size: 12, weight: 'bold' },
-                        callbacks: { label: c => ' Balanço: ' + formatarNumero(c.parsed.y) + ' Kz' }
+                        callbacks: { label: c => ' Carteira: ' + formatarNumero(c.parsed.y) + ' Kz' }
                     }
                 },
                 scales: {
@@ -1640,12 +1914,12 @@ const initCharts = () => {
         })
     }
 
-    // 3. Gráfico: Qualidade da Carteira (NPL · PAR 1 · PAR 30 até ao último período)
-    if (chartQualidadeRef.value && historicoAteUltimoPeriodo.value.length > 0) {
-        const labels = colunasMeses.value.map(m => m.label)
-        const npl = historicoAteUltimoPeriodo.value.map(i => Number(i.NPLPercentual) || 0)
-        const p1  = historicoAteUltimoPeriodo.value.map(i => Number(i.PAR1Percentual) || 0)
-        const p30 = historicoAteUltimoPeriodo.value.map(i => Number(i.PAR30Percentual) || 0)
+    // 3. Gráfico: Qualidade da Carteira (Histórico da Tabela Principal + Mês em Análise)
+    if (chartQualidadeRef.value && historicoOrdenado.value.length > 0) {
+        const labels = labelsGraficosAutomaticos.value
+        const npl = historicoOrdenado.value.map(i => Number(i.NPLPercentual) || 0)
+        const p1  = historicoOrdenado.value.map(i => Number(i.PAR1Percentual) || 0)
+        const p30 = historicoOrdenado.value.map(i => Number(i.PAR30Percentual) || 0)
 
         charts.qualidade = new Chart(chartQualidadeRef.value, {
             type: 'line',
@@ -1768,7 +2042,7 @@ const imprimirA4 = () => {
         <html>
             <head>
                 <meta charset="utf-8">
-                <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA]</title>
+                <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]</title>
                 ${estilos}
                 <style>
                     @page { size: A4 landscape; margin: 5mm; }

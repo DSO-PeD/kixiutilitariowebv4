@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CaptacaoClienteController;
 use App\Http\Controllers\ComprovativosController;
 use App\Http\Controllers\CpvtReconciliacaoController;
 use App\Http\Controllers\PgtRefNotificacaoController;
@@ -33,6 +34,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/referenciapgt', [ComprovativosController::class, 'viewReferenciaPGT'])->name('referenciapgt');
     Route::get('/clientecorp', [ClienteCEController::class, 'viewClientesCE'])->name('clientecorp');
     Route::get('/rdcorp', [RDKixiCorpController::class, 'viewReportRD'])->name('rdcorp');
+    // Relatórios por Direção
+    Route::get('/reports/rd/dpp', [RDKixiCorpController::class, 'viewReportRDDPP'])->name('reports.rd.dpp');
+    Route::get('/reports/rd/dop', [RDKixiCorpController::class, 'viewReportRDDOP'])->name('reports.rd.dop');
+    Route::get('/reports/rd/out', [RDKixiCorpController::class, 'viewReportRDOUT'])->name('reports.rd.out');
+
     Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/reconciliacao/exportar-excel', [CpvtReconciliacaoController::class, 'exportarExcel'])->name('reconciliacao.exportar');
@@ -99,6 +105,30 @@ Route::post('/loginmobile', [AuthController::class, 'loginMobile'])->withoutMidd
 Route::post('/guardarpagamento', [ComprovativosController::class, 'guardarmobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 Route::post('/comprovativosmobile', [ComprovativosController::class, 'viewComprovativosMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
 Route::get('/relmobile/cpvtpgtmobile/{id}/{user}', [ReportDomPDFController::class, 'emitirRelatorioReembolsoPgtReferenciaMobile'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])->middleware('mobile');
+
+//  CAPTAÇÃO:
+Route::get('/dadosauxiliarescaptacao', [CaptacaoClienteController::class, 'dadosAuxiliaresCaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/guardarpontencialcliente', [CaptacaoClienteController::class, 'guardarmobilecaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/listarpontencialcliente', [CaptacaoClienteController::class, 'listarmobilecaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/oficiaiscreditoporagencia', [CaptacaoClienteController::class, 'listarOficiaisPorAgencia'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+Route::post('/atribuircliente/gerente', [CaptacaoClienteController::class, 'atribuirAoGerente'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+Route::post('/atribuircliente/oficialcredito', [CaptacaoClienteController::class, 'atribuirAoOficial'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
 /******************************************************************************************************************************************************************************************************************************************************** */
 
 Route::get('/test-redis', function () {
@@ -144,4 +174,8 @@ Route::prefix('api')->group(function () {
     Route::post('/rd/carregartblRDprintProduto', [ExternalAPIController::class, 'carregartblRDprintProduto']);
     Route::post('/rd/carregartblRDprintProdutoProvisao', [ExternalAPIController::class, 'carregartblRDprintProdutoProvisao']);
     Route::post('/rd/carregartblRDprintRegional', [ExternalAPIController::class, 'carregartblRDprintRegional']);
+
+
+
+
 });
