@@ -33,6 +33,8 @@ use Exception;
 class ComprovativosController extends Controller
 {
 
+
+
     public function viewComprovativos(Request $request)
     {
         $authenticatedUser = Auth::user();

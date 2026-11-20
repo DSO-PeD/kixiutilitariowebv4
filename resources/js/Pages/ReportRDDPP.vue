@@ -914,7 +914,7 @@
 
                     <!-- ═════════════════════════════════════════════════════════════════
                          7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO
-                         Model: tblrdriscoexposicaocentroscusto
+                         Model: tblRDRiscoExposicaoCentrosCusto
                          ═════════════════════════════════════════════════════════════════ -->
                     <section v-if="centrosCustoOrdenadosPorRisco.length > 0" class="pt-6 border-t-2 border-slate-200">
                         <SectionTitle

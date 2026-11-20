@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-
 class TblRDprintKixiCreditoModel extends Model
 {
     protected $table = 'tblRDprintKixiCredito';
@@ -15,6 +14,8 @@ class TblRDprintKixiCreditoModel extends Model
     protected $fillable = [
         'Id',
         'DataReferencia',
+        'TipoDireccao',
+        'DirectorNome',
         'BalancoValor',
         'CreditosQuantidade',
         'CreditosNovos',
@@ -68,40 +69,47 @@ class TblRDprintKixiCreditoModel extends Model
         'Reembolso',
         'VariacaoPercentual',
         'DataCriacao',
-        'Activo'
+        'Activo',
+        'TipoDireccao',
+        'DirectorNome'
     ];
 
     /**
-     * Obter registro por Data de Referência
+     * Buscar histórico consolidado filtrado por TipoDireccao ('KIX', 'DPP', 'DOP', 'OUT')
      */
-    public static function getPorDataReferencia($dataReferencia)
+    public static function getHistoricoPorDireccao(string $tipoDireccao = 'KIX')
+    {
+        return DB::table('tblRDprintKixiCredito')
+            ->where('Activo', 1)
+            ->where('TipoDireccao', $tipoDireccao)
+            ->orderBy('DataReferencia', 'asc')
+            ->get();
+    }
+
+    /**
+     * Obter registro por Data de Referência e Direção
+     */
+    public static function getPorDataReferencia($dataReferencia, string $tipoDireccao = 'KIX')
     {
         return DB::table('tblRDprintKixiCredito')
             ->where('DataReferencia', $dataReferencia)
+            ->where('TipoDireccao', $tipoDireccao)
             ->where('Activo', 1)
             ->first();
     }
 
     /**
-     * Salvar ou Atualizar registros consolidados (Upsert)
+     * Salvar ou Atualizar registros consolidados (Upsert por DataReferencia + TipoDireccao)
      */
     public static function salvarOuAtualizarDados(array $dados)
     {
         return DB::table('tblRDprintKixiCredito')->updateOrInsert(
-            ['DataReferencia' => $dados['DataReferencia']],
+            [
+                'DataReferencia' => $dados['DataReferencia'],
+                'TipoDireccao'   => $dados['TipoDireccao'] ?? 'KIX',
+            ],
             $dados
         );
-    }
-
-    /**
-     * Buscar todos os relatórios consolidados ordenados por data
-     */
-    public static function getHistoricoConsolidado()
-    {
-        return DB::table('tblRDprintKixiCredito')
-            ->where('Activo', 1)
-            ->orderBy('DataReferencia', 'desc')
-            ->get();
     }
 
     /**

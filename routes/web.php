@@ -14,6 +14,7 @@ use App\Http\Controllers\DebugPgtRefController;
 use App\Http\Controllers\ClienteCEController;
 use App\Http\Controllers\DeclaracaoController;
 use App\Http\Controllers\ExternalAPIController;
+use App\Http\Controllers\RdReportEmailController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redis;
 
@@ -22,6 +23,7 @@ Route::middleware(['guest', 'web'])->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
+
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
@@ -38,10 +40,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/rd/dpp', [RDKixiCorpController::class, 'viewReportRDDPP'])->name('reports.rd.dpp');
     Route::get('/reports/rd/dop', [RDKixiCorpController::class, 'viewReportRDDOP'])->name('reports.rd.dop');
     Route::get('/reports/rd/out', [RDKixiCorpController::class, 'viewReportRDOUT'])->name('reports.rd.out');
+    Route::post('/reports/rd/enviar-email', [RdReportEmailController::class, 'enviar'])->middleware(['auth', 'throttle:10,1'])   ->name('reports.rd.enviar-email');   // 10 envios por minuto por utilizador
+
 
     Route::post('/guardar-referencia-pagamento', [ComprovativosController::class, 'guardarRegerenciaPagamento'])->name('guardar.referencia.pagamento');
     Route::get('/reconciliacao', [CpvtReconciliacaoController::class, 'viewComprovativosReconlicacao'])->name('comprovativosreco');
     Route::get('/reconciliacao/exportar-excel', [CpvtReconciliacaoController::class, 'exportarExcel'])->name('reconciliacao.exportar');
+    Route::get('/comprovativos/exportar-csv', [ComprovativosController::class, 'exportarCsv'])->name('comprovativos.exportar.csv');
     Route::get('/listarEstadosDCF', [CpvtReconciliacaoController::class, 'listarEstadosReconciliacao']);
     Route::get('/listarCpvtDetalheDCF', [CpvtReconciliacaoController::class, 'listarDetalhesComprovativosDCF']);
     Route::get('/extratos', [TKxExtratoController::class, 'viewExtrato'])->name('extratos');
