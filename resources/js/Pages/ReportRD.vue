@@ -1,5 +1,5 @@
  <template>
-    <Head :title="`Reporting Balance Kixi Crédito Angola · ${tituloDireccao}`" />
+    <Head :title="`Reporting Balance ${tituloInstituicaoOuDireccao}`" />
 
     <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/50">
         <div class="container mx-auto py-4 md:py-6 px-2 md:px-4 max-w-[1600px]">
@@ -18,7 +18,7 @@
                             <div>
                                 <div class="flex flex-wrap items-center gap-2">
                                     <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
-                                        Reporting Balance · Kixi Crédito Angola
+                                        Reporting Balance · {{ tituloHeaderPrincipal }}
                                     </h1>
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/30">
                                         {{ tituloDireccao }}
@@ -35,7 +35,7 @@
                             <button @click="imprimirA4"
                                     class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all backdrop-blur-sm">
                                 <i class="fa fa-print text-blue-200"></i>
-                                Imprimir Tabelas (A4)
+                                Imprimir Relatório (A4)
                             </button>
                             <button @click="abrirDialogEmail"
                                     class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
@@ -52,7 +52,7 @@
                         </span>
 
                         <Link href="/rdcorp"
-                              :class="direccaoActiva === 'GLOBAL'
+                              :class="direccaoActivaNorm === 'GLOBAL'
                                   ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
                                   : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
                               class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
@@ -61,7 +61,7 @@
                         </Link>
 
                         <Link href="/reports/rd/dpp"
-                              :class="direccaoActiva === 'DPP'
+                              :class="direccaoActivaNorm === 'DPP'
                                   ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
                                   : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
                               class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
@@ -70,7 +70,7 @@
                         </Link>
 
                         <Link href="/reports/rd/dop"
-                              :class="direccaoActiva === 'DOP'
+                              :class="direccaoActivaNorm === 'DOP'
                                   ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
                                   : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
                               class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
@@ -79,7 +79,7 @@
                         </Link>
 
                         <Link href="/reports/rd/out"
-                              :class="direccaoActiva === 'OUT'
+                              :class="direccaoActivaNorm === 'OUT'
                                   ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
                                   : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
                               class="px-3.5 py-1.5 rounded-xl text-xs transition-all flex items-center gap-1.5">
@@ -91,7 +91,7 @@
             </div>
 
             <!-- ═══════════════ KPI CARDS ═══════════════ -->
-            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4 mb-6">
+            <div ref="areaKpis" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3 mb-6">
                 <KpiCard
                     label="Carteira Total"
                     :value="formatarMoedaCompleta(ultimoRegistro?.BalancoValor)"
@@ -121,15 +121,32 @@
                     tone="amber"
                 />
                 <KpiCard
-                    label="NPL"
-                    :value="formatarPercentual(ultimoRegistro?.NPLPercentual)"
-                    :delta="calcularDelta(ultimoRegistro?.NPLPercentual, registroAnterior?.NPLPercentual)"
-                    icon="fa-exclamation-triangle"
+                    label="Clientes Novos"
+                    :value="formatarInt(ultimoRegistro?.ClientesNovos)"
+                    :delta="calcularDelta(ultimoRegistro?.ClientesNovos, registroAnterior?.ClientesNovos)"
+                    icon="fa-user-plus"
+                    tone="blue"
+                />
+                <KpiCard
+                    label="PAR 30"
+                    :value="formatarMoedaCompleta(ultimoRegistro?.PAR30Valor)"
+                    :subValue="formatarPercentual(ultimoRegistro?.PAR30Percentual)"
+                    :delta="calcularDelta(ultimoRegistro?.PAR30Percentual, registroAnterior?.PAR30Percentual)"
+                    icon="fa-exclamation-circle"
+                    tone="amber"
+                    invert
+                />
+                <KpiCard
+                    label="Provisão"
+                    :value="formatarMoedaCompleta(ultimoRegistro?.ProvisaoValor)"
+                    :subValue="formatarPercentual(provisaoPercentualAtual)"
+                    :delta="calcularDelta(ultimoRegistro?.ProvisaoValor, registroAnterior?.ProvisaoValor)"
+                    icon="fa-shield-alt"
                     tone="rose"
                     invert
                 />
                 <KpiCard
-                    label="Taxa de Reembolso"
+                    label="Taxa Reembolso"
                     :value="formatarPercentual(ultimoRegistro?.TaxaReembolsoPercentual)"
                     :delta="calcularDelta(ultimoRegistro?.TaxaReembolsoPercentual, registroAnterior?.TaxaReembolsoPercentual)"
                     icon="fa-percentage"
@@ -138,7 +155,7 @@
             </div>
 
             <!-- ═══════════════ GRÁFICOS DINÂMICOS ═══════════════ -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+            <div ref="areaGraficos" class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
@@ -186,7 +203,7 @@
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-building text-indigo-600"></i>
-                            <h3 class="font-semibold text-slate-800">Distribuição da Carteira por Localidade Kixi Crédito</h3>
+                            <h3 class="font-semibold text-slate-800">Distribuição da Carteira por Localidade {{ tituloEntidadeCurto }}</h3>
                         </div>
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
                             Top 8 · {{ ultimoMesNome }}
@@ -202,17 +219,17 @@
             <div ref="areaTabelas">
                 <div class="hidden print:block text-center mb-4 pb-2 border-b border-slate-300">
                     <h1 class="text-base font-bold text-slate-800 uppercase tracking-wide">
-                        RD Express {{ ultimoMesNome }} [KIXICREDITO ANGOLA · {{ tituloDireccao }}]
+                        RD Express {{ ultimoMesNome }} [{{ tituloEntidadeMaiusculo }}]
                     </h1>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 space-y-8">
 
-                    <!-- ═══ TABELA 1: Reporting Global ═══ -->
-                    <section>
+                    <!-- ═══ TABELA 1: Reporting Global / Direcção ═══ -->
+                    <section v-if="historicoOrdenado.length > 0">
                         <SectionTitle
                             icon="fa-globe-africa"
-                            :title="`Reporting Consolidado — KIXICRÉDITO ANGOLA (${tituloDireccao})`"
+                            :title="`Reporting Consolidado — ${tituloEntidadeMaiusculo}`"
                             subtitle="Histórico Mensal Consolidado até ao Último Período"
                             tone="blue"
                         />
@@ -225,14 +242,16 @@
                                         <th rowspan="2"
                                             class="w-36 bg-white border-0 px-3 py-1.5 align-bottom text-left text-[11px] uppercase tracking-wider">
                                         </th>
-                                        <th :colspan="colunasMeses.length"
-                                            class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider rounded-tl-xl">
-                                            Histórico Mensal
+                                        <th :colspan="colunasMeses.length + 2"
+                                            class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-3.5 px-2 text-[18px] uppercase tracking-wider rounded-tl-xl">
+                                            <div class="font-extrabold text-[#FEF3C7] tracking-wide">
+                                                {{ tituloCabecalhoDireccao }}
+                                            </div>
+                                            <div v-if="directorExibicao" class="text-[14px] font-bold text-[#FDE68A] tracking-wider mt-0.5">
+                                                {{ directorExibicao }}
+                                            </div>
                                         </th>
-                                        <th colspan="2" class="bg-[#0B2E4F] text-white border-r border-b border-slate-300 py-1.5 text-[11px] uppercase tracking-wider">
-                                            Variação
-                                        </th>
-                                        <th rowspan="2" class="text-white border-b border-slate-300 py-1.5 px-3 text-[11px] uppercase tracking-wider bg-[#1E5A8E] rounded-tr-xl">
+                                        <th rowspan="2" class="text-white border-b border-slate-300 py-1.5 px-3 text-[16px] uppercase tracking-wider bg-[#1E5A8E] rounded-tr-xl">
                                             {{ ultimoMesNome || 'Mês Atual' }}
                                         </th>
                                         <!-- Canto superior direito invisível -->
@@ -357,7 +376,7 @@
                                             class="text-right border-r border-slate-200 px-2 py-1 font-medium tabular-nums">
                                             <span class="font-bold" :class="linha.classePerc">{{ formatarPercentual(item[linha.percKey]) }}</span>
                                             <br>
-                                            <span class="text-[9px] text-slate-500">{{ formatarK(item[linha.valKey]) }}</span>
+                                            <span class="text-[12px] text-slate-500">{{ formatarK(item[linha.valKey]) }}</span>
                                         </td>
                                         <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.[linha.maisKey]) }}
@@ -368,7 +387,7 @@
                                         <td class="text-right border-r border-slate-200 px-2 py-1 font-bold tabular-nums">
                                             <span class="font-bold" :class="linha.classePerc">{{ formatarPercentual(ultimoRegistro?.[linha.percKey]) }}</span>
                                             <br>
-                                            <span class="text-[9px] text-slate-500">{{ formatarK(ultimoRegistro?.[linha.valKey]) }}</span>
+                                            <span class="text-[12px] text-slate-500">{{ formatarK(ultimoRegistro?.[linha.valKey]) }}</span>
                                         </td>
                                         <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.[linha.variacaoKey]) <= 0 ? 'text-emerald-700' : 'text-rose-700'">
@@ -390,7 +409,7 @@
                                             class="text-right border-r border-slate-200 px-2 py-1 font-semibold text-rose-700 tabular-nums">
                                             {{ formatarNumero(item.ProvisaoValor) }}
                                             <br>
-                                            <span class="text-[9px] text-slate-500">{{ formatarProvisaoCobertura(item.ProvisaoDiasAtraso, item.ProvisaoCoberturaPerc) }}</span>
+                                            <span class="text-[10px] text-slate-600">{{ formatarProvisaoCobertura(item.ProvisaoDiasAtraso, item.ProvisaoCoberturaPerc, item.ProvisaoClasseRisco) }}</span>
                                         </td>
                                         <td class="text-right border-r border-slate-200 px-2 py-1 bg-emerald-50 text-emerald-700 font-bold tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.Provisao_Mais) }}
@@ -401,7 +420,7 @@
                                         <td class="text-right border-r border-slate-200 px-2 py-1 font-bold text-rose-700 tabular-nums">
                                             {{ formatarNumero(ultimoRegistro?.ProvisaoValor) }}
                                             <br>
-                                            <span class="text-[9px] text-slate-500">{{ formatarProvisaoCobertura(ultimoRegistro?.ProvisaoDiasAtraso, ultimoRegistro?.ProvisaoCoberturaPerc) }}</span>
+                                            <span class="text-[10px] text-slate-600">{{ formatarProvisaoCobertura(ultimoRegistro?.ProvisaoDiasAtraso, ultimoRegistro?.ProvisaoCoberturaPerc, ultimoRegistro?.ProvisaoClasseRisco) }}</span>
                                         </td>
                                         <td class="text-right px-2 py-1 font-bold tabular-nums"
                                             :class="Number(ultimoRegistro?.VariacaoProvisao) <= 0 ? 'text-emerald-700' : 'text-rose-700'">
@@ -452,17 +471,18 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 2: Agências ═══ -->
-                    <section v-if="agenciasCapital.length > 0 || agenciasProvincia.length > 0">
+                    <!-- ═══ TABELA 2: Agências (Capital, Províncias e Agrupamento PARCERIAS) ═══ -->
+                    <section v-if="agenciasCapital.length > 0 || agenciasProvincia.length > 0 || agenciasParcerias.length > 0">
                         <SectionTitle
                             icon="fa-wallet"
-                            title="1. DISTRIBUIÇÃO DA CARTEIRA - KIXICRÉDITO ANGOLA"
+                            :title="`1. DISTRIBUIÇÃO DA CARTEIRA - ${tituloEntidadeMaiusculo}`"
                             subtitle="Performance detalhada por localidade"
                             tone="emerald"
                         />
                         <div class="space-y-4">
-                            <AgenciasTable titulo="Capital (Luanda)" :agencias="agenciasCapital" />
-                            <AgenciasTable titulo="Províncias" :agencias="agenciasProvincia" />
+                            <AgenciasTable v-if="agenciasCapital.length > 0" titulo="Capital (Luanda)" :agencias="agenciasCapital" />
+                            <AgenciasTable v-if="agenciasProvincia.length > 0" titulo="Províncias" :agencias="agenciasProvincia" />
+                            <AgenciasTable v-if="agenciasParcerias.length > 0" titulo="Parcerias" :agencias="agenciasParcerias" />
                         </div>
                     </section>
 
@@ -474,7 +494,7 @@
                                     <tr class="bg-[#0B2E4F] text-white">
                                         <th colspan="11" class="px-3 py-1.5 text-xs tracking-wider uppercase text-left">
                                             <i class="fas fa-user-tie mr-2 opacity-70"></i>
-                                            Detalhamento por Produto
+                                            Detalhamento por Produto - {{ tituloEntidadeMaiusculo }}
                                         </th>
                                     </tr>
                                     <tr class="bg-[#103E68] text-white text-center text-[10px]">
@@ -603,11 +623,11 @@
                     </section>
 
                     <!-- ═══ TABELA 4: MOVIMENTO DAS PRESTAÇÕES ═══ -->
-                    <section v-if="movimentoPrestacaoRD.length > 0">
+                    <section v-if="linhasMovimentoPrestacao.length > 0">
                         <SectionTitle
                             icon="fa-file-invoice-dollar"
-                            title="2. MOVIMENTO DAS PRESTAÇÕES - KIXICRÉDITO ANGOLA"
-                            subtitle="Detalhe das prestações Kixi Crédito"
+                            :title="`2. MOVIMENTO DAS PRESTAÇÕES - ${tituloEntidadeMaiusculo}`"
+                            :subtitle="`Detalhe das prestações ${tituloEntidadeCurto}`"
                             tone="emerald"
                         />
                         <div class="overflow-x-auto rounded border border-slate-300">
@@ -658,7 +678,7 @@
                     <section v-if="desembolsosReembolsos12MesesRD.length > 0">
                         <SectionTitle
                             icon="fa-money-bill-wave"
-                            title="3. DESEMBOLSOS E REEMBOLSOS (ÚLTIMOS 12 MESES)"
+                            :title="`3. DESEMBOLSOS E REEMBOLSOS (ÚLTIMOS 12 MESES) - ${tituloEntidadeMaiusculo}`"
                             subtitle="Evolução mensal repartida em 2 blocos de 6 meses com destaque para pico máximo (verde), mínimo (vermelho) e total acumulado"
                             tone="emerald"
                         />
@@ -760,7 +780,7 @@
                     <section v-if="provisoesAgrupadas.length > 0">
                         <SectionTitle
                             icon="fa-chart-line"
-                            title="4. PROVISÕES - KIXICRÉDITO ANGOLA"
+                            :title="`4. PROVISÕES - ${tituloEntidadeMaiusculo}`"
                             subtitle="Evolução de provisões por agrupamento de produto"
                             tone="emerald"
                         />
@@ -780,7 +800,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="bg-blue-50/70 font-bold border-b border-slate-300">
+                                    <tr v-if="direccaoActivaNorm === 'GLOBAL'" class="bg-blue-50/70 font-bold border-b border-slate-300">
                                         <td class="border-r border-slate-300 px-2 py-1 text-[#0B2E4F] uppercase">KIXICRÉDITO ANGOLA</td>
                                         <td class="border-r border-slate-300 px-1 py-1 text-center text-blue-900 bg-blue-100/60">{{ totalGeralProvisoes.percDado }}%</td>
                                         <td class="border-r border-slate-300 px-2 py-1 text-right text-blue-900">{{ formatarNumero(totalGeralProvisoes.fechoAA) }}</td>
@@ -846,10 +866,10 @@
                     </section>
 
                     <!-- ═══ TABELA 7: CARTEIRA WRITE-OFF ═══ -->
-                    <section v-if="carteiraWriteOffRD.length > 0">
+                    <section v-if="linhasWO.length > 0">
                         <SectionTitle
                             icon="fa-eraser"
-                            title="5. CARTEIRA WRITE-OFF"
+                            :title="`5. CARTEIRA WRITE-OFF - ${tituloEntidadeMaiusculo}`"
                             subtitle="Evolução e recuperação de ativos baixados"
                             tone="rose"
                         />
@@ -896,7 +916,7 @@
                         <div class="overflow-x-auto rounded-xl border border-slate-200">
                             <table class="w-full text-[11px] border-collapse text-slate-800">
                                 <thead class="sticky top-0 text-white text-center"
-                                       :class="direccaoActiva === 'GLOBAL' ? 'bg-gradient-to-r from-rose-900 to-rose-800' : (direccaoActiva === 'DOP' ? 'bg-[#0B2E4F]' : 'bg-indigo-900')">
+                                       :class="direccaoActivaNorm === 'GLOBAL' ? 'bg-gradient-to-r from-rose-900 to-rose-800' : (direccaoActivaNorm === 'DOP' ? 'bg-[#0B2E4F]' : 'bg-indigo-900')">
                                     <tr>
                                         <th class="px-2 py-2 text-center w-10 border-r border-white/20">Pos.</th>
                                         <th class="px-2 py-2 text-center border-r border-white/20">LNR</th>
@@ -961,22 +981,24 @@
 
 
                     <!-- ═════════════════════════════════════════════════════════════════
-                         7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO
+                         7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO (COM SUBTABELA PA´S PARCERIAS)
                          ═════════════════════════════════════════════════════════════════ -->
-                    <section v-if="centrosCustoOrdenadosPorRisco.length > 0" class="pt-6 border-t-2 border-slate-200">
+                    <section v-if="centrosCustoRegulares.length > 0 || centrosCustoParcerias.length > 0" class="pt-6 border-t-2 border-slate-200 space-y-5">
                         <SectionTitle
                             icon="fa-network-wired"
-                            title="7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO"
+                            :title="`7. EXPOSIÇÃO AO RISCO POR CENTROS DE CUSTO - ${tituloEntidadeMaiusculo}`"
                             subtitle="Pontos de Atendimento classificados em ordem de gravidade de risco (Maior risco na 1ª posição)"
                             tone="amber"
                         />
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <!-- Subtabela 1: Centros de Custo Regulares -->
+                        <div v-if="centrosCustoRegulares.length > 0" class="overflow-x-auto rounded-xl border border-slate-200">
                             <table class="w-full text-[11px] border-collapse text-slate-800">
                                 <thead class="sticky top-0 bg-[#0B2E4F] text-white text-center">
                                     <tr>
                                         <th class="px-2 py-2 text-center w-12 border-r border-slate-700">Pos.</th>
                                         <th class="px-3 py-2 text-left border-r border-slate-700">Ponto de Atendimento (Centro de Custo)</th>
+                                        <th class="px-2 py-2 text-center border-r border-slate-700">Direcção</th>
                                         <th class="px-3 py-2 text-left border-r border-slate-700">Província</th>
                                         <th class="px-2 py-2 text-center border-r border-slate-700">Clientes Ativos</th>
                                         <th class="px-2 py-2 text-center border-r border-slate-700 text-rose-300">Em Atraso</th>
@@ -988,7 +1010,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr v-for="item in centrosCustoOrdenadosPorRisco" :key="item.ID || item.CentroCusto"
+                                    <tr v-for="item in centrosCustoRegulares" :key="item.ID || item.CentroCusto"
                                         class="hover:bg-amber-50/40 transition-colors">
                                         <td class="px-2 py-1.5 text-center font-bold text-slate-500 border-r border-slate-200">
                                             {{ item.PosicaoRisco ?? '—' }}
@@ -996,6 +1018,84 @@
                                         <td class="px-3 py-1.5 font-bold text-slate-800 whitespace-nowrap border-r border-slate-200">
                                             <i class="fas fa-building mr-1.5 text-slate-400"></i>
                                             {{ item.CentroCusto }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-center border-r border-slate-200">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
+                                                  :class="obterClasseBadgeDireccao(obterDireccaoCentroCusto(item))">
+                                                {{ obterDireccaoCentroCusto(item) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-1.5 text-slate-600 border-r border-slate-200">
+                                            {{ item.Provincia || '—' }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-center tabular-nums border-r border-slate-200">
+                                            {{ formatarInt(item.TotalClientesAtivos) }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-center tabular-nums font-semibold text-rose-700 bg-rose-50/40 border-r border-slate-200">
+                                            {{ formatarInt(item.ClientesEmAtraso) }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-right tabular-nums font-medium border-r border-slate-200">
+                                            {{ formatarNumero(item.CarteiraTotalCapital) }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-right tabular-nums font-bold text-rose-700 border-r border-slate-200">
+                                            {{ formatarNumero(item.CarteiraVencidaCapital) }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-right tabular-nums font-black text-amber-900 bg-amber-50 border-r border-slate-200">
+                                            {{ formatarPercentual(item.PAR_Percentual) }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-right tabular-nums text-slate-700 border-r border-slate-200">
+                                            {{ formatarNumero(item.ProvisaoTotal) }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-center">
+                                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold"
+                                                  :class="Number(item.MaxDiasAtraso) > 365 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'">
+                                                {{ item.MaxDiasAtraso ?? 0 }} dias
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Subtabela 2: PA´S PARCERIAS -->
+                        <div v-if="centrosCustoParcerias.length > 0" class="overflow-x-auto rounded-xl border border-indigo-200">
+                            <table class="w-full text-[11px] border-collapse text-slate-800">
+                                <thead class="sticky top-0 text-white text-center">
+                                    <tr class="bg-indigo-950">
+                                        <th colspan="11" class="px-3 py-1.5 text-xs tracking-wider uppercase text-left border-b border-indigo-800">
+                                            <i class="fas fa-handshake mr-2 text-indigo-300"></i>
+                                            PA´S PARCERIAS
+                                        </th>
+                                    </tr>
+                                    <tr class="bg-indigo-900">
+                                        <th class="px-2 py-2 text-center w-12 border-r border-indigo-800">Pos.</th>
+                                        <th class="px-3 py-2 text-left border-r border-indigo-800">Ponto de Atendimento (Centro de Custo)</th>
+                                        <th class="px-2 py-2 text-center border-r border-indigo-800">Direcção</th>
+                                        <th class="px-3 py-2 text-left border-r border-indigo-800">Província</th>
+                                        <th class="px-2 py-2 text-center border-r border-indigo-800">Clientes Ativos</th>
+                                        <th class="px-2 py-2 text-center border-r border-indigo-800 text-rose-300">Em Atraso</th>
+                                        <th class="px-2 py-2 text-right border-r border-indigo-800">Carteira Total Capital</th>
+                                        <th class="px-2 py-2 text-right border-r border-indigo-800 text-rose-300">Carteira Vencida</th>
+                                        <th class="px-2 py-2 text-right border-r border-indigo-800 bg-indigo-950 text-amber-300 font-bold">PAR %</th>
+                                        <th class="px-2 py-2 text-right border-r border-indigo-800">Provisão Total</th>
+                                        <th class="px-2 py-2 text-center">Máx. Dias Atraso</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr v-for="item in centrosCustoParcerias" :key="item.ID || item.CentroCusto"
+                                        class="hover:bg-indigo-50/40 transition-colors">
+                                        <td class="px-2 py-1.5 text-center font-bold text-slate-500 border-r border-slate-200">
+                                            {{ item.PosicaoRisco ?? '—' }}
+                                        </td>
+                                        <td class="px-3 py-1.5 font-bold text-slate-800 whitespace-nowrap border-r border-slate-200">
+                                            <i class="fas fa-handshake mr-1.5 text-indigo-400"></i>
+                                            {{ item.CentroCusto }}
+                                        </td>
+                                        <td class="px-2 py-1.5 text-center border-r border-slate-200">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
+                                                  :class="obterClasseBadgeDireccao(obterDireccaoCentroCusto(item))">
+                                                {{ obterDireccaoCentroCusto(item) }}
+                                            </span>
                                         </td>
                                         <td class="px-3 py-1.5 text-slate-600 border-r border-slate-200">
                                             {{ item.Provincia || '—' }}
@@ -1122,6 +1222,41 @@ const props = defineProps({
     user: Object
 })
 
+const direccaoActivaNorm = computed(() => String(props.direccaoActiva || 'GLOBAL').trim().toUpperCase())
+
+/* "Kixi Crédito Angola" apenas no GLOBAL; nas direcções substitui pelo nome da direcção */
+const tituloEntidadeMaiusculo = computed(() => {
+    const map = {
+        GLOBAL: 'KIXICRÉDITO ANGOLA',
+        DPP: 'PARTICULARES & PARCERIAS(DPP)',
+        DOP: 'OPERAÇÕES(DOP)',
+        OUT: 'OUTROS(OUT)',
+    }
+    return map[direccaoActivaNorm.value] || direccaoActivaNorm.value
+})
+
+const tituloEntidadeCurto = computed(() => {
+    const map = {
+        GLOBAL: 'Kixi Crédito',
+        DPP: 'DPP',
+        DOP: 'DOP',
+        OUT: 'OUT',
+    }
+    return map[direccaoActivaNorm.value] || direccaoActivaNorm.value
+})
+
+const tituloHeaderPrincipal = computed(() => {
+    return direccaoActivaNorm.value === 'GLOBAL'
+        ? 'Kixi Crédito Angola'
+        : tituloEntidadeMaiusculo.value
+})
+
+const tituloInstituicaoOuDireccao = computed(() => {
+    return direccaoActivaNorm.value === 'GLOBAL'
+        ? `Kixi Crédito Angola · ${tituloDireccao.value}`
+        : tituloDireccao.value
+})
+
 const tituloDireccao = computed(() => {
     const map = {
         GLOBAL: '100% Instituição',
@@ -1129,8 +1264,37 @@ const tituloDireccao = computed(() => {
         DOP: 'Direcção DOP · Operações',
         OUT: 'Direcção OUT · Outros',
     }
-    const base = map[String(props.direccaoActiva || 'GLOBAL').toUpperCase()] || props.direccaoActiva
+    const base = map[direccaoActivaNorm.value] || props.direccaoActiva
     return props.directorNome ? `${base} (${props.directorNome})` : base
+})
+
+const tituloCabecalhoDireccao = computed(() => {
+    if (direccaoActivaNorm.value === 'GLOBAL') {
+        return 'KIXI CRÉDITO ANGOLA'
+    }
+    const map = {
+        DPP: 'PARTICULARES E PARCERIAS(DPP)',
+        DOP: 'OPERAÇÕES(DOP)',
+        OUT: 'OUTROS(OUT)',
+    }
+    const peso = ultimoRegistro.value?.PesoPercentual ?? ultimoRegistro.value?.PesoDireccao
+    const base = map[direccaoActivaNorm.value] || tituloEntidadeMaiusculo.value
+    return peso !== null && peso !== undefined
+        ? `${base} (${Math.round(Number(peso))}%)`
+        : base
+})
+
+const directorExibicao = computed(() => {
+    if (props.directorNome && String(props.directorNome).trim()) {
+        return String(props.directorNome).trim().toUpperCase()
+    }
+    if (direccaoActivaNorm.value !== 'GLOBAL') {
+        const prodComGestor = (props.produtosRD || []).find(p => p.DirectorNome && String(p.DirectorNome).trim())
+        if (prodComGestor) return String(prodComGestor.DirectorNome).trim().toUpperCase()
+        const regComGestor = (props.historicoRD || []).find(h => h.DirectorNome && String(h.DirectorNome).trim())
+        if (regComGestor) return String(regComGestor.DirectorNome).trim().toUpperCase()
+    }
+    return ''
 })
 
 /* ══════════════════════════════════════════════════
@@ -1161,7 +1325,10 @@ const KpiCard = (p) => {
                     h('i', { class: `fas ${p.icon} ${t.text} text-xs` })
                 ])
             ]),
-            h('div', { class: 'text-sm xl:text-base font-bold text-slate-900 tabular-nums tracking-tight leading-tight break-words' }, p.value),
+            h('div', { class: 'text-sm xl:text-base font-bold text-slate-900 tabular-nums tracking-tight leading-tight break-words' }, [
+                p.value,
+                p.subValue && h('span', { class: `ml-1.5 text-xs font-extrabold ${t.text}` }, `(${p.subValue})`)
+            ]),
             deltaNum !== null && h('div', { class: `flex items-center gap-1 mt-1 text-[11px] font-semibold ${deltaColor}` }, [
                 h('i', { class: `fas ${arrowClass} text-[9px]` }),
                 h('span', { class: 'tabular-nums' }, Math.abs(Math.round(deltaNum)) + '%'),
@@ -1170,7 +1337,7 @@ const KpiCard = (p) => {
         ])
     ])
 }
-KpiCard.props = ['label', 'value', 'delta', 'icon', 'tone', 'invert']
+KpiCard.props = ['label', 'value', 'subValue', 'delta', 'icon', 'tone', 'invert']
 
 const SectionTitle = (p) => {
     const tones = {
@@ -1234,12 +1401,14 @@ const AgenciasTable = (p) => {
     const taMedia = totais.taCount > 0 ? Math.round(totais.taSoma / totais.taCount) : null
     const gestaoMedia = totais.gestaoCount > 0 ? Math.round(totais.gestaoSoma / totais.gestaoCount) : null
 
+    const isParcerias = String(p.titulo || '').toUpperCase().includes('PARCERIA')
+
     return h('div', { class: 'overflow-x-auto rounded-xl border border-slate-200' }, [
         h('table', { class: 'w-full text-xs border-collapse text-slate-800' }, [
             h('thead', [
-                h('tr', { class: 'bg-[#0B2E4F] text-white' }, [
+                h('tr', { class: isParcerias ? 'bg-indigo-900 text-white' : 'bg-[#0B2E4F] text-white' }, [
                     h('th', { colspan: 11, class: 'px-3 py-1.5 text-xs tracking-wider uppercase text-left' }, [
-                        h('i', { class: 'fas fa-location-dot mr-2 opacity-70' }),
+                        h('i', { class: `fas ${isParcerias ? 'fa-handshake' : 'fa-location-dot'} mr-2 opacity-70` }),
                         p.titulo
                     ])
                 ]),
@@ -1357,6 +1526,8 @@ AgenciasTable.props = ['titulo', 'agencias']
 /* ══════════════════════════════════════════════════
    REFS & CHARTS
    ══════════════════════════════════════════════════ */
+const areaKpis = ref(null)
+const areaGraficos = ref(null)
 const areaTabelas = ref(null)
 const chartBalancoRef = ref(null)
 const chartFluxoRef = ref(null)
@@ -1402,6 +1573,17 @@ const ultimoRegistro = computed(() => {
 const registroAnterior = computed(() => {
     if (historicoOrdenado.value.length < 2) return null
     return historicoOrdenado.value[historicoOrdenado.value.length - 2]
+})
+
+const provisaoPercentualAtual = computed(() => {
+    const u = ultimoRegistro.value
+    if (!u) return 0
+    if (u.ProvisaoCoberturaPerc !== null && u.ProvisaoCoberturaPerc !== undefined) {
+        return Number(u.ProvisaoCoberturaPerc) || 0
+    }
+    const bal = _toNum(u.BalancoValor)
+    const prov = _toNum(u.ProvisaoValor)
+    return isFinite(bal) && bal > 0 && isFinite(prov) ? (prov / bal) * 100 : 0
 })
 
 const historicoAteUltimoPeriodo = computed(() => {
@@ -1458,8 +1640,23 @@ const labelMesAnterior = computed(() => {
 
 const labelFechoAA = computed(() => `DEZ ${Number(anoAtual.value) - 1}`)
 
-const agenciasCapital  = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'CAPITAL'))
-const agenciasProvincia = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'PROVINCIA'))
+/* Identificação e agrupamento de pontos de atendimento PARCERIAS */
+const isPontoParceria = (item) => {
+    const agrup = String(item?.TipoAgrupamento || '').trim().toUpperCase()
+    const nome = String(item?.NomeLocal || item?.CentroCusto || '').trim().toUpperCase()
+    const dir = String(item?.Direccao || item?.ccDireccao || item?.TipoDireccao || '').trim().toUpperCase()
+    return agrup === 'PARCERIAS' || agrup === 'PARCERIA' || nome.includes('PARCERIA') || dir === 'PARCERIAS'
+}
+
+const agenciasCapital = computed(() =>
+    (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'CAPITAL' && !isPontoParceria(i))
+)
+const agenciasProvincia = computed(() =>
+    (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'PROVINCIA' && !isPontoParceria(i))
+)
+const agenciasParcerias = computed(() =>
+    (props.agenciasRD || []).filter(i => isPontoParceria(i))
+)
 
 /* ══════════════════════════════════════════════════
    COMPUTED: DESTAQUE MAX/MIN, BLOCOS DE 6 MESES & TOTAL ACUMULADO FLUXO (12 MESES)
@@ -1753,8 +1950,24 @@ const linhasWO = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: 7. CENTROS DE CUSTO ORDENADOS POR GRAVIDADE DE RISCO
+   COMPUTED: 7. CENTROS DE CUSTO ORDENADOS POR GRAVIDADE DE RISCO + DIRECÇÃO + PA´S PARCERIAS
    ══════════════════════════════════════════════════ */
+const obterDireccaoCentroCusto = (item) => {
+    const raw = String(
+        item?.Direccao || item?.ccDireccao || item?.TipoDireccao || item?.SiglaDireccao || ''
+    ).trim().toUpperCase()
+    if (raw) return raw
+    return direccaoActivaNorm.value !== 'GLOBAL' ? direccaoActivaNorm.value : '—'
+}
+
+const obterClasseBadgeDireccao = (dir) => {
+    const d = String(dir || '').toUpperCase()
+    if (d === 'DOP') return 'bg-blue-100 text-blue-800'
+    if (d === 'DPP') return 'bg-purple-100 text-purple-800'
+    if (d === 'OUT') return 'bg-amber-100 text-amber-800'
+    return 'bg-slate-100 text-slate-700'
+}
+
 const centrosCustoOrdenadosPorRisco = computed(() => {
     return [...(props.riscoExposicaoCentrosCustoRD || [])]
         .sort((a, b) => {
@@ -1765,25 +1978,38 @@ const centrosCustoOrdenadosPorRisco = computed(() => {
         })
 })
 
+const isCentroCustoParceria = (item) => {
+    const nome = String(item?.CentroCusto || '').trim().toUpperCase()
+    return nome.includes('PARCERIA')
+}
+
+const centrosCustoRegulares = computed(() =>
+    centrosCustoOrdenadosPorRisco.value.filter(i => !isCentroCustoParceria(i))
+)
+
+const centrosCustoParcerias = computed(() =>
+    centrosCustoOrdenadosPorRisco.value.filter(i => isCentroCustoParceria(i))
+)
+
 /* ══════════════════════════════════════════════════
    COMPUTED: 6. TOP 15 CLIENTES (GERAL NA PÁGINA INICIAL | POR DIREÇÃO NAS RESTANTES)
    ══════════════════════════════════════════════════ */
 const normalizarTipoRanking = (val) => String(val || '').trim().toUpperCase()
 
 const tituloSecaoTopClientes = computed(() => {
-    const dir = String(props.direccaoActiva || 'GLOBAL').toUpperCase()
+    const dir = direccaoActivaNorm.value
     if (dir === 'GLOBAL') return 'TOP 15 CLIENTES EM RISCO CRÍTICO — VISÃO GERAL (INSTITUIÇÃO)'
-    return `TOP 15 CLIENTES EM RISCO CRÍTICO — DIRECÇÃO ${dir}`
+    return `TOP 15 CLIENTES EM RISCO CRÍTICO — ${tituloEntidadeMaiusculo.value}`
 })
 
 const subtituloSecaoTopClientes = computed(() => {
-    const dir = String(props.direccaoActiva || 'GLOBAL').toUpperCase()
+    const dir = direccaoActivaNorm.value
     if (dir === 'GLOBAL') return 'Ranking consolidado dos 15 clientes com maior exposição em risco na instituição'
-    return `Ranking dos 15 clientes com maior exposição em risco exclusivos da direcção ${dir}`
+    return `Ranking dos 15 clientes com maior exposição em risco exclusivos de ${tituloEntidadeMaiusculo.value}`
 })
 
 const listaTopClientesAtiva = computed(() => {
-    const dir = String(props.direccaoActiva || 'GLOBAL').toUpperCase()
+    const dir = direccaoActivaNorm.value
     const lista = [...(props.riscoTopClientesRD || [])]
 
     if (dir === 'GLOBAL') {
@@ -1828,9 +2054,35 @@ const calcularDelta = (atual, anterior) => {
     return ((a - b) / Math.abs(b)) * 100
 }
 
-const formatarProvisaoCobertura = (diasAtraso, percentual) => {
+/* Tabela de escalões de risco conforme Dias em Atraso */
+const TABELA_ESCALOES_RISCO = [
+    { risco: 'A', diaInicio: 0,  diaFim: 7,    percentagem: 0 },
+    { risco: 'B', diaInicio: 8,  diaFim: 15,   percentagem: 1 },
+    { risco: 'C', diaInicio: 16, diaFim: 30,   percentagem: 3 },
+    { risco: 'D', diaInicio: 31, diaFim: 45,   percentagem: 10 },
+    { risco: 'E', diaInicio: 46, diaFim: 75,   percentagem: 20 },
+    { risco: 'F', diaInicio: 76, diaFim: 90,   percentagem: 50 },
+    { risco: 'G', diaInicio: 91, diaFim: 9999, percentagem: 100 },
+]
+
+const obterLetraRiscoPorDias = (diasAtraso, letraExplicita = null) => {
+    if (letraExplicita && String(letraExplicita).trim()) {
+        return String(letraExplicita).trim().toUpperCase()
+    }
+    const d = Math.max(0, Math.round(Number(diasAtraso) || 0))
+    const faixa = TABELA_ESCALOES_RISCO.find(f => d >= f.diaInicio && d <= f.diaFim)
+    return faixa ? faixa.risco : 'G'
+}
+
+const formatarProvisaoCobertura = (diasAtraso, percentual, letraExplicita = null) => {
     if (percentual === null || percentual === undefined) return '—'
-    return `(DA: ${diasAtraso ?? 0} :: ${formatarNumero(percentual)}%)`
+    const da = diasAtraso ?? 0
+    const letra = obterLetraRiscoPorDias(da, letraExplicita)
+    const n = _toNum(percentual)
+    const percFormatado = isFinite(n)
+        ? n.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : '0,00'
+    return `(DA : ${da}) (${letra} :: ${percFormatado}%)`
 }
 
 const _toNum = (val) => {
@@ -1859,17 +2111,32 @@ const formatarCompacto = (val) => {
     const abs = Math.abs(n)
     if (abs >= 1e9) return (n / 1e9).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'B'
     if (abs >= 1e6) return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'M'
-    if (abs >= 1e3) return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + 'K'
+    if (abs >= 1e3) return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'K'
     return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
 }
 
+/* Formato #.###,## (2 casas decimais e separador de milhares) */
 const formatarK = (val) => {
     const n = _toNum(val)
     if (!isFinite(n)) return '—'
+
     const abs = Math.abs(n)
-    if (abs >= 1e6) return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + 'M'
-    if (abs >= 1e3) return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + 'K'
-    return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
+
+    const opcoes = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        useGrouping: true
+    }
+
+    if (abs >= 1e6) {
+        return (n / 1e6).toLocaleString('pt-PT', opcoes) + 'M'
+    }
+
+    if (abs >= 1e3) {
+        return (n / 1e3).toLocaleString('pt-PT', opcoes) + 'K'
+    }
+
+    return n.toLocaleString('pt-PT', opcoes)
 }
 
 const formatarMoedaCompleta = (val) => {
@@ -1886,7 +2153,7 @@ const formatarMoedaCompacta = (val) => {
 const formatarPercentual = (val) => {
     const n = _toNum(val)
     if (!isFinite(n)) return '0%'
-    return n.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + '%'
+    return n.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + '%'
 }
 
 const obterCorGestao = (valor) => {
@@ -1909,7 +2176,7 @@ const destroyCharts = () => {
 const initCharts = () => {
     destroyCharts()
 
-    // 1. Gráfico: Evolução da Carteira (Histórico da Tabela Principal + Mês em Análise)
+    // 1. Gráfico: Evolução da Carteira
     if (chartBalancoRef.value && historicoOrdenado.value.length > 0) {
         const labels = labelsGraficosAutomaticos.value
         const data = historicoOrdenado.value.map(i => Number(i.BalancoValor) || 0)
@@ -1994,7 +2261,7 @@ const initCharts = () => {
         })
     }
 
-    // 3. Gráfico: Qualidade da Carteira (Histórico da Tabela Principal + Mês em Análise)
+    // 3. Gráfico: Qualidade da Carteira
     if (chartQualidadeRef.value && historicoOrdenado.value.length > 0) {
         const labels = labelsGraficosAutomaticos.value
         const npl = historicoOrdenado.value.map(i => Number(i.NPLPercentual) || 0)
@@ -2033,7 +2300,7 @@ const initCharts = () => {
         })
     }
 
-    // 4. Gráfico: Distribuição por Localidade / Centros de Custo (Top 8 até ao último período)
+    // 4. Gráfico: Distribuição por Localidade / Centros de Custo
     if (chartAgenciasRef.value) {
         let labels = []
         let dadosValores = []
@@ -2104,7 +2371,7 @@ watch(
 onBeforeUnmount(destroyCharts)
 
 /* ══════════════════════════════════════════════════
-   IMPRESSÃO A4 (HTML PROFISSIONAL REUTILIZADO PARA EMAIL)
+   IMPRESSÃO A4 (PÁGINA 1: CARDS + CHARTS ISOLADOS | PÁGINA 2+: TABELAS)
    ══════════════════════════════════════════════════ */
 const EMAIL_REMETENTE = 'desenvolvimento@kixicredito.ao'
 
@@ -2112,7 +2379,7 @@ const CSS_IMPRESSAO = `
     @page {
         size: A4 landscape;
         margin: 10mm 8mm 12mm 8mm;
-        @bottom-left  { content: "Kixi Crédito Angola · Documento confidencial"; font: 7pt 'Segoe UI', Arial, sans-serif; color: #64748b; }
+        @bottom-left  { content: "${tituloEntidadeCurto.value} · Documento confidencial"; font: 7pt 'Segoe UI', Arial, sans-serif; color: #64748b; }
         @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 7pt 'Segoe UI', Arial, sans-serif; color: #64748b; }
     }
     * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -2127,8 +2394,49 @@ const CSS_IMPRESSAO = `
     .doc-header .meta { text-align: right; font-size: 9px; color: #475569; }
     .doc-header .meta strong { color: #0B2E4F; font-size: 10.5px; }
 
+    .pagina-resumo {
+        page-break-after: always;
+        break-after: page;
+    }
+    .print-kpis {
+        display: grid !important;
+        grid-template-columns: repeat(8, 1fr) !important;
+        gap: 6px !important;
+        margin-bottom: 10px !important;
+    }
+    .print-kpis > div {
+        padding: 6px 8px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+    }
+    .print-charts {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    .print-charts > div {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        padding: 8px 10px !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .print-charts img.chart-snapshot {
+        width: 100% !important;
+        height: 175px !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
+    .pagina-tabelas {
+        page-break-before: always;
+        break-before: page;
+    }
     .print-root, .print-root > div { box-shadow: none !important; border: 0 !important; padding: 0 !important; border-radius: 0 !important; background: #fff !important; }
     .print-root .space-y-8 > * + * { margin-top: 14px !important; }
+    .print-root .space-y-5 > * + * { margin-top: 10px !important; }
     .print-root .space-y-4 > * + * { margin-top: 8px !important; }
     .overflow-x-auto { overflow: visible !important; }
     .sticky { position: static !important; }
@@ -2158,12 +2466,31 @@ const gerarHtmlRelatorio = ({ paraEmail = false } = {}) => {
     const estilos = paraEmail
         ? ''
         : Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).map(s => s.outerHTML).join('')
-    const tituloDoc = `RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]`
+    const tituloDoc = `RD Express ${ultimoMesNome.value} [${tituloEntidadeMaiusculo.value}]`
     const agora = new Date().toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })
 
-    const clone = areaTabelas.value.cloneNode(true)
-    clone.querySelectorAll('canvas, button').forEach(el => el.remove())
-    clone.classList.add('print-root')
+    const cloneKpis = areaKpis.value ? areaKpis.value.cloneNode(true) : document.createElement('div')
+    cloneKpis.className = 'print-kpis'
+
+    const cloneGraficos = areaGraficos.value ? areaGraficos.value.cloneNode(true) : document.createElement('div')
+    cloneGraficos.className = 'print-charts'
+    if (areaGraficos.value) {
+        const origCanvases = areaGraficos.value.querySelectorAll('canvas')
+        const cloneCanvases = cloneGraficos.querySelectorAll('canvas')
+        origCanvases.forEach((origCanvas, idx) => {
+            const targetCanvas = cloneCanvases[idx]
+            if (targetCanvas) {
+                const img = document.createElement('img')
+                img.src = origCanvas.toDataURL('image/png', 1.0)
+                img.className = 'chart-snapshot'
+                targetCanvas.parentNode.replaceChild(img, targetCanvas)
+            }
+        })
+    }
+
+    const cloneTabelas = areaTabelas.value.cloneNode(true)
+    cloneTabelas.querySelectorAll('canvas, button').forEach(el => el.remove())
+    cloneTabelas.classList.add('print-root')
 
     return `<!DOCTYPE html>
 <html lang="pt-PT">
@@ -2174,17 +2501,24 @@ const gerarHtmlRelatorio = ({ paraEmail = false } = {}) => {
     <style>${CSS_IMPRESSAO}</style>
 </head>
 <body>
-    <div class="doc-header">
-        <div>
-            <h1 class="titulo">Reporting Balance · Kixi Crédito Angola</h1>
-            <div class="sub">Relatório Diário Executivo · ${tituloDireccao.value}</div>
+    <div class="pagina-resumo">
+        <div class="doc-header">
+            <div>
+                <h1 class="titulo">Reporting Balance · ${tituloHeaderPrincipal.value}</h1>
+                <div class="sub">Relatório Diário Executivo · ${tituloDireccao.value}</div>
+            </div>
+            <div class="meta">
+                <div><strong>Data de referência: ${ultimoMesNome.value}</strong></div>
+                <div>Emitido em ${agora}</div>
+            </div>
         </div>
-        <div class="meta">
-            <div><strong>Data de referência: ${ultimoMesNome.value}</strong></div>
-            <div>Emitido em ${agora}</div>
-        </div>
+        ${cloneKpis.outerHTML}
+        ${cloneGraficos.outerHTML}
     </div>
-    ${clone.outerHTML}
+
+    <div class="pagina-tabelas">
+        ${cloneTabelas.outerHTML}
+    </div>
 </body>
 </html>`
 }
@@ -2204,7 +2538,6 @@ const imprimirA4 = () => {
     const limpar = () => { if (iframe.parentNode) document.body.removeChild(iframe) }
 
     setTimeout(() => {
-        // Ajusta a escala para que a tabela mais larga caiba na largura útil do A4 paisagem (≈ 281mm ≈ 1062px)
         const larguraUtil = 1062
         const maisLarga = Math.max(...Array.from(doc.querySelectorAll('table')).map(t => t.scrollWidth), larguraUtil)
         if (maisLarga > larguraUtil) {
@@ -2230,10 +2563,10 @@ const emTd = (t, st = '') => `<td style="text-align:right;color:#1e293b;${EM_BAS
 const emTdL = (t, st = '') => emTd(t, `text-align:left;font-weight:700;${st}`)
 const emTr = (cels, st = '') => `<tr style="${st}">${cels.join('')}</tr>`
 
-const emTabela = (heads, linhas, barra = '') => `
+const emTabela = (heads, linhas, barra = '', barraBg = EM_COR.azul) => `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;">
   <thead>
-    ${barra ? `<tr><th colspan="${heads.length}" style="background:${EM_COR.azul};color:#ffffff;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:8px 10px;border:1px solid ${EM_COR.azul};">${barra}</th></tr>` : ''}
+    ${barra ? `<tr><th colspan="${heads.length}" style="background:${barraBg};color:#ffffff;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:8px 10px;border:1px solid ${barraBg};">${barra}</th></tr>` : ''}
     <tr>${heads.map(h => emTh(h)).join('')}</tr>
   </thead>
   <tbody>${linhas.join('')}</tbody>
@@ -2350,12 +2683,12 @@ const emConsolidado = () => {
             varCel(u[l.variacaoKey], true)
         ]))
     })
-    const provSub = (d, p) => `<br><span style="font-size:11px;font-weight:400;color:#64748b;">${esc(formatarProvisaoCobertura(d, p))}</span>`
+    const provSub = (d, p, cl) => `<br><span style="font-size:11px;font-weight:400;color:#64748b;">${esc(formatarProvisaoCobertura(d, p, cl))}</span>`
     rows.push(emTr([
         emTdL('7. Provisão'),
-        ...meses.map(i => emTd(`${formatarNumero(i.ProvisaoValor)}${provSub(i.ProvisaoDiasAtraso, i.ProvisaoCoberturaPerc)}`, `color:${EM_COR.rosa};font-weight:600;`)),
+        ...meses.map(i => emTd(`${formatarNumero(i.ProvisaoValor)}${provSub(i.ProvisaoDiasAtraso, i.ProvisaoCoberturaPerc, i.ProvisaoClasseRisco)}`, `color:${EM_COR.rosa};font-weight:600;`)),
         ups(u.Provisao_Mais), dns(u.Provisao_Menos),
-        emTd(`${formatarNumero(u.ProvisaoValor)}${provSub(u.ProvisaoDiasAtraso, u.ProvisaoCoberturaPerc)}`, `color:${EM_COR.rosa};font-weight:700;`),
+        emTd(`${formatarNumero(u.ProvisaoValor)}${provSub(u.ProvisaoDiasAtraso, u.ProvisaoCoberturaPerc, u.ProvisaoClasseRisco)}`, `color:${EM_COR.rosa};font-weight:700;`),
         varCel(u.VariacaoProvisao, true)
     ], 'background:#fff7f8;'))
     linhasPercentuais.forEach(l => {
@@ -2368,7 +2701,8 @@ const emConsolidado = () => {
             varCel(u[l.variacaoKey], !!l.invertido)
         ]))
     })
-    return emTabela(heads, rows)
+    const barra = `${esc(tituloCabecalhoDireccao.value)}${directorExibicao.value ? ` · DIRECTOR ${esc(directorExibicao.value)}` : ''}`
+    return emTabela(heads, rows, barra)
 }
 
 const emAgencias = (titulo, lista) => {
@@ -2379,7 +2713,8 @@ const emAgencias = (titulo, lista) => {
     })
     const t = emTotalAgencias(lista)
     linhas.push(emTr([emTdL(`Total ${esc(titulo)}`, 'background:#0B2E4F;color:#ffffff;'), ...emCelsMetricas(t, 'background:#0B2E4F;color:#ffffff;')]))
-    return emTabela(['Localidade', ...EM_HEADS_METRICAS], linhas, esc(titulo))
+    const barraBg = String(titulo).toUpperCase().includes('PARCERIA') ? '#312e81' : EM_COR.azul
+    return emTabela(['Localidade', ...EM_HEADS_METRICAS], linhas, esc(titulo), barraBg)
 }
 
 const emProdutos = () => {
@@ -2393,7 +2728,7 @@ const emProdutos = () => {
         ]))
         g.itens.forEach(p => linhas.push(emTr([emTdL(`&nbsp;&nbsp;• ${esc(p.NomeProduto)}`, 'font-weight:500;'), ...emCelsMetricas(emMapItem(p))])))
     })
-    return emTabela(['Produto', ...EM_HEADS_METRICAS], linhas, 'Detalhamento por Produto')
+    return emTabela(['Produto', ...EM_HEADS_METRICAS], linhas, `Detalhamento por Produto - ${esc(tituloEntidadeMaiusculo.value)}`)
 }
 
 const emMovimento = () => {
@@ -2442,16 +2777,19 @@ const emProvisoes = () => {
         emTd(formatarPercentual(t.varAno), `text-align:center;color:${cor(t.varAno)};font-weight:700;${st}`)
     ]
     const tg = totalGeralProvisoes.value
-    const linhas = [
-        emTr([
-            emTdL('KIXICRÉDITO ANGOLA', 'background:#dbeafe;color:#0B2E4F;text-transform:uppercase;'),
-            emTd(`${tg.percDado}%`, 'text-align:center;background:#dbeafe;font-weight:700;'),
-            emTd(formatarNumero(tg.fechoAA), 'background:#dbeafe;font-weight:700;'),
-            emTd(formatarNumero(tg.mesAnterior), 'background:#dbeafe;font-weight:700;'),
-            emTd(formatarNumero(tg.mesActual), 'background:#dbeafe;font-weight:700;'),
-            ...celsDif(tg, 'background:#dbeafe;font-weight:700;')
-        ])
-    ]
+    const linhas = []
+    if (direccaoActivaNorm.value === 'GLOBAL') {
+        linhas.push(
+            emTr([
+                emTdL('KIXICRÉDITO ANGOLA', 'background:#dbeafe;color:#0B2E4F;text-transform:uppercase;'),
+                emTd(`${tg.percDado}%`, 'text-align:center;background:#dbeafe;font-weight:700;'),
+                emTd(formatarNumero(tg.fechoAA), 'background:#dbeafe;font-weight:700;'),
+                emTd(formatarNumero(tg.mesAnterior), 'background:#dbeafe;font-weight:700;'),
+                emTd(formatarNumero(tg.mesActual), 'background:#dbeafe;font-weight:700;'),
+                ...celsDif(tg, 'background:#dbeafe;font-weight:700;')
+            ])
+        )
+    }
     provisoesAgrupadas.value.forEach(g => {
         const st = 'background:#fef9e7;font-weight:700;'
         linhas.push(emTr([
@@ -2516,12 +2854,21 @@ const emTopClientes = () => {
 }
 
 const emCentrosCusto = () => {
-    const heads = ['Pos.', 'Ponto de Atendimento (Centro de Custo)', 'Província', 'Clientes Ativos', 'Em Atraso', 'Carteira Total Capital', 'Carteira Vencida', 'PAR %', 'Provisão Total', 'Máx. Dias Atraso']
-    const linhas = centrosCustoOrdenadosPorRisco.value.map(i => {
+    const heads = ['Pos.', 'Ponto de Atendimento (Centro de Custo)', 'Direcção', 'Província', 'Clientes Ativos', 'Em Atraso', 'Carteira Total Capital', 'Carteira Vencida', 'PAR %', 'Provisão Total', 'Máx. Dias Atraso']
+    const mapLinhas = (lista) => lista.map(i => {
         const longo = Number(i.MaxDiasAtraso) > 365
+        const dirVal = obterDireccaoCentroCusto(i)
+        const dirEstilo = dirVal === 'DOP'
+            ? ['#dbeafe', '#1e40af']
+            : dirVal === 'DPP'
+                ? ['#f3e8ff', '#6b21a8']
+                : dirVal === 'OUT'
+                    ? ['#fef3c7', '#92400e']
+                    : ['#f1f5f9', '#334155']
         return emTr([
             emTd(esc(i.PosicaoRisco ?? '—'), 'text-align:center;font-weight:700;color:#64748b;'),
             emTdL(esc(i.CentroCusto), 'white-space:nowrap;'),
+            emTd(`<span style="display:inline-block;background:${dirEstilo[0]};color:${dirEstilo[1]};font-weight:700;font-size:11px;padding:1px 7px;border-radius:4px;">${esc(dirVal)}</span>`, 'text-align:center;'),
             emTd(esc(i.Provincia || '—'), 'text-align:left;'),
             emTd(formatarInt(i.TotalClientesAtivos), 'text-align:center;'),
             emTd(formatarInt(i.ClientesEmAtraso), 'text-align:center;background:#fff1f2;color:#be123c;font-weight:700;'),
@@ -2532,13 +2879,21 @@ const emCentrosCusto = () => {
             emTd(`<span style="display:inline-block;background:${longo ? '#ffe4e6' : '#f1f5f9'};color:${longo ? '#9f1239' : '#334155'};font-weight:700;font-size:11.5px;padding:1px 8px;border-radius:4px;">${esc(i.MaxDiasAtraso ?? 0)} dias</span>`, 'text-align:center;')
         ])
     })
-    return emTabela(heads, linhas)
+
+    const blocos = []
+    if (centrosCustoRegulares.value.length > 0) {
+        blocos.push(emTabela(heads, mapLinhas(centrosCustoRegulares.value)))
+    }
+    if (centrosCustoParcerias.value.length > 0) {
+        blocos.push(emTabela(heads, mapLinhas(centrosCustoParcerias.value), 'PA´S PARCERIAS', '#312e81'))
+    }
+    return blocos.join('<div style="height:14px;"></div>')
 }
 
 const gerarHtmlEmail = () => {
     const u = ultimoRegistro.value || {}
     const ant = registroAnterior.value || {}
-    const assunto = `RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]`
+    const assunto = `RD Express ${ultimoMesNome.value} [${tituloEntidadeMaiusculo.value}]`
     const agora = new Date().toLocaleString('pt-PT', { dateStyle: 'long', timeStyle: 'short' })
 
     const kpis = [
@@ -2546,34 +2901,41 @@ const gerarHtmlEmail = () => {
         { l: 'Desembolso', v: formatarMoedaCompleta(u.Desembolsos), d: calcularDelta(u.Desembolsos, ant.Desembolsos), cor: '#047857' },
         { l: 'Reembolso', v: formatarMoedaCompleta(u.Reembolso), d: calcularDelta(u.Reembolso, ant.Reembolso), cor: '#be123c' },
         { l: 'Créditos Novos', v: formatarInt(u.CreditosNovos), d: calcularDelta(u.CreditosNovos, ant.CreditosNovos), cor: '#b45309' },
-        { l: 'NPL', v: formatarPercentual(u.NPLPercentual), d: calcularDelta(u.NPLPercentual, ant.NPLPercentual), cor: '#be123c', invert: true },
-        { l: 'Taxa de Reembolso', v: formatarPercentual(u.TaxaReembolsoPercentual), d: calcularDelta(u.TaxaReembolsoPercentual, ant.TaxaReembolsoPercentual), cor: '#047857' }
+        { l: 'Clientes Novos', v: formatarInt(u.ClientesNovos), d: calcularDelta(u.ClientesNovos, ant.ClientesNovos), cor: '#1d4ed8' },
+        { l: 'PAR 30', v: `${formatarK(u.PAR30Valor)} (${formatarPercentual(u.PAR30Percentual)})`, d: calcularDelta(u.PAR30Percentual, ant.PAR30Percentual), cor: '#b45309', invert: true },
+        { l: 'Provisão', v: `${formatarK(u.ProvisaoValor)} (${formatarPercentual(provisaoPercentualAtual.value)})`, d: calcularDelta(u.ProvisaoValor, ant.ProvisaoValor), cor: '#be123c', invert: true },
+        { l: 'Taxa Reembolso', v: formatarPercentual(u.TaxaReembolsoPercentual), d: calcularDelta(u.TaxaReembolsoPercentual, ant.TaxaReembolsoPercentual), cor: '#047857' }
     ]
     const kpiHtml = kpis.map(k => {
         const tem = k.d !== null && k.d !== undefined
         const bom = tem ? (k.invert ? k.d <= 0 : k.d >= 0) : null
-        return `<td width="16.66%" valign="top" style="padding:4px;">
-            <div style="border:1px solid #e2e8f0;border-top:4px solid ${k.cor};border-radius:8px;padding:10px 12px;background:#ffffff;">
-                <div style="font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b;">${k.l}</div>
-                <div style="font-size:16px;font-weight:800;color:#0f172a;margin-top:4px;">${k.v}</div>
-                <div style="font-size:11.5px;font-weight:700;margin-top:3px;color:${tem ? (bom ? EM_COR.verde : EM_COR.rosa) : '#94a3b8'};">${tem ? `${k.d >= 0 ? '▲' : '▼'} ${Math.abs(Math.round(k.d))}% <span style="font-weight:400;color:#94a3b8;">vs mês ant.</span>` : '—'}</div>
+        return `<td width="12.5%" valign="top" style="padding:3px;">
+            <div style="border:1px solid #e2e8f0;border-top:4px solid ${k.cor};border-radius:8px;padding:8px 10px;background:#ffffff;">
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#64748b;">${k.l}</div>
+                <div style="font-size:13.5px;font-weight:800;color:#0f172a;margin-top:4px;">${k.v}</div>
+                <div style="font-size:10.5px;font-weight:700;margin-top:3px;color:${tem ? (bom ? EM_COR.verde : EM_COR.rosa) : '#94a3b8'};">${tem ? `${k.d >= 0 ? '▲' : '▼'} ${Math.abs(Math.round(k.d))}% <span style="font-weight:400;color:#94a3b8;">vs mês ant.</span>` : '—'}</div>
             </div></td>`
     }).join('')
 
     const secoes = []
-    secoes.push(emSecao(`Reporting Consolidado — KIXICRÉDITO ANGOLA`, esc(tituloDireccao.value) + ' · Histórico mensal consolidado até ao último período', emConsolidado()))
-    if (agenciasCapital.value.length || agenciasProvincia.value.length) {
-        secoes.push(emSecao('1. Distribuição da Carteira', 'Performance detalhada por localidade',
-            [agenciasCapital.value.length ? emAgencias('Capital (Luanda)', agenciasCapital.value) : '',
-             agenciasProvincia.value.length ? emAgencias('Províncias', agenciasProvincia.value) : ''].join('<div style="height:12px;"></div>')))
+    if (historicoOrdenado.value.length > 0) {
+        secoes.push(emSecao(`Reporting Consolidado — ${esc(tituloEntidadeMaiusculo.value)}`, esc(tituloDireccao.value) + ' · Histórico mensal consolidado até ao último período', emConsolidado()))
     }
-    if (produtosAgrupados.value.length) secoes.push(emSecao('Detalhamento por Produto', 'Resultados por gestor e produto', emProdutos()))
-    if (props.movimentoPrestacaoRD.length) secoes.push(emSecao('2. Movimento das Prestações', 'Detalhe das prestações Kixi Crédito', emMovimento()))
-    if (props.desembolsosReembolsos12MesesRD.length) secoes.push(emSecao('3. Desembolsos e Reembolsos (Últimos 12 Meses)', 'Pico máximo (verde), mínimo (vermelho) e total acumulado', emFluxo12Meses()))
-    if (provisoesAgrupadas.value.length) secoes.push(emSecao('4. Provisões', 'Evolução de provisões por agrupamento de produto', emProvisoes()))
-    if (props.carteiraWriteOffRD.length) secoes.push(emSecao('5. Carteira Write-Off', 'Evolução e recuperação de ativos baixados', emWriteOff()))
+    if (agenciasCapital.value.length || agenciasProvincia.value.length || agenciasParcerias.value.length) {
+        secoes.push(emSecao(`1. Distribuição da Carteira - ${esc(tituloEntidadeMaiusculo.value)}`, 'Performance detalhada por localidade',
+            [
+                agenciasCapital.value.length ? emAgencias('Capital (Luanda)', agenciasCapital.value) : '',
+                agenciasProvincia.value.length ? emAgencias('Províncias', agenciasProvincia.value) : '',
+                agenciasParcerias.value.length ? emAgencias('Parcerias', agenciasParcerias.value) : ''
+            ].filter(Boolean).join('<div style="height:12px;"></div>')))
+    }
+    if (produtosAgrupados.value.length) secoes.push(emSecao(`Detalhamento por Produto - ${esc(tituloEntidadeMaiusculo.value)}`, 'Resultados por gestor e produto', emProdutos()))
+    if (linhasMovimentoPrestacao.value.length) secoes.push(emSecao(`2. Movimento das Prestações - ${esc(tituloEntidadeMaiusculo.value)}`, `Detalhe das prestações ${esc(tituloEntidadeCurto.value)}`, emMovimento()))
+    if (props.desembolsosReembolsos12MesesRD.length) secoes.push(emSecao(`3. Desembolsos e Reembolsos (Últimos 12 Meses) - ${esc(tituloEntidadeMaiusculo.value)}`, 'Pico máximo (verde), mínimo (vermelho) e total acumulado', emFluxo12Meses()))
+    if (provisoesAgrupadas.value.length) secoes.push(emSecao(`4. Provisões - ${esc(tituloEntidadeMaiusculo.value)}`, 'Evolução de provisões por agrupamento de produto', emProvisoes()))
+    if (linhasWO.value.length) secoes.push(emSecao(`5. Carteira Write-Off - ${esc(tituloEntidadeMaiusculo.value)}`, 'Evolução e recuperação de ativos baixados', emWriteOff()))
     if (temTopClientes.value) secoes.push(emSecao(`6. ${esc(tituloSecaoTopClientes.value)}`, esc(subtituloSecaoTopClientes.value), emTopClientes()))
-    if (centrosCustoOrdenadosPorRisco.value.length) secoes.push(emSecao('7. Exposição ao Risco por Centros de Custo', 'Pontos de atendimento por ordem de gravidade de risco', emCentrosCusto()))
+    if (centrosCustoRegulares.value.length || centrosCustoParcerias.value.length) secoes.push(emSecao(`7. Exposição ao Risco por Centros de Custo - ${esc(tituloEntidadeMaiusculo.value)}`, 'Pontos de atendimento por ordem de gravidade de risco', emCentrosCusto()))
 
     return `<!DOCTYPE html>
 <html lang="pt-PT">
@@ -2588,7 +2950,7 @@ const gerarHtmlEmail = () => {
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="1100" style="width:100%;max-width:1100px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #dbe3ec;">
     <tr><td style="background:#0B2E4F;background-image:linear-gradient(135deg,#0B2E4F,#1E5A8E);padding:26px 28px;">
         <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#6ee7b7;">Relatório Diário Executivo</div>
-        <div style="font-size:24px;font-weight:800;color:#ffffff;margin-top:4px;">Reporting Balance · Kixi Crédito Angola</div>
+        <div style="font-size:24px;font-weight:800;color:#ffffff;margin-top:4px;">Reporting Balance · ${esc(tituloHeaderPrincipal.value)}</div>
         <div style="margin-top:10px;">
             <span style="display:inline-block;background:rgba(110,231,183,.18);border:1px solid rgba(110,231,183,.45);color:#a7f3d0;font-size:12px;font-weight:700;padding:3px 12px;border-radius:12px;">${esc(tituloDireccao.value)}</span>
             <span style="display:inline-block;color:#cfe3f5;font-size:13px;margin-left:10px;">Data de referência: <b style="color:#ffffff;">${esc(ultimoMesNome.value)}</b></span>
@@ -2601,7 +2963,7 @@ const gerarHtmlEmail = () => {
     <tr><td style="padding:28px;">
         <div style="border-top:2px solid #e2e8f0;padding-top:14px;font-size:12px;color:#64748b;line-height:1.6;">
             Relatório gerado em ${esc(agora)} e enviado por <b>${EMAIL_REMETENTE}</b>.<br>
-            Kixi Crédito Angola · Documento confidencial, destinado exclusivamente ao destinatário.
+            ${esc(tituloHeaderPrincipal.value)} · Documento confidencial, destinado exclusivamente ao destinatário.
         </div>
     </td></tr>
   </table>
@@ -2656,8 +3018,8 @@ const enviarEmail = async () => {
             body: JSON.stringify({
                 destinatario: emailDialog.destinatario,
                 remetente: EMAIL_REMETENTE,
-                direccao: String(props.direccaoActiva || 'GLOBAL').toUpperCase(),
-                assunto: `RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]`,
+                direccao: direccaoActivaNorm.value,
+                assunto: `RD Express ${ultimoMesNome.value} [${tituloEntidadeMaiusculo.value}]`,
                 html: gerarHtmlEmail()
             })
         })

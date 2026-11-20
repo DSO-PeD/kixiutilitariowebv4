@@ -113,7 +113,7 @@ class ExternalAPIController extends Controller
         DB::transaction(function () use ($data) {
 
             // Eliminar os dados existentes
-            TblRDPrintCarteiraWriteOffModel::query()->delete();
+            TblRDPrintCarteiraWriteOffModel::query()->delete();  // Para esta tabela é válido
 
             // Inserir os novos
             if (!empty($data)) {
@@ -160,7 +160,7 @@ class ExternalAPIController extends Controller
         DB::transaction(function () use ($data) {
 
             // Eliminar os dados existentes
-            TblRDprintDadosEstatisticosModel::query()->delete();
+            TblRDprintDadosEstatisticosModel::query()->delete();  // Para esta tabela é válido
 
             // Inserir os novos
             if (!empty($data)) {
@@ -185,14 +185,15 @@ class ExternalAPIController extends Controller
                 'DesembolsoValor' => $record['DesembolsoValor'],
                 'ReembolsoValor' => $record['ReembolsoValor'],
                 'DataCriacao' => $record['DataCriacao'],
-                'Activo' => $record['Activo']
+                'Activo' => $record['Activo'],
+                'TipoDireccao'=>$record['TipoDireccao'],
             ];
         })->toArray();
 
         DB::transaction(function () use ($data) {
 
             // Eliminar os dados existentes
-            TblRDPrintDesembolsosReembolsos12MesesModel::query()->delete();
+            TblRDPrintDesembolsosReembolsos12MesesModel::query()->delete();  // Para esta tabela é válido
 
             // Inserir os novos
             if (!empty($data)) {
@@ -273,7 +274,9 @@ class ExternalAPIController extends Controller
                 'VariacaoTaxaCumprimento' => $record['VariacaoTaxaCumprimento'],
                 'VariacaoTaxaRecuperacao' => $record['VariacaoTaxaRecuperacao'],
                 'DataCriacao' => $record['DataCriacao'],
-                'Activo' => $record['Activo']
+                'Activo' => $record['Activo'],
+                'TipoDireccao'=> $record['TipoDireccao'],
+                'DirectorNome'=> $record['DirectorNome']
             ];
         })->toArray();
 
@@ -298,86 +301,7 @@ class ExternalAPIController extends Controller
             'dates_updated' => $datasParaAtualizar,
         ]);
     }
-   /* public function carregartblRDprintKixiCredito(Request $request){
-        $records = $request->input('records');
 
-        $data = collect($records)->map(function ($record) {
-            return [
-                'Id' => $record['Id'],
-                'DataReferencia' => $record['DataReferencia'],
-                'BalancoValor' => $record['BalancoValor'],
-                'CreditosQuantidade' => $record['CreditosQuantidade'],
-                'CreditosNovos' => $record['CreditosNovos'],
-                'TaxaJuros1' => $record['TaxaJuros1'],
-                'TaxaJuros2' => $record['TaxaJuros2'],
-                'CreditosAteKz2000_Qtd' => $record['CreditosAteKz2000_Qtd'],
-                'CreditosAteKz2000_Valor' => $record['CreditosAteKz2000_Valor'],
-                'ClientesQuantidade' => $record['ClientesQuantidade'],
-                'ClientesNovos' => $record['ClientesNovos'],
-                'ClientesAteKz2000' => $record['ClientesAteKz2000'],
-                'NPLPercentual' => $record['NPLPercentual'],
-                'NPLValor' => $record['NPLValor'],
-                'PAR1Percentual' => $record['PAR1Percentual'],
-                'PAR1Valor' => $record['PAR1Valor'],
-                'PAR30Percentual' => $record['PAR30Percentual'],
-                'PAR30Valor' => $record['PAR30Valor'],
-                'ProvisaoValor' => $record['ProvisaoValor'],
-                'ProvisaoCoberturaPerc' => $record['ProvisaoCoberturaPerc'],
-                'ProvisaoDiasAtraso' => $record['ProvisaoDiasAtraso'],
-                'TaxaReembolsoPercentual' => $record['TaxaReembolsoPercentual'],
-                'TaxaCumprimentoPercentual' => $record['TaxaCumprimentoPercentual'],
-                'TaxaRecuperacaoPercentual' => $record['TaxaRecuperacaoPercentual'],
-                'Desembolsos' => $record['Desembolsos'],
-                'Reembolso' => $record['Reembolso'],
-                'CreditosNovos_Mais' => $record['CreditosNovos_Mais'],
-                'CreditosNovos_Menos' => $record['CreditosNovos_Menos'],
-                'ClientesNovos_Mais' => $record['ClientesNovos_Mais'],
-                'ClientesNovos_Menos' => $record['ClientesNovos_Menos'],
-                'NPL_Mais' => $record['NPL_Mais'],
-                'NPL_Menos' => $record['NPL_Menos'],
-                'PAR1_Mais' => $record['PAR1_Mais'],
-                'PAR1_Menos' => $record['PAR1_Menos'],
-                'PAR30_Mais' => $record['PAR30_Mais'],
-                'PAR30_Menos' => $record['PAR30_Menos'],
-                'Provisao_Mais' => $record['Provisao_Mais'],
-                'Provisao_Menos' => $record['Provisao_Menos'],
-                'TaxaReembolso_Mais' => $record['TaxaReembolso_Mais'],
-                'TaxaReembolso_Menos' => $record['TaxaReembolso_Menos'],
-                'TaxaCumprimento_Mais' => $record['TaxaCumprimento_Mais'],
-                'TaxaCumprimento_Menos' => $record['TaxaCumprimento_Menos'],
-                'TaxaRecuperacao_Mais' => $record['TaxaRecuperacao_Mais'],
-                'TaxaRecuperacao_Menos' => $record['TaxaRecuperacao_Menos'],
-                'VariacaoPercentual' => $record['VariacaoPercentual'],
-                'VariacaoCreditosNovos' => $record['VariacaoCreditosNovos'],
-                'VariacaoClientesNovos' => $record['VariacaoClientesNovos'],
-                'VariacaoNPL' => $record['VariacaoNPL'],
-                'VariacaoPAR1' => $record['VariacaoPAR1'],
-                'VariacaoPAR30' => $record['VariacaoPAR30'],
-                'VariacaoProvisao' => $record['VariacaoProvisao'],
-                'VariacaoTaxaReembolso' => $record['VariacaoTaxaReembolso'],
-                'VariacaoTaxaCumprimento' => $record['VariacaoTaxaCumprimento'],
-                'VariacaoTaxaRecuperacao' => $record['VariacaoTaxaRecuperacao'],
-                'DataCriacao' => $record['DataCriacao'],
-                'Activo' => $record['Activo']
-            ];
-        })->toArray();
-
-        DB::transaction(function () use ($data) {
-
-            // Eliminar os dados existentes
-            TblRDprintKixiCreditoModel::query()->delete();
-
-            // Inserir os novos
-            if (!empty($data)) {
-                TblRDprintKixiCreditoModel::insert($data);
-            }
-        });
-
-        return response()->json([
-            'success' => true,
-            'processed' => count($data),
-        ]);
-    }*/
 
     public function carregartblRDprintMovimentoPrestacao(Request $request){
         $records = $request->input('records');
@@ -544,7 +468,9 @@ class ExternalAPIController extends Controller
                 'GestaoValor' => $record['GestaoValor'],
                 'GestaoSufixo' => $record['GestaoSufixo'],
                 'DataCriacao' => $record['DataCriacao'],
-                'Activo' => $record['Activo']
+                'Activo' => $record['Activo'],
+                'TipoDireccao'=> $record['TipoDireccao'],
+                'DirectorNome'=> $record['DirectorNome']
             ];
         })->toArray();
 

@@ -49,6 +49,8 @@ class TblRDprintRiscoExposicaoCentrosCustoModel extends Model
         'MaxDiasAtraso',
         'DataProcessamento',
         'Activo',
+        'TipoAgrupamento',
+        'TipoDireccao'
     ];
 
     /**

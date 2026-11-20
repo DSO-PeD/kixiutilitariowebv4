@@ -40,7 +40,9 @@ class TblRDprintRegionalModel extends Model
         'GestaoValor',
         'GestaoSufixo',
         'DataCriacao',
-        'Activo'
+        'Activo',
+        'TipoDireccao',
+        'DirectorNome'
     ];
 
     /**
