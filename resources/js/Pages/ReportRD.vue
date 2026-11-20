@@ -37,11 +37,11 @@
                                 <i class="fa fa-print text-blue-200"></i>
                                 Imprimir Tabelas (A4)
                             </button>
-                            <a :href="`/reports/rdreport`" target="_blank"
-                               class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
-                                <i class="fa fa-chart-line"></i>
-                                Visualizar RD Express
-                            </a>
+                            <button @click="abrirDialogEmail"
+                                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/30">
+                                <i class="fa fa-paper-plane"></i>
+                                Enviar por Email
+                            </button>
                         </div>
                     </div>
 
@@ -51,7 +51,7 @@
                             <i class="fas fa-layer-group mr-1"></i> Direcção:
                         </span>
 
-                        <Link href="/reports/rd"
+                        <Link href="/rdcorp"
                               :class="direccaoActiva === 'GLOBAL'
                                   ? 'bg-white text-[#0B2E4F] shadow-md font-bold'
                                   : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'"
@@ -94,21 +94,21 @@
             <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4 mb-6">
                 <KpiCard
                     label="Carteira Total"
-                    :value="formatarMoedaCompacta(ultimoRegistro?.BalancoValor)"
+                    :value="formatarMoedaCompleta(ultimoRegistro?.BalancoValor)"
                     :delta="calcularDelta(ultimoRegistro?.BalancoValor, registroAnterior?.BalancoValor)"
                     icon="fa-wallet"
                     tone="blue"
                 />
                 <KpiCard
                     label="Desembolso"
-                    :value="formatarMoedaCompacta(ultimoRegistro?.Desembolsos)"
+                    :value="formatarMoedaCompleta(ultimoRegistro?.Desembolsos)"
                     :delta="calcularDelta(ultimoRegistro?.Desembolsos, registroAnterior?.Desembolsos)"
                     icon="fa-hand-holding-usd"
                     tone="emerald"
                 />
                 <KpiCard
                     label="Reembolso"
-                    :value="formatarMoedaCompacta(ultimoRegistro?.Reembolso)"
+                    :value="formatarMoedaCompleta(ultimoRegistro?.Reembolso)"
                     :delta="calcularDelta(ultimoRegistro?.Reembolso, registroAnterior?.Reembolso)"
                     icon="fa-undo"
                     tone="rose"
@@ -654,57 +654,105 @@
                         </div>
                     </section>
 
-                    <!-- ═══ TABELA 5: Desembolsos/Reembolsos 12 Meses ═══ -->
+                    <!-- ═══ TABELA 5: Desembolsos/Reembolsos 12 Meses (2 blocos de 6 meses + Coluna Total Acumulado) ═══ -->
                     <section v-if="desembolsosReembolsos12MesesRD.length > 0">
                         <SectionTitle
                             icon="fa-money-bill-wave"
                             title="3. DESEMBOLSOS E REEMBOLSOS (ÚLTIMOS 12 MESES)"
-                            subtitle="Evolução mensal com destaque para pico máximo (verde) e mínimo (vermelho)"
+                            subtitle="Evolução mensal repartida em 2 blocos de 6 meses com destaque para pico máximo (verde), mínimo (vermelho) e total acumulado"
                             tone="emerald"
                         />
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
-                            <table class="w-full text-xs border-collapse text-slate-800">
-                                <thead>
-                                    <tr class="bg-[#103E68] text-white text-center text-[11px]">
-                                        <th class="border-r border-b border-slate-300 px-3 py-1.5 text-left w-44 uppercase tracking-wider">Fluxo / Mês</th>
-                                        <th v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="border-r border-b border-slate-300 px-2 py-1.5 min-w-[85px] uppercase tracking-wider">
-                                            {{ mes.NomeDoMes }}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr class="hover:bg-emerald-50/20 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left bg-emerald-50 text-emerald-800">
-                                            <i class="fas fa-arrow-down mr-2 text-emerald-600"></i>Desembolso (+)
-                                        </td>
-                                        <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-1.5 tabular-nums transition-all"
-                                            :class="obterClasseDestaqueDesembolso(mes)">
-                                            <div class="flex items-center justify-end gap-1">
-                                                <span v-if="Number(mes.DesembolsoValor) === maxMinFluxo.maxDesemb" class="text-[8px] bg-emerald-600 text-white px-1 rounded-sm uppercase tracking-tighter">▲ MAX</span>
-                                                <span v-else-if="Number(mes.DesembolsoValor) === maxMinFluxo.minDesemb" class="text-[8px] bg-rose-600 text-white px-1 rounded-sm uppercase tracking-tighter">▼ MIN</span>
-                                                <span>{{ formatarNumero(mes.DesembolsoValor) }}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-rose-50/20 transition-colors">
-                                        <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left bg-rose-50 text-rose-800">
-                                            <i class="fas fa-arrow-up mr-2 text-rose-600"></i>Reembolso (−)
-                                        </td>
-                                        <td v-for="mes in desembolsosReembolsos12MesesRD" :key="mes.Id"
-                                            class="text-right border-r border-slate-200 px-2 py-1.5 tabular-nums transition-all"
-                                            :class="obterClasseDestaqueReembolso(mes)">
-                                            <div class="flex items-center justify-end gap-1">
-                                                <span v-if="Number(mes.ReembolsoValor) === maxMinFluxo.maxReemb" class="text-[8px] bg-emerald-600 text-white px-1 rounded-sm uppercase tracking-tighter">▲ MAX</span>
-                                                <span v-else-if="Number(mes.ReembolsoValor) === maxMinFluxo.minReemb" class="text-[8px] bg-rose-600 text-white px-1 rounded-sm uppercase tracking-tighter">▼ MIN</span>
-                                                <span>{{ formatarNumero(mes.ReembolsoValor) }}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="flex flex-col lg:flex-row rounded-xl border border-slate-200 overflow-hidden">
+                            <!-- Esquerda: 2 blocos empilhados de 6 meses cada -->
+                            <div class="flex-1">
+                                <table class="w-full text-xs border-collapse text-slate-800">
+                                    <tbody>
+                                        <template v-for="(bloco, blocoIdx) in blocosFluxo6Meses" :key="blocoIdx">
+                                            <tr class="bg-[#103E68] text-white text-center text-[11px]"
+                                                :class="{ 'border-t-2 border-slate-400': blocoIdx > 0 }">
+                                                <th class="border-r border-b border-slate-300 px-3 py-1.5 text-left w-36 uppercase tracking-wider">
+                                                    Fluxo / Mês ({{ blocoIdx === 0 ? '1–6' : '7–12' }})
+                                                </th>
+                                                <th v-for="mes in bloco" :key="mes.Id"
+                                                    class="border-r border-b border-slate-300 px-2 py-1.5 uppercase tracking-wider">
+                                                    {{ mes.NomeDoMes }}
+                                                </th>
+                                                <th v-for="n in Math.max(0, 6 - bloco.length)" :key="'empty-h-' + n"
+                                                    class="border-r border-b border-slate-300 px-2 py-1.5 bg-[#0B2E4F]/60">
+                                                    —
+                                                </th>
+                                            </tr>
+
+                                            <tr class="hover:bg-emerald-50/20 transition-colors">
+                                                <td class="font-bold border-r border-b border-slate-200 px-3 py-1.5 text-left bg-emerald-50 text-emerald-800 whitespace-nowrap">
+                                                    <i class="fas fa-arrow-down mr-2 text-emerald-600"></i>Desembolso (+)
+                                                </td>
+                                                <td v-for="mes in bloco" :key="mes.Id"
+                                                    class="text-right border-r border-b border-slate-200 px-2 py-1.5 tabular-nums transition-all"
+                                                    :class="obterClasseDestaqueDesembolso(mes)">
+                                                    <div class="flex items-center justify-end gap-1">
+                                                        <span v-if="Number(mes.DesembolsoValor) === maxMinFluxo.maxDesemb" class="text-[8px] bg-emerald-600 text-white px-1 rounded-sm uppercase tracking-tighter">▲ MAX</span>
+                                                        <span v-else-if="Number(mes.DesembolsoValor) === maxMinFluxo.minDesemb" class="text-[8px] bg-rose-600 text-white px-1 rounded-sm uppercase tracking-tighter">▼ MIN</span>
+                                                        <span>{{ formatarNumero(mes.DesembolsoValor) }}</span>
+                                                    </div>
+                                                </td>
+                                                <td v-for="n in Math.max(0, 6 - bloco.length)" :key="'empty-d-' + n"
+                                                    class="text-right border-r border-b border-slate-200 px-2 py-1.5 text-slate-400">
+                                                    —
+                                                </td>
+                                            </tr>
+
+                                            <tr class="hover:bg-rose-50/20 transition-colors">
+                                                <td class="font-bold border-r border-slate-200 px-3 py-1.5 text-left bg-rose-50 text-rose-800 whitespace-nowrap"
+                                                    :class="{ 'border-b': blocoIdx < blocosFluxo6Meses.length - 1 }">
+                                                    <i class="fas fa-arrow-up mr-2 text-rose-600"></i>Reembolso (−)
+                                                </td>
+                                                <td v-for="mes in bloco" :key="mes.Id"
+                                                    class="text-right border-r border-slate-200 px-2 py-1.5 tabular-nums transition-all"
+                                                    :class="[obterClasseDestaqueReembolso(mes), { 'border-b': blocoIdx < blocosFluxo6Meses.length - 1 }]">
+                                                    <div class="flex items-center justify-end gap-1">
+                                                        <span v-if="Number(mes.ReembolsoValor) === maxMinFluxo.maxReemb" class="text-[8px] bg-emerald-600 text-white px-1 rounded-sm uppercase tracking-tighter">▲ MAX</span>
+                                                        <span v-else-if="Number(mes.ReembolsoValor) === maxMinFluxo.minReemb" class="text-[8px] bg-rose-600 text-white px-1 rounded-sm uppercase tracking-tighter">▼ MIN</span>
+                                                        <span>{{ formatarNumero(mes.ReembolsoValor) }}</span>
+                                                    </div>
+                                                </td>
+                                                <td v-for="n in Math.max(0, 6 - bloco.length)" :key="'empty-r-' + n"
+                                                    class="text-right border-r border-slate-200 px-2 py-1.5 text-slate-400"
+                                                    :class="{ 'border-b': blocoIdx < blocosFluxo6Meses.length - 1 }">
+                                                    —
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Direita: Coluna de Total Acumulado (12 Meses) alinhada -->
+                            <div class="lg:w-48 shrink-0 flex flex-col border-t-2 lg:border-t-0 border-slate-300 bg-slate-50">
+                                <div class="bg-[#0B2E4F] text-amber-200 px-3 py-1.5 text-center text-[11px] font-black uppercase tracking-wider border-b border-slate-300">
+                                    Total Acumulado
+                                    <span class="block text-[9px] font-normal text-blue-200">12 Meses</span>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-center divide-y divide-slate-200">
+                                    <div class="flex-1 flex flex-col justify-center px-3 py-2 bg-emerald-50/80 text-right">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                                            <i class="fas fa-arrow-down mr-1"></i>Total Desembolso
+                                        </span>
+                                        <span class="text-sm font-black text-emerald-950 tabular-nums mt-0.5">
+                                            {{ formatarNumero(totaisAcumuladosFluxo.totalDesembolso) }}
+                                        </span>
+                                    </div>
+                                    <div class="flex-1 flex flex-col justify-center px-3 py-2 bg-rose-50/80 text-right">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-700">
+                                            <i class="fas fa-arrow-up mr-1"></i>Total Reembolso
+                                        </span>
+                                        <span class="text-sm font-black text-rose-950 tabular-nums mt-0.5">
+                                            {{ formatarNumero(totaisAcumuladosFluxo.totalReembolso) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
@@ -834,60 +882,21 @@
                     </section>
 
                     <!-- ═════════════════════════════════════════════════════════════════
-                         6. TOP CLIENTES EM RISCO CRÍTICO
+                         6. TOP CLIENTES EM RISCO CRÍTICO (Coluna Oficial de Crédito oculta)
                          ═════════════════════════════════════════════════════════════════ -->
-                    <section v-if="temTopClientes" class="pt-6 border-t-2 border-slate-200 space-y-6">
+                    <section v-if="temTopClientes" class="pt-6 border-t-2 border-slate-200 space-y-4">
                         <SectionTitle
                             icon="fa-users-slash"
-                            title="6. TOP CLIENTES EM RISCO CRÍTICO"
-                            subtitle="Classificação por Direção (DOP & DPP) e Risco Geral da Instituição"
+                            :title="`6. ${tituloSecaoTopClientes}`"
+                            :subtitle="subtituloSecaoTopClientes"
                             tone="rose"
                         />
 
-                        <!-- ABAS DE NAVEGAÇÃO DOS 3 RANKINGS -->
-                        <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
-                            <button
-                                type="button"
-                                @click="tabRiscoAtiva = 'GERAL'"
-                                :class="tabRiscoAtiva === 'GERAL'
-                                    ? 'bg-rose-700 text-white shadow-sm'
-                                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
-                                class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Top 15 Risco Geral (Instituição)
-                                <span class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full">{{ top15ClientesGeral.length }}</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                @click="tabRiscoAtiva = 'DOP'"
-                                :class="tabRiscoAtiva === 'DOP'
-                                    ? 'bg-[#0B2E4F] text-white shadow-sm'
-                                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
-                                class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
-                                <i class="fas fa-sitemap"></i>
-                                Top 15 DOP (Operações)
-                                <span class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full">{{ top15ClientesDOP.length }}</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                @click="tabRiscoAtiva = 'DPP'"
-                                :class="tabRiscoAtiva === 'DPP'
-                                    ? 'bg-indigo-700 text-white shadow-sm'
-                                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
-                                class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
-                                <i class="fas fa-handshake"></i>
-                                Top 15 DPP (Particulares & Parcerias)
-                                <span class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full">{{ top15ClientesDPP.length }}</span>
-                            </button>
-                        </div>
-
-                        <!-- TABELA DINÂMICA DE TOP CLIENTES -->
+                        <!-- TABELA ÚNICA DE TOP 15 CLIENTES CONFORME VISÃO ATIVA -->
                         <div class="overflow-x-auto rounded-xl border border-slate-200">
                             <table class="w-full text-[11px] border-collapse text-slate-800">
                                 <thead class="sticky top-0 text-white text-center"
-                                       :class="tabRiscoAtiva === 'GERAL' ? 'bg-gradient-to-r from-rose-900 to-rose-800' : (tabRiscoAtiva === 'DOP' ? 'bg-[#0B2E4F]' : 'bg-indigo-900')">
+                                       :class="direccaoActiva === 'GLOBAL' ? 'bg-gradient-to-r from-rose-900 to-rose-800' : (direccaoActiva === 'DOP' ? 'bg-[#0B2E4F]' : 'bg-indigo-900')">
                                     <tr>
                                         <th class="px-2 py-2 text-center w-10 border-r border-white/20">Pos.</th>
                                         <th class="px-2 py-2 text-center border-r border-white/20">LNR</th>
@@ -899,8 +908,7 @@
                                         <th class="px-2 py-2 text-right border-r border-white/20">Saldo Capital (Kz)</th>
                                         <th class="px-2 py-2 text-right border-r border-white/20">Saldo Juros (Kz)</th>
                                         <th class="px-2 py-2 text-right border-r border-white/20 font-black bg-black/20 text-amber-200">Total em Risco (Kz)</th>
-                                        <th class="px-2 py-2 text-right border-r border-white/20">Provisão Constituída</th>
-                                        <th class="px-2 py-2 text-left">Oficial de Crédito</th>
+                                        <th class="px-2 py-2 text-right">Provisão Constituída</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -942,17 +950,8 @@
                                         <td class="px-2 py-1.5 text-right tabular-nums font-black text-rose-700 bg-rose-50/70 border-r border-slate-200">
                                             {{ formatarNumero(c.SaldoTotalEmRisco) }}
                                         </td>
-                                        <td class="px-2 py-1.5 text-right tabular-nums text-slate-600 border-r border-slate-200">
+                                        <td class="px-2 py-1.5 text-right tabular-nums text-slate-600">
                                             {{ formatarNumero(c.ProvisaoACT) }}
-                                        </td>
-                                        <td class="px-2 py-1.5 text-slate-600 text-[10px] whitespace-nowrap">
-                                            {{ c.NomeOficialCredito || c.UsSectorista || '—' }}
-                                        </td>
-                                    </tr>
-
-                                    <tr v-if="listaTopClientesAtiva.length === 0">
-                                        <td colspan="12" class="px-3 py-6 text-center text-slate-400">
-                                            Nenhum cliente em risco encontrado para a classificação selecionada.
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1034,11 +1033,73 @@
                 </div>
             </div>
         </div>
+
+        <!-- ═══════════════ DIALOG: ENVIAR POR EMAIL ═══════════════ -->
+        <transition name="fade">
+            <div v-if="emailDialog.aberto"
+                 class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                 @click.self="fecharDialogEmail"
+                 @keydown.esc="fecharDialogEmail">
+                <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" role="dialog" aria-modal="true">
+                    <div class="bg-gradient-to-r from-[#0B2E4F] to-[#1E5A8E] px-5 py-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3 text-white">
+                            <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm">Enviar Relatório por Email</h3>
+                                <p class="text-[11px] text-blue-100/80">RD Express · {{ ultimoMesNome }}</p>
+                            </div>
+                        </div>
+                        <button @click="fecharDialogEmail" class="text-white/70 hover:text-white text-lg leading-none" aria-label="Fechar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <form @submit.prevent="enviarEmail" class="p-5 space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Remetente</label>
+                            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm border border-slate-200">
+                                <i class="fas fa-lock text-slate-400 text-xs"></i>
+                                {{ EMAIL_REMETENTE }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="emailDestinatario" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                                Email do destinatário
+                            </label>
+                            <input id="emailDestinatario" ref="emailInputRef" v-model.trim="emailDialog.destinatario"
+                                   type="email" required autocomplete="email" placeholder="nome@exemplo.com"
+                                   :disabled="emailDialog.enviando"
+                                   class="w-full px-3 py-2 rounded-lg border text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 disabled:bg-slate-50"
+                                   :class="emailDialog.erro ? 'border-rose-400' : 'border-slate-300'" />
+                            <p v-if="emailDialog.erro" class="mt-1 text-xs text-rose-600">{{ emailDialog.erro }}</p>
+                            <p v-if="emailDialog.sucesso" class="mt-1 text-xs text-emerald-600">
+                                <i class="fas fa-check-circle mr-1"></i>{{ emailDialog.sucesso }}
+                            </p>
+                        </div>
+
+                        <div class="flex justify-end gap-2 pt-1">
+                            <button type="button" @click="fecharDialogEmail" :disabled="emailDialog.enviando"
+                                    class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                                Cancelar
+                            </button>
+                            <button type="submit" :disabled="emailDialog.enviando || !emailValido"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                                <i :class="emailDialog.enviando ? 'fas fa-spinner fa-spin' : 'fas fa-paper-plane'"></i>
+                                {{ emailDialog.enviando ? 'A enviar…' : 'Enviar' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
 import { Head, Link } from '@inertiajs/vue3'
 import Chart from 'chart.js/auto'
 
@@ -1046,7 +1107,8 @@ import Chart from 'chart.js/auto'
    PROPS
    ══════════════════════════════════════════════════ */
 const props = defineProps({
-    direccaoActiva: { type: String, default: 'GLOBAL' }, // 'GLOBAL' | 'DPP' | 'DOP' | 'OUT'
+    direccaoActiva: { type: String, default: 'GLOBAL' },
+    directorNome: { type: String, default: '' },
     historicoRD: { type: Array, default: () => [] },
     agenciasRD: { type: Array, default: () => [] },
     produtosRD: { type: Array, default: () => [] },
@@ -1067,13 +1129,9 @@ const tituloDireccao = computed(() => {
         DOP: 'Direcção DOP · Operações',
         OUT: 'Direcção OUT · Outros',
     }
-    return map[String(props.direccaoActiva || 'GLOBAL').toUpperCase()] || props.direccaoActiva
+    const base = map[String(props.direccaoActiva || 'GLOBAL').toUpperCase()] || props.direccaoActiva
+    return props.directorNome ? `${base} (${props.directorNome})` : base
 })
-
-/* ══════════════════════════════════════════════════
-   ESTADO REATIVO DAS ABAS DE RISCO (SEÇÃO 6)
-   ══════════════════════════════════════════════════ */
-const tabRiscoAtiva = ref('GERAL') // 'GERAL' | 'DOP' | 'DPP'
 
 /* ══════════════════════════════════════════════════
    COMPONENTES INTERNOS (KpiCard, SectionTitle, AgenciasTable)
@@ -1103,7 +1161,7 @@ const KpiCard = (p) => {
                     h('i', { class: `fas ${p.icon} ${t.text} text-xs` })
                 ])
             ]),
-            h('div', { class: 'text-lg font-bold text-slate-900 tabular-nums tracking-tight leading-tight' }, p.value),
+            h('div', { class: 'text-sm xl:text-base font-bold text-slate-900 tabular-nums tracking-tight leading-tight break-words' }, p.value),
             deltaNum !== null && h('div', { class: `flex items-center gap-1 mt-1 text-[11px] font-semibold ${deltaColor}` }, [
                 h('i', { class: `fas ${arrowClass} text-[9px]` }),
                 h('span', { class: 'tabular-nums' }, Math.abs(Math.round(deltaNum)) + '%'),
@@ -1404,8 +1462,27 @@ const agenciasCapital  = computed(() => (props.agenciasRD || []).filter(i => i.T
 const agenciasProvincia = computed(() => (props.agenciasRD || []).filter(i => i.TipoAgrupamento === 'PROVINCIA'))
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: DESTAQUE MAX/MIN FLUXO (12 MESES)
+   COMPUTED: DESTAQUE MAX/MIN, BLOCOS DE 6 MESES & TOTAL ACUMULADO FLUXO (12 MESES)
    ══════════════════════════════════════════════════ */
+const blocosFluxo6Meses = computed(() => {
+    const list = props.desembolsosReembolsos12MesesRD || []
+    if (list.length === 0) return []
+    const blocos = []
+    for (let i = 0; i < list.length; i += 6) {
+        blocos.push(list.slice(i, i + 6))
+    }
+    return blocos
+})
+
+const totaisAcumuladosFluxo = computed(() => {
+    const list = props.desembolsosReembolsos12MesesRD || []
+    return list.reduce((acc, item) => {
+        acc.totalDesembolso += Number(item.DesembolsoValor) || 0
+        acc.totalReembolso += Number(item.ReembolsoValor) || 0
+        return acc
+    }, { totalDesembolso: 0, totalReembolso: 0 })
+})
+
 const maxMinFluxo = computed(() => {
     const list = props.desembolsosReembolsos12MesesRD || []
     if (list.length === 0) return { maxDesemb: 0, minDesemb: 0, maxReemb: 0, minReemb: 0 }
@@ -1546,7 +1623,7 @@ const provisoesAgrupadas = computed(() => {
         let gestor = ''
         let tipoDireccao = ''
 
-        if ( nomeProd.includes('colaborador')) {
+        if (nomeProd.includes('colaborador')) {
             gestor = 'Marta dos Santos'
             tipoDireccao = 'OUTROS'
         } else {
@@ -1689,48 +1766,45 @@ const centrosCustoOrdenadosPorRisco = computed(() => {
 })
 
 /* ══════════════════════════════════════════════════
-   COMPUTED: 6. TOP 15 CLIENTES POR TIPO DE RANKING
+   COMPUTED: 6. TOP 15 CLIENTES (GERAL NA PÁGINA INICIAL | POR DIREÇÃO NAS RESTANTES)
    ══════════════════════════════════════════════════ */
 const normalizarTipoRanking = (val) => String(val || '').trim().toUpperCase()
 
-const top15ClientesDOP = computed(() => {
-    return [...(props.riscoTopClientesRD || [])]
-        .filter(c => normalizarTipoRanking(c.TipoRanking) === 'TOP15_DOP' || (normalizarTipoRanking(c.ccDireccao) === 'DOP' && !c.TipoRanking))
-        .sort((a, b) => (Number(a.Posicao) || 999) - (Number(b.Posicao) || 999))
-        .slice(0, 15)
+const tituloSecaoTopClientes = computed(() => {
+    const dir = String(props.direccaoActiva || 'GLOBAL').toUpperCase()
+    if (dir === 'GLOBAL') return 'TOP 15 CLIENTES EM RISCO CRÍTICO — VISÃO GERAL (INSTITUIÇÃO)'
+    return `TOP 15 CLIENTES EM RISCO CRÍTICO — DIRECÇÃO ${dir}`
 })
 
-const top15ClientesDPP = computed(() => {
-    return [...(props.riscoTopClientesRD || [])]
-        .filter(c => normalizarTipoRanking(c.TipoRanking) === 'TOP15_DPP' || (normalizarTipoRanking(c.ccDireccao) === 'DPP' && !c.TipoRanking))
-        .sort((a, b) => (Number(a.Posicao) || 999) - (Number(b.Posicao) || 999))
-        .slice(0, 15)
-})
-
-const top15ClientesGeral = computed(() => {
-    const filtrados = [...(props.riscoTopClientesRD || [])]
-        .filter(c => normalizarTipoRanking(c.TipoRanking) === 'TOP15_GERAL')
-        .sort((a, b) => (Number(a.Posicao) || 999) - (Number(b.Posicao) || 999))
-        .slice(0, 15)
-
-    if (filtrados.length === 0 && (props.riscoTopClientesRD || []).length > 0) {
-        return [...props.riscoTopClientesRD]
-            .sort((a, b) => (Number(b.SaldoTotalEmRisco) || 0) - (Number(a.SaldoTotalEmRisco) || 0))
-            .slice(0, 15)
-            .map((item, idx) => ({ ...item, Posicao: idx + 1 }))
-    }
-
-    return filtrados
+const subtituloSecaoTopClientes = computed(() => {
+    const dir = String(props.direccaoActiva || 'GLOBAL').toUpperCase()
+    if (dir === 'GLOBAL') return 'Ranking consolidado dos 15 clientes com maior exposição em risco na instituição'
+    return `Ranking dos 15 clientes com maior exposição em risco exclusivos da direcção ${dir}`
 })
 
 const listaTopClientesAtiva = computed(() => {
-    if (tabRiscoAtiva.value === 'DOP') return top15ClientesDOP.value
-    if (tabRiscoAtiva.value === 'DPP') return top15ClientesDPP.value
-    return top15ClientesGeral.value
+    const dir = String(props.direccaoActiva || 'GLOBAL').toUpperCase()
+    const lista = [...(props.riscoTopClientesRD || [])]
+
+    if (dir === 'GLOBAL') {
+        return lista
+            .filter(c => normalizarTipoRanking(c.TipoRanking) === 'TOP15_GERAL')
+            .sort((a, b) => (Number(a.Posicao) || 999) - (Number(b.Posicao) || 999))
+            .slice(0, 15)
+    }
+
+    const rankingEsperado = `TOP15_${dir}`
+    return lista
+        .filter(c =>
+            normalizarTipoRanking(c.TipoRanking) === rankingEsperado ||
+            (!c.TipoRanking && normalizarTipoRanking(c.ccDireccao) === dir)
+        )
+        .sort((a, b) => (Number(a.Posicao) || 999) - (Number(b.Posicao) || 999))
+        .slice(0, 15)
 })
 
 const temTopClientes = computed(() => {
-    return (props.riscoTopClientesRD || []).length > 0
+    return listaTopClientesAtiva.value.length > 0
 })
 
 const linhasRisco = [
@@ -1796,6 +1870,12 @@ const formatarK = (val) => {
     if (abs >= 1e6) return (n / 1e6).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + 'M'
     if (abs >= 1e3) return (n / 1e3).toLocaleString('pt-PT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + 'K'
     return n.toLocaleString('pt-PT', { maximumFractionDigits: 0 })
+}
+
+const formatarMoedaCompleta = (val) => {
+    const n = _toNum(val)
+    if (!isFinite(n)) return '—'
+    return n.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' Kz'
 }
 
 const formatarMoedaCompacta = (val) => {
@@ -2024,49 +2104,575 @@ watch(
 onBeforeUnmount(destroyCharts)
 
 /* ══════════════════════════════════════════════════
-   IMPRESSÃO A4
+   IMPRESSÃO A4 (HTML PROFISSIONAL REUTILIZADO PARA EMAIL)
    ══════════════════════════════════════════════════ */
+const EMAIL_REMETENTE = 'desenvolvimento@kixicredito.ao'
+
+const CSS_IMPRESSAO = `
+    @page {
+        size: A4 landscape;
+        margin: 10mm 8mm 12mm 8mm;
+        @bottom-left  { content: "Kixi Crédito Angola · Documento confidencial"; font: 7pt 'Segoe UI', Arial, sans-serif; color: #64748b; }
+        @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 7pt 'Segoe UI', Arial, sans-serif; color: #64748b; }
+    }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; color: #0f172a;
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 10px; line-height: 1.35;
+        -webkit-font-smoothing: antialiased; }
+
+    .doc-header { display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 2.5px solid #0B2E4F; padding: 0 0 6px; margin-bottom: 10px; }
+    .doc-header .titulo { font-size: 15px; font-weight: 800; color: #0B2E4F; letter-spacing: .02em; text-transform: uppercase; margin: 0; }
+    .doc-header .sub { font-size: 9.5px; color: #475569; margin-top: 2px; }
+    .doc-header .meta { text-align: right; font-size: 9px; color: #475569; }
+    .doc-header .meta strong { color: #0B2E4F; font-size: 10.5px; }
+
+    .print-root, .print-root > div { box-shadow: none !important; border: 0 !important; padding: 0 !important; border-radius: 0 !important; background: #fff !important; }
+    .print-root .space-y-8 > * + * { margin-top: 14px !important; }
+    .print-root .space-y-4 > * + * { margin-top: 8px !important; }
+    .overflow-x-auto { overflow: visible !important; }
+    .sticky { position: static !important; }
+    .shadow-sm, .shadow-xl, .shadow-lg, .shadow-md { box-shadow: none !important; }
+    .print\\:block, .hidden { display: none !important; }
+    .rounded-2xl, .rounded-xl, .rounded, .rounded-tl-xl, .rounded-tr-xl { border-radius: 0 !important; }
+
+    table { width: 100% !important; border-collapse: collapse !important; font-size: 11px !important; page-break-inside: auto; }
+    th, td { padding: 3.5px 5px !important; vertical-align: middle; }
+    thead { display: table-header-group; }
+    tfoot { display: table-row-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
+    th { font-weight: 700 !important; letter-spacing: .02em; }
+    td { font-variant-numeric: tabular-nums; }
+    .text-\\[8px\\], .text-\\[9px\\] { font-size: 9px !important; }
+    .text-\\[10px\\] { font-size: 10px !important; }
+    .text-\\[11px\\], .text-xs { font-size: 11px !important; }
+    h2 { font-size: 14px !important; margin: 0 !important; }
+    h2 + p, section p { font-size: 10px !important; }
+
+    section { break-inside: auto; page-break-inside: auto; margin: 0 0 12px; }
+    section > div:first-child { break-after: avoid; page-break-after: avoid; }
+    .quebra-pagina { break-before: page; page-break-before: always; }
+`
+
+const gerarHtmlRelatorio = ({ paraEmail = false } = {}) => {
+    const estilos = paraEmail
+        ? ''
+        : Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).map(s => s.outerHTML).join('')
+    const tituloDoc = `RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]`
+    const agora = new Date().toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })
+
+    const clone = areaTabelas.value.cloneNode(true)
+    clone.querySelectorAll('canvas, button').forEach(el => el.remove())
+    clone.classList.add('print-root')
+
+    return `<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="utf-8">
+    <title>${tituloDoc}</title>
+    ${estilos}
+    <style>${CSS_IMPRESSAO}</style>
+</head>
+<body>
+    <div class="doc-header">
+        <div>
+            <h1 class="titulo">Reporting Balance · Kixi Crédito Angola</h1>
+            <div class="sub">Relatório Diário Executivo · ${tituloDireccao.value}</div>
+        </div>
+        <div class="meta">
+            <div><strong>Data de referência: ${ultimoMesNome.value}</strong></div>
+            <div>Emitido em ${agora}</div>
+        </div>
+    </div>
+    ${clone.outerHTML}
+</body>
+</html>`
+}
+
 const imprimirA4 = () => {
     if (!areaTabelas.value) return
+
     const iframe = document.createElement('iframe')
-    iframe.style.cssText = 'position:absolute;width:0;height:0;border:none;'
+    iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;'
     document.body.appendChild(iframe)
     const doc = iframe.contentWindow.document
 
-    const estilos = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-        .map(s => s.outerHTML).join('')
-
     doc.open()
-    doc.write(`
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta charset="utf-8">
-                <title>RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]</title>
-                ${estilos}
-                <style>
-                    @page { size: A4 landscape; margin: 5mm; }
-                    body { background-color: #fff !important; padding: 0 !important; margin: 0 !important;
-                           -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                           font-family: ui-sans-serif, system-ui, sans-serif; }
-                    table { font-size: 7.5px !important; page-break-inside: auto; }
-                    tr { page-break-inside: avoid; }
-                    thead { display: table-header-group; }
-                    .shadow-sm, .shadow-xl, .shadow-lg { box-shadow: none !important; }
-                    .rounded-2xl, .rounded-xl, .rounded { border-radius: 2px !important; }
-                    section { page-break-inside: avoid; margin-bottom: 6px; }
-                </style>
-            </head>
-            <body>${areaTabelas.value.outerHTML}</body>
-        </html>
-    `)
+    doc.write(gerarHtmlRelatorio())
     doc.close()
 
+    const limpar = () => { if (iframe.parentNode) document.body.removeChild(iframe) }
+
     setTimeout(() => {
+        // Ajusta a escala para que a tabela mais larga caiba na largura útil do A4 paisagem (≈ 281mm ≈ 1062px)
+        const larguraUtil = 1062
+        const maisLarga = Math.max(...Array.from(doc.querySelectorAll('table')).map(t => t.scrollWidth), larguraUtil)
+        if (maisLarga > larguraUtil) {
+            doc.body.style.zoom = String(Math.max(0.6, larguraUtil / maisLarga))
+        }
         iframe.contentWindow.focus()
+        iframe.contentWindow.onafterprint = limpar
         iframe.contentWindow.print()
-        document.body.removeChild(iframe)
-    }, 600)
+        setTimeout(limpar, 60000)
+    }, 700)
+}
+
+/* ══════════════════════════════════════════════════
+   HTML DO EMAIL (ESTRUTURA TABLE-BASED, ESTILOS INLINE)
+   ══════════════════════════════════════════════════ */
+const esc = (v) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+const EM_COR = { azul: '#0B2E4F', azul2: '#103E68', verde: '#047857', rosa: '#be123c', ambar: '#b45309', cinza: '#64748b' }
+const EM_BASE = 'padding:6px 9px;border:1px solid #dbe3ec;font-size:12.5px;line-height:1.35;'
+
+const emTh = (t, st = '') => `<th style="background:${EM_COR.azul2};color:#ffffff;font-weight:700;text-align:center;white-space:nowrap;${EM_BASE}${st}">${t}</th>`
+const emTd = (t, st = '') => `<td style="text-align:right;color:#1e293b;${EM_BASE}${st}">${t}</td>`
+const emTdL = (t, st = '') => emTd(t, `text-align:left;font-weight:700;${st}`)
+const emTr = (cels, st = '') => `<tr style="${st}">${cels.join('')}</tr>`
+
+const emTabela = (heads, linhas, barra = '') => `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;">
+  <thead>
+    ${barra ? `<tr><th colspan="${heads.length}" style="background:${EM_COR.azul};color:#ffffff;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:8px 10px;border:1px solid ${EM_COR.azul};">${barra}</th></tr>` : ''}
+    <tr>${heads.map(h => emTh(h)).join('')}</tr>
+  </thead>
+  <tbody>${linhas.join('')}</tbody>
+</table>`
+
+const emSecao = (titulo, sub, conteudo) => `
+<tr><td style="padding:26px 28px 6px;">
+  <div style="border-left:5px solid ${EM_COR.azul};padding:2px 0 2px 12px;">
+    <div style="font-size:17px;font-weight:700;color:#0f172a;">${titulo}</div>
+    ${sub ? `<div style="font-size:12.5px;color:${EM_COR.cinza};margin-top:2px;">${sub}</div>` : ''}
+  </div>
+</td></tr>
+<tr><td style="padding:8px 28px 4px;"><div style="overflow-x:auto;">${conteudo}</div></td></tr>`
+
+const emBadge = (valor, sufixo = '') => {
+    const n = Number(valor)
+    if (valor === null || valor === undefined || !isFinite(n)) return '<span style="color:#94a3b8;">—</span>'
+    const [bg, fg] = n > 0 ? ['#d1fae5', EM_COR.verde] : n < 0 ? ['#ffe4e6', EM_COR.rosa] : ['#fef3c7', '#92400e']
+    return `<span style="display:inline-block;background:${bg};color:${fg};font-weight:700;font-size:12px;padding:1px 9px;border-radius:10px;">${Math.round(n)}${esc(sufixo)}</span>`
+}
+
+const emMapItem = (a) => ({
+    oa: a.OA_Qtd, pa: a.PA_Qtd, balanco: a.BalancoValor,
+    credTot: a.CreditosTotal_Qtd, credNov: a.CreditosNovos_Qtd,
+    cliTot: a.ClientesTotal_Qtd, cliNov: a.ClientesNovos_Qtd,
+    par1: a.PAR1_Valor, par1p: a.PAR1_Percentual, par30: a.PAR30_Valor, par30p: a.PAR30_Percentual,
+    des: a.DesembolsoValor, ta: a.TempoAtendimentodias, ree: a.ReembolsoValor,
+    prov: a.ProvisaoValor, provClasse: a.ProvisaoClasseRisco,
+    gestao: a.GestaoValor, gestaoSufixo: a.GestaoSufixo
+})
+
+const emCelsMetricas = (m, st = '') => [
+    emTd(`${m.oa ?? '—'}/${m.pa ?? '—'}`, `text-align:center;${st}`),
+    emTd(formatarNumero(m.balanco), `font-weight:700;${st}`),
+    emTd(`${formatarInt(m.credTot)} | <b style="color:#4338ca;">${formatarInt(m.credNov)}</b>`, st),
+    emTd(`${formatarInt(m.cliTot)} | <b style="color:#0e7490;">${formatarInt(m.cliNov)}</b>`, st),
+    emTd(`${formatarK(m.par1)}${m.par1p != null ? ` <span style="color:${EM_COR.ambar};font-size:11px;font-weight:700;">(${Math.round(m.par1p)}%)</span>` : ''}`, st),
+    emTd(`${formatarK(m.par30)}${m.par30p != null ? ` <span style="color:${EM_COR.rosa};font-size:11px;font-weight:700;">(${Math.round(m.par30p)}%)</span>` : ''}`, st),
+    emTd(`${formatarNumero(m.des)}${m.ta != null ? ` <span style="color:${EM_COR.cinza};font-size:11px;">| ${String(Math.round(m.ta)).padStart(2, '0')}</span>` : ''}`, `color:${EM_COR.verde};font-weight:600;${st}`),
+    emTd(formatarNumero(m.ree), `color:${EM_COR.rosa};${st}`),
+    emTd(`${formatarNumero(m.prov)}${m.provClasse ? ` <b>(${esc(m.provClasse)})</b>` : ''}`, st),
+    emTd(emBadge(m.gestao, m.gestaoSufixo), `text-align:center;${st}`)
+]
+
+const EM_HEADS_METRICAS = ['OA/PA', 'Carteira', 'Créditos | Novos', 'Clientes | Novos', 'PAR 1', 'PAR 30', 'Desembolsos | TA', 'Reembolsos', 'Provisão', 'Gestão']
+
+const emTotalAgencias = (lista) => {
+    const base = lista.filter(a => !a.IsTotalizador)
+    const its = base.length ? base : lista
+    const soma = (k) => its.reduce((s, a) => s + (Number(a[k]) || 0), 0)
+    const balanco = soma('BalancoValor')
+    const tas = its.filter(a => a.TempoAtendimentodias != null)
+    const ges = its.filter(a => a.GestaoValor != null)
+    return {
+        oa: soma('OA_Qtd'), pa: soma('PA_Qtd'), balanco,
+        credTot: soma('CreditosTotal_Qtd'), credNov: soma('CreditosNovos_Qtd'),
+        cliTot: soma('ClientesTotal_Qtd'), cliNov: soma('ClientesNovos_Qtd'),
+        par1: soma('PAR1_Valor'), par1p: balanco > 0 ? soma('PAR1_Valor') / balanco * 100 : 0,
+        par30: soma('PAR30_Valor'), par30p: balanco > 0 ? soma('PAR30_Valor') / balanco * 100 : 0,
+        des: soma('DesembolsoValor'), ree: soma('ReembolsoValor'), prov: soma('ProvisaoValor'),
+        ta: tas.length ? tas.reduce((s, a) => s + Number(a.TempoAtendimentodias), 0) / tas.length : null,
+        gestao: ges.length ? ges.reduce((s, a) => s + Number(a.GestaoValor), 0) / ges.length : null,
+        gestaoSufixo: ges.find(a => a.GestaoSufixo)?.GestaoSufixo || ''
+    }
+}
+
+const emConsolidado = () => {
+    const u = ultimoRegistro.value || {}
+    const meses = historicoAteUltimoPeriodo.value
+    const heads = ['Indicador', ...colunasMeses.value.map(m => esc(m.label)), '▲', '▼', esc(ultimoMesNome.value || 'Atual'), 'Var.']
+    const varCel = (v, invertido = false) => {
+        const n = Number(v) || 0
+        const bom = invertido ? n <= 0 : n >= 0
+        const seta = invertido ? (n <= 0 ? '▼' : '▲') : (n >= 0 ? '▲' : '▼')
+        return emTd(`${seta} ${formatarPercentual(Math.abs(n))}`, `font-weight:700;color:${bom ? EM_COR.verde : EM_COR.rosa};`)
+    }
+    const ups = (v) => emTd(formatarNumero(v), 'background:#ecfdf5;color:#047857;font-weight:700;')
+    const dns = (v) => emTd(formatarNumero(v), 'background:#fff1f2;color:#be123c;font-weight:700;')
+    const upsI = (v) => emTd(formatarInt(v), 'background:#ecfdf5;color:#047857;font-weight:700;')
+    const dnsI = (v) => emTd(formatarInt(v), 'background:#fff1f2;color:#be123c;font-weight:700;')
+    const corRisco = { npl: '#be123c', par1: '#c2410c', par30: '#b45309' }
+    const corPerc = { TaxaReembolsoPercentual: '#047857', TaxaCumprimentoPercentual: '#1d4ed8', TaxaRecuperacaoPercentual: '#4338ca' }
+    const rows = []
+
+    rows.push(emTr([
+        emTdL('1. Carteira'),
+        ...meses.map(i => emTd(formatarNumero(i.BalancoValor))),
+        ups(u.Desembolsos), dns(u.Reembolso),
+        emTd(formatarNumero(u.BalancoValor), 'background:#fffbeb;color:#92400e;font-weight:700;'),
+        varCel(u.VariacaoPercentual)
+    ]))
+    rows.push(emTr([
+        emTdL('2. Créditos | Novos<br><span style="font-size:11px;font-weight:400;color:#64748b;">Taxa Juros ≤ Kz 2.000</span>'),
+        ...meses.map(i => emTd(`${formatarInt(i.CreditosQuantidade)} | <b style="color:#4338ca;">${formatarInt(i.CreditosNovos)}</b>`)),
+        upsI(u.CreditosNovos_Mais), dnsI(u.CreditosNovos_Menos),
+        emTd(`${formatarInt(u.CreditosQuantidade)} | <b style="color:#4338ca;">${formatarInt(u.CreditosNovos)}</b>`, 'font-weight:700;'),
+        varCel(u.VariacaoCreditosNovos)
+    ]))
+    rows.push(emTr([
+        emTdL('3. Clientes | Novos<br><span style="font-size:11px;font-weight:400;color:#64748b;">≤ Kz 2.000</span>'),
+        ...meses.map(i => emTd(`${formatarInt(i.ClientesQuantidade)} | <b style="color:#0e7490;">${formatarInt(i.ClientesNovos)}</b>`)),
+        upsI(u.ClientesNovos_Mais), dnsI(u.ClientesNovos_Menos),
+        emTd(`${formatarInt(u.ClientesQuantidade)} | <b style="color:#0e7490;">${formatarInt(u.ClientesNovos)}</b>`, 'font-weight:700;'),
+        varCel(u.VariacaoClientesNovos)
+    ]))
+    linhasRisco.forEach(l => {
+        const c = corRisco[l.key] || '#1e293b'
+        const dupla = (reg) => `<b style="color:${c};">${formatarPercentual(reg?.[l.percKey])}</b><br><span style="font-size:11px;color:#64748b;">${formatarK(reg?.[l.valKey])}</span>`
+        rows.push(emTr([
+            emTdL(`${l.numero}. ${esc(l.label)}`),
+            ...meses.map(i => emTd(dupla(i))),
+            ups(u[l.maisKey]), dns(u[l.menosKey]),
+            emTd(dupla(u), 'font-weight:700;'),
+            varCel(u[l.variacaoKey], true)
+        ]))
+    })
+    const provSub = (d, p) => `<br><span style="font-size:11px;font-weight:400;color:#64748b;">${esc(formatarProvisaoCobertura(d, p))}</span>`
+    rows.push(emTr([
+        emTdL('7. Provisão'),
+        ...meses.map(i => emTd(`${formatarNumero(i.ProvisaoValor)}${provSub(i.ProvisaoDiasAtraso, i.ProvisaoCoberturaPerc)}`, `color:${EM_COR.rosa};font-weight:600;`)),
+        ups(u.Provisao_Mais), dns(u.Provisao_Menos),
+        emTd(`${formatarNumero(u.ProvisaoValor)}${provSub(u.ProvisaoDiasAtraso, u.ProvisaoCoberturaPerc)}`, `color:${EM_COR.rosa};font-weight:700;`),
+        varCel(u.VariacaoProvisao, true)
+    ], 'background:#fff7f8;'))
+    linhasPercentuais.forEach(l => {
+        const c = corPerc[l.key] || '#1e293b'
+        rows.push(emTr([
+            emTdL(`${l.numero}. ${esc(l.label)}`),
+            ...meses.map(i => emTd(formatarPercentual(i[l.key]), `color:${c};font-weight:700;`)),
+            ups(u[l.maisKey]), dns(u[l.menosKey]),
+            emTd(formatarPercentual(u[l.key]), `color:${c};font-weight:700;`),
+            varCel(u[l.variacaoKey], !!l.invertido)
+        ]))
+    })
+    return emTabela(heads, rows)
+}
+
+const emAgencias = (titulo, lista) => {
+    const linhas = lista.map(a => {
+        const st = a.IsTotalizador ? 'background:#fffbeb;font-weight:700;' : ''
+        const peso = a.PesoPercentual ? ` <span style="color:#64748b;font-weight:400;font-size:11px;">(${Math.round(a.PesoPercentual)}%)</span>` : ''
+        return emTr([emTdL(`${esc(a.NomeLocal)}${peso}`, st), ...emCelsMetricas(emMapItem(a), st)])
+    })
+    const t = emTotalAgencias(lista)
+    linhas.push(emTr([emTdL(`Total ${esc(titulo)}`, 'background:#0B2E4F;color:#ffffff;'), ...emCelsMetricas(t, 'background:#0B2E4F;color:#ffffff;')]))
+    return emTabela(['Localidade', ...EM_HEADS_METRICAS], linhas, esc(titulo))
+}
+
+const emProdutos = () => {
+    const linhas = []
+    produtosAgrupados.value.forEach(g => {
+        const st = 'background:#e0e7ff;font-weight:700;color:#1e1b4b;'
+        const mt = { ...emMapItem(g.total), ta: g.total.TempoAtendimentoMedia, gestao: g.total.GestaoMedia, gestaoSufixo: g.total.GestaoSufixo }
+        linhas.push(emTr([
+            emTdL(`${esc(g.gestor)}<br><span style="font-size:11px;font-weight:500;color:#4338ca;">${esc(g.tipoDireccao)} · ${g.itens.length} ${g.itens.length === 1 ? 'produto' : 'produtos'}</span>`, st),
+            ...emCelsMetricas(mt, st)
+        ]))
+        g.itens.forEach(p => linhas.push(emTr([emTdL(`&nbsp;&nbsp;• ${esc(p.NomeProduto)}`, 'font-weight:500;'), ...emCelsMetricas(emMapItem(p))])))
+    })
+    return emTabela(['Produto', ...EM_HEADS_METRICAS], linhas, 'Detalhamento por Produto')
+}
+
+const emMovimento = () => {
+    const heads = ['Período Prestação', 'Cap. B.I.', 'Cap. Desembolsado', 'Cap. Reembolsado', 'Cap. B.F.', 'Juros B.I.', 'Juros Desembolsado', 'Juros Reembolsado', 'Juros B.F.', 'Total Recuperado', '%Recup. / TxRecup.']
+    const linhas = linhasMovimentoPrestacao.value.map(mp => {
+        const st = (mp.IsTotal || mp.IsIntermediario) ? 'background:#103E68;color:#ffffff;font-weight:700;' : ''
+        return emTr([
+            emTd(esc(mp.PeriodoPrestacao), `text-align:center;font-weight:700;${st}`),
+            ...['CapIniValor', 'CapDesValor', 'CapReeValor', 'CapFimValor', 'JurIniValor', 'JurDesValor', 'JurReeValor', 'JurFimValor'].map(k => emTd(formatarNumero(mp[k]), st)),
+            emTd(formatarNumero(mp.TotalRecuperado), `font-weight:700;${st}`),
+            emTd(`${Math.round(Number(mp.PctRecuperado ?? 0))}% / ${Math.round(Number(mp.TxRecuperacao ?? 0))}%`, `text-align:center;font-weight:700;${st}`)
+        ])
+    })
+    return emTabela(heads, linhas)
+}
+
+const emFluxo12Meses = () => {
+    const mm = maxMinFluxo.value
+    const cel = (val, max, min, corBase) => {
+        const n = Number(val) || 0
+        const [bg, tag] = n === max ? ['background:#a7f3d0;font-weight:800;', '<span style="background:#047857;color:#fff;font-size:10px;padding:0 4px;border-radius:2px;">▲ MAX</span> ']
+            : n === min ? ['background:#fecdd3;font-weight:800;', '<span style="background:#be123c;color:#fff;font-size:10px;padding:0 4px;border-radius:2px;">▼ MIN</span> ']
+            : ['font-weight:600;', '']
+        return emTd(`${tag}${formatarNumero(val)}`, `color:${corBase};${bg}`)
+    }
+    const blocos = blocosFluxo6Meses.value.map((bloco, idx) => emTabela(
+        [`Fluxo / Mês (${idx === 0 ? '1–6' : '7–12'})`, ...bloco.map(m => esc(m.NomeDoMes))],
+        [
+            emTr([emTdL('▼ Desembolso (+)', 'background:#ecfdf5;color:#047857;'), ...bloco.map(m => cel(m.DesembolsoValor, mm.maxDesemb, mm.minDesemb, EM_COR.verde))]),
+            emTr([emTdL('▲ Reembolso (−)', 'background:#fff1f2;color:#be123c;'), ...bloco.map(m => cel(m.ReembolsoValor, mm.maxReemb, mm.minReemb, EM_COR.rosa))])
+        ]
+    )).join('<div style="height:10px;"></div>')
+    const tot = totaisAcumuladosFluxo.value
+    const totais = emTabela(['Total Acumulado (12 Meses)', 'Valor'], [
+        emTr([emTdL('Total Desembolso', 'background:#ecfdf5;color:#047857;'), emTd(formatarNumero(tot.totalDesembolso), 'font-weight:800;color:#064e3b;')]),
+        emTr([emTdL('Total Reembolso', 'background:#fff1f2;color:#be123c;'), emTd(formatarNumero(tot.totalReembolso), 'font-weight:800;color:#881337;')])
+    ])
+    return `${blocos}<div style="height:10px;"></div>${totais}`
+}
+
+const emProvisoes = () => {
+    const cor = (n) => (Number(n) < 0 ? '#2563eb' : EM_COR.rosa)
+    const celsDif = (t, st = '') => [
+        emTd(formatarNumero(t.difMensal), `color:${cor(t.difMensal)};${st}`),
+        emTd(formatarNumero(t.difAnual), `color:${cor(t.difAnual)};${st}`),
+        emTd(formatarPercentual(t.varAno), `text-align:center;color:${cor(t.varAno)};font-weight:700;${st}`)
+    ]
+    const tg = totalGeralProvisoes.value
+    const linhas = [
+        emTr([
+            emTdL('KIXICRÉDITO ANGOLA', 'background:#dbeafe;color:#0B2E4F;text-transform:uppercase;'),
+            emTd(`${tg.percDado}%`, 'text-align:center;background:#dbeafe;font-weight:700;'),
+            emTd(formatarNumero(tg.fechoAA), 'background:#dbeafe;font-weight:700;'),
+            emTd(formatarNumero(tg.mesAnterior), 'background:#dbeafe;font-weight:700;'),
+            emTd(formatarNumero(tg.mesActual), 'background:#dbeafe;font-weight:700;'),
+            ...celsDif(tg, 'background:#dbeafe;font-weight:700;')
+        ])
+    ]
+    provisoesAgrupadas.value.forEach(g => {
+        const st = 'background:#fef9e7;font-weight:700;'
+        linhas.push(emTr([
+            emTdL(`${esc(g.tipoDireccao)}<br><span style="font-size:11px;font-weight:600;color:#475569;">${esc(g.gestor)}</span>`, st),
+            emTd(`${g.total.percDado}%`, `text-align:center;${st}`),
+            emTd(formatarNumero(g.total.fechoAA), st),
+            emTd(formatarNumero(g.total.mesAnterior), st),
+            emTd(formatarNumero(g.total.mesActual), st),
+            ...celsDif(g.total, st)
+        ]))
+        g.itens.forEach(i => linhas.push(emTr([
+            emTdL(`&nbsp;&nbsp;${esc(i.NomeProduto)}`, 'font-weight:500;'),
+            emTd(`${i.PercentagemDado !== null && i.PercentagemDado !== undefined ? i.PercentagemDado : 0}%`, 'text-align:center;'),
+            emTd(formatarNumero(i.ProvisaoValorFechoAnoAnterior)),
+            emTd(formatarNumero(i.ProvisaoValorMesAnterior)),
+            emTd(formatarNumero(i.ProvisaoValorMesActual), 'font-weight:600;'),
+            emTd(formatarNumero(i.ProvisaoDiferencaMensal), `color:${cor(i.ProvisaoDiferencaMensal)};font-weight:600;`),
+            emTd(formatarNumero(i.ProvisaoDiferencaAnual), `color:${cor(i.ProvisaoDiferencaAnual)};font-weight:600;`),
+            emTd(formatarPercentual(i.PercentVariaAnual), `text-align:center;color:${cor(i.PercentVariaAnual)};font-weight:600;`)
+        ])))
+    })
+    return emTabela(['Agrupamento', '%', esc(labelFechoAA.value), esc(labelMesAnterior.value), esc(labelMesActual.value), 'Dif. Mensal', 'Dif. Anual', 'Var. Ano'], linhas)
+}
+
+const emWriteOff = () => {
+    const heads = ['Período WO', 'B. Inicial', `&lt;= ${esc(cabecalhosWO.value.anterior)}`, ...cabecalhosWO.value.meses.map(esc), 'Recuperado', 'B. Final', '%KR']
+    const linhas = linhasWO.value.map(w => {
+        const st = w.IsTotal ? 'background:#103E68;color:#ffffff;font-weight:700;' : ''
+        return emTr([
+            emTd(esc(w.EtiquetaPeriodoWO), `text-align:center;font-weight:600;${st}`),
+            emTd(formatarNumero(w.BalancoInicial), st),
+            emTd(formatarNumero(w.RecuperadoAcumuladoAnterior), st),
+            ...w.mesesValores.map(v => emTd(formatarNumero(v), st)),
+            emTd(formatarNumero(w.TotalRecuperado), `font-weight:700;${st}`),
+            emTd(formatarNumero(w.BalancoFinal), w.IsTotal ? st : 'background:#fff9c4;color:#0f172a;font-weight:700;'),
+            emTd(formatarPercentual(w.PctKR), `text-align:center;font-weight:700;${st}`)
+        ])
+    })
+    return emTabela(heads, linhas)
+}
+
+const emTopClientes = () => {
+    const heads = ['Pos.', 'LNR', 'Nome do Cliente', 'Produto', 'Direção', 'Centro de Custo', 'Dias Atraso', 'Saldo Capital (Kz)', 'Saldo Juros (Kz)', 'Total em Risco (Kz)', 'Provisão Constituída']
+    const linhas = listaTopClientesAtiva.value.map(c => {
+        const critico = Number(c.DiasAtrasoACT) >= 1000
+        const dir = c.ccDireccao === 'DOP' ? ['#dbeafe', '#1e40af'] : ['#f3e8ff', '#6b21a8']
+        return emTr([
+            emTd(esc(c.Posicao ?? '—'), 'text-align:center;font-weight:700;color:#64748b;'),
+            emTd(esc(c.CodigoCliente), 'text-align:center;font-family:Consolas,monospace;'),
+            emTdL(esc(c.NomeCliente), 'white-space:nowrap;'),
+            emTd(esc(c.Produto), 'text-align:left;'),
+            emTd(`<span style="display:inline-block;background:${dir[0]};color:${dir[1]};font-weight:700;font-size:11px;padding:1px 7px;border-radius:4px;">${esc(c.ccDireccao || '—')}</span>`, 'text-align:center;'),
+            emTd(esc(c.CentroCusto), 'text-align:left;'),
+            emTd(`<span style="display:inline-block;background:${critico ? '#ffe4e6' : '#fef3c7'};color:${critico ? '#9f1239' : '#92400e'};font-weight:800;font-size:11.5px;padding:1px 8px;border-radius:4px;">${esc(c.DiasAtrasoACT ?? 0)} d</span>`, 'text-align:center;'),
+            emTd(formatarNumero(c.SaldoCapitalACT)),
+            emTd(formatarNumero(c.SaldoJurosACT), 'color:#64748b;'),
+            emTd(formatarNumero(c.SaldoTotalEmRisco), 'background:#fff1f2;color:#be123c;font-weight:800;'),
+            emTd(formatarNumero(c.ProvisaoACT))
+        ])
+    })
+    return emTabela(heads, linhas)
+}
+
+const emCentrosCusto = () => {
+    const heads = ['Pos.', 'Ponto de Atendimento (Centro de Custo)', 'Província', 'Clientes Ativos', 'Em Atraso', 'Carteira Total Capital', 'Carteira Vencida', 'PAR %', 'Provisão Total', 'Máx. Dias Atraso']
+    const linhas = centrosCustoOrdenadosPorRisco.value.map(i => {
+        const longo = Number(i.MaxDiasAtraso) > 365
+        return emTr([
+            emTd(esc(i.PosicaoRisco ?? '—'), 'text-align:center;font-weight:700;color:#64748b;'),
+            emTdL(esc(i.CentroCusto), 'white-space:nowrap;'),
+            emTd(esc(i.Provincia || '—'), 'text-align:left;'),
+            emTd(formatarInt(i.TotalClientesAtivos), 'text-align:center;'),
+            emTd(formatarInt(i.ClientesEmAtraso), 'text-align:center;background:#fff1f2;color:#be123c;font-weight:700;'),
+            emTd(formatarNumero(i.CarteiraTotalCapital)),
+            emTd(formatarNumero(i.CarteiraVencidaCapital), 'color:#be123c;font-weight:700;'),
+            emTd(formatarPercentual(i.PAR_Percentual), 'background:#fffbeb;color:#78350f;font-weight:800;'),
+            emTd(formatarNumero(i.ProvisaoTotal)),
+            emTd(`<span style="display:inline-block;background:${longo ? '#ffe4e6' : '#f1f5f9'};color:${longo ? '#9f1239' : '#334155'};font-weight:700;font-size:11.5px;padding:1px 8px;border-radius:4px;">${esc(i.MaxDiasAtraso ?? 0)} dias</span>`, 'text-align:center;')
+        ])
+    })
+    return emTabela(heads, linhas)
+}
+
+const gerarHtmlEmail = () => {
+    const u = ultimoRegistro.value || {}
+    const ant = registroAnterior.value || {}
+    const assunto = `RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]`
+    const agora = new Date().toLocaleString('pt-PT', { dateStyle: 'long', timeStyle: 'short' })
+
+    const kpis = [
+        { l: 'Carteira Total', v: formatarMoedaCompleta(u.BalancoValor), d: calcularDelta(u.BalancoValor, ant.BalancoValor), cor: '#1d4ed8' },
+        { l: 'Desembolso', v: formatarMoedaCompleta(u.Desembolsos), d: calcularDelta(u.Desembolsos, ant.Desembolsos), cor: '#047857' },
+        { l: 'Reembolso', v: formatarMoedaCompleta(u.Reembolso), d: calcularDelta(u.Reembolso, ant.Reembolso), cor: '#be123c' },
+        { l: 'Créditos Novos', v: formatarInt(u.CreditosNovos), d: calcularDelta(u.CreditosNovos, ant.CreditosNovos), cor: '#b45309' },
+        { l: 'NPL', v: formatarPercentual(u.NPLPercentual), d: calcularDelta(u.NPLPercentual, ant.NPLPercentual), cor: '#be123c', invert: true },
+        { l: 'Taxa de Reembolso', v: formatarPercentual(u.TaxaReembolsoPercentual), d: calcularDelta(u.TaxaReembolsoPercentual, ant.TaxaReembolsoPercentual), cor: '#047857' }
+    ]
+    const kpiHtml = kpis.map(k => {
+        const tem = k.d !== null && k.d !== undefined
+        const bom = tem ? (k.invert ? k.d <= 0 : k.d >= 0) : null
+        return `<td width="16.66%" valign="top" style="padding:4px;">
+            <div style="border:1px solid #e2e8f0;border-top:4px solid ${k.cor};border-radius:8px;padding:10px 12px;background:#ffffff;">
+                <div style="font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b;">${k.l}</div>
+                <div style="font-size:16px;font-weight:800;color:#0f172a;margin-top:4px;">${k.v}</div>
+                <div style="font-size:11.5px;font-weight:700;margin-top:3px;color:${tem ? (bom ? EM_COR.verde : EM_COR.rosa) : '#94a3b8'};">${tem ? `${k.d >= 0 ? '▲' : '▼'} ${Math.abs(Math.round(k.d))}% <span style="font-weight:400;color:#94a3b8;">vs mês ant.</span>` : '—'}</div>
+            </div></td>`
+    }).join('')
+
+    const secoes = []
+    secoes.push(emSecao(`Reporting Consolidado — KIXICRÉDITO ANGOLA`, esc(tituloDireccao.value) + ' · Histórico mensal consolidado até ao último período', emConsolidado()))
+    if (agenciasCapital.value.length || agenciasProvincia.value.length) {
+        secoes.push(emSecao('1. Distribuição da Carteira', 'Performance detalhada por localidade',
+            [agenciasCapital.value.length ? emAgencias('Capital (Luanda)', agenciasCapital.value) : '',
+             agenciasProvincia.value.length ? emAgencias('Províncias', agenciasProvincia.value) : ''].join('<div style="height:12px;"></div>')))
+    }
+    if (produtosAgrupados.value.length) secoes.push(emSecao('Detalhamento por Produto', 'Resultados por gestor e produto', emProdutos()))
+    if (props.movimentoPrestacaoRD.length) secoes.push(emSecao('2. Movimento das Prestações', 'Detalhe das prestações Kixi Crédito', emMovimento()))
+    if (props.desembolsosReembolsos12MesesRD.length) secoes.push(emSecao('3. Desembolsos e Reembolsos (Últimos 12 Meses)', 'Pico máximo (verde), mínimo (vermelho) e total acumulado', emFluxo12Meses()))
+    if (provisoesAgrupadas.value.length) secoes.push(emSecao('4. Provisões', 'Evolução de provisões por agrupamento de produto', emProvisoes()))
+    if (props.carteiraWriteOffRD.length) secoes.push(emSecao('5. Carteira Write-Off', 'Evolução e recuperação de ativos baixados', emWriteOff()))
+    if (temTopClientes.value) secoes.push(emSecao(`6. ${esc(tituloSecaoTopClientes.value)}`, esc(subtituloSecaoTopClientes.value), emTopClientes()))
+    if (centrosCustoOrdenadosPorRisco.value.length) secoes.push(emSecao('7. Exposição ao Risco por Centros de Custo', 'Pontos de atendimento por ordem de gravidade de risco', emCentrosCusto()))
+
+    return `<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(assunto)}</title>
+</head>
+<body style="margin:0;padding:0;background:#eef2f7;font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:#0f172a;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef2f7;">
+<tr><td align="center" style="padding:24px 10px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="1100" style="width:100%;max-width:1100px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #dbe3ec;">
+    <tr><td style="background:#0B2E4F;background-image:linear-gradient(135deg,#0B2E4F,#1E5A8E);padding:26px 28px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#6ee7b7;">Relatório Diário Executivo</div>
+        <div style="font-size:24px;font-weight:800;color:#ffffff;margin-top:4px;">Reporting Balance · Kixi Crédito Angola</div>
+        <div style="margin-top:10px;">
+            <span style="display:inline-block;background:rgba(110,231,183,.18);border:1px solid rgba(110,231,183,.45);color:#a7f3d0;font-size:12px;font-weight:700;padding:3px 12px;border-radius:12px;">${esc(tituloDireccao.value)}</span>
+            <span style="display:inline-block;color:#cfe3f5;font-size:13px;margin-left:10px;">Data de referência: <b style="color:#ffffff;">${esc(ultimoMesNome.value)}</b></span>
+        </div>
+    </td></tr>
+    <tr><td style="padding:20px 24px 0;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;"><tr>${kpiHtml}</tr></table>
+    </td></tr>
+    ${secoes.join('\n')}
+    <tr><td style="padding:28px;">
+        <div style="border-top:2px solid #e2e8f0;padding-top:14px;font-size:12px;color:#64748b;line-height:1.6;">
+            Relatório gerado em ${esc(agora)} e enviado por <b>${EMAIL_REMETENTE}</b>.<br>
+            Kixi Crédito Angola · Documento confidencial, destinado exclusivamente ao destinatário.
+        </div>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body>
+</html>`
+}
+
+/* ══════════════════════════════════════════════════
+   ENVIAR POR EMAIL
+   ══════════════════════════════════════════════════ */
+const emailInputRef = ref(null)
+const emailDialog = reactive({ aberto: false, destinatario: '', enviando: false, erro: '', sucesso: '' })
+
+const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+const emailValido = computed(() => REGEX_EMAIL.test(emailDialog.destinatario))
+
+const abrirDialogEmail = () => {
+    Object.assign(emailDialog, { aberto: true, erro: '', sucesso: '', enviando: false })
+    nextTick(() => emailInputRef.value?.focus())
+}
+
+const fecharDialogEmail = () => {
+    if (emailDialog.enviando) return
+    emailDialog.aberto = false
+}
+
+const obterCsrf = () => {
+    const meta = document.querySelector('meta[name="csrf-token"]')?.content
+    if (meta) return { 'X-CSRF-TOKEN': meta }
+    const m = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
+    return m ? { 'X-XSRF-TOKEN': decodeURIComponent(m[1]) } : {}
+}
+
+const enviarEmail = async () => {
+    if (!emailValido.value || emailDialog.enviando || !areaTabelas.value) return
+    emailDialog.erro = ''
+    emailDialog.sucesso = ''
+    emailDialog.enviando = true
+
+    try {
+        const resp = await fetch('/reports/rd/enviar-email', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                ...obterCsrf()
+            },
+            body: JSON.stringify({
+                destinatario: emailDialog.destinatario,
+                remetente: EMAIL_REMETENTE,
+                direccao: String(props.direccaoActiva || 'GLOBAL').toUpperCase(),
+                assunto: `RD Express ${ultimoMesNome.value} [KIXICREDITO ANGOLA · ${tituloDireccao.value}]`,
+                html: gerarHtmlEmail()
+            })
+        })
+
+        const dados = await resp.json().catch(() => ({}))
+        if (!resp.ok) {
+            throw new Error(dados.message || dados.error || `Falha no envio (HTTP ${resp.status}).`)
+        }
+
+        emailDialog.sucesso = `Relatório enviado para ${emailDialog.destinatario}.`
+        setTimeout(() => { emailDialog.enviando = false; emailDialog.aberto = false }, 1600)
+    } catch (e) {
+        emailDialog.erro = e.message || 'Não foi possível enviar o email. Tente novamente.'
+        emailDialog.enviando = false
+    }
 }
 </script>
 
@@ -2074,4 +2680,6 @@ const imprimirA4 = () => {
 .tabular-nums {
     font-variant-numeric: tabular-nums;
 }
+.fade-enter-active, .fade-leave-active { transition: opacity .15s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
