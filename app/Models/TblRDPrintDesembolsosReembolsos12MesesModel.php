@@ -19,7 +19,8 @@ class TblRDPrintDesembolsosReembolsos12MesesModel extends Model
         'DesembolsoValor',
         'ReembolsoValor',
         'DataCriacao',
-        'Activo'
+        'Activo',
+        'TipoDireccao'
     ];
 
     /**
