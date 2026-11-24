@@ -96,6 +96,73 @@ class CaptacaoClienteController extends Controller
         }
     }
 
+    public function alterarmobilecaptacao(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'nome_cliente_empresa' => 'required|string|max:150',
+            'genero' => 'required|in:M,F,m,f',
+            'local_negocio' => 'required|string|max:300',
+            'valor_solicitado' => 'required|numeric|min:0',
+            'id_tipo_negocio' => 'required|integer|exists:tblTiposNegocio,id',
+            'telefone' => 'required|string|max:20',
+            'data_captacao' => 'required|date',
+            'id_estado_resposta_agencia' => 'nullable|integer|exists:tblEstadosRespostaAgencia,id',
+            'OfCodigoAgencia' => 'required|integer',
+            'UtCodigo' => 'nullable|string|max:150',
+            'UtCodigoCaptador' => 'nullable|string|max:150',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Erro de validação nos dados enviados.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $captacao = CaptacaoClienteModel::find((int) $request->input('id'));
+
+            if (!$captacao) {
+                return response()->json([
+                    'status' => 'ERROR',
+                    'message' => 'Registo de captação não encontrado.',
+                ], 404);
+            }
+
+            $dadosAtualizar = [
+                'nome_cliente_empresa' => trim($request->input('nome_cliente_empresa')),
+                'genero' => strtoupper($request->input('genero')),
+                'local_negocio' => trim($request->input('local_negocio')),
+                'valor_solicitado' => $request->input('valor_solicitado'),
+                'id_tipo_negocio' => (int) $request->input('id_tipo_negocio'),
+                'telefone' => $request->input('telefone'),
+                'data_captacao' => $request->input('data_captacao'),
+                'id_estado_resposta_agencia' => (int) ($request->input('id_estado_resposta_agencia') ?? $captacao->id_estado_resposta_agencia ?? 1),
+                'OfCodigoAgencia' => (int) $request->input('OfCodigoAgencia'),
+            ];
+
+            // Atualiza UtCodigoCaptador apenas se for explicitamente enviado
+            if ($request->filled('UtCodigoCaptador')) {
+                $dadosAtualizar['UtCodigoCaptador'] = $request->input('UtCodigoCaptador');
+            }
+
+            $captacao->update($dadosAtualizar);
+
+            return response()->json([
+                'status' => 'SUCCESS',
+                'message' => 'Dados do potencial cliente atualizados com sucesso!',
+                'captacao' => $captacao->fresh(),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Erro interno ao atualizar captação: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
     /**
      * Listar captações já trazendo os relacionamentos (tipoNegocio e estadoResposta)
      */
@@ -127,92 +194,92 @@ class CaptacaoClienteController extends Controller
         }
     }
 
-public function listarOficiaisPorAgencia(Request $request)
-{
-    $ofCodigoAgencia = $request->input('OfCodigoAgencia');
+    public function listarOficiaisPorAgencia(Request $request)
+    {
+        $ofCodigoAgencia = $request->input('OfCodigoAgencia');
 
-    $oficiais = TKxUsUtilizadorModel::where('UtAgencia', $ofCodigoAgencia)
-        ->where('activo', 1)
-        ->where(function ($query) {
-            $query->where('UtFuncao', 'LIKE', '%Oficial%')
-                  ->orWhere('UtFuncao', 'LIKE', '%Credito%')
-                  ->orWhere('UtFuncao', 'LIKE', '%Crédito%')
-                  ->orWhere('UtFuncao', 'LIKE', '%Oficial de Crédito%');
-        })
-        ->select('UtCodigo', 'UtNome', 'UtFuncao', 'UtAgencia')
-        ->orderBy('UtNome', 'asc')
-        ->get();
+        $oficiais = TKxUsUtilizadorModel::where('UtAgencia', $ofCodigoAgencia)
+            ->where('activo', 1)
+            ->where(function ($query) {
+                $query->where('UtFuncao', 'LIKE', '%Oficial%')
+                    ->orWhere('UtFuncao', 'LIKE', '%Credito%')
+                    ->orWhere('UtFuncao', 'LIKE', '%Crédito%')
+                    ->orWhere('UtFuncao', 'LIKE', '%Oficial de Crédito%');
+            })
+            ->select('UtCodigo', 'UtNome', 'UtFuncao', 'UtAgencia')
+            ->orderBy('UtNome', 'asc')
+            ->get();
 
-    return response()->json([
-        'status'   => 'SUCCESS',
-        'oficiais' => $oficiais,
-    ], 200);
-}
-
-public function atribuirAoGerente(Request $request)
-{
-    $clientesIds     = $request->input('clientes_ids', []);
-    $ofCodigoAgencia = $request->input('OfCodigoAgencia');
-    $utCodigoOperador = $request->input('UtCodigo');
-
-    if (empty($clientesIds)) {
         return response()->json([
-            'status'  => 'ERROR',
-            'message' => 'Nenhum cliente foi selecionado.'
-        ], 400);
+            'status' => 'SUCCESS',
+            'oficiais' => $oficiais,
+        ], 200);
     }
 
-    $gerente = TKxUsUtilizadorModel::where('UtAgencia', $ofCodigoAgencia)
-        ->where('activo', 1)
-        ->where('UtFuncao', 'LIKE', '%Gerente%')
-        ->first();
+    public function atribuirAoGerente(Request $request)
+    {
+        $clientesIds = $request->input('clientes_ids', []);
+        $ofCodigoAgencia = $request->input('OfCodigoAgencia');
+        $utCodigoOperador = $request->input('UtCodigo');
 
-    if (!$gerente) {
+        if (empty($clientesIds)) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Nenhum cliente foi selecionado.'
+            ], 400);
+        }
+
+        $gerente = TKxUsUtilizadorModel::where('UtAgencia', $ofCodigoAgencia)
+            ->where('activo', 1)
+            ->where('UtFuncao', 'LIKE', '%Gerente%')
+            ->first();
+
+        if (!$gerente) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Nenhum Gerente ativo encontrado para esta agência.'
+            ], 404);
+        }
+
+        CaptacaoClienteModel::atribuirGerente($clientesIds, $gerente->UtCodigo, $utCodigoOperador);
+
         return response()->json([
-            'status'  => 'ERROR',
-            'message' => 'Nenhum Gerente ativo encontrado para esta agência.'
-        ], 404);
+            'status' => 'SUCCESS',
+            'message' => "Cliente(s) atribuído(s) com sucesso ao Gerente {$gerente->UtNome}."
+        ], 200);
     }
 
-    CaptacaoClienteModel::atribuirGerente($clientesIds, $gerente->UtCodigo, $utCodigoOperador);
+    public function atribuirAoOficial(Request $request)
+    {
+        $clientesIds = $request->input('clientes_ids', []);
+        $utCodigoOficial = $request->input('UtCodigoOficial');
+        $utCodigoOperador = $request->input('UtCodigo');
 
-    return response()->json([
-        'status'  => 'SUCCESS',
-        'message' => "Cliente(s) atribuído(s) com sucesso ao Gerente {$gerente->UtNome}."
-    ], 200);
-}
+        if (empty($clientesIds) || empty($utCodigoOficial)) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Selecione pelo menos um cliente e um Oficial de Crédito.'
+            ], 400);
+        }
 
-public function atribuirAoOficial(Request $request)
-{
-    $clientesIds      = $request->input('clientes_ids', []);
-    $utCodigoOficial  = $request->input('UtCodigoOficial');
-    $utCodigoOperador = $request->input('UtCodigo');
+        $oficial = TKxUsUtilizadorModel::where('UtCodigo', $utCodigoOficial)
+            ->where('activo', 1)
+            ->first();
 
-    if (empty($clientesIds) || empty($utCodigoOficial)) {
+        if (!$oficial) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Oficial de Crédito não encontrado ou inativo.'
+            ], 404);
+        }
+
+        CaptacaoClienteModel::atribuirOficial($clientesIds, $oficial->UtCodigo, $utCodigoOperador);
+
         return response()->json([
-            'status'  => 'ERROR',
-            'message' => 'Selecione pelo menos um cliente e um Oficial de Crédito.'
-        ], 400);
+            'status' => 'SUCCESS',
+            'message' => "Cliente(s) atribuído(s) ao Oficial {$oficial->UtNome}."
+        ], 200);
     }
-
-    $oficial = TKxUsUtilizadorModel::where('UtCodigo', $utCodigoOficial)
-        ->where('activo', 1)
-        ->first();
-
-    if (!$oficial) {
-        return response()->json([
-            'status'  => 'ERROR',
-            'message' => 'Oficial de Crédito não encontrado ou inativo.'
-        ], 404);
-    }
-
-    CaptacaoClienteModel::atribuirOficial($clientesIds, $oficial->UtCodigo, $utCodigoOperador);
-
-    return response()->json([
-        'status'  => 'SUCCESS',
-        'message' => "Cliente(s) atribuído(s) ao Oficial {$oficial->UtNome}."
-    ], 200);
-}
 
 
 }

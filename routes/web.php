@@ -120,6 +120,10 @@ Route::post('/guardarpontencialcliente', [CaptacaoClienteController::class, 'gua
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 
+Route::post('/atualizarpontencialcliente', [CaptacaoClienteController::class, 'alterarmobilecaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
 Route::post('/listarpontencialcliente', [CaptacaoClienteController::class, 'listarmobilecaptacao'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
