@@ -30,6 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 //Proteger o dashboard:
 
 Route::middleware(['auth'])->group(function () {
+   
     Route::get('/dashboard', [AuthController::class, 'carregamentoInicial'])->name('dashboard');
 
     Route::get('/comprovativos', [ComprovativosController::class, 'viewComprovativos'])->name('comprovativos');
@@ -120,11 +121,15 @@ Route::post('/guardarpontencialcliente', [CaptacaoClienteController::class, 'gua
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 
+Route::post('/atualizarpontencialcliente', [CaptacaoClienteController::class, 'alterarmobilecaptacao'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
 Route::post('/listarpontencialcliente', [CaptacaoClienteController::class, 'listarmobilecaptacao'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 
-Route::post('/oficiaiscreditoporagencia', [CaptacaoClienteController::class, 'listarOficiaisPorAgencia'])
+Route::post('/oficiaisporagencia', [CaptacaoClienteController::class, 'listarOficiaisPorAgencia'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 Route::post('/atribuircliente/gerente', [CaptacaoClienteController::class, 'atribuirAoGerente'])
@@ -132,6 +137,18 @@ Route::post('/atribuircliente/gerente', [CaptacaoClienteController::class, 'atri
     ->middleware('mobile');
 Route::post('/atribuircliente/oficialcredito', [CaptacaoClienteController::class, 'atribuirAoOficial'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/supervisoresporagencia', [CaptacaoClienteController::class, 'supervisoresPorAgencia'])
+->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/atribuircliente/supervisor', [CaptacaoClienteController::class, 'atribuirClienteSupervisor'])
+->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('mobile');
+
+Route::post('/guardaranaliseoficial', [CaptacaoClienteController::class, 'guardarAnaliseOficial'])
+->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->middleware('mobile');
 
 /******************************************************************************************************************************************************************************************************************************************************** */

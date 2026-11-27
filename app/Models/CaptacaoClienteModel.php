@@ -27,6 +27,8 @@ class CaptacaoClienteModel extends Model
         'UtCodigoCaptador',
         'UtCodigoGerente',
         'data_atribuicao_gerente',
+        'UtCodigoSupervisor',
+        'data_atribuicao_supervisor',
         'UtCodigoOficialCredito',
         'data_atribuicao_oficial',
         'atribuido_por',
@@ -34,15 +36,15 @@ class CaptacaoClienteModel extends Model
     ];
 
     protected $casts = [
-        'valor_solicitado'           => 'decimal:2',
-        'id_tipo_negocio'            => 'integer',
+        'valor_solicitado' => 'decimal:2',
+        'id_tipo_negocio' => 'integer',
         'id_estado_resposta_agencia' => 'integer',
-        'OfCodigoAgencia'            => 'integer',
-        'data_captacao'              => 'date:Y-m-d',
-        'data_atribuicao_gerente'    => 'datetime',
-        'data_atribuicao_oficial'    => 'datetime',
+        'OfCodigoAgencia' => 'integer',
+        'data_captacao' => 'date:Y-m-d',
+        'data_atribuicao_gerente' => 'datetime',
+        'data_atribuicao_supervisor' => 'datetime',
+        'data_atribuicao_oficial' => 'datetime',
     ];
-
     // --- RELACIONAMENTOS ---
 
     public function tipoNegocio()
@@ -58,6 +60,11 @@ class CaptacaoClienteModel extends Model
     public function gerente()
     {
         return $this->belongsTo(TKxUsUtilizadorModel::class, 'UtCodigoGerente', 'UtCodigo');
+    }
+
+    public function supervisor()
+    {
+        return $this->belongsTo(TKxUsUtilizadorModel::class, 'UtCodigoSupervisor', 'UtCodigo');
     }
 
     public function oficialCredito()
@@ -78,9 +85,21 @@ class CaptacaoClienteModel extends Model
     public static function atribuirGerente(array $clientesIds, string $utCodigoGerente, string $atribuidoPor): int
     {
         return self::whereIn('id', $clientesIds)->update([
-            'UtCodigoGerente'         => $utCodigoGerente,
+            'UtCodigoGerente' => $utCodigoGerente,
             'data_atribuicao_gerente' => Carbon::now(),
-            'atribuido_por'           => $atribuidoPor,
+            'atribuido_por' => $atribuidoPor,
+        ]);
+    }
+
+    /**
+     * Atribui um lote de clientes a um Supervisor
+     */
+    public static function atribuirSupervisor(array $clientesIds, string $utCodigoSupervisor, string $atribuidoPor): int
+    {
+        return self::whereIn('id', $clientesIds)->update([
+            'UtCodigoSupervisor' => $utCodigoSupervisor,
+            'data_atribuicao_supervisor' => Carbon::now(),
+            'atribuido_por' => $atribuidoPor,
         ]);
     }
 
@@ -90,9 +109,15 @@ class CaptacaoClienteModel extends Model
     public static function atribuirOficial(array $clientesIds, string $utCodigoOficial, string $atribuidoPor): int
     {
         return self::whereIn('id', $clientesIds)->update([
-            'UtCodigoOficialCredito'         => $utCodigoOficial,
+            'UtCodigoOficialCredito' => $utCodigoOficial,
             'data_atribuicao_oficial' => Carbon::now(),
-            'atribuido_por'           => $atribuidoPor,
+            'atribuido_por' => $atribuidoPor,
         ]);
     }
+
+    public function detalheOficial()
+    {
+        return $this->hasOne(TblCaptacaoClienteDetalheModel::class, 'id_captacao_cliente', 'id');
+    }
+
 }
