@@ -33,187 +33,214 @@ use Illuminate\Support\Facades\DB;
 class ClienteCEController extends Controller
 {
     //
-
     public function viewClientesCE(Request $request)
     {
-
         $authenticatedUser = Auth::user();
 
-        $resultagencia_user = TKxAgenciaModel::where('OfCodigo', '=', $authenticatedUser->UtAgencia)->first();
+        // Obtém a agência e as bases operacionais permitidas ao utilizador logado
+        $resultAgenciaUser = TKxAgenciaModel::where('OfCodigo', $authenticatedUser->UtAgencia)->first();
 
+        $basesOperacaoIdentificadores = $resultAgenciaUser
+            ? explode(',', $resultAgenciaUser->BasesOperacao)
+            : [];
 
+        $basesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $basesOperacaoIdentificadores)
+            ->get(['OfCodigo', 'OfIdentificador', 'OfNombre']);
 
+        $codigosAgenciasPermitidas = $basesOperacaoAgencias->pluck('OfCodigo')->toArray();
 
-        $tipoDeBusca = $request->tipo;
-        $tipoProdutoPP = $request->filtrar_poupancas;
-        $tipoProdutoPT = $request->filtrar_prestacoes;
+        // Filtros vindos da request
+        $search = $request->input('search', '');
+        $agenciaFiltro = $request->input('agencia', 'T');
+        $estadoFiltro = (int) $request->input('estado', 0);
+        $faseAtribuicao = $request->input('fase_atribuicao', 'TODOS');
+        $dataInicio = $request->input('data_inicio', '');
+        $dataFim = $request->input('data_fim', '');
 
+        // Query principal sobre tblCaptacoesClientes com joins para nomes de utilizadores e tabelas auxiliares
+        $query = DB::table('tblCaptacoesClientes as c')
+            ->leftJoin('tkxusutilizador as cap', 'cap.UtCodigo', '=', 'c.UtCodigoCaptador')
+            ->leftJoin('tkxusutilizador as ger', 'ger.UtCodigo', '=', 'c.UtCodigoGerente')
+            ->leftJoin('tkxusutilizador as sup', 'sup.UtCodigo', '=', 'c.UtCodigoSupervisor')
+            ->leftJoin('tkxusutilizador as ofi', 'ofi.UtCodigo', '=', 'c.UtCodigoOficialCredito')
+            ->leftJoin('tbltiposnegocio as tn', 'tn.id', '=', 'c.id_tipo_negocio')
+            ->leftJoin('tblestadosrespostaagencia as est', 'est.id', '=', 'c.id_estado_resposta_agencia')
+            ->select(
+                'c.*',
+                'cap.UtNome as nome_captador',
+                'ger.UtNome as nome_gerente',
+                'sup.UtNome as nome_supervisor',
+                'ofi.UtNome as nome_oficial',
+                'tn.descricao as tipo_negocio_descricao',
+                'est.descricao as estado_descricao',
+                'est.cor_hex as estado_cor_hex'
+            )
+            ->whereIn('c.OfCodigoAgencia', $codigosAgenciasPermitidas);
 
-
-        $lista_produtos = TKxClProdutoModel::getProdutos();
-
-
-
-
-        $NumeroRegistroTabela = $resultagencia_user->NumeroRegistroTabela;
-        $dataFecho = $resultagencia_user->DataFecho;
-
-        $dataFecho = date("Y-m-d", strtotime($dataFecho));
-        $hoje = date('Y-m-d');
-
-        $dataActual = date("Y-m-d", strtotime($hoje));
-
-
-        $estados = EstadosModel::getEstadosDCF('RPGT');
-        $ids_estados = $estados->pluck('id')->implode(',');
-
-        $produto_poupancas_busca = collect($lista_produtos)->where('TipoProduto', '=', 'S');
-        $produto_poupancas_busca = "'" . $produto_poupancas_busca->pluck('Metodologia')->implode(',') . "'";
-
-
-        $produto_prestacoes_busca = collect($lista_produtos)->where('TipoProduto', '=', 'L');
-        $produto_prestacoes_busca = "'" . $produto_prestacoes_busca->pluck('Metodologia')->implode(',') . "'";
-
-        $produtos_geral_busca = "'" . $lista_produtos->pluck('Metodologia')->implode(',') . "'";
-
-
-
-        $Bases = "'" . $resultagencia_user->BasesOperacao . "'";
-
-
-        $ESTADO = "'" . $ids_estados . "'";
-        $DataInicio = date("Y-m-d 00:00:00", strtotime('-7 day', strtotime($hoje)));
-        $DataFim = date("Y-m-d 23:59:00", strtotime($hoje));
-
-
-        $TIPO = 7371;
-        $LOAN = "'DS/280890'";
-
-        $BasesOperacao = explode(',', $resultagencia_user->BasesOperacao);
-
-
-
-        if ($tipoDeBusca == 1) {
-            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio));
-            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim));
-            $TIPO = $tipoDeBusca;
-
-            //dd( $DataFim );
+        // Filtro por agência específica
+        if ($agenciaFiltro !== 'T' && $agenciaFiltro !== '') {
+            $query->where('c.OfCodigoAgencia', (int) $agenciaFiltro);
         }
 
-        if ($tipoDeBusca == 3) {
-            $LOAN = "'" . $request->loan . "'";
-            $TIPO = 73713;
-        }
-        if ($tipoDeBusca == 4) {
-
-            $DataInicio = date("Y-m-d 00:00:00", strtotime($request->data_inicio_imput));
-            $DataFim = date("Y-m-d 23:59:00", strtotime($request->data_fim_imput));
-
-
-            if ($request->agencia_imput !== 'T') {
-                $Bases = "'" . $request->agencia_imput . "'";
-            }
-
-
-
-            $TIPO = 73714;
+        // Filtro por estado
+        if ($estadoFiltro > 0) {
+            $query->where('c.id_estado_resposta_agencia', $estadoFiltro);
         }
 
+        // Filtro por período de data de captação
+        if (!empty($dataInicio)) {
+            $query->whereDate('c.data_captacao', '>=', $dataInicio);
+        }
+        if (!empty($dataFim)) {
+            $query->whereDate('c.data_captacao', '<=', $dataFim);
+        }
 
+        // Filtro por fase de atribuição
+        if ($faseAtribuicao === 'SEM_ATRIBUICAO') {
+            $query->where(function ($q) {
+                $q->whereNull('c.UtCodigoGerente')->orWhere('c.UtCodigoGerente', '');
+            })->where(function ($q) {
+                $q->whereNull('c.UtCodigoSupervisor')->orWhere('c.UtCodigoSupervisor', '');
+            })->where(function ($q) {
+                $q->whereNull('c.UtCodigoOficialCredito')->orWhere('c.UtCodigoOficialCredito', '');
+            });
+        } elseif ($faseAtribuicao === 'GERENTE') {
+            $query->whereNotNull('c.UtCodigoGerente')->where('c.UtCodigoGerente', '<>', '');
+        } elseif ($faseAtribuicao === 'SUPERVISOR') {
+            $query->whereNotNull('c.UtCodigoSupervisor')->where('c.UtCodigoSupervisor', '<>', '');
+        } elseif ($faseAtribuicao === 'OFICIAL') {
+            $query->whereNotNull('c.UtCodigoOficialCredito')->where('c.UtCodigoOficialCredito', '<>', '');
+        } elseif ($faseAtribuicao === 'COM_PARECER') {
+            $query->whereExists(function ($sub) {
+                $sub->select(DB::raw(1))
+                    ->from('tblcaptacaoclientedetalhe as d')
+                    ->whereColumn('d.id_captacao_cliente', 'c.id');
+            });
+        }
 
+        // Filtro de pesquisa textual
+        if (!empty($search)) {
+            $termo = '%' . $search . '%';
+            $query->where(function ($q) use ($termo) {
+                $q->where('c.nome_cliente_empresa', 'like', $termo)
+                    ->orWhere('c.telefone', 'like', $termo)
+                    ->orWhere('c.local_negocio', 'like', $termo)
+                    ->orWhere('c.UtCodigoCaptador', 'like', $termo)
+                    ->orWhere('c.UtCodigoOficialCredito', 'like', $termo)
+                    ->orWhere('cap.UtNome', 'like', $termo)
+                    ->orWhere('ofi.UtNome', 'like', $termo);
+            });
+        }
 
-        $lista_comprovativo = ComprovativoModel::getComprovativos($Bases, $DataInicio, $DataFim, $NumeroRegistroTabela, $TIPO, $LOAN, $ESTADO, $produtos_geral_busca, "'DJA'");
+        $captacoesRaw = $query
+            ->orderByDesc('c.data_captacao')
+            ->orderByDesc('c.id')
+            ->get();
 
+        // Carrega os detalhes/pareceres da tblcaptacaoclientedetalhe agrupados por id_captacao_cliente
+        $idsCaptacoes = $captacoesRaw->pluck('id')->toArray();
 
+        $detalhesAgrupados = collect();
+        if (!empty($idsCaptacoes)) {
+            $detalhesAgrupados = DB::table('tblcaptacaoclientedetalhe as d')
+                ->leftJoin('tkxusutilizador as ofi', 'ofi.UtCodigo', '=', 'd.UtCodigoOficial')
+                ->leftJoin('tblestadosrespostaagencia as est', 'est.id', '=', 'd.id_estado_resposta_agencia')
+                ->select(
+                    'd.*',
+                    'ofi.UtNome as nome_oficial',
+                    'est.descricao as estado_descricao'
+                )
+                ->whereIn('d.id_captacao_cliente', $idsCaptacoes)
+                ->orderBy('d.id', 'asc')
+                ->get()
+                ->map(function ($det) {
+                    return [
+                        'id' => $det->id,
+                        'id_captacao_cliente' => $det->id_captacao_cliente,
+                        'id_estado_resposta_agencia' => $det->id_estado_resposta_agencia,
+                        'data_rejeicao' => $det->data_rejeicao,
+                        'razao_rejeicao' => $det->razao_rejeicao,
+                        'id_quem_rejeitou' => $det->id_quem_rejeitou,
+                        'idade' => $det->idade,
+                        'numero_bi' => $det->numero_bi,
+                        'observacoes' => $det->observacoes,
+                        'UtCodigoOficial' => $det->UtCodigoOficial,
+                        'OfCodigoAgencia' => $det->OfCodigoAgencia,
+                        'created_at' => $det->created_at,
+                        'updated_at' => $det->updated_at,
+                        'oficial' => $det->nome_oficial ? ['UtNome' => $det->nome_oficial] : null,
+                        'estado_resposta' => $det->estado_descricao ? ['descricao' => $det->estado_descricao] : null,
+                    ];
+                })
+                ->groupBy('id_captacao_cliente');
+        }
 
-
-
-        $BasesOperacaoAgencias = TKxAgenciaModel::whereIn('OfIdentificador', $BasesOperacao)->get();
-        $total = sizeof($lista_comprovativo);
-
-
-        collect($lista_comprovativo)->max('created_at');
-        collect($lista_comprovativo)->min('created_at');
-
-        $DataInicioFormatada = Carbon::parse($DataInicio)->format('d/m/Y');
-        $DataFimFormatada = Carbon::parse($DataFim)->format('d/m/Y');
-
-
-
-
-        $TipoComprovativo = [
-            'G' => 'G/',
-            'I' => 'I/'
-        ];
-        // dd($lista_comprovativo );
-        $comprovativos_list = collect($lista_comprovativo)->map(function ($item) {
-
-
-
+        // Formata a estrutura exata esperada pelo componente Vue ClienteCorp.vue
+        $listaCaptacoes = $captacoesRaw->map(function ($item) use ($detalhesAgrupados) {
+            $detalhesItem = $detalhesAgrupados->get($item->id, collect())->values()->all();
 
             return [
                 'id' => $item->id,
-                'data' => $item->dataRegistoFomatada,
-                'agencia' => $item->OfNombre,
-                'basedelacamento' => $item->basedelacamento,
-                'usuario' => $item->UtNome,
-                'lnr' => $item->BuDadoOrigem,
-                'inicio' => $item->inicio,
-                'fim' => $item->fim,
-                'estado' => $item->estado,
-                'color' => $item->color,
-                'idestado' => $item->idestado,
-                'cliente' => $item->nomecliente,
+                'nome_cliente_empresa' => $item->nome_cliente_empresa,
+                'genero' => $item->genero,
+                'local_negocio' => $item->local_negocio,
+                'valor_solicitado' => $item->valor_solicitado,
+                'id_tipo_negocio' => $item->id_tipo_negocio,
                 'telefone' => $item->telefone,
-                'metodologia' => $item->PoAgrupado,
-                'referencia' => $item->referencia,
-                'montante' => $item->montante,
-                'montantepago' => $item->montantepago,
-                'TipoProduto' => $item->TipoProduto,
-                // Mantenha todos os campos necessários para filtros client-side
-                'CiFecha' => $item->created_at, // Para filtro por data
-                'OfIdentificador' => $item->OfIdentificador, // Para filtro por agência
+                'data_captacao' => $item->data_captacao,
+                'id_estado_resposta_agencia' => $item->id_estado_resposta_agencia,
+                'OfCodigoAgencia' => $item->OfCodigoAgencia,
+                'UtCodigoCaptador' => $item->UtCodigoCaptador,
+                'UtCodigoSupervisor' => $item->UtCodigoSupervisor,
+                'UtCodigoGerente' => $item->UtCodigoGerente,
+                'data_atribuicao_gerente' => $item->data_atribuicao_gerente,
+                'UtCodigoOficialCredito' => $item->UtCodigoOficialCredito,
+                'data_atribuicao_oficial' => $item->data_atribuicao_oficial,
+                'data_atribuicao_supervisor' => $item->data_atribuicao_supervisor,
+                'atribuido_por' => $item->atribuido_por,
+                'ObservacaoEstado' => $item->ObservacaoEstado,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
 
-
+                // Objetos relacionados esperados no Vue
+                'captador' => $item->nome_captador ? ['UtNome' => $item->nome_captador] : null,
+                'gerente' => $item->nome_gerente ? ['UtNome' => $item->nome_gerente] : null,
+                'supervisor' => $item->nome_supervisor ? ['UtNome' => $item->nome_supervisor] : null,
+                'oficial_credito' => $item->nome_oficial ? ['UtNome' => $item->nome_oficial] : null,
+                'tipo_negocio' => $item->tipo_negocio_descricao ? ['descricao' => $item->tipo_negocio_descricao] : null,
+                'estado_resposta' => [
+                    'descricao' => $item->estado_descricao ?? 'Pendente',
+                    'cor_hex' => $item->estado_cor_hex ?? '#f59e0b',
+                ],
+                'detalhes' => $detalhesItem,
+                'detalhe' => !empty($detalhesItem) ? end($detalhesItem) : null,
             ];
         });
 
+        // Carrega os estados e tipos de negócio para os selects de filtro
+        $estados = DB::table('tblestadosrespostaagencia')
+            ->select('id', 'descricao', 'cor_hex')
+            ->get();
 
-
-
+        $tiposNegocio = DB::table('tbltiposnegocio')
+            ->select('id', 'descricao')
+            ->get();
 
         return Inertia::render('ClienteCorp', [
-            'lista_comprovativo' => $comprovativos_list,
-            // 'comprovativos' => $paginado,
+            'lista_captacoes' => $listaCaptacoes,
+            'estados' => $estados,
+            'tipos_negocio' => $tiposNegocio,
+            'bases' => $basesOperacaoAgencias,
             'filters' => [
-                'search' => $request->input('search_input', ''),
-                'lnr' => $request->input('lnr_imput', ''),
-                'estado' => $request->input('estado_input', 28), // Valor padrão 28 (Todos)
-                'agencia' => $request->input('agencia_imput', default: 'T'), // Valor padrão 'T' (Todas)
-                'formaPagamento' => $request->input('forma_pagamento', 'TP'), // Valor padrão 'T' (Todas)
-                'produtoPrestacao' => $request->input('produto_prestacao', 'TL'),
-                'produtoPoupanca' => $request->input('produto_poupanca', 'TS'),
-                'data_inicio' => $request->input('data_inicio_imput', ''),
-                'data_fim' => $request->input('data_fim_imput', ''),
-                'filtrar_prestacoes' => (bool) $request->input('filtrar_prestacoes', true),
-                'filtrar_poupancas' => (bool) $request->input('filtrar_poupancas', true),
+                'search' => $search,
+                'agencia' => $agenciaFiltro,
+                'estado' => $estadoFiltro,
+                'fase_atribuicao' => $faseAtribuicao,
+                'data_inicio' => $dataInicio,
+                'data_fim' => $dataFim,
             ],
             'page' => (int) $request->input('page', 1),
-            'bases' => $BasesOperacaoAgencias,
-            'produtos' => $lista_produtos,
-
-            'tipocomprovativos' => $TipoComprovativo,
-            'estados' => $estados,
-            //  'lista_comprovativo' => $lista_comprovativo,
-            'total' => $total,
-
-            'dataInicioPeriodo' => $DataFimFormatada,
-            'dataFimPeriodo' => $DataInicioFormatada
-
+            'perPage' => 50,
         ]);
-
-
-
     }
 }

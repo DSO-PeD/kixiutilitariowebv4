@@ -58,7 +58,7 @@ class RDKixiCorpController extends Controller
 
         $ultimoRegisto = $historico->last();
         $ultimaDataRef = $ultimoRegisto ? $ultimoRegisto->DataReferencia : null;
-        $directorNome  = $ultimoRegisto->DirectorNome ?? null;
+        $directorNome = $ultimoRegisto->DirectorNome ?? null;
 
         // 2. Regiões / Agências
         $agencias = $ultimaDataRef
@@ -76,9 +76,17 @@ class RDKixiCorpController extends Controller
             : [];
 
         // 5. Desembolsos e Reembolsos (12 meses)
-        $desembolsosReembolsos12Meses = $ultimaDataRef
-            ? $this->consultarTabelaSecundaria('tblRDprintDesembolsosReembolsos12meses', $sufixo, $tipoDireccao, $ultimaDataRef)
-            : [];
+        // 5. Desembolsos e Reembolsos (12 meses) — sem filtro de data: as 12 últimas linhas activas da direcção
+        $desembolsosReembolsos12Meses = $this->consultarTabelaSecundaria(
+            'tblRDprintDesembolsosReembolsos12meses',
+            $sufixo,
+            $tipoDireccao,
+            null,
+            48
+        );
+        /*  $desembolsosReembolsos12Meses = $ultimaDataRef
+              ? $this->consultarTabelaSecundaria('tblRDprintDesembolsosReembolsos12meses', $sufixo, $tipoDireccao, $ultimaDataRef)
+              : [];*/
 
         // 6. Dados Estatísticos
         $dadosEstatisticos = $ultimaDataRef
@@ -107,19 +115,19 @@ class RDKixiCorpController extends Controller
 
         // Usa sempre o mesmo componente moderno ReportRD (evita duplicar 4 ficheiros Vue)
         return Inertia::render('ReportRD', [
-            'direccaoActiva'                 => ($tipoDireccao === 'KIX') ? 'GLOBAL' : $tipoDireccao,
-            'directorNome'                   => $directorNome,
-            'historicoRD'                    => $historico,
-            'agenciasRD'                     => $agencias,
-            'produtosRD'                     => $produtos,
-            'provisoesProdutosRD'            => $provisoesProdutos,
+            'direccaoActiva' => ($tipoDireccao === 'KIX') ? 'GLOBAL' : $tipoDireccao,
+            'directorNome' => $directorNome,
+            'historicoRD' => $historico,
+            'agenciasRD' => $agencias,
+            'produtosRD' => $produtos,
+            'provisoesProdutosRD' => $provisoesProdutos,
             'desembolsosReembolsos12MesesRD' => $desembolsosReembolsos12Meses,
-            'dadosEstatisticosRD'           => $dadosEstatisticos,
-            'carteiraWriteOffRD'             => $carteiraWriteOff,
-            'movimentoPrestacaoRD'           => $movimentoPrestacao,
-            'riscoExposicaoCentrosCustoRD'   => $riscoExposicaoCentrosCusto,
-            'riscoTopClientesRD'             => $riscoTopClientes,
-            'user'                           => $authenticatedUser,
+            'dadosEstatisticosRD' => $dadosEstatisticos,
+            'carteiraWriteOffRD' => $carteiraWriteOff,
+            'movimentoPrestacaoRD' => $movimentoPrestacao,
+            'riscoExposicaoCentrosCustoRD' => $riscoExposicaoCentrosCusto,
+            'riscoTopClientesRD' => $riscoTopClientes,
+            'user' => $authenticatedUser,
         ]);
     }
 
@@ -128,7 +136,63 @@ class RDKixiCorpController extends Controller
      * - Na Página Inicial ('KIX'): filtra estritamente pela coluna que contém 'KIX' (TipoAgrupamento ou TipoDireccao).
      * - Nas Direções ('DPP', 'DOP', 'OUT'): lê tabela com sufixo se existir, ou filtra pela coluna da direção.
      */
-    private function consultarTabelaSecundaria(string $tabelaBase, string $sufixo, string $tipoDireccao, $dataReferencia)
+    private function consultarTabelaSecundaria(string $tabelaBase, string $sufixo, string $tipoDireccao, $dataReferencia = null, ?int $ultimasLinhas = null)
+    {
+        $tabelaComSufixo = "{$tabelaBase}{$sufixo}";
+
+        // Aplica a data (se existir) e, opcionalmente, devolve só as N últimas linhas por ordem cronológica
+        $finalizar = function ($query) use ($dataReferencia, $ultimasLinhas) {
+            $query->where('Activo', 1);
+
+            if ($dataReferencia !== null) {
+                $query->where('DataReferencia', $dataReferencia);
+            }
+
+            if ($ultimasLinhas !== null) {
+                return $query->orderByDesc('Id')->limit($ultimasLinhas)->get()->reverse()->values();
+            }
+
+            return $query->get();
+        };
+
+        if ($sufixo !== '' && Schema::hasTable($tabelaComSufixo)) {
+            return $finalizar(DB::table($tabelaComSufixo));
+        }
+
+        if (!Schema::hasTable($tabelaBase)) {
+            return [];
+        }
+
+        $query = DB::table($tabelaBase);
+
+        $temTipoAgrupamento = Schema::hasColumn($tabelaBase, 'TipoAgrupamento');
+        $temTipoDireccao = Schema::hasColumn($tabelaBase, 'TipoDireccao');
+        $temCcDireccao = Schema::hasColumn($tabelaBase, 'ccDireccao');
+
+        if ($tipoDireccao === 'KIX') {
+            if ($temTipoAgrupamento && $temTipoDireccao) {
+                $query->where(function ($q) {
+                    $q->where('TipoAgrupamento', 'KIX')
+                        ->orWhere('TipoDireccao', 'KIX');
+                });
+            } elseif ($temTipoAgrupamento) {
+                $query->where('TipoAgrupamento', 'KIX');
+            } elseif ($temTipoDireccao) {
+                $query->where('TipoDireccao', 'KIX');
+            }
+        } else {
+            if ($temTipoDireccao) {
+                $query->where('TipoDireccao', $tipoDireccao);
+            } elseif ($temTipoAgrupamento) {
+                $query->where('TipoAgrupamento', $tipoDireccao);
+            } elseif ($temCcDireccao) {
+                $query->where('ccDireccao', $tipoDireccao);
+            }
+        }
+
+        return $finalizar($query);
+    }
+    /*private function consultarTabelaSecundaria(string $tabelaBase, string $sufixo, string $tipoDireccao, $dataReferencia)
     {
         $tabelaComSufixo = "{$tabelaBase}{$sufixo}";
 
@@ -175,7 +239,7 @@ class RDKixiCorpController extends Controller
         }
 
         return $query->get();
-    }
+    }*/
 
     /**
      * Filtra a secção Top 15 Clientes:
@@ -198,10 +262,10 @@ class RDKixiCorpController extends Controller
             $rankingAlvo = "TOP15_{$tipoDireccao}";
             $query->where(function ($q) use ($rankingAlvo, $tipoDireccao) {
                 $q->where('TipoRanking', $rankingAlvo)
-                  ->orWhere(function ($sub) use ($tipoDireccao) {
-                      $sub->whereNull('TipoRanking')
-                          ->where('ccDireccao', $tipoDireccao);
-                  });
+                    ->orWhere(function ($sub) use ($tipoDireccao) {
+                        $sub->whereNull('TipoRanking')
+                            ->where('ccDireccao', $tipoDireccao);
+                    });
             });
         }
 

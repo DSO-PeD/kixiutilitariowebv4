@@ -531,7 +531,8 @@ class TKxExtratoController extends Controller
     private function construirMensagemSMS(string $referencia, string $lnr): string
     {
         return "Parabéns já podes efectuar os seus pagamentos das suas prestações pela referência:\n"
-            . " {$referencia}\n\n"
+            . "ENTIDADE: 00589\n"
+            . "REFERÊNCIA: {$referencia}\n\n"
             . "Empréstimo número {$lnr}\n\n"
             . "KIXICREDITO\n"
             . "PARCEIRA NOS NEGÓCIOS";

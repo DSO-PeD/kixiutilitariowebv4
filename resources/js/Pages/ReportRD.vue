@@ -172,13 +172,8 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 space-y-8">
 
                     <!-- ═══ TABELA 1: Reporting Global / Direcção ═══ -->
-                    <section v-if="historicoOrdenado.length > 0">
-                        <!--SectionTitle
-                            icon="fa-globe-africa"
-                            :title="`Reporting Consolidado — ${tituloEntidadeMaiusculo}`"
-                            subtitle="Histórico Mensal Consolidado até ao Último Período"
-                            tone="blue"
-                        /-->
+                    <section class="secao-historico" v-if="historicoOrdenado.length > 0">
+
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-xs border-collapse text-slate-800">
@@ -231,7 +226,7 @@
                                         </td>
                                         <td v-for="item in historicoAteUltimoPeriodo"
                                             :key="item.Id || item.DataReferencia"
-                                            class="text-right border-r border-slate-200 px-2 py-1 font-medium tabular-nums">
+                                            class="text-right border-r border-slate-200 px-2 py-1 font-bold  tabular-nums">
                                             {{ formatarNumero(item.BalancoValor) }}
                                         </td>
                                         <td
@@ -362,7 +357,7 @@
                                             <span class="font-bold" :class="linha.classePerc">{{
                                                 formatarPercentual(item[linha.percKey]) }}</span>
                                             <br>
-                                            <span class="text-[12px] text-slate-500">{{ formatarK(item[linha.valKey])
+                                            <span class="text-[11px] text-slate-500">{{ formatarK(item[linha.valKey])
                                                 }}</span>
                                         </td>
                                         <td
@@ -378,7 +373,7 @@
                                             <span class="font-bold" :class="linha.classePerc">{{
                                                 formatarPercentual(ultimoRegistro?.[linha.percKey]) }}</span>
                                             <br>
-                                            <span class="text-[12px] text-slate-500">{{
+                                            <span class="text-[11px] text-slate-500">{{
                                                 formatarK(ultimoRegistro?.[linha.valKey]) }}</span>
                                         </td>
                                         <td class="text-right px-2 py-1 font-bold tabular-nums"
@@ -486,7 +481,7 @@
                     </section>
 
                     <!-- ═══ TABELA 2: Agências (Capital, Províncias e Agrupamento PARCERIAS) ═══ -->
-                    <section
+                    <section class="secao-distribuicao"
                         v-if="agenciasCapital.length > 0 || agenciasProvincia.length > 0 || agenciasParcerias.length > 0">
                         <SectionTitle :title="`1. DISTRIBUIÇÃO DA CARTEIRA - ${tituloEntidadeMaiusculo}`"
                             tone="emerald" />
@@ -501,7 +496,7 @@
                     </section>
 
                     <!-- ═══ TABELA 3: Detalhamento por Produto ═══ -->
-                    <section v-if="produtosAgrupados.length > 0">
+                    <section class="secao-produtos" v-if="produtosAgrupados.length > 0">
                         <div class="overflow-x-auto rounded-xl border border-slate-200">
                             <table class="w-full text-[11px] border-collapse text-slate-800">
                                 <thead class="sticky top-0 z-10">
@@ -559,7 +554,7 @@
                                                     <div class="leading-tight">
                                                         <div
                                                             class="text-xs font-bold text-indigo-950 uppercase tracking-wide">
-                                                            {{ grupo.gestor }}
+                                                            {{ grupo.gestor.replace(/Director(a)?/gi, '').trim() }}
                                                         </div>
                                                         <div class="text-[9px] text-indigo-700 font-medium">
                                                             {{ grupo.tipoDireccao }} · {{ grupo.itens.length }} {{
@@ -696,7 +691,7 @@
                     </section>
 
                     <!-- ═══ TABELA 4: MOVIMENTO DAS PRESTAÇÕES ═══ -->
-                    <section v-if="linhasMovimentoPrestacao.length > 0">
+                    <section class="secao-movimento" v-if="linhasMovimentoPrestacao.length > 0">
                         <SectionTitle :title="`2. MOVIMENTO DAS PRESTAÇÕES - ${tituloEntidadeMaiusculo}`"
                             tone="emerald" />
                         <div class="overflow-x-auto rounded border border-slate-300">
@@ -772,12 +767,12 @@
                     </section>
 
                     <!-- ═══ TABELA 5: Desembolsos/Reembolsos 12 Meses (2 blocos de 6 meses + Coluna Total Acumulado) ═══ -->
-                    <section v-if="desembolsosReembolsos12MesesRD.length > 0">
+                    <section class="secao-fluxo" v-if="desembolsosReembolsos12MesesRD.length > 0">
                         <SectionTitle
                             :title="`3. DESEMBOLSOS E REEMBOLSOS (ÚLTIMOS 12 MESES) - ${tituloEntidadeMaiusculo}`"
                             tone="emerald" />
 
-                        <div class="flex flex-col lg:flex-row rounded-xl border border-slate-200 overflow-hidden">
+                        <div class="fluxo-12m flex flex-col lg:flex-row rounded-xl border border-slate-200 overflow-hidden">
                             <!-- Esquerda: 2 blocos empilhados de 6 meses cada -->
                             <div class="flex-1">
                                 <table class="w-full text-xs border-collapse text-slate-800">
@@ -858,7 +853,7 @@
 
                             <!-- Direita: Coluna de Total Acumulado (12 Meses) alinhada -->
                             <div
-                                class="lg:w-48 shrink-0 flex flex-col border-t-2 lg:border-t-0 border-slate-300 bg-slate-50">
+                                class="fluxo-total lg:w-48 shrink-0 flex flex-col border-t-2 lg:border-t-0 border-slate-300 bg-slate-50">
                                 <div
                                     class="bg-[#0B2E4F] text-amber-200 px-3 py-1.5 text-center text-[11px] font-black uppercase tracking-wider border-b border-slate-300">
                                     Total Acumulado
@@ -1555,7 +1550,7 @@ const tituloEntidadeMaiusculo = computed(() => {
 
 const tituloEntidadeCurto = computed(() => {
     const map = {
-        GLOBAL: 'Kixi Crédito',
+        GLOBAL: 'KixiCrédito',
         DPP: 'DPP',
         DOP: 'DOP',
         OUT: 'OUT',
@@ -1566,7 +1561,7 @@ const tituloEntidadeCurto = computed(() => {
 /* Título do cabeçalho: "Kixi Crédito Angola" (global) ou "Direcção DOP"; o nome do director vai por baixo */
 const tituloHeaderPrincipal = computed(() => {
     return direccaoActivaNorm.value === 'GLOBAL'
-        ? 'Kixi Crédito Angola'
+        ? 'KixiCrédito Angola'
         : `Direcção ${direccaoActivaNorm.value}`
 })
 
@@ -1589,7 +1584,7 @@ const tituloDireccao = computed(() => {
 
 const tituloCabecalhoDireccao = computed(() => {
     if (direccaoActivaNorm.value === 'GLOBAL') {
-        return 'KIXI CRÉDITO ANGOLA'
+        return 'KixiCrédito Angola'
     }
     const map = {
         DPP: 'PARTICULARES E PARCERIAS(DPP)',
@@ -2339,14 +2334,14 @@ const normalizarTipoRanking = (val) => String(val || '').trim().toUpperCase()
 
 const tituloSecaoTopClientes = computed(() => {
     const dir = direccaoActivaNorm.value
-    if (dir === 'GLOBAL') return 'TOP 15 – CLIENTES COM PAR30 — VISÃO GERAL (INSTITUIÇÃO)'
-    return `TOP 15 – CLIENTES COM PAR30 — ${tituloEntidadeMaiusculo.value}`
+    if (dir === 'GLOBAL') return 'TOP 15 – CLIENTES COM RISCO ELEVADO - KIXICRÉDITO ANGOLA'
+    return `TOP 15 – CLIENTES COM RISCO ELEVADO— ${tituloEntidadeMaiusculo.value}`
 })
 
 const subtituloSecaoTopClientes = computed(() => {
     const dir = direccaoActivaNorm.value
-    if (dir === 'GLOBAL') return 'Ranking consolidado dos 15 clientes com maior exposição em risco na instituição. | ( Limitado por Corte Mínimo de Atraso + Com Prioridade ao Maior Montante)'
-    return `Ranking dos 15 clientes com maior exposição em risco exclusivos de ${tituloEntidadeMaiusculo.value} |  (Limitado por Corte Mínimo de Atraso + Com Prioridade ao Maior Montante)`
+    if (dir === 'GLOBAL') return ''
+    return ``
 })
 
 const listaTopClientesAtiva = computed(() => {
@@ -3036,7 +3031,11 @@ const CSS_IMPRESSAO = `
     .doc-header .meta { text-align: right; font-size: 9px; color: #475569; }
     .doc-header .meta strong { color: #0B2E4F; font-size: 10.5px; }
 
+    /* Página 1: KPIs no topo e os 4 gráficos (2×2) a ocupar toda a altura útil restante.
+       Altura útil A4 paisagem = 210mm − margens (10 + 12) = 188mm; 185mm deixa folga para evitar página extra. */
     .pagina-resumo {
+        display: flex; flex-direction: column;
+        height: 185mm;
         page-break-after: always;
         break-after: page;
     }
@@ -3055,19 +3054,27 @@ const CSS_IMPRESSAO = `
     .print-charts {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
+        grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+        flex: 1 1 auto; min-height: 0;
     }
     .print-charts > div {
+        display: flex !important; flex-direction: column !important; min-height: 0;
         border: 1px solid #cbd5e1 !important;
-        border-radius: 6px !important;
-        padding: 8px 10px !important;
+        border-radius: 8px !important;
+        padding: 10px 12px !important;
         box-shadow: none !important;
         break-inside: avoid;
         page-break-inside: avoid;
     }
+    .print-charts > div > * { min-height: 0; }
+    .print-charts > div > div:has(img.chart-snapshot), .print-charts > div > div:has(> img) {
+        flex: 1 1 auto; min-height: 0; height: auto !important; display: flex; align-items: center; justify-content: center;
+    }
     .print-charts img.chart-snapshot {
         width: 100% !important;
-        height: 175px !important;
+        height: 100% !important;
+        max-height: 100% !important;
         object-fit: contain !important;
         display: block !important;
     }
@@ -3115,8 +3122,61 @@ const CSS_IMPRESSAO = `
     h2 { font-size: 14px !important; margin: 0 !important; }
     h2 + p, section p { font-size: 10px !important; }
 
-    section { break-inside: auto; page-break-inside: auto; margin: 0 0 12px; }
+    /* ── Enquadramento A4 ajustado por página ── */
+    section { break-inside: avoid; page-break-inside: avoid; margin: 0 0 14px; }
     section > div:first-child { break-after: avoid; page-break-after: avoid; }
+
+    /* PÁGINA 2: Histórico + 1. Distribuição da Carteira (todas as sub-tabelas juntas e com respiro vertical) */
+    .secao-historico { margin-bottom: 16px !important; }
+    .secao-historico th, .secao-historico td { padding: 5.5px 6px !important; }
+    .secao-distribuicao { break-inside: avoid !important; page-break-inside: avoid !important; margin-bottom: 0 !important; }
+    .secao-distribuicao > .space-y-4 > * + * { margin-top: 12px !important; }
+    .secao-distribuicao th, .secao-distribuicao td { padding: 5.5px 6px !important; }
+
+    /* PÁGINA 3: Isolada exclusivamente para Detalhes por Produtos, com melhor altura de linha */
+    .secao-produtos {
+        break-before: page !important;
+        page-break-before: always !important;
+        break-after: page !important;
+        page-break-after: always !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+        margin-bottom: 0 !important;
+    }
+    .secao-produtos th, .secao-produtos td { padding: 6.5px 6px !important; }
+
+    /* PÁGINA 4: 2. Movimento das Prestações + 3. Desembolsos e Reembolsos juntos na mesma página */
+    .secao-movimento {
+        break-before: page !important;
+        page-break-before: always !important;
+        margin-bottom: 18px !important;
+    }
+    .secao-movimento th, .secao-movimento td { padding: 4.5px 6px !important; }
+    .secao-fluxo {
+        break-before: avoid !important;
+        page-break-before: avoid !important;
+        break-after: page !important;
+        page-break-after: always !important;
+        margin-bottom: 0 !important;
+    }
+    .secao-fluxo th, .secao-fluxo td { padding: 6.5px 6px !important; }
+
+    section .rounded-xl, section .rounded-2xl { box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+    section .overflow-x-auto { break-inside: avoid; page-break-inside: avoid; }
+
+    /* ── 3. Desembolsos e Reembolsos (12 meses): o Total Acumulado fica sempre à direita ──
+       O breakpoint lg: não se aplica no iframe de impressão, por isso a linha é forçada aqui.
+       Colunas de rótulo e de meses mais estreitas libertam espaço para a coluna de total. */
+    .fluxo-12m { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; }
+    .fluxo-12m > div:first-child { flex: 1 1 0 !important; min-width: 0 !important; }
+    .fluxo-12m > div:first-child table { table-layout: fixed !important; width: 100% !important; }
+    .fluxo-12m > div:first-child th:first-child,
+    .fluxo-12m > div:first-child td:first-child { width: 92px !important; padding-left: 5px !important; padding-right: 4px !important; white-space: nowrap; font-size: 10px !important; }
+    .fluxo-12m > div:first-child th:not(:first-child),
+    .fluxo-12m > div:first-child td:not(:first-child) { padding-left: 3px !important; padding-right: 4px !important; font-size: 10.5px !important; white-space: nowrap; overflow: hidden; }
+    .fluxo-12m .fluxo-total { flex: 0 0 140px !important; width: 140px !important; border-top: 0 !important; border-left: 2px solid #cbd5e1; }
+    .fluxo-12m .fluxo-total span.text-sm { font-size: 12px !important; white-space: nowrap; }
+    .fluxo-12m .fluxo-total span.text-\\[10px\\] { font-size: 9px !important; white-space: nowrap; }
     .quebra-pagina { break-before: page; page-break-before: always; }
 `
 
@@ -3199,7 +3259,7 @@ const imprimirA4 = () => {
         const larguraUtil = 1062
         const maisLarga = Math.max(...Array.from(doc.querySelectorAll('table')).map(t => t.scrollWidth), larguraUtil)
         if (maisLarga > larguraUtil) {
-            doc.body.style.zoom = String(Math.max(0.6, larguraUtil / maisLarga))
+            const pt = doc.querySelector('.pagina-tabelas'); if (pt) pt.style.zoom = String(Math.max(0.6, larguraUtil / maisLarga))
         }
         iframe.contentWindow.focus()
         iframe.contentWindow.onafterprint = limpar
@@ -3214,9 +3274,11 @@ const imprimirA4 = () => {
 const esc = (v) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
 const EM_COR = { azul: '#0B2E4F', azul2: '#103E68', verde: '#047857', rosa: '#be123c', ambar: '#b45309', cinza: '#64748b' }
-const EM_BASE = 'padding:6px 9px;border:1px solid #dbe3ec;font-size:12.5px;line-height:1.35;'
+const EM_BASE = 'padding:5px 7px;border:1px solid #e2e8f0;font-size:12px;line-height:1.3;font-variant-numeric:tabular-nums;'
 
-const emTh = (t, st = '') => `<th style="background:${EM_COR.azul2};color:#ffffff;font-weight:700;text-align:center;white-space:nowrap;${EM_BASE}${st}">${t}</th>`
+/* Cabeçalho como no ecrã: fundo azul-escuro, texto branco, maiúsculas pequenas com espaçamento entre letras,
+   separadores a branco translúcido */
+const emTh = (t, st = '', bg = EM_COR.azul2) => `<th style="background:${bg};color:#ffffff;font-weight:700;text-align:center;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;${EM_BASE}font-size:11px;border-color:rgba(255,255,255,.28);${st}">${t}</th>`
 const emTd = (t, st = '') => `<td style="text-align:right;color:#1e293b;${EM_BASE}${st}">${t}</td>`
 const emTdL = (t, st = '') => emTd(t, `text-align:left;font-weight:700;${st}`)
 const emTr = (cels, st = '') => `<tr style="${st}">${cels.join('')}</tr>`
@@ -3225,24 +3287,34 @@ const emTr = (cels, st = '') => `<tr style="${st}">${cels.join('')}</tr>`
    por isso o contentor (div com borda + overflow:hidden) é que arredonda e recorta os cantos das células,
    tal como no ecrã. O div interior mantém o scroll horizontal em ecrãs estreitos.
    Outlook desktop (motor Word) ignora border-radius e mostra cantos rectos — degradação aceitável. */
-const emTabela = (heads, linhas, barra = '', barraBg = EM_COR.azul) => `
-<div style="border:1px solid ${barra ? barraBg : '#dbe3ec'};border-radius:12px;overflow:hidden;-webkit-border-radius:12px;">
+/* opts: { headBg, barraAlign:'left'|'center', headHtml (cabeçalho próprio, ex.: 2 linhas) , zebra:true }
+   Zebra: linhas alternadas em #f8fafc (como o ecrã); as que já têm fundo próprio não são alteradas. */
+const emTabela = (heads, linhas, barra = '', barraBg = EM_COR.azul, opts = {}) => {
+    const { headBg = EM_COR.azul2, barraAlign = 'left', headHtml = '', zebra = true } = opts
+    const corpo = linhas.map((l, i) => (zebra && i % 2 === 1 && !/^<tr style="[^"]*background/.test(l))
+        ? l.replace(/^<tr style="/, '<tr style="background:#f8fafc;') : l).join('')
+    const barraHtml = barra
+        ? `<tr><th colspan="${heads.length || 99}" style="background:${barraBg};color:#ffffff;text-align:${barraAlign};font-size:${barraAlign === 'center' ? '15px' : '12.5px'};letter-spacing:.05em;text-transform:uppercase;padding:${barraAlign === 'center' ? '12px 10px' : '8px 12px'};border:0;border-bottom:1px solid rgba(255,255,255,.25);">${barra}</th></tr>`
+        : ''
+    return `
+<div style="border:1px solid ${barra ? barraBg : '#cbd5e1'};border-radius:12px;overflow:hidden;-webkit-border-radius:12px;">
 <div style="overflow-x:auto;border-radius:12px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;">
   <thead>
-    ${barra ? `<tr><th colspan="${heads.length}" style="background:${barraBg};color:#ffffff;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:8px 10px;border:1px solid ${barraBg};">${barra}</th></tr>` : ''}
-    <tr>${heads.map(h => emTh(h)).join('')}</tr>
+    ${barraHtml}
+    ${headHtml || `<tr>${heads.map(h => emTh(h, '', headBg)).join('')}</tr>`}
   </thead>
-  <tbody>${linhas.join('')}</tbody>
+  <tbody>${corpo}</tbody>
 </table>
 </div>
 </div>`
+}
 
 const emSecao = (titulo, sub, conteudo, corBorda = EM_COR.azul) => `
 <tr><td style="padding:26px 28px 6px;">
   <div style="border-left:5px solid ${corBorda};padding:2px 0 2px 12px;">
-    <div style="font-size:17px;font-weight:700;color:#0f172a;">${titulo}</div>
-    ${sub ? `<div style="font-size:12.5px;color:${EM_COR.cinza};margin-top:2px;">${sub}</div>` : ''}
+    <div style="font-size:15px;font-weight:800;color:#0f172a;text-transform:uppercase;letter-spacing:.02em;">${titulo}</div>
+    ${sub ? `<div style="font-size:12px;color:${EM_COR.cinza};margin-top:2px;">${sub}</div>` : ''}
   </div>
 </td></tr>
 <tr><td style="padding:8px 28px 4px;"><div style="overflow-x:auto;">${conteudo}</div></td></tr>`
@@ -3271,8 +3343,8 @@ const emCelsMetricas = (m, st = '') => [
     emTd(`${formatarInt(m.cliTot)} | <b style="color:#0e7490;">${formatarInt(m.cliNov)}</b>`, st),
     emTd(`${formatarK(m.par1)}${m.par1p != null ? ` <span style="color:${EM_COR.ambar};font-size:11px;font-weight:700;">(${Math.round(m.par1p)}%)</span>` : ''}`, st),
     emTd(`${formatarK(m.par30)}${m.par30p != null ? ` <span style="color:${EM_COR.rosa};font-size:11px;font-weight:700;">(${Math.round(m.par30p)}%)</span>` : ''}`, st),
-    emTd(`${formatarNumero(m.des)}${m.ta != null ? ` <span style="color:${EM_COR.cinza};font-size:11px;">| ${String(Math.round(m.ta)).padStart(2, '0')}</span>` : ''}`, `color:${EM_COR.verde};font-weight:600;${st}`),
-    emTd(formatarNumero(m.ree), `color:${EM_COR.rosa};${st}`),
+    emTd(`${formatarNumero(m.des)}${m.ta != null ? ` <span style="color:${EM_COR.cinza};font-size:11px;">| ${String(Math.round(m.ta)).padStart(2, '0')}</span>` : ''}`, `background:#f0fdf4;color:${EM_COR.verde};font-weight:700;${st}`),
+    emTd(formatarNumero(m.ree), `background:#fff5f5;color:${EM_COR.rosa};${st}`),
     emTd(`${formatarNumero(m.prov)}${m.provClasse ? ` <b>(${esc(m.provClasse)})</b>` : ''}`, st),
     emTd(emBadge(m.gestao, m.gestaoSufixo), `text-align:center;${st}`)
 ]
@@ -3325,14 +3397,14 @@ const emConsolidado = () => {
         varCel(u.VariacaoPercentual)
     ]))
     rows.push(emTr([
-        emTdL('2. Créditos | Novos<br><span style="font-size:11px;font-weight:400;color:#64748b;">Taxa Juros ≤ Kz 2.000</span>'),
+        emTdL('2. Créditos | Novos'),
         ...meses.map(i => emTd(`${formatarInt(i.CreditosQuantidade)} | <b style="color:#4338ca;">${formatarInt(i.CreditosNovos)}</b>`)),
         upsI(u.CreditosNovos_Mais), dnsI(u.CreditosNovos_Menos),
         emTd(`${formatarInt(u.CreditosQuantidade)} | <b style="color:#4338ca;">${formatarInt(u.CreditosNovos)}</b>`, 'font-weight:700;'),
         varCel(u.VariacaoCreditosNovos)
     ]))
     rows.push(emTr([
-        emTdL('3. Clientes | Novos<br><span style="font-size:11px;font-weight:400;color:#64748b;">≤ Kz 2.000</span>'),
+        emTdL('3. Clientes | Novos<br>'),
         ...meses.map(i => emTd(`${formatarInt(i.ClientesQuantidade)} | <b style="color:#0e7490;">${formatarInt(i.ClientesNovos)}</b>`)),
         upsI(u.ClientesNovos_Mais), dnsI(u.ClientesNovos_Menos),
         emTd(`${formatarInt(u.ClientesQuantidade)} | <b style="color:#0e7490;">${formatarInt(u.ClientesNovos)}</b>`, 'font-weight:700;'),
@@ -3367,18 +3439,23 @@ const emConsolidado = () => {
             varCel(u[l.variacaoKey], !!l.invertido)
         ]))
     })
-    const barra = `${esc(tituloCabecalhoDireccao.value)}${directorExibicao.value ? ` · DIRECTOR ${esc(directorExibicao.value)}` : ''}`
-    return emTabela(heads, rows, barra)
+    /* Barra de cor à esquerda de cada indicador (como no ecrã) */
+    const coresLinha = ['#2563eb', '#4f46e5', '#0d9488', '#e11d48', '#ea580c', '#d97706', '#dc2626', '#059669', '#2563eb', '#4f46e5']
+    const rowsComBarra = rows.map((r, i) => r.replace(/^(\s*<tr[^>]*>\s*<td style="[^"]*)"/, `$1border-left:4px solid ${coresLinha[i % coresLinha.length]};"`))
+    const barra = `<div style="color:#fef3c7;font-weight:800;">${esc(tituloCabecalhoDireccao.value)}</div>${directorExibicao.value ? `<div style="color:#fde68a;font-size:12px;font-weight:700;margin-top:2px;">${esc(directorExibicao.value)}</div>` : ''}`
+    const nMeses = meses.length
+    const headHtml = `<tr>${emTh('Indicador', 'text-align:left;', '#0B2E4F')}${meses.map((_, i) => emTh(esc(colunasMeses.value[i]?.label ?? ''))).join('')}${emTh('▲', '', '#0f766e')}${emTh('▼', '', '#5b4b7a')}${emTh(esc(ultimoMesNome.value || 'Atual'), '', '#1E5A8E')}${emTh('Var.', '', '#0B2E4F')}</tr>`
+    return emTabela(heads, rowsComBarra, barra, EM_COR.azul, { barraAlign: 'center', headHtml })
 }
 
 const emAgencias = (titulo, lista) => {
     const linhas = lista.map(a => {
         const st = a.IsTotalizador ? 'background:#fffbeb;font-weight:700;' : ''
         const peso = a.PesoPercentual ? ` <span style="color:#64748b;font-weight:400;font-size:11px;">(${Math.round(a.PesoPercentual)}%)</span>` : ''
-        return emTr([emTdL(`${esc(a.NomeLocal)}${peso}`, st), ...emCelsMetricas(emMapItem(a), st)])
+        return emTr([emTdL(`<span style="color:#94a3b8;">—</span>&nbsp; ${esc(a.NomeLocal)}${peso}`, `font-weight:${a.IsTotalizador ? 700 : 500};${st}`), ...emCelsMetricas(emMapItem(a), st)])
     })
     const t = emTotalAgencias(lista)
-    linhas.push(emTr([emTdL(`Total ${esc(titulo)}`, 'background:#0B2E4F;color:#ffffff;'), ...emCelsMetricas(t, 'background:#0B2E4F;color:#ffffff;')]))
+    linhas.push(emTr([emTdL(`TOTAL ${esc(titulo).toUpperCase()}`, 'background:#0B2E4F;color:#ffffff;border-top:2px solid #94a3b8;'), ...emCelsMetricas(t, 'background:#0B2E4F;color:#ffffff;border-top:2px solid #94a3b8;')]))
     const barraBg = String(titulo).toUpperCase().includes('PARCERIA') ? '#312e81' : EM_COR.azul
     return emTabela(['Localidade', ...EM_HEADS_METRICAS], linhas, esc(titulo), barraBg)
 }
@@ -3386,15 +3463,15 @@ const emAgencias = (titulo, lista) => {
 const emProdutos = () => {
     const linhas = []
     produtosAgrupados.value.forEach(g => {
-        const st = 'background:#e0e7ff;font-weight:700;color:#1e1b4b;'
+        const st = 'background:#e0e7ff;font-weight:700;color:#1e1b4b;border-top:1px solid #c7d2fe;'
         const mt = { ...emMapItem(g.total), ta: g.total.TempoAtendimentoMedia, gestao: g.total.GestaoMedia, gestaoSufixo: g.total.GestaoSufixo }
         linhas.push(emTr([
             emTdL(`${esc(g.gestor)}<br><span style="font-size:11px;font-weight:500;color:#4338ca;">${esc(g.tipoDireccao)} · ${g.itens.length} ${g.itens.length === 1 ? 'produto' : 'produtos'}</span>`, st),
             ...emCelsMetricas(mt, st)
         ]))
-        g.itens.forEach(p => linhas.push(emTr([emTdL(`&nbsp;&nbsp;• ${esc(p.NomeProduto)}`, 'font-weight:500;'), ...emCelsMetricas(emMapItem(p))])))
+        g.itens.forEach(p => linhas.push(emTr([emTdL(`&nbsp;&nbsp;<span style="color:#6366f1;">•</span> ${esc(p.NomeProduto)}`, 'font-weight:500;'), ...emCelsMetricas(emMapItem(p))])))
     })
-    return emTabela(['Produto', ...EM_HEADS_METRICAS], linhas, `Detalhamento por Produto - ${esc(tituloEntidadeMaiusculo.value)}`)
+    return emTabela(['Produto', ...EM_HEADS_METRICAS], linhas, `DETALHES POR PRODUTOS - ${esc(tituloEntidadeMaiusculo.value)}`)
 }
 
 const emMovimento = () => {
@@ -3408,7 +3485,10 @@ const emMovimento = () => {
             emTd(`${Math.round(Number(mp.PctRecuperado ?? 0))}% / ${Math.round(Number(mp.TxRecuperacao ?? 0))}%`, `text-align:center;font-weight:700;${st}`)
         ])
     })
-    return emTabela(heads, linhas)
+    const h = (t, st = '', extra = '') => `<th ${extra} style="background:${EM_COR.azul2};color:#ffffff;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em;${EM_BASE}font-size:11px;border-color:rgba(255,255,255,.28);${st}">${t}</th>`
+    const headHtml = `<tr>${h('Período<br>Prestação', 'background:#0B2E4F;', 'rowspan="2"')}${h('Capital', 'background:#0B2E4F;', 'colspan="4"')}${h('Juros + Outros', 'background:#0B2E4F;', 'colspan="4"')}${h('Total<br>Recuperado', 'background:#0B2E4F;', 'rowspan="2"')}${h('%Recup. /<br>TxRecup.', 'background:#0B2E4F;', 'rowspan="2"')}</tr>
+<tr>${['B.I.', 'Desembolsado', 'Reembolsado', 'B.F.', 'B.I.', 'Desembolsado', 'Reembolsado', 'B.F.'].map(t => h(t)).join('')}</tr>`
+    return emTabela(heads, linhas, '', EM_COR.azul, { headHtml })
 }
 
 const emFluxo12Meses = () => {
@@ -3420,19 +3500,35 @@ const emFluxo12Meses = () => {
                 : ['font-weight:600;', '']
         return emTd(`${tag}${formatarNumero(val)}`, `color:${corBase};${bg}`)
     }
-    const blocos = blocosFluxo6Meses.value.map((bloco, idx) => emTabela(
-        [`Fluxo / Mês (${idx === 0 ? '1–6' : '7–12'})`, ...bloco.map(m => esc(m.NomeDoMes))],
-        [
-            emTr([emTdL('▼ Desembolso (+)', 'background:#ecfdf5;color:#047857;'), ...bloco.map(m => cel(m.DesembolsoValor, mm.maxDesemb, mm.minDesemb, EM_COR.verde))]),
-            emTr([emTdL('▲ Reembolso (−)', 'background:#fff1f2;color:#be123c;'), ...bloco.map(m => cel(m.ReembolsoValor, mm.maxReemb, mm.minReemb, EM_COR.rosa))])
-        ]
-    )).join('<div style="height:10px;"></div>')
+    const vazio = '<span style="color:#94a3b8;">—</span>'
     const tot = totaisAcumuladosFluxo.value
-    const totais = emTabela(['Total Acumulado (12 Meses)', 'Valor'], [
-        emTr([emTdL('Total Desembolso', 'background:#ecfdf5;color:#047857;'), emTd(formatarNumero(tot.totalDesembolso), 'font-weight:800;color:#064e3b;')]),
-        emTr([emTdL('Total Reembolso', 'background:#fff1f2;color:#be123c;'), emTd(formatarNumero(tot.totalReembolso), 'font-weight:800;color:#881337;')])
-    ])
-    return `${blocos}<div style="height:10px;"></div>${totais}`
+    const blocos = blocosFluxo6Meses.value
+    const linhas = []
+    blocos.forEach((bloco, idx) => {
+        const falta = Math.max(0, 6 - bloco.length)
+        const cab = `<tr>${emTh(`Fluxo / Mês (${idx === 0 ? '1–6' : '7–12'})`, 'text-align:left;')}${bloco.map(m => emTh(esc(m.NomeDoMes))).join('')}${Array.from({ length: falta }, () => emTh('—')).join('')}`
+        const totalCab = idx === 0
+            ? `<th style="background:#0B2E4F;color:#fde68a;text-align:center;text-transform:uppercase;letter-spacing:.04em;${EM_BASE}font-size:11px;font-weight:800;border-color:rgba(255,255,255,.28);width:170px;">Total Acumulado<br><span style="font-size:10px;font-weight:400;color:#bfdbfe;">12 Meses</span></th>`
+            : ''
+        const cDes = `${emTdL('▼ Desembolso (+)', 'background:#ecfdf5;color:#047857;white-space:nowrap;')}${bloco.map(m => cel(m.DesembolsoValor, mm.maxDesemb, mm.minDesemb, EM_COR.verde)).join('')}${Array.from({ length: falta }, () => emTd(vazio)).join('')}`
+        const cRee = `${emTdL('▲ Reembolso (−)', 'background:#fff1f2;color:#be123c;white-space:nowrap;')}${bloco.map(m => cel(m.ReembolsoValor, mm.maxReemb, mm.minReemb, EM_COR.rosa)).join('')}${Array.from({ length: falta }, () => emTd(vazio)).join('')}`
+        const totDes = idx === 0
+            ? `<td rowspan="${blocos.length > 1 ? 3 : 2}" valign="middle" style="background:#ecfdf5;text-align:right;${EM_BASE}padding:10px 12px;"><div style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#047857;">▼ Total Desembolso</div><div style="font-size:15px;font-weight:800;color:#064e3b;margin-top:4px;white-space:nowrap;">${formatarNumero(tot.totalDesembolso)}</div></td>`
+            : ''
+        const totRee = idx === 1
+            ? `<td rowspan="2" valign="middle" style="background:#fff1f2;text-align:right;${EM_BASE}padding:10px 12px;"><div style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#be123c;">▲ Total Reembolso</div><div style="font-size:15px;font-weight:800;color:#881337;margin-top:4px;white-space:nowrap;">${formatarNumero(tot.totalReembolso)}</div></td>`
+            : ''
+        linhas.push(`${cab}${totalCab}</tr>`, `<tr style="background:#ffffff;">${cDes}${totDes}${totRee}</tr>`, `<tr style="background:#ffffff;">${cRee}</tr>`)
+    })
+    /* Com só um bloco, o Total Reembolso fica numa linha própria sob o Total Desembolso */
+    if (blocos.length === 1) {
+        linhas.push(`<tr><td colspan="7" style="${EM_BASE}"></td><td style="background:#fff1f2;text-align:right;${EM_BASE}padding:10px 12px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#be123c;">▲ Total Reembolso</div><div style="font-size:15px;font-weight:800;color:#881337;white-space:nowrap;">${formatarNumero(tot.totalReembolso)}</div></td></tr>`)
+    }
+    return `
+<div style="border:1px solid #cbd5e1;border-radius:12px;overflow:hidden;-webkit-border-radius:12px;">
+<div style="overflow-x:auto;border-radius:12px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;"><tbody>${linhas.join('')}</tbody></table>
+</div></div>`
 }
 
 const emProvisoes = () => {
@@ -3516,7 +3612,9 @@ const emTopClientes = () => {
             emTd(formatarNumero(c.ProvisaoACT))
         ])
     })
-    return emTabela(heads, linhas)
+    const headBg = direccaoActivaNorm.value === 'GLOBAL' ? '#881337' : (direccaoActivaNorm.value === 'DOP' ? '#0B2E4F' : '#312e81')
+    const headHtml = `<tr>${heads.map(h => emTh(h, h === 'Total em Risco (Kz)' ? 'color:#fde68a;background:rgba(0,0,0,.25);' : '', headBg)).join('')}</tr>`
+    return emTabela(heads, linhas, '', headBg, { headBg, headHtml })
 }
 
 const emCentrosCusto = () => {
@@ -3652,27 +3750,45 @@ const gerarHtmlEmail = () => {
 
     const kpiHtml = emGradeCartoes(kpisTopo.value, 5)
 
-    const secoes = []
+  const secoes = []
     if (historicoOrdenado.value.length > 0) {
-        secoes.push(emSecao(`Reporting Consolidado — ${esc(tituloEntidadeMaiusculo.value)}`, esc(tituloDireccao.value) + ' · Histórico mensal consolidado até ao último período', emConsolidado()))
+        secoes.push(`<tr><td style="padding:26px 28px 4px;"><div style="overflow-x:auto;">${emConsolidado()}</div></td></tr>`)
     }
     if (agenciasCapital.value.length || agenciasProvincia.value.length || agenciasParcerias.value.length) {
-        secoes.push(emSecao(`1. Distribuição da Carteira - ${esc(tituloEntidadeMaiusculo.value)}`, 'Performance detalhada por localidade',
+        secoes.push(emSecao(
+            `1. Distribuição da Carteira - ${esc(tituloEntidadeMaiusculo.value)}`,
+            '',
             [
                 agenciasCapital.value.length ? emAgencias('Capital (Luanda)', agenciasCapital.value) : '',
                 agenciasProvincia.value.length ? emAgencias('Províncias', agenciasProvincia.value) : '',
                 agenciasParcerias.value.length ? emAgencias('Parcerias', agenciasParcerias.value) : ''
-            ].filter(Boolean).join('<div style="height:12px;"></div>')))
+            ].filter(Boolean).join('<div style="height:12px;"></div>')
+        ))
     }
-    if (produtosAgrupados.value.length) secoes.push(emSecao(`Detalhes por Produto - ${esc(tituloEntidadeMaiusculo.value)}`, 'Resultados por gestor e produto', emProdutos()))
-    if (linhasMovimentoPrestacao.value.length) secoes.push(emSecao(`2. Movimento das Prestações - ${esc(tituloEntidadeMaiusculo.value)}`, `Detalhe das prestações ${esc(tituloEntidadeCurto.value)}`, emMovimento()))
-    if (props.desembolsosReembolsos12MesesRD.length) secoes.push(emSecao(`3. Desembolsos e Reembolsos (Últimos 12 Meses) - ${esc(tituloEntidadeMaiusculo.value)}`, 'Pico máximo (verde), mínimo (vermelho) e total acumulado', emFluxo12Meses()))
-    if (provisoesAgrupadas.value.length) secoes.push(emSecao(`4. Provisões - ${esc(tituloEntidadeMaiusculo.value)}`, 'Evolução de provisões por agrupamento de produto', emProvisoes()))
-    if (linhasWO.value.length) secoes.push(emSecao(`5. Carteira Write-Off - ${esc(tituloEntidadeMaiusculo.value)}`, 'Evolução e recuperação de ativos baixados', emWriteOff()))
-    if (temTopClientes.value) secoes.push(emSecao(`6. ${esc(tituloSecaoTopClientes.value)}`, esc(subtituloSecaoTopClientes.value), emTopClientes()))
-    if (centrosCustoRegulares.value.length || centrosCustoParcerias.value.length) secoes.push(emSecao(`7. Exposição ao Risco por Centros de Custo - ${esc(tituloEntidadeMaiusculo.value)}`, 'Pontos de atendimento por ordem de gravidade de risco', emCentrosCusto()))
-    if (agroProduto.value && agroMetricas.value) secoes.push(emSecao(`8. APRECIAÇÃO DO PRODUTO KIXIAGROCABINDA - ${esc(tituloEntidadeMaiusculo.value)}`, '', emAgro(), '#10b981'))
-
+    if (produtosAgrupados.value.length) {
+        secoes.push(`<tr><td style="padding:26px 28px 4px;"><div style="overflow-x:auto;">${emProdutos()}</div></td></tr>`)
+    }
+    if (linhasMovimentoPrestacao.value.length) {
+        secoes.push(emSecao(`2. Movimento das Prestações - ${esc(tituloEntidadeMaiusculo.value)}`, '', emMovimento()))
+    }
+    if (props.desembolsosReembolsos12MesesRD.length) {
+        secoes.push(emSecao(`3. Desembolsos e Reembolsos (Últimos 12 Meses) - ${esc(tituloEntidadeMaiusculo.value)}`, '', emFluxo12Meses()))
+    }
+    if (provisoesAgrupadas.value.length) {
+        secoes.push(emSecao(`4. Provisões - ${esc(tituloEntidadeMaiusculo.value)}`, '', emProvisoes()))
+    }
+    if (linhasWO.value.length) {
+        secoes.push(emSecao(`5. Carteira Write-Off - ${esc(tituloEntidadeMaiusculo.value)}`, '', emWriteOff()))
+    }
+    if (temTopClientes.value) {
+        secoes.push(emSecao(`6. ${esc(tituloSecaoTopClientes.value)}`, esc(subtituloSecaoTopClientes.value), emTopClientes()))
+    }
+    if (centrosCustoRegulares.value.length || centrosCustoParcerias.value.length) {
+        secoes.push(emSecao(`7. DESEMPENHO DA CARTEIRA EM ATRASO - ${esc(tituloEntidadeMaiusculo.value)}`, '', emCentrosCusto()))
+    }
+    if (agroProduto.value && agroMetricas.value) {
+        secoes.push(emSecao(`8. APRECIAÇÃO DO PRODUTO KIXIAGROCABINDA - ${esc(tituloEntidadeMaiusculo.value)}`, '', emAgro(), '#10b981'))
+    }
     return `<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -3721,7 +3837,7 @@ const GRUPOS_EMAIL = [
     { key: 'CDO', rotulo: 'CDO', direccao: 'GLOBAL', descricao: 'Relatório principal para o grupo do Comité de Desempenho' },
     { key: 'DOP', rotulo: 'DOP', direccao: 'DOP', descricao: 'Relatório DOP para o Director da DOP e restantes membros' },
     { key: 'DPP', rotulo: 'DPP', direccao: 'DPP', descricao: 'Relatório DPP para o Director da DPP e restantes membros' },
-    { key: 'OUT', rotulo: 'OUT', direccao: 'OUT', descricao: 'Relatório OUT para o Director de OUT e restantes membros' },
+    { key: 'OUT', rotulo: 'OUT', direccao: 'OUT', descricao: 'Relatório OUT para o Directora de OUT e restantes membros' },
     { key: 'NENHUM', rotulo: 'Nenhum', direccao: null, descricao: 'Inserir o email do destinatário manualmente' },
 ]
 
